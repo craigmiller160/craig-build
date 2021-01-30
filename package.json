@@ -6,7 +6,8 @@
   "scripts": {
     "lint": "eslint",
     "forceBuild": "tsc",
-    "test": "jest"
+    "test": "jest",
+    "build": "eslint && jest && tsc"
   },
   "devDependencies": {
     "@types/jest": "^26.0.20",
