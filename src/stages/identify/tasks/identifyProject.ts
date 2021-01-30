@@ -2,7 +2,7 @@ import * as E from 'fp-ts/es6/Either';
 import fs from 'fs';
 import path from 'path';
 import getCwd from '../../../utils/getCwd';
-import ProjectType from '../utils/ProjectType';
+import ProjectType from '../../../types/ProjectType';
 
 const NPM_PROJECT_FILE= 'package.json';
 const MVN_PROJECT_FILE = 'pom.xml';
