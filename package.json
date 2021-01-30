@@ -3,6 +3,9 @@
   "version": "1.0.0-beta",
   "main": "index.js",
   "author": "craigmiller160",
+  "scripts": {
+    "lint": "eslint"
+  },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.14.1",
     "@typescript-eslint/parser": "^4.14.1",
