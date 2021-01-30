@@ -34,38 +34,41 @@ const isDirectory = (file: string): boolean =>
 export default (): E.Either<Error, ProjectDescription> =>
     pipe(
         fs.readdirSync(path.resolve(getCwd())),
-        A.reduce<string, O.Option<ProjectDescription>>(
+        A.reduce<string, ProjectDescription>(
             O.none,
-            (result: O.Option<ProjectDescription>, file: string) => {
-                if (NPM_PROJECT_FILE === file) {
-                    return O.fold(
-                        (): ProjectDescription => ({
-                            buildSystem: BuildSystem.NPM
-                        }),
-                        (desc: ProjectDescription): ProjectDescription => ({
-                            ...desc,
-                            buildSystem: BuildSystem.NPM
-                        })
-                    )(result);
-                } else if (MVN_PROJECT_FILE === file) {
-                    return O.fold(
-                        (): ProjectDescription => ({
-                            buildSystem: BuildSystem.Maven
-                        }),
-                        (desc: ProjectDescription): ProjectDescription => ({
-                            ...desc,
-                            buildSystem: BuildSystem.Maven
-                        })
-                    )(result);
-                } else if (DEPLOY_DIR === file) {
-                    // O.fold()
-                    // TODO think about this
-                    return O.none;
-                } else {
-                    return O.none;
-                }
+            (result: ProjectDescription, file: string) => {
+                return {};
             }
+            // (result: O.Option<ProjectDescription>, file: string) => {
+            //     if (NPM_PROJECT_FILE === file) {
+            //         return O.fold(
+            //             (): ProjectDescription => ({
+            //                 buildSystem: BuildSystem.NPM
+            //             }),
+            //             (desc: ProjectDescription): ProjectDescription => ({
+            //                 ...desc,
+            //                 buildSystem: BuildSystem.NPM
+            //             })
+            //         )(result);
+            //     } else if (MVN_PROJECT_FILE === file) {
+            //         return O.fold(
+            //             (): ProjectDescription => ({
+            //                 buildSystem: BuildSystem.Maven
+            //             }),
+            //             (desc: ProjectDescription): ProjectDescription => ({
+            //                 ...desc,
+            //                 buildSystem: BuildSystem.Maven
+            //             })
+            //         )(result);
+            //     } else if (DEPLOY_DIR === file) {
+            //         // O.fold()
+            //         // TODO think about this
+            //         return O.none;
+            //     } else {
+            //         return O.none;
+            //     }
+            // }
         ),
-        O.filter((desc: ProjectDescription) => !!desc.projectType),
-        E.fromOption(() => new Error()) // TODO enhance this
+        // O.filter((desc: ProjectDescription) => !!desc.projectType),
+        // E.fromOption(() => new Error()) // TODO enhance this
     );
