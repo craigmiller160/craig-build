@@ -1,5 +1,8 @@
+import ContextStatus from '../types/ContextStatus';
+
 export class TaskContext {
     public messages: string[] = [];
+    public status: ContextStatus = ContextStatus.PENDING;
 
     constructor(public taskName: string) {}
 
@@ -10,6 +13,7 @@ export class TaskContext {
 
 export class StageContext {
     public tasks: TaskContext[] = [];
+    public status: ContextStatus = ContextStatus.PENDING;
 
     constructor(public stageName: string) {}
 
@@ -22,6 +26,7 @@ export class StageContext {
 
 export class BuildContext {
     public stages: StageContext[] = [];
+    public status: ContextStatus = ContextStatus.PENDING;
 
     newStage(stageName: string): StageContext {
         const stage = new StageContext(stageName);
