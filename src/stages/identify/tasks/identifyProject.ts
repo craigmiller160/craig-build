@@ -8,11 +8,11 @@ import BuildError from '../../../error/BuildError';
 import { SUCCESS_STATUS, taskLogger } from '../../../context/logger';
 import { pipe } from 'fp-ts/pipeable';
 
-const TASK_NAME = 'Identify Project';
+export const TASK_NAME = 'Identify Project';
 
 const NPM_PROJECT_FILE= 'package.json';
 const MVN_PROJECT_FILE = 'pom.xml';
-const DEPLOY_PATH = path.resolve('deploy', 'deployment.yml');
+const DEPLOY_PATH = path.join('deploy', 'deployment.yml');
 
 const fileExists = (file: string): boolean =>
     fs.existsSync(path.resolve(getCwd(), file));
