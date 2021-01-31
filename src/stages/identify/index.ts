@@ -6,6 +6,8 @@ import ProjectInfo from '../../types/ProjectInfo';
 import { Stage } from '../../types/Build';
 import { stageLogger, SUCCESS_STATUS } from '../../context/logger';
 import { isBuildError } from '../../error/BuildError';
+import { isApplication } from '../../utils/projectTypeUtils';
+import getKubeProjectInfo from './tasks/getKubeProjectInfo';
 
 const STAGE_NAME = 'Identify';
 
@@ -14,6 +16,12 @@ const identify: Stage<ProjectInfo> = () => {
     return pipe(
         identifyProject(),
         E.chain((projectType) => getProjectConfig(projectType)),
+        E.chain((projectInfo) => {
+            if (isApplication(projectInfo.projectType)) {
+                return getKubeProjectInfo(projectInfo);
+            }
+            return E.right(projectInfo);
+        }),
         E.map((projectInfo) => {
             stageLogger(STAGE_NAME, 'Finished successfully', SUCCESS_STATUS);
             return projectInfo;

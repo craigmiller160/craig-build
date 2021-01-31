@@ -5,6 +5,8 @@ import { pipe } from 'fp-ts/pipeable';
 import * as E from 'fp-ts/Either';
 import { isBuildError } from './error/BuildError';
 
+// TODO no matter what type of error, need to know how far the service got
+
 const execute = (): E.Either<Error, any> => { // TODO improve type here
     buildLogger(`Starting build for: ${getCwd()}`);
 

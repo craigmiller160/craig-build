@@ -12,11 +12,11 @@ import * as E from 'fp-ts/Either';
 import * as O from 'fp-ts/Option';
 import { pipe } from 'fp-ts/pipeable';
 import handleUnknownError from '../../../utils/handleUnknownError';
-import { InputTask, Task } from '../../../types/Build';
+import { InputTask } from '../../../types/Build';
 import BuildError from '../../../error/BuildError';
-import { taskLogger } from '../../../context/logger';
+import { SUCCESS_STATUS, taskLogger } from '../../../context/logger';
 
-const TASK_NAME = 'Get Project Info';
+const TASK_NAME = 'Get Base Project Info';
 
 const mapNpmDependencies = (dependencies: NpmDependencies) =>
     Object.entries(dependencies)
@@ -96,7 +96,7 @@ const getBaseProjectInfo: InputTask<ProjectType, ProjectInfo> = (projectType: Pr
     return pipe(
         findProjectInfo(projectType),
         E.map((projectInfo) => {
-            taskLogger(TASK_NAME, 'Finished. ProjectInfo loaded successfully');
+            taskLogger(TASK_NAME, 'Finished loading base ProjectInfo successfully', SUCCESS_STATUS);
             return projectInfo;
         })
     );
