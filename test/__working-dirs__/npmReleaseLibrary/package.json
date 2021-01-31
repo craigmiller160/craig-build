@@ -2,11 +2,11 @@
   "name": "@craigmiller160/craig-build",
   "version": "1.0.0",
   "dependencies": {
-    "@craigmiller160/react-web-config": "^1.0.0-beta",
+    "@craigmiller160/react-web-config": "^1.0.0",
     "@material-ui/core": "^1.0.0-beta"
   },
   "devDependencies": {
-    "@craigmiller160/foo-bar": "^1.0.0-beta",
+    "@craigmiller160/foo-bar": "^1.0.0",
     "@craigmiller160/abc-def": "^1.0.0"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@craigmiller160/craig-build",
-  "version": "1.0.0",
+  "version": "1.0.0-beta",
   "dependencies": {
     "@craigmiller160/react-web-config": "^1.0.0-beta",
     "@material-ui/core": "^1.0.0-beta"
