@@ -1,5 +1,5 @@
 import identifyProject from './tasks/identifyProject';
-import getProjectConfig from './tasks/getBaseProjectInfo';
+import getBaseProjectInfo from './tasks/getBaseProjectInfo';
 import * as E from 'fp-ts/Either';
 import { pipe } from 'fp-ts/pipeable';
 import ProjectInfo from '../../types/ProjectInfo';
@@ -15,7 +15,7 @@ const identify: Stage<ProjectInfo> = () => {
     stageLogger(STAGE_NAME, 'Starting...');
     return pipe(
         identifyProject(),
-        E.chain((projectType) => getProjectConfig(projectType)),
+        E.chain((projectType) => getBaseProjectInfo(projectType)),
         E.chain((projectInfo) => {
             if (isApplication(projectInfo.projectType)) {
                 return getKubeProjectInfo(projectInfo);
