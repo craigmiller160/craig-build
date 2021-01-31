@@ -16,4 +16,8 @@ describe('identifyProject task', () => {
     it('is MavenLibrary', () => {
         throw new Error();
     });
+
+    it('is unknown project', () => {
+        throw new Error();
+    });
 });
