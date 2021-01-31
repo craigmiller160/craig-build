@@ -15,7 +15,8 @@ describe('getKubeProjectInfo task', () => {
             projectType: ProjectType.MavenApplication,
             name: 'email-service',
             version: '1.2.0',
-            dependencies: []
+            dependencies: [],
+            isPreRelease: false
         };
         const result = getKubeProjectInfo(projectInfo);
         expect(result).toEqualRight({
