@@ -6,8 +6,8 @@ export interface Dependency {
 }
 
 export interface NexusVersions {
-    latestPreReleaseVersion: string;
-    latestReleaseVersion: string;
+    latestPreReleaseVersion?: string;
+    latestReleaseVersion?: string;
 }
 
 export default interface ProjectInfo {
