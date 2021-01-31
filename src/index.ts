@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import execute from './execution';
 import { pipe } from 'fp-ts/pipeable';
 import * as E from 'fp-ts/Either';
