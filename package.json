@@ -1,10 +1,13 @@
 {
   "name": "@craigmiller160/craig-build",
-  "version": "1.0.0-beta",
+  "version": "1.0.0-beta.0",
   "main": "index.js",
   "author": "craigmiller160",
   "bin": {
     "craig-build": "build/index.js"
+  },
+  "publishConfig": {
+    "registry": "https://craigmiller160.ddns.net:30003/repository/npm-private/"
   },
   "scripts": {
     "lint": "eslint -c eslint.config.js src/**/*.ts --fix",
