@@ -12,8 +12,7 @@ const identify: Stage<undefined, ProjectInfo> = () => {
     stageLogger(STAGE_NAME, 'Starting...');
     return pipe(
         identifyProject(),
-        E.map((projectType) => getProjectConfig(projectType)),
-        E.flatten,
+        E.chain((projectType) => getProjectConfig(projectType)),
         E.map((projectInfo) => {
             stageLogger(STAGE_NAME, 'Finished successfully');
             return projectInfo;

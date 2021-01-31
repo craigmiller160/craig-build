@@ -5,6 +5,7 @@ import getCwd from '../../../utils/getCwd';
 import ProjectType from '../../../types/ProjectType';
 import { TaskContext } from '../../../context';
 import { Task } from '../../../types/Build';
+import BuildError from '../../../error/BuildError';
 
 const NPM_PROJECT_FILE= 'package.json';
 const MVN_PROJECT_FILE = 'pom.xml';
@@ -16,7 +17,7 @@ const fileExists = (file: string): boolean =>
 const fileExistsAndIsDirectory = (file: string): boolean =>
     fileExists(file) && fs.lstatSync(path.resolve(getCwd(), file)).isDirectory();
 
-const identifyProject: Task<undefined, ProjectType> = () => {
+const identifyProject: Task<never, ProjectType> = () => {
     const hasNpmProjectFile = fileExists(NPM_PROJECT_FILE);
     const hasMvnProjectFile = fileExists(MVN_PROJECT_FILE);
     const hasDeployDir = fileExistsAndIsDirectory(DEPLOY_DIR);
@@ -30,7 +31,7 @@ const identifyProject: Task<undefined, ProjectType> = () => {
     } else if (hasMvnProjectFile) {
         return E.right(ProjectType.MavenLibrary);
     } else {
-        return E.left(new Error()); // TODO enhance this
+        return E.left(new BuildError('Unable to identify project type'));
     }
 };
 
