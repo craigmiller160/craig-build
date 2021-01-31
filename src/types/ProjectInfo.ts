@@ -5,12 +5,17 @@ export interface Dependency {
     version: string;
 }
 
+export interface NexusVersions {
+    latestPreReleaseVersion: string;
+    latestReleaseVersion: string;
+}
+
 export default interface ProjectInfo {
     projectType: ProjectType;
     name: string;
     version: string;
     dependencies: Dependency[];
     kubernetesDockerImage?: string;
-    latestNexusVersion?: string;
+    latestNexusVersions?: NexusVersions;
     isPreRelease: boolean;
 }
