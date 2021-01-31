@@ -4,7 +4,7 @@
   "main": "index.js",
   "author": "craigmiller160",
   "scripts": {
-    "lint": "eslint -c eslint.config.js src/**/*.ts",
+    "lint": "eslint -c eslint.config.js src/**/*.ts --fix",
     "forceBuild": "tsc",
     "test": "jest",
     "build": "yarn lint && jest && tsc"

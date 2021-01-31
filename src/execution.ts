@@ -4,6 +4,8 @@ import getCwd from './utils/getCwd';
 import { pipe } from 'fp-ts/pipeable';
 import * as E from 'fp-ts/Either';
 
+// TODO need to log error here
+
 const execute = (): E.Either<Error, any> => { // TODO improve type here
     buildLogger(`Starting build for: ${getCwd()}`);
 
