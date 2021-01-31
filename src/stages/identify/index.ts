@@ -23,7 +23,8 @@ const identify: Stage<ProjectInfo> = () => {
             return E.right(projectInfo);
         }),
         E.map((projectInfo) => {
-            stageLogger(STAGE_NAME, 'Finished successfully', SUCCESS_STATUS);
+            const projectInfoString = JSON.stringify(projectInfo, null, 2);
+            stageLogger(STAGE_NAME, `Finished successfully. Project Info: ${projectInfoString}`, SUCCESS_STATUS);
             return projectInfo;
         }),
         E.mapLeft((error) => {
