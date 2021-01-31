@@ -14,7 +14,7 @@ import { pipe } from 'fp-ts/pipeable';
 import handleUnknownError from '../../../utils/handleUnknownError';
 import { InputTask } from '../../../types/Build';
 import BuildError from '../../../error/BuildError';
-import { SUCCESS_STATUS, taskLogger } from '../../../context/logger';
+import { SUCCESS_STATUS, taskLogger } from '../../../common/logger';
 import { STAGE_NAME } from '../index';
 
 const TASK_NAME = 'Get Base Project Info';

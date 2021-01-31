@@ -1,6 +1,6 @@
 import { InputTask } from '../../../types/Build';
 import ProjectInfo from '../../../types/ProjectInfo';
-import { SUCCESS_STATUS, taskLogger } from '../../../context/logger';
+import { SUCCESS_STATUS, taskLogger } from '../../../common/logger';
 import * as E from 'fp-ts/Either';
 import { pipe } from 'fp-ts/pipeable';
 import path from 'path';

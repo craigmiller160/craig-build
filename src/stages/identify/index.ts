@@ -4,7 +4,7 @@ import * as E from 'fp-ts/Either';
 import { pipe } from 'fp-ts/pipeable';
 import ProjectInfo from '../../types/ProjectInfo';
 import { Stage } from '../../types/Build';
-import { stageLogger, SUCCESS_STATUS } from '../../context/logger';
+import { stageLogger, SUCCESS_STATUS } from '../../common/logger';
 import { isBuildError } from '../../error/BuildError';
 import { isApplication } from '../../utils/projectTypeUtils';
 import getKubeProjectInfo from './tasks/getKubeProjectInfo';

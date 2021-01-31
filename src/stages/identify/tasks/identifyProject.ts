@@ -5,7 +5,7 @@ import getCwd from '../../../utils/getCwd';
 import ProjectType from '../../../types/ProjectType';
 import { Task } from '../../../types/Build';
 import BuildError from '../../../error/BuildError';
-import { SUCCESS_STATUS, taskLogger } from '../../../context/logger';
+import { SUCCESS_STATUS, taskLogger } from '../../../common/logger';
 import { pipe } from 'fp-ts/pipeable';
 import { STAGE_NAME } from '../index';
 

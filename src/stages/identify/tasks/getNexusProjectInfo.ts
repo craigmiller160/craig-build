@@ -10,6 +10,14 @@ const getHighestMavenSnapshotVersion = () => {
 
 };
 
+const getHighestNpmReleaseVersion = () => {
+
+};
+
+const getHighestNpmBetaVersion = () => {
+
+};
+
 const findVersionInfo = () => {
 
 };
