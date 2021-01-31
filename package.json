@@ -3,6 +3,9 @@
   "version": "1.0.0-beta",
   "main": "index.js",
   "author": "craigmiller160",
+  "bin": {
+    "craig-build": "build/index.js"
+  },
   "scripts": {
     "lint": "eslint -c eslint.config.js src/**/*.ts --fix",
     "forceBuild": "tsc",
