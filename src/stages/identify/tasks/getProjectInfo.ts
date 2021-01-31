@@ -69,7 +69,7 @@ const findProjectInfo = (projectType: ProjectType): E.Either<Error, ProjectInfo>
         case ProjectType.MavenApplication:
             return getProjectMaven();
         default:
-            return E.left(new BuildError('Cannot find or load project info'));
+            return E.left(new BuildError('Cannot find or load project info', { taskName: TASK_NAME }));
     }
 };
 

@@ -7,3 +7,8 @@ export type Stage<Result> = BuildStep<Result>;
 export type InputStage<Input, Result> = InputBuildStep<Input, Result>;
 export type Task<Result> = BuildStep<Result>;
 export type InputTask<Input, Result> = InputBuildStep<Input, Result>;
+
+export interface BuildContext {
+    stageName?: string;
+    taskName?: string;
+}

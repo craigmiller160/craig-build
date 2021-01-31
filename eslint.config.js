@@ -4,6 +4,9 @@ const config = {
     extends: [
         'airbnb'
     ],
+    plugins: [
+        'unused-imports'
+    ],
     parser: 'babel-eslint',
     env: {
         browser: true,
@@ -79,7 +82,10 @@ const config = {
                 logical: 'ignore',
                 prop: 'parens'
             }
-        ]
+        ],
+        'no-unused-vars': 0,
+        'unused-imports/no-unused-imports': 'error',
+        'unused-imports/no-unused-vars': 'error'
     },
     globals: {
         window: true,
@@ -135,13 +141,9 @@ const config = {
                     },
                 ],
                 'no-unused-vars': 'off',
-                '@typescript-eslint/no-unused-vars': [
-                    'error',
-                    {
-                        args: 'none',
-                        ignoreRestSiblings: true,
-                    },
-                ],
+                '@typescript-eslint/no-unused-vars': 0,
+                'unused-imports/no-unused-imports-ts': 'error',
+                'unused-imports/no-unused-vars-ts': 'error',
                 'no-useless-constructor': 'off',
                 '@typescript-eslint/no-useless-constructor': 'error',
                 'import/extensions': [

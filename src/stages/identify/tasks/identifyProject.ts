@@ -35,7 +35,7 @@ const getProjectType = (): E.Either<Error, ProjectType> => {
     } else if (hasMvnProjectFile) {
         return E.right(ProjectType.MavenLibrary);
     } else {
-        return E.left(new BuildError('Unable to identify project type'));
+        return E.left(new BuildError('Unable to identify project type', { taskName: TASK_NAME }));
     }
 };
 
