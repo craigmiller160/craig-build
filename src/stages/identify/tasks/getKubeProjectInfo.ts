@@ -19,7 +19,7 @@ const findKubeProjectInfo = (projectInfo: ProjectInfo): E.Either<Error, ProjectI
             const kubeContent = fs.readFileSync(kubeDeploymentPath, 'utf8');
             const kubeDeploymentContent = kubeContent.split('---')[0];
             const kubeDeployment = yaml.parse(kubeDeploymentContent) as KubeDeployment;
-            projectInfo.kubernetesVersion = kubeDeployment.spec.template.spec.containers[0].image;
+            projectInfo.kubernetesDockerImage = kubeDeployment.spec.template.spec.containers[0].image;
             return projectInfo;
         },
         handleUnknownError
