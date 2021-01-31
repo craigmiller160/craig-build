@@ -1,6 +1,6 @@
-import getProjectInfo from '../../../../src/stages/identify/tasks/getProjectInfo';
+import getBaseProjectInfo from '../../../../src/stages/identify/tasks/getBaseProjectInfo';
 
-describe('getProjectInfo task', () => {
+describe('getBaseProjectInfo task', () => {
     it('get Maven ProjectInfo', () => {
         throw new Error();
     });

@@ -91,7 +91,7 @@ const findProjectInfo = (projectType: ProjectType): E.Either<Error, ProjectInfo>
     }
 };
 
-const getProjectInfo: InputTask<ProjectType, ProjectInfo> = (projectType: ProjectType) => {
+const getBaseProjectInfo: InputTask<ProjectType, ProjectInfo> = (projectType: ProjectType) => {
     taskLogger(TASK_NAME, 'Starting...');
     return pipe(
         findProjectInfo(projectType),
@@ -102,4 +102,4 @@ const getProjectInfo: InputTask<ProjectType, ProjectInfo> = (projectType: Projec
     );
 };
 
-export default getProjectInfo;
+export default getBaseProjectInfo;

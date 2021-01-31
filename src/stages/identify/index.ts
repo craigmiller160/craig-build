@@ -1,5 +1,5 @@
 import identifyProject from './tasks/identifyProject';
-import getProjectConfig from './tasks/getProjectInfo';
+import getProjectConfig from './tasks/getBaseProjectInfo';
 import * as E from 'fp-ts/Either';
 import { pipe } from 'fp-ts/pipeable';
 import ProjectInfo from '../../types/ProjectInfo';
