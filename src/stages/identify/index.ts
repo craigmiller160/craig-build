@@ -9,7 +9,7 @@ import { isBuildError } from '../../error/BuildError';
 import { isApplication } from '../../utils/projectTypeUtils';
 import getKubeProjectInfo from './tasks/getKubeProjectInfo';
 
-const STAGE_NAME = 'Identify';
+export const STAGE_NAME = 'Identify';
 
 const identify: Stage<ProjectInfo> = () => {
     stageLogger(STAGE_NAME, 'Starting...');

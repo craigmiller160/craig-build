@@ -17,9 +17,8 @@ const doLog = (message: string, status?: StatusType) => {
     }
 };
 
-// TODO how to include stage name in task logger?
-export const taskLogger = (taskName: string, message: string, status?: StatusType) => {
-    const fullMessage = `[${LOG_PREFIX}] [Task: ${taskName}] ${message}`;
+export const taskLogger = (stageName: string, taskName: string, message: string, status?: StatusType) => {
+    const fullMessage = `[${LOG_PREFIX}] [Stage: ${stageName}] [Task: ${taskName}] ${message}`;
     doLog(fullMessage, status);
 };
 

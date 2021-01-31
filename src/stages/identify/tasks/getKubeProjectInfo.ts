@@ -9,6 +9,7 @@ import yaml from 'yaml';
 import fs from 'fs';
 import KubeDeployment from '../../../types/KubeDeployment';
 import handleUnknownError from '../../../utils/handleUnknownError';
+import { STAGE_NAME } from '../index';
 
 const TASK_NAME = 'Get Kubernetes Project Info';
 
@@ -26,11 +27,11 @@ const findKubeProjectInfo = (projectInfo: ProjectInfo): E.Either<Error, ProjectI
     );
 
 const getKubeProjectInfo: InputTask<ProjectInfo, ProjectInfo> = (projectInfo: ProjectInfo) => {
-    taskLogger(TASK_NAME, 'Starting...');
+    taskLogger(STAGE_NAME, TASK_NAME, 'Starting...');
     return pipe(
         findKubeProjectInfo(projectInfo),
         E.map((projectInfo) => {
-            taskLogger(TASK_NAME, 'Finished loading Kubernetes ProjectInfo successfully', SUCCESS_STATUS);
+            taskLogger(STAGE_NAME, TASK_NAME, 'Finished loading Kubernetes ProjectInfo successfully', SUCCESS_STATUS);
             return projectInfo;
         })
     );

@@ -7,6 +7,7 @@ import { Task } from '../../../types/Build';
 import BuildError from '../../../error/BuildError';
 import { SUCCESS_STATUS, taskLogger } from '../../../context/logger';
 import { pipe } from 'fp-ts/pipeable';
+import { STAGE_NAME } from '../index';
 
 export const TASK_NAME = 'Identify Project';
 
@@ -36,11 +37,11 @@ const getProjectType = (): E.Either<Error, ProjectType> => {
 };
 
 const identifyProject: Task<ProjectType> = () => {
-    taskLogger(TASK_NAME, 'Starting...');
+    taskLogger(STAGE_NAME, TASK_NAME, 'Starting...');
     return pipe(
         getProjectType(),
         E.map((projectType) => {
-            taskLogger(TASK_NAME, `Finished successfully. Project identified: ${projectType}`, SUCCESS_STATUS);
+            taskLogger(STAGE_NAME, TASK_NAME, `Finished successfully. Project identified: ${projectType}`, SUCCESS_STATUS);
             return projectType
         })
     );

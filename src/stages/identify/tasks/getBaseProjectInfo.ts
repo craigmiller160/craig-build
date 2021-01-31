@@ -15,6 +15,7 @@ import handleUnknownError from '../../../utils/handleUnknownError';
 import { InputTask } from '../../../types/Build';
 import BuildError from '../../../error/BuildError';
 import { SUCCESS_STATUS, taskLogger } from '../../../context/logger';
+import { STAGE_NAME } from '../index';
 
 const TASK_NAME = 'Get Base Project Info';
 
@@ -92,11 +93,11 @@ const findProjectInfo = (projectType: ProjectType): E.Either<Error, ProjectInfo>
 };
 
 const getBaseProjectInfo: InputTask<ProjectType, ProjectInfo> = (projectType: ProjectType) => {
-    taskLogger(TASK_NAME, 'Starting...');
+    taskLogger(STAGE_NAME, TASK_NAME, 'Starting...');
     return pipe(
         findProjectInfo(projectType),
         E.map((projectInfo) => {
-            taskLogger(TASK_NAME, 'Finished loading base ProjectInfo successfully', SUCCESS_STATUS);
+            taskLogger(STAGE_NAME, TASK_NAME, 'Finished loading base ProjectInfo successfully', SUCCESS_STATUS);
             return projectInfo;
         })
     );
