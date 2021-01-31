@@ -5,6 +5,7 @@ import { pipe } from 'fp-ts/es6/pipeable';
 import ProjectInfo from '../../types/ProjectInfo';
 import { Stage } from '../../types/Build';
 import { stageLogger } from '../../context/logger';
+import { isBuildError } from '../../error/BuildError';
 
 const STAGE_NAME = 'Identify';
 
@@ -16,6 +17,12 @@ const identify: Stage<ProjectInfo> = () => {
         E.map((projectInfo) => {
             stageLogger(STAGE_NAME, 'Finished successfully');
             return projectInfo;
+        }),
+        E.mapLeft((error) => {
+            if (isBuildError(error)) {
+                error.stageName = STAGE_NAME;
+            }
+            return error;
         })
     );
 };
