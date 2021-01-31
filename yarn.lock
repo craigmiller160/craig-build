@@ -4512,6 +4512,11 @@ tr46@^2.0.2:
   dependencies:
     punycode "^2.1.1"
 
+ts-custom-error@^3.2.0:
+  version "3.2.0"
+  resolved "https://craigmiller160.ddns.net:30003/repository/npm-group/ts-custom-error/-/ts-custom-error-3.2.0.tgz#ff8f80a3812bab9dc448536312da52dce1b720fb"
+  integrity sha512-cBvC2QjtvJ9JfWLvstVnI45Y46Y5dMxIaG1TDMGAD/R87hpvqFL+7LhvUDhnRCfOnx/xitollFWWvUKKKhbN0A==
+
 ts-jest@^26.5.0:
   version "26.5.0"
   resolved "https://craigmiller160.ddns.net:30003/repository/npm-group/ts-jest/-/ts-jest-26.5.0.tgz#3e3417d91bc40178a6716d7dacc5b0505835aa21"

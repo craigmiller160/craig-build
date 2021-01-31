@@ -4,6 +4,7 @@ import path from 'path';
 import getCwd from '../../../utils/getCwd';
 import ProjectType from '../../../types/ProjectType';
 import { TaskContext } from '../../../context';
+import { Task } from '../../../types/Build';
 
 const NPM_PROJECT_FILE= 'package.json';
 const MVN_PROJECT_FILE = 'pom.xml';
@@ -15,7 +16,7 @@ const fileExists = (file: string): boolean =>
 const fileExistsAndIsDirectory = (file: string): boolean =>
     fileExists(file) && fs.lstatSync(path.resolve(getCwd(), file)).isDirectory();
 
-export default (): E.Either<Error, ProjectType> => {
+const identifyProject: Task<undefined, ProjectType> = () => {
     const hasNpmProjectFile = fileExists(NPM_PROJECT_FILE);
     const hasMvnProjectFile = fileExists(MVN_PROJECT_FILE);
     const hasDeployDir = fileExistsAndIsDirectory(DEPLOY_DIR);
@@ -32,3 +33,5 @@ export default (): E.Either<Error, ProjectType> => {
         return E.left(new Error()); // TODO enhance this
     }
 };
+
+export default identifyProject;
