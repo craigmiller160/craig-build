@@ -9,7 +9,9 @@ import PomXml from '../../../types/PomXml';
 import { Parser } from 'xml2js';
 import ProjectType from '../../../types/ProjectType';
 import * as E from 'fp-ts/es6/Either';
+import * as O from 'fp-ts/es6/Option';
 import { pipe } from 'fp-ts/es6/pipeable';
+import handleUnknownError from '../../../utils/handleUnknownError';
 
 const getProjectNpm = (): ProjectInfo => {
     const packageJson: PackageJson = require(path.resolve(getCwd(), 'package.json')) as PackageJson;
@@ -19,31 +21,40 @@ const getProjectNpm = (): ProjectInfo => {
     };
 };
 
-const parseXml = (xml: string): E.Either<Error, PomXml> => {
-    let parsed: PomXml | null = null;
-    const parser = new Parser();
-    parser.parseString(xml, (error: Error, result: PomXml) => {
-        if (error) {
-            throw error;
-        }
-        parsed = result;
-    });
-    if (parsed !== null) {
-        return E.right(parsed);
-    }
-    return E.left(new Error('Parsed pom.xml should not be null'));
-};
+const parseXml = (xml: string): E.Either<Error, PomXml> =>
+    pipe(
+        E.tryCatch<Error, E.Either<Error, PomXml>>(
+            () => {
+                let parsed: O.Option<PomXml> = O.none;
+                const parser = new Parser();
+                parser.parseString(xml, (error: Error, result: PomXml) => {
+                    if (error) {
+                        throw error;
+                    }
+                    parsed = O.some(result);
+                });
+                return E.fromOption<Error>(
+                    () => new Error('Parsed pom.xml should not be null')
+                )(parsed);
+            },
+            handleUnknownError
+        ),
+        E.flatten
+    );
 
-const getProjectMaven = (): E.Either<Error, ProjectInfo> => {
-    const pomXml = fs.readFileSync(path.resolve(getCwd(), 'pom.xml'), 'utf8');
-    return pipe(
-        parseXml(pomXml),
+const getProjectMaven = (): E.Either<Error, ProjectInfo> =>
+    pipe(
+        E.tryCatch(
+            () => fs.readFileSync(path.resolve(getCwd(), 'pom.xml'), 'utf8'),
+            handleUnknownError
+        ),
+        E.map((pomXml: string) => parseXml(pomXml)),
+        E.flatten,
         E.map((parsedPomXml) => ({
             name: parsedPomXml.project.artifactId[0],
             version: parsedPomXml.project.version[0]
         }))
     );
-};
 
 const getProjectInfo = (projectType: ProjectType): E.Either<Error, ProjectInfo> => {
     switch (projectType) {
