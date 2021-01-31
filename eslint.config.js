@@ -155,7 +155,7 @@ const config = {
                 ],
                 'no-empty-function': 0,
                 '@typescript-eslint/no-empty-function': 'error',
-                'semi': 0,
+                'semi': 'error',
                 '@typescript-eslint/semi': ['error', 'always'],
                 '@typescript-eslint/member-delimiter-style': [
                     'error',

@@ -3,6 +3,7 @@ import { BuildContext } from '../types/Build';
 
 class BuildError extends CustomError {
     stageName: string = '';
+
     taskName: string = '';
 
     constructor(message: string, context?: BuildContext) {

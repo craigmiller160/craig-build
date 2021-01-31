@@ -4,7 +4,7 @@ import * as E from 'fp-ts/Either';
 import { pipe } from 'fp-ts/pipeable';
 import ProjectInfo from '../../types/ProjectInfo';
 import { Stage } from '../../types/Build';
-import { stageLogger } from '../../context/logger';
+import { stageLogger, SUCCESS_STATUS } from '../../context/logger';
 import { isBuildError } from '../../error/BuildError';
 
 const STAGE_NAME = 'Identify';
@@ -15,7 +15,7 @@ const identify: Stage<ProjectInfo> = () => {
         identifyProject(),
         E.chain((projectType) => getProjectConfig(projectType)),
         E.map((projectInfo) => {
-            stageLogger(STAGE_NAME, 'Finished successfully');
+            stageLogger(STAGE_NAME, 'Finished successfully', SUCCESS_STATUS);
             return projectInfo;
         }),
         E.mapLeft((error) => {
