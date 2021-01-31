@@ -3,20 +3,21 @@ import { buildLogger, ERROR_STATUS, SUCCESS_STATUS } from './common/logger';
 import getCwd from './utils/getCwd';
 import { pipe } from 'fp-ts/pipeable';
 import * as E from 'fp-ts/Either';
+import * as TE from 'fp-ts/TaskEither';
 import { isBuildError } from './error/BuildError';
 
 // TODO no matter what type of error, need to know how far the service got
 
-const execute = (): E.Either<Error, any> => { // TODO improve type here
+const execute = (): TE.TaskEither<Error, any> => { // TODO improve type here
     buildLogger(`Starting build for: ${getCwd()}`);
 
     return pipe(
         identify(),
-        E.map(() => {
+        TE.map(() => {
             // TODO include more details on output
             buildLogger('Build finished successfully', SUCCESS_STATUS);
         }),
-        E.mapLeft((error) => {
+        TE.mapLeft((error) => {
             if (isBuildError(error)) {
                 const message = `Build failed on Stage ${error.stageName} and Task ${error.taskName}: ${error.message}`;
                 buildLogger(message, ERROR_STATUS);
