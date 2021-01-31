@@ -73,7 +73,7 @@ const getProjectMaven = (projectType: ProjectType): E.Either<Error, ProjectInfo>
             dependencies: parsedPomXml.project.dependencies[0].dependency
                 .map((dependency) => ({
                     name: `${dependency.groupId[0]}/${dependency.artifactId[0]}`,
-                    version: dependency.version[0]
+                    version: dependency.version?.[0] ?? ''
                 }))
         }))
     );
