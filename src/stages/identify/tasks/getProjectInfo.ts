@@ -2,7 +2,7 @@
 
 import path from 'path';
 import ProjectInfo from '../../../types/ProjectInfo';
-import PackageJson from '../../../types/PackageJson';
+import PackageJson, { Dependencies as NpmDependencies } from '../../../types/PackageJson';
 import getCwd from '../../../utils/getCwd';
 import fs from 'fs';
 import PomXml from '../../../types/PomXml';
@@ -18,12 +18,23 @@ import { taskLogger } from '../../../context/logger';
 
 const TASK_NAME = 'Get Project Info';
 
+const mapNpmDependencies = (dependencies: NpmDependencies) =>
+    Object.entries(dependencies)
+        .map(([key, value]) => ({
+            name: key,
+            version: value
+        }));
+
 const getProjectNpm = (projectType: ProjectType): ProjectInfo => {
     const packageJson: PackageJson = require(path.resolve(getCwd(), 'package.json')) as PackageJson;
     return {
         projectType,
         name: packageJson.name.replace('@craigmiller160/', ''),
-        version: packageJson.version
+        version: packageJson.version,
+        dependencies: [
+            ...mapNpmDependencies(packageJson.dependencies),
+            ...mapNpmDependencies(packageJson.devDependencies)
+        ]
     };
 };
 
@@ -58,7 +69,12 @@ const getProjectMaven = (projectType: ProjectType): E.Either<Error, ProjectInfo>
         E.map((parsedPomXml) => ({
             projectType,
             name: parsedPomXml.project.artifactId[0],
-            version: parsedPomXml.project.version[0]
+            version: parsedPomXml.project.version[0],
+            dependencies: parsedPomXml.project.dependencies[0].dependency
+                .map((dependency) => ({
+                    name: `${dependency.groupId[0]}/${dependency.artifactId[0]}`,
+                    version: dependency.version[0]
+                }))
         }))
     );
 
