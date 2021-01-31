@@ -13,6 +13,10 @@ import * as O from 'fp-ts/es6/Option';
 import { pipe } from 'fp-ts/es6/pipeable';
 import handleUnknownError from '../../../utils/handleUnknownError';
 import { InputTask, Task } from '../../../types/Build';
+import BuildError from '../../../error/BuildError';
+import { taskLogger } from '../../../context/logger';
+
+const TASK_NAME = 'Get Project Info';
 
 const getProjectNpm = (): ProjectInfo => {
     const packageJson: PackageJson = require(path.resolve(getCwd(), 'package.json')) as PackageJson;
@@ -56,7 +60,7 @@ const getProjectMaven = (): E.Either<Error, ProjectInfo> =>
         }))
     );
 
-const getProjectInfo: InputTask<ProjectType, ProjectInfo> = (projectType: ProjectType) => {
+const findProjectInfo = (projectType: ProjectType): E.Either<Error, ProjectInfo> => {
     switch (projectType) {
         case ProjectType.NpmApplication:
         case ProjectType.NpmLibrary:
@@ -65,8 +69,19 @@ const getProjectInfo: InputTask<ProjectType, ProjectInfo> = (projectType: Projec
         case ProjectType.MavenApplication:
             return getProjectMaven();
         default:
-            return E.left(new Error()); // TODO enhance this
+            return E.left(new BuildError('Cannot find or load project info'));
     }
+};
+
+const getProjectInfo: InputTask<ProjectType, ProjectInfo> = (projectType: ProjectType) => {
+    taskLogger(TASK_NAME, 'Starting...');
+    return pipe(
+        findProjectInfo(projectType),
+        E.map((projectInfo) => {
+            taskLogger(TASK_NAME, 'Finished. ProjectInfo loaded successfully');
+            return projectInfo;
+        })
+    );
 };
 
 export default getProjectInfo;

@@ -6,6 +6,10 @@ import ProjectType from '../../../types/ProjectType';
 import { TaskContext } from '../../../context';
 import { Task } from '../../../types/Build';
 import BuildError from '../../../error/BuildError';
+import { taskLogger } from '../../../context/logger';
+import { pipe } from 'fp-ts/pipeable';
+
+const TASK_NAME = 'Identify Project';
 
 const NPM_PROJECT_FILE= 'package.json';
 const MVN_PROJECT_FILE = 'pom.xml';
@@ -17,7 +21,7 @@ const fileExists = (file: string): boolean =>
 const fileExistsAndIsDirectory = (file: string): boolean =>
     fileExists(file) && fs.lstatSync(path.resolve(getCwd(), file)).isDirectory();
 
-const identifyProject: Task<ProjectType> = () => {
+const getProjectType = (): E.Either<Error, ProjectType> => {
     const hasNpmProjectFile = fileExists(NPM_PROJECT_FILE);
     const hasMvnProjectFile = fileExists(MVN_PROJECT_FILE);
     const hasDeployDir = fileExistsAndIsDirectory(DEPLOY_DIR);
@@ -33,6 +37,17 @@ const identifyProject: Task<ProjectType> = () => {
     } else {
         return E.left(new BuildError('Unable to identify project type'));
     }
+};
+
+const identifyProject: Task<ProjectType> = () => {
+    taskLogger(TASK_NAME, 'Starting...');
+    return pipe(
+        getProjectType(),
+        E.map((projectType) => {
+            taskLogger(TASK_NAME, `Project identified: ${projectType}`);
+            return projectType
+        })
+    );
 };
 
 export default identifyProject;
