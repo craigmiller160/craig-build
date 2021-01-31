@@ -1,4 +1,4 @@
-import { InputTask } from '../../../types/Build';
+import { AsyncInputTask, InputTask } from '../../../types/Build';
 import ProjectInfo from '../../../types/ProjectInfo';
 import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
@@ -17,8 +17,8 @@ import NexusSearchResult from '../../../types/NexusSearchResult';
 const TASK_NAME = 'Get Nexus Project Info';
 
 const updateNexusProjectInfo = (releaseResult: NexusSearchResult, preReleaseResult: NexusSearchResult, projectInfo: ProjectInfo): ProjectInfo => {
-    const preReleaseVersion = preReleaseResult.items.length > 0 ? preReleaseResult.items[0].version ? undefined;
-    const releaseVersion = releaseResult.items.length > 0 ? releaseResult.items[0].version ? undefined;
+    const preReleaseVersion = preReleaseResult.items.length > 0 ? preReleaseResult.items[0].version : undefined;
+    const releaseVersion = releaseResult.items.length > 0 ? releaseResult.items[0].version : undefined;
     return {
         ...projectInfo,
         latestNexusVersions: {
@@ -72,11 +72,11 @@ const findNexusVersionInfo = (projectInfo: ProjectInfo): TE.TaskEither<Error, Pr
     }
 };
 
-const getNexusProjectInfo: InputTask<ProjectInfo, ProjectInfo> = async (projectInfo: ProjectInfo) => {
+const getNexusProjectInfo: AsyncInputTask<ProjectInfo, ProjectInfo> = (projectInfo: ProjectInfo) => {
     taskLogger(STAGE_NAME, TASK_NAME, 'Starting...');
     return pipe(
-        await findNexusVersionInfo(projectInfo)(),
-        E.map((projectInfo) => {
+        findNexusVersionInfo(projectInfo),
+        TE.map((projectInfo) => {
             taskLogger(STAGE_NAME, TASK_NAME, 'Finished loading Nexus ProjectInfo successfully', SUCCESS_STATUS);
             return projectInfo;
         })
