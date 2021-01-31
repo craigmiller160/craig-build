@@ -18,9 +18,10 @@ import { taskLogger } from '../../../context/logger';
 
 const TASK_NAME = 'Get Project Info';
 
-const getProjectNpm = (): ProjectInfo => {
+const getProjectNpm = (projectType: ProjectType): ProjectInfo => {
     const packageJson: PackageJson = require(path.resolve(getCwd(), 'package.json')) as PackageJson;
     return {
+        projectType,
         name: packageJson.name.replace('@craigmiller160/', ''),
         version: packageJson.version
     };
@@ -47,7 +48,7 @@ const parseXml = (xml: string): E.Either<Error, PomXml> =>
         E.flatten
     );
 
-const getProjectMaven = (): E.Either<Error, ProjectInfo> =>
+const getProjectMaven = (projectType: ProjectType): E.Either<Error, ProjectInfo> =>
     pipe(
         E.tryCatch(
             () => fs.readFileSync(path.resolve(getCwd(), 'pom.xml'), 'utf8'),
@@ -55,6 +56,7 @@ const getProjectMaven = (): E.Either<Error, ProjectInfo> =>
         ),
         E.chain((pomXml: string) => parseXml(pomXml)),
         E.map((parsedPomXml) => ({
+            projectType,
             name: parsedPomXml.project.artifactId[0],
             version: parsedPomXml.project.version[0]
         }))
@@ -64,10 +66,10 @@ const findProjectInfo = (projectType: ProjectType): E.Either<Error, ProjectInfo>
     switch (projectType) {
         case ProjectType.NpmApplication:
         case ProjectType.NpmLibrary:
-            return E.right(getProjectNpm());
+            return E.right(getProjectNpm(projectType));
         case ProjectType.MavenLibrary:
         case ProjectType.MavenApplication:
-            return getProjectMaven();
+            return getProjectMaven(projectType);
         default:
             return E.left(new BuildError('Cannot find or load project info', { taskName: TASK_NAME }));
     }
