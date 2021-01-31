@@ -2,10 +2,14 @@ import handleUnknownError from '../../src/utils/handleUnknownError';
 
 describe('handleUnknownError', () => {
     it('is error', () => {
-        throw new Error();
+        const error = new Error();
+        const result = handleUnknownError(error);
+        expect(result).toEqual(error);
     });
 
     it('is unknown', () => {
-        throw new Error();
+        const foo = 'foo';
+        const result = handleUnknownError(foo);
+        expect(result).toEqual(new Error(`Unknown Error: ${foo}`));
     });
 })
