@@ -49,8 +49,7 @@ const getProjectMaven = (): E.Either<Error, ProjectInfo> =>
             () => fs.readFileSync(path.resolve(getCwd(), 'pom.xml'), 'utf8'),
             handleUnknownError
         ),
-        E.map((pomXml: string) => parseXml(pomXml)),
-        E.flatten,
+        E.chain((pomXml: string) => parseXml(pomXml)),
         E.map((parsedPomXml) => ({
             name: parsedPomXml.project.artifactId[0],
             version: parsedPomXml.project.version[0]
