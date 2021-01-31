@@ -19,7 +19,7 @@ jest.mock('../../../src/stages/identify/tasks/getNexusProjectInfo', () => jest.f
 const identifyProjectMock: Mock = identifyProject as Mock;
 const getBaseProjectInfoMock: Mock = getBaseProjectInfo as Mock;
 const getKubeProjectInfoMock: Mock = getKubeProjectInfo as Mock;
-const getNexusProjectInfoMock: Mock = getKubeProjectInfo as Mock;
+const getNexusProjectInfoMock: Mock = getNexusProjectInfo as Mock;
 
 describe('identify stage', () => {
     beforeEach(() => {
@@ -55,7 +55,7 @@ describe('identify stage', () => {
         expect(getKubeProjectInfoMock).not.toHaveBeenCalled();
     });
 
-    it('completes successfully for application', () => {
+    it('completes successfully for application', async () => {
         const projectType = ProjectType.MavenApplication;
         const projectInfo: ProjectInfo = {
             projectType,
@@ -80,7 +80,7 @@ describe('identify stage', () => {
         getKubeProjectInfoMock.mockImplementation(() => E.right(kubeProjectInfo));
         getNexusProjectInfoMock.mockImplementation(() => TE.right(nexusProjectInfo));
 
-        const result = identify();
+        const result = await identify()();
         expect(result).toEqualRight(nexusProjectInfo);
 
         expect(identifyProjectMock).toHaveBeenCalled();
@@ -89,7 +89,7 @@ describe('identify stage', () => {
         expect(getNexusProjectInfoMock).toHaveBeenCalledWith(kubeProjectInfo);
     });
 
-    it('completes with error', () => {
+    it('completes with error', async () => {
         const projectType = ProjectType.MavenLibrary;
         const projectInfo: ProjectInfo = {
             projectType,
@@ -101,7 +101,7 @@ describe('identify stage', () => {
         identifyProjectMock.mockImplementation(() => E.right(projectType));
         getBaseProjectInfoMock.mockImplementation(() => E.left(new BuildError('Failing')));
 
-        const result = identify();
+        const result = await identify()();
         expect(result).toEqualLeft(new BuildError('Failing', { stageName: STAGE_NAME }));
 
         expect(identifyProjectMock).toHaveBeenCalled();
