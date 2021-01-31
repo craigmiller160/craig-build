@@ -10,4 +10,6 @@ export default interface ProjectInfo {
     name: string;
     version: string;
     dependencies: Dependency[];
+    kubernetesVersion?: string;
+    latestNexusVersion?: string;
 }
