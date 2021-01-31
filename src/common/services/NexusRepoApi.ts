@@ -53,7 +53,7 @@ export const searchForMavenReleases = (artifactId: string): TE.TaskEither<Error,
         extractResponseData
     );
 
-export const searchForNpmBeta = (name: string): TE.TaskEither<Error, NexusSearchResult> =>
+export const searchForNpmBetas = (name: string): TE.TaskEither<Error, NexusSearchResult> =>
     pipe(
         TE.tryCatch(
             () => {
@@ -72,7 +72,7 @@ export const searchForNpmBeta = (name: string): TE.TaskEither<Error, NexusSearch
         extractResponseData
     );
 
-export const searchForNpmRelease = (name: string): TE.TaskEither<Error, NexusSearchResult> =>
+export const searchForNpmReleases = (name: string): TE.TaskEither<Error, NexusSearchResult> =>
     pipe(
         TE.tryCatch(
             () => {
