@@ -4,10 +4,10 @@
   "main": "index.js",
   "author": "craigmiller160",
   "scripts": {
-    "lint": "eslint",
+    "lint": "eslint -c eslint.config.js src/**/*.ts",
     "forceBuild": "tsc",
     "test": "jest",
-    "build": "eslint && jest && tsc"
+    "build": "yarn lint && jest && tsc"
   },
   "devDependencies": {
     "@types/jest": "^26.0.20",
