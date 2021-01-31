@@ -1,3 +1,4 @@
+import '@relmify/jest-fp-ts';
 import Mock = jest.Mock;
 import getCwd from '../src/utils/getCwd';
 
