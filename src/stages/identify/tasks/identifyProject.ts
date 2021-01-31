@@ -1,4 +1,4 @@
-import * as E from 'fp-ts/es6/Either';
+import * as E from 'fp-ts/Either';
 import fs from 'fs';
 import path from 'path';
 import getCwd from '../../../utils/getCwd';

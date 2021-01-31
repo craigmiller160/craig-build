@@ -1,7 +1,7 @@
 import identifyProject from './tasks/identifyProject';
 import getProjectConfig from './tasks/getProjectInfo';
-import * as E from 'fp-ts/es6/Either';
-import { pipe } from 'fp-ts/es6/pipeable';
+import * as E from 'fp-ts/Either';
+import { pipe } from 'fp-ts/pipeable';
 import ProjectInfo from '../../types/ProjectInfo';
 import { Stage } from '../../types/Build';
 import { stageLogger } from '../../context/logger';
