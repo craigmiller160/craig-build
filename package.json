@@ -1,6 +1,6 @@
 {
   "name": "@craigmiller160/craig-build",
-  "version": "1.0.0-beta.0",
+  "version": "1.0.0-beta.1",
   "main": "index.js",
   "author": "craigmiller160",
   "bin": {
@@ -9,6 +9,9 @@
   "publishConfig": {
     "registry": "https://craigmiller160.ddns.net:30003/repository/npm-private/"
   },
+  "files": [
+    "build"
+  ],
   "scripts": {
     "lint": "eslint -c eslint.config.js src/**/*.ts --fix",
     "forceBuild": "tsc",
