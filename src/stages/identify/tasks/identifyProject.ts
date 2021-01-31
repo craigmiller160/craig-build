@@ -17,7 +17,7 @@ const fileExistsAndIsDirectory = (file: string): boolean =>
 
 const taskName = 'Identify Project';
 
-const taskAction = (context: TaskContext): E.Either<Error, ProjectType> => {
+const taskAction = (): E.Either<Error, ProjectType> => {
     const hasNpmProjectFile = fileExists(NPM_PROJECT_FILE);
     const hasMvnProjectFile = fileExists(MVN_PROJECT_FILE);
     const hasDeployDir = fileExistsAndIsDirectory(DEPLOY_DIR);
