@@ -8,7 +8,7 @@ import { stageLogger } from '../../context/logger';
 
 const STAGE_NAME = 'Identify';
 
-const identify: Stage<undefined, ProjectInfo> = () => {
+const identify: Stage<ProjectInfo> = () => {
     stageLogger(STAGE_NAME, 'Starting...');
     return pipe(
         identifyProject(),

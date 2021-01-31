@@ -17,7 +17,7 @@ const fileExists = (file: string): boolean =>
 const fileExistsAndIsDirectory = (file: string): boolean =>
     fileExists(file) && fs.lstatSync(path.resolve(getCwd(), file)).isDirectory();
 
-const identifyProject: Task<never, ProjectType> = () => {
+const identifyProject: Task<ProjectType> = () => {
     const hasNpmProjectFile = fileExists(NPM_PROJECT_FILE);
     const hasMvnProjectFile = fileExists(MVN_PROJECT_FILE);
     const hasDeployDir = fileExistsAndIsDirectory(DEPLOY_DIR);

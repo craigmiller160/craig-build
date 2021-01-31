@@ -12,7 +12,7 @@ import * as E from 'fp-ts/es6/Either';
 import * as O from 'fp-ts/es6/Option';
 import { pipe } from 'fp-ts/es6/pipeable';
 import handleUnknownError from '../../../utils/handleUnknownError';
-import { Task } from '../../../types/Build';
+import { InputTask, Task } from '../../../types/Build';
 
 const getProjectNpm = (): ProjectInfo => {
     const packageJson: PackageJson = require(path.resolve(getCwd(), 'package.json')) as PackageJson;
@@ -57,7 +57,7 @@ const getProjectMaven = (): E.Either<Error, ProjectInfo> =>
         }))
     );
 
-const getProjectInfo: Task<ProjectType, ProjectInfo> = (projectType?: ProjectType) => {
+const getProjectInfo: InputTask<ProjectType, ProjectInfo> = (projectType: ProjectType) => {
     switch (projectType) {
         case ProjectType.NpmApplication:
         case ProjectType.NpmLibrary:
