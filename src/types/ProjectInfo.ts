@@ -12,4 +12,5 @@ export default interface ProjectInfo {
     dependencies: Dependency[];
     kubernetesDockerImage?: string;
     latestNexusVersion?: string;
+    isPreRelease: boolean;
 }

@@ -15,6 +15,7 @@ describe('getBaseProjectInfo task', () => {
             projectType: ProjectType.MavenApplication,
             name: 'email-service',
             version: '1.2.0',
+            isPreRelease: false,
             dependencies: [
                 {
                     name: 'org.springframework.boot/spring-boot-starter-actuator',
@@ -36,6 +37,10 @@ describe('getBaseProjectInfo task', () => {
         })
     });
 
+    it('get Maven ProjectInfo for snapshot', () => {
+        throw new Error();
+    });
+
     it('get Npm ProjectInfo', () => {
         getCwdMock.mockImplementation(() => path.resolve(process.cwd(), 'test', '__working-dirs__', 'npmReleaseApplication'));
         const result = getBaseProjectInfo(ProjectType.NpmApplication);
@@ -43,6 +48,7 @@ describe('getBaseProjectInfo task', () => {
             projectType: ProjectType.NpmApplication,
             name: 'craig-build',
             version: '1.0.0',
+            isPreRelease: false,
             dependencies: [
                 {
                     name: '@craigmiller160/react-web-config',
@@ -62,5 +68,9 @@ describe('getBaseProjectInfo task', () => {
                 }
             ]
         });
+    });
+
+    it('get Npm ProjectInfo for beta', () => {
+        throw new Error();
     });
 });

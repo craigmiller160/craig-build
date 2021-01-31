@@ -39,7 +39,8 @@ const getProjectNpm = (projectType: ProjectType): ProjectInfo => {
         dependencies: [
             ...mapNpmDependencies(packageJson.dependencies),
             ...mapNpmDependencies(packageJson.devDependencies)
-        ]
+        ],
+        isPreRelease: packageJson.version.includes('beta')
     };
 };
 
@@ -92,12 +93,16 @@ const getProjectMaven = (projectType: ProjectType): E.Either<Error, ProjectInfo>
             handleUnknownError
         ),
         E.chain((pomXml: string) => parseXml(pomXml)),
-        E.map((parsedPomXml) => ({
-            projectType,
-            name: parsedPomXml.project.artifactId[0],
-            version: parsedPomXml.project.version[0],
-            dependencies: getMavenDependencies(parsedPomXml)
-        }))
+        E.map((parsedPomXml) => {
+            const version = parsedPomXml.project.version[0];
+            return {
+                projectType,
+                name: parsedPomXml.project.artifactId[0],
+                version,
+                dependencies: getMavenDependencies(parsedPomXml),
+                isPreRelease: version.includes('SNAPSHOT')
+            };
+        })
     );
 
 const findProjectInfo = (projectType: ProjectType): E.Either<Error, ProjectInfo> => {
