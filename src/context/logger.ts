@@ -1,4 +1,5 @@
-const LOG_PREFIX = 'CRAIG-BUILD'
+/* eslint-disable no-console */
+const LOG_PREFIX = 'CRAIG-BUILD';
 
 export const taskLogger = (taskName: string, message: string) =>
     console.log(`[${LOG_PREFIX}] [Task: ${taskName}] ${message}`);

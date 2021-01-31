@@ -1,3 +1,4 @@
+/* eslint-disable */ // TODO delete this if this file is used
 import ContextStatus from '../types/ContextStatus';
 
 export class TaskContext {

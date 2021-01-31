@@ -25,6 +25,7 @@ const config = {
         }
     },
     rules: {
+        'no-shadow': 0,
         'no-tabs': 0,
         'react/jsx-indent': 0,
         'indent': 0,
@@ -124,6 +125,7 @@ const config = {
                 '@typescript-eslint/no-array-constructor': 'error',
                 'no-use-before-define': 'off',
                 'no-unused-expressions': 'off',
+                '@typescript-eslint/no-shadow': 'error',
                 '@typescript-eslint/no-unused-expressions': [
                     'error',
                     {
