@@ -1,6 +1,6 @@
 import ProjectType from './ProjectType';
 
-interface Dependency {
+export interface Dependency {
     name: string;
     version: string;
 }

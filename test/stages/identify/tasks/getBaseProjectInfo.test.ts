@@ -9,7 +9,6 @@ const getCwdMock: Mock = getCwd as Mock;
 
 describe('getBaseProjectInfo task', () => {
     it('get Maven ProjectInfo', () => {
-        // TODO need the properties
         getCwdMock.mockImplementation(() => path.resolve(process.cwd(), 'test', '__working-dirs__', 'mavenReleaseApplication'));
         const result = getBaseProjectInfo(ProjectType.MavenApplication);
         expect(result).toEqualRight({
@@ -23,15 +22,15 @@ describe('getBaseProjectInfo task', () => {
                 },
                 {
                     name: 'org.postgresql/postgresql',
-                    version: '${postgres.version}'
+                    version: '42.2.18'
                 },
                 {
                     name: 'io.craigmiller160/api-test-processor',
-                    version: '${api.test.processor.version}'
+                    version: '1.2.2'
                 },
                 {
                     name: 'io.craigmiller160/spring-web-utils',
-                    version: '${web.utils.version}'
+                    version: '1.1.2'
                 }
             ]
         })

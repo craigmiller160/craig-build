@@ -1,7 +1,7 @@
 // TODO add retrieval of dependency versions here
 
 import path from 'path';
-import ProjectInfo from '../../../types/ProjectInfo';
+import ProjectInfo, { Dependency } from '../../../types/ProjectInfo';
 import PackageJson, { Dependencies as NpmDependencies } from '../../../types/PackageJson';
 import getCwd from '../../../utils/getCwd';
 import fs from 'fs';
@@ -18,6 +18,10 @@ import { SUCCESS_STATUS, taskLogger } from '../../../context/logger';
 import { STAGE_NAME } from '../index';
 
 const TASK_NAME = 'Get Base Project Info';
+
+type KeyValueMap = {
+    [key: string]: string;
+}
 
 const mapNpmDependencies = (dependencies: NpmDependencies) =>
     Object.entries(dependencies)
@@ -60,6 +64,27 @@ const parseXml = (xml: string): E.Either<Error, PomXml> =>
         E.flatten
     );
 
+const getMavenDependencies = (pomXml: PomXml): Dependency[] => {
+    const propertyMap: KeyValueMap = Object.entries(pomXml.project.properties[0])
+        .reduce((acc: KeyValueMap, [key, value]) => {
+            acc[key] = value[0];
+            return acc;
+        }, {});
+    return pomXml.project.dependencies[0].dependency
+        .map((dependency) => {
+            let version = dependency.version?.[0] ?? '';
+            if (version.startsWith('${')) {
+                const mapKey = version.replace(/^\${/, '')
+                    .replace(/}$/, '');
+                version = propertyMap[mapKey];
+            }
+            return {
+                name: `${dependency.groupId[0]}/${dependency.artifactId[0]}`,
+                version
+            };
+        });
+};
+
 const getProjectMaven = (projectType: ProjectType): E.Either<Error, ProjectInfo> =>
     pipe(
         E.tryCatch(
@@ -71,11 +96,7 @@ const getProjectMaven = (projectType: ProjectType): E.Either<Error, ProjectInfo>
             projectType,
             name: parsedPomXml.project.artifactId[0],
             version: parsedPomXml.project.version[0],
-            dependencies: parsedPomXml.project.dependencies[0].dependency
-                .map((dependency) => ({
-                    name: `${dependency.groupId[0]}/${dependency.artifactId[0]}`,
-                    version: dependency.version?.[0] ?? ''
-                }))
+            dependencies: getMavenDependencies(parsedPomXml)
         }))
     );
 
