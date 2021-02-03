@@ -5,4 +5,4 @@ node_modules
 .yalc
 yalc.lock
 yarn-error.log
-build
+/build

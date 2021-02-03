@@ -8,6 +8,19 @@ import { isBuildError } from './error/BuildError';
 
 // TODO no matter what type of error, need to know how far the service got
 
+/*
+ * TODO eventually delete this
+ * Order of Operations
+ *
+ * 1. Self-Validation
+ * 2. Identify
+ * 3. Config Validation
+ * 4. Build
+ * 5. Publish
+ * 6. Deploy
+ * 7. Cleanup
+ */
+
 const execute = (): TE.TaskEither<Error, any> => { // TODO improve type here
     buildLogger(`Starting build for: ${getCwd()}`);
 
