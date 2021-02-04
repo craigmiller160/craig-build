@@ -36,22 +36,133 @@ describe('validateDependencyVersions task', () => {
     });
 
     it('validates maven for release successfully', () => {
-        throw new Error();
+        const projectInfo: ProjectInfo = {
+            projectType: ProjectType.MavenLibrary,
+            isPreRelease: false,
+            name: 'my-project',
+            version: '1.0.0',
+            dependencies: [
+                {
+                    name: 'foo-bar',
+                    version: '1.0.0-SNAPSHOT'
+                },
+                {
+                    name: 'io.craigmiller160/dep-1',
+                    version: '1.0.0'
+                },
+                {
+                    name: 'io.craigmiller160/dep-2',
+                    version: '1.0.0'
+                }
+            ]
+        };
+        const result = validateDependencyVersions(projectInfo);
+        expect(result).toEqualRight(projectInfo);
     });
 
     it('validates maven for snapshot, with snapshot dependency', () => {
-        throw new Error();
+        const projectInfo: ProjectInfo = {
+            projectType: ProjectType.MavenLibrary,
+            isPreRelease: true,
+            name: 'my-project',
+            version: '1.0.0-SNAPSHOT',
+            dependencies: [
+                {
+                    name: 'foo-bar',
+                    version: '1.0.0-SNAPSHOT'
+                },
+                {
+                    name: 'io.craigmiller160/dep-1',
+                    version: '1.0.0-SNAPSHOT'
+                },
+                {
+                    name: 'io.craigmiller160/dep-2',
+                    version: '1.0.0'
+                }
+            ]
+        };
+        const result = validateDependencyVersions(projectInfo);
+        expect(result).toEqualRight(projectInfo);
     });
 
     it('validates npm for release, with beta dependency', () => {
-        throw new Error();
+        const projectInfo: ProjectInfo = {
+            projectType: ProjectType.NpmLibrary,
+            isPreRelease: false,
+            name: 'my-project',
+            version: '1.0.0',
+            dependencies: [
+                {
+                    name: 'foo-bar',
+                    version: '1.0.0-beta'
+                },
+                {
+                    name: '@craigmiller160/dep-1',
+                    version: '1.0.0-beta'
+                },
+                {
+                    name: '@craigmiller160/dep-2',
+                    version: '1.0.0'
+                }
+            ]
+        };
+        const result = validateDependencyVersions(projectInfo);
+        const expectedMessage = 'beta dependencies not allowed in release build: @craigmiller160/dep-1:1.0.0-beta ';
+        expect(result).toEqualLeft(new BuildError(expectedMessage, {
+            taskName: TASK_NAME,
+            stageName: STAGE_NAME
+        }));
     });
 
     it('validates npm for release successfully', () => {
-        throw new Error();
+        const projectInfo: ProjectInfo = {
+            projectType: ProjectType.NpmLibrary,
+            isPreRelease: false,
+            name: 'my-project',
+            version: '1.0.0',
+            dependencies: [
+                {
+                    name: 'foo-bar',
+                    version: '1.0.0-beta'
+                },
+                {
+                    name: '@craigmiller160/dep-1',
+                    version: '1.0.0'
+                },
+                {
+                    name: '@craigmiller160/dep-2',
+                    version: '1.0.0'
+                }
+            ]
+        };
+        const result = validateDependencyVersions(projectInfo);
+        const expectedMessage = 'beta dependencies not allowed in release build: io.craigmiller160/dep-1:1.0.0-SNAPSHOT ';
+        expect(result).toEqualRight(projectInfo);
     });
 
     it('validates npm for beta, with beta dependency', () => {
-        throw new Error();
+        const projectInfo: ProjectInfo = {
+            projectType: ProjectType.NpmLibrary,
+            isPreRelease: false,
+            name: 'my-project',
+            version: '1.0.0-beta',
+            dependencies: [
+                {
+                    name: 'foo-bar',
+                    version: '1.0.0-beta'
+                },
+                {
+                    name: '@craigmiller160/dep-1',
+                    version: '1.0.0-beta'
+                },
+                {
+                    name: '@craigmiller160/dep-2',
+                    version: '1.0.0'
+                }
+            ]
+        };
+        const result = validateDependencyVersions(projectInfo);
+        const expectedMessage = 'beta dependencies not allowed in release build: io.craigmiller160/dep-1:1.0.0-SNAPSHOT ';
+        expect(result).toEqualRight(projectInfo);
     });
 });
