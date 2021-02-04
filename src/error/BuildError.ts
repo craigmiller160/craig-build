@@ -1,6 +1,8 @@
 import { CustomError } from 'ts-custom-error';
 import { BuildContext } from '../types/Build';
 
+// TODO figure out a better way of always guaranteeing stage name
+
 class BuildError extends CustomError {
     stageName: string = '';
 
