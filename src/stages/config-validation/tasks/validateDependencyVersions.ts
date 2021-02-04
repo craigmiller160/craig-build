@@ -14,21 +14,24 @@ const TASK_NAME = 'Validate Dependency Versions';
 const MAVEN_CRAIG_DEP_PREFIX = 'io.craigmiller160';
 const MAVEN_PRE_RELEASE_FLAG = 'SNAPSHOT';
 
+const NPM_CRAIG_DEP_PREFIX = '@craigmiller160';
+const NPM_PRE_RELEASE_FLAG = 'beta';
+
 const createError = (message: string) =>
     new BuildError(message, {
         taskName: TASK_NAME,
         stageName: STAGE_NAME
     });
 
-const validateMavenVersions = (projectInfo: ProjectInfo): E.Either<Error, ProjectInfo> => {
-    if (projectInfo.version.includes(MAVEN_PRE_RELEASE_FLAG)) {
+const validateDependencies = (prefix: string, preReleaseFlag: string, projectInfo: ProjectInfo): E.Either<Error, ProjectInfo> => {
+    if (projectInfo.version.includes(preReleaseFlag)) {
         return E.right(projectInfo);
     }
 
     return pipe(
         projectInfo.dependencies,
-        A.filter((dependency) => dependency.name.startsWith(MAVEN_CRAIG_DEP_PREFIX)),
-        A.filter((dependency) => dependency.version.includes(MAVEN_PRE_RELEASE_FLAG)),
+        A.filter((dependency) => dependency.name.startsWith(prefix)),
+        A.filter((dependency) => dependency.version.includes(preReleaseFlag)),
         A.reduce<Dependency, E.Either<string, ProjectInfo>>(E.right(projectInfo), (result, dependency) => {
             let message = '';
             if (isLeft(result)) {
@@ -39,21 +42,19 @@ const validateMavenVersions = (projectInfo: ProjectInfo): E.Either<Error, Projec
             return E.left(message);
         }),
         E.mapLeft((errorMessage: string) => {
-            return createError(`SNAPSHOT dependencies not allowed in release build: ${errorMessage}`);
+            return createError(`${preReleaseFlag} dependencies not allowed in release build: ${errorMessage}`);
         })
     );
-}
-
-const validateNpmVersions = (projectInfo: ProjectInfo) => {
-
 };
 
 const doVersionValidation = (projectInfo: ProjectInfo): E.Either<Error, ProjectInfo> => {
     switch (projectInfo.projectType) {
         case ProjectType.MavenApplication:
         case ProjectType.MavenLibrary:
+            return validateDependencies(MAVEN_CRAIG_DEP_PREFIX, MAVEN_PRE_RELEASE_FLAG, projectInfo);
         case ProjectType.NpmApplication:
         case ProjectType.NpmLibrary:
+            return validateDependencies(NPM_CRAIG_DEP_PREFIX, NPM_PRE_RELEASE_FLAG, projectInfo);
         default:
             return E.left(createError('Cannot find or load project info'))
     }
