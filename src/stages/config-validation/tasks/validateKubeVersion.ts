@@ -7,13 +7,6 @@ import { taskLogger } from '../../../common/logger';
 import { STAGE_NAME } from '../index';
 import BuildError from '../../../error/BuildError';
 
-// TODO only execute this one for applications
-
-/*
- * IsPreRelease = version is latest
- * Otherwise, version should match
- */
-
 export const TASK_NAME = 'Validate Kubernetes Version';
 const KUBE_PRE_RELEASE_VERSION = 'latest';
 
@@ -22,15 +15,6 @@ const createError = (message: string) =>
         taskName: TASK_NAME,
         stageName: STAGE_NAME
     });
-
-const getKubernetesVersion = (projectInfo: ProjectInfo): O.Option<string> =>
-    pipe(
-        O.fromNullable(projectInfo.kubernetesDockerImage),
-        O.map((image: string) => {
-            const parts = image.split(':');
-            return parts[parts.length - 1];
-        })
-    );
 
 const validateKubeVersion: InputTask<ProjectInfo, ProjectInfo> = (projectInfo: ProjectInfo) => {
     taskLogger(STAGE_NAME, TASK_NAME, 'Starting...');
