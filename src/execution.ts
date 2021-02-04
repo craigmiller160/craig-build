@@ -5,6 +5,8 @@ import { pipe } from 'fp-ts/pipeable';
 import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
 import { isBuildError } from './error/BuildError';
+import ProjectInfo from './types/ProjectInfo';
+import configValidation from './stages/config-validation';
 
 // TODO no matter what type of error, need to know how far the service got
 
@@ -26,6 +28,7 @@ const execute = (): TE.TaskEither<Error, any> => { // TODO improve type here
 
     return pipe(
         identify(),
+        TE.chain((projectInfo: ProjectInfo) => TE.fromEither(configValidation(projectInfo))),
         TE.map(() => {
             // TODO include more details on output
             buildLogger('Build finished successfully', SUCCESS_STATUS);

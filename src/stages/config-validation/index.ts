@@ -1,12 +1,17 @@
 import * as E from 'fp-ts/Either';
 import { InputStage } from '../../types/Build';
 import ProjectInfo from '../../types/ProjectInfo';
+import { stageLogger } from '../../common/logger';
+import { pipe } from 'fp-ts/pipeable';
+import validateDependencyVersions from './tasks/validateDependencyVersions';
 
 export const STAGE_NAME = 'Config Validation';
 
-const configValidation: InputStage<ProjectInfo, boolean> = () => {
-    // TODO finish this
-    return E.left(new Error());
+const configValidation: InputStage<ProjectInfo, ProjectInfo> = (projectInfo: ProjectInfo) => {
+    stageLogger(STAGE_NAME, 'Starting...');
+    return pipe(
+        validateDependencyVersions(projectInfo)
+    );
 };
 
 export default configValidation;
