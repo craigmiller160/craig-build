@@ -1,4 +1,10 @@
-import fs from 'fs';
+import ProjectInfo from '../../../../src/types/ProjectInfo';
+import ProjectType from '../../../../src/types/ProjectType';
+
+// const createProjectInfo = (projectType: ProjectType): ProjectInfo => ({
+//     projectType,
+//     name:
+// });
 
 describe('validateDependencyVersions task', () => {
     it('validates maven for release, with snapshot dependency', () => {
