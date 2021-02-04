@@ -1,13 +1,18 @@
-import ProjectInfo from '../../../types/ProjectInfo';
+import ProjectInfo, { Dependency } from '../../../types/ProjectInfo';
 import { InputTask } from '../../../types/Build';
 import * as E from 'fp-ts/Either';
+import * as A from 'fp-ts/Array';
 import ProjectType from '../../../types/ProjectType';
 import BuildError from '../../../error/BuildError';
 import { SUCCESS_STATUS, taskLogger } from '../../../common/logger';
 import { STAGE_NAME } from '../index';
 import { pipe } from 'fp-ts/pipeable';
+import { isLeft } from 'fp-ts/Either';
 
 const TASK_NAME = 'Validate Dependency Versions';
+
+const MAVEN_CRAIG_DEP_PREFIX = 'io.craigmiller160';
+const MAVEN_PRE_RELEASE_FLAG = 'SNAPSHOT';
 
 const createError = (message: string) =>
     new BuildError(message, {
@@ -15,9 +20,29 @@ const createError = (message: string) =>
         stageName: STAGE_NAME
     });
 
-const validateMavenVersions = (projectInfo: ProjectInfo) => {
+const validateMavenVersions = (projectInfo: ProjectInfo): E.Either<Error, ProjectInfo> => {
+    if (projectInfo.version.includes(MAVEN_PRE_RELEASE_FLAG)) {
+        return E.right(projectInfo);
+    }
 
-};
+    return pipe(
+        projectInfo.dependencies,
+        A.filter((dependency) => dependency.name.startsWith(MAVEN_CRAIG_DEP_PREFIX)),
+        A.filter((dependency) => dependency.version.includes(MAVEN_PRE_RELEASE_FLAG)),
+        A.reduce<Dependency, E.Either<string, ProjectInfo>>(E.right(projectInfo), (result, dependency) => {
+            let message = '';
+            if (isLeft(result)) {
+                message = result.left;
+            }
+
+            message += `${dependency.name}:${dependency.version} `;
+            return E.left(message);
+        }),
+        E.mapLeft((errorMessage: string) => {
+            return createError(`SNAPSHOT dependencies not allowed in release build: ${errorMessage}`);
+        })
+    );
+}
 
 const validateNpmVersions = (projectInfo: ProjectInfo) => {
 
