@@ -9,7 +9,7 @@ import { STAGE_NAME } from '../index';
 import { pipe } from 'fp-ts/pipeable';
 import { isLeft } from 'fp-ts/Either';
 
-const TASK_NAME = 'Validate Dependency Versions';
+export const TASK_NAME = 'Validate Dependency Versions';
 
 const MAVEN_CRAIG_DEP_PREFIX = 'io.craigmiller160';
 const MAVEN_PRE_RELEASE_FLAG = 'SNAPSHOT';
