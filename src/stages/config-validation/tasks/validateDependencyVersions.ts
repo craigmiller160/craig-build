@@ -9,6 +9,12 @@ import { pipe } from 'fp-ts/pipeable';
 
 const TASK_NAME = 'Validate Dependency Versions';
 
+const createError = (message: string) =>
+    new BuildError(message, {
+        taskName: TASK_NAME,
+        stageName: STAGE_NAME
+    });
+
 const validateMavenVersions = (projectInfo: ProjectInfo) => {
 
 };
@@ -24,7 +30,7 @@ const doVersionValidation = (projectInfo: ProjectInfo): E.Either<Error, ProjectI
         case ProjectType.NpmApplication:
         case ProjectType.NpmLibrary:
         default:
-            return E.left(new BuildError('Cannot find or load project info', { taskName: TASK_NAME }))
+            return E.left(createError('Cannot find or load project info'))
     }
 };
 

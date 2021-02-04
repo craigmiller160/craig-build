@@ -11,6 +11,12 @@ import { STAGE_NAME } from '../index';
 
 export const TASK_NAME = 'Identify Project';
 
+const createError = (message: string) =>
+    new BuildError(message, {
+        taskName: TASK_NAME,
+        stageName: STAGE_NAME
+    });
+
 const NPM_PROJECT_FILE= 'package.json';
 const MVN_PROJECT_FILE = 'pom.xml';
 const DEPLOY_PATH = path.join('deploy', 'deployment.yml');
@@ -32,7 +38,7 @@ const getProjectType = (): E.Either<Error, ProjectType> => {
     } else if (hasMvnProjectFile) {
         return E.right(ProjectType.MavenLibrary);
     } else {
-        return E.left(new BuildError('Unable to identify project type', { taskName: TASK_NAME }));
+        return E.left(createError('Unable to identify project type'));
     }
 };
 

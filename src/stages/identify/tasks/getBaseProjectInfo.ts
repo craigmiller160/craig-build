@@ -23,6 +23,12 @@ type KeyValueMap = {
     [key: string]: string;
 }
 
+const createError = (message: string) =>
+    new BuildError(message, {
+        taskName: TASK_NAME,
+        stageName: STAGE_NAME
+    });
+
 const mapNpmDependencies = (dependencies: NpmDependencies) =>
     Object.entries(dependencies)
         .map(([key, value]) => ({
@@ -114,7 +120,7 @@ const findProjectInfo = (projectType: ProjectType): E.Either<Error, ProjectInfo>
         case ProjectType.MavenApplication:
             return getProjectMaven(projectType);
         default:
-            return E.left(new BuildError('Cannot find or load project info', { taskName: TASK_NAME }));
+            return E.left(createError('Cannot find or load project info'));
     }
 };
 

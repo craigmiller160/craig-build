@@ -30,12 +30,6 @@ const identify: AsyncStage<ProjectInfo> = () => {
             const projectInfoString = JSON.stringify(projectInfo, null, 2);
             stageLogger(STAGE_NAME, `Finished successfully. Project Info: ${projectInfoString}`, SUCCESS_STATUS);
             return projectInfo;
-        }),
-        TE.mapLeft((error) => {
-            if (isBuildError(error)) {
-                error.stageName = STAGE_NAME;
-            }
-            return error;
         })
     );
 };
