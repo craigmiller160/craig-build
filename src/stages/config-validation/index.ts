@@ -1,8 +1,5 @@
-import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
-import { InputStage } from '../../types/Build';
 import ProjectInfo from '../../types/ProjectInfo';
-import { stageLogger } from '../../common/logger';
 import { pipe } from 'fp-ts/pipeable';
 import validateDependencyVersions from './tasks/validateDependencyVersions';
 import { isApplication } from '../../utils/projectTypeUtils';

@@ -1,12 +1,9 @@
 import identifyProject from './tasks/identifyProject';
 import getBaseProjectInfo from './tasks/getBaseProjectInfo';
-import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
 import { pipe } from 'fp-ts/pipeable';
 import ProjectInfo from '../../types/ProjectInfo';
-import { AsyncStage, Stage } from '../../types/Build';
 import { stageLogger, SUCCESS_STATUS } from '../../common/logger';
-import { isBuildError } from '../../error/BuildError';
 import { isApplication } from '../../utils/projectTypeUtils';
 import getKubeProjectInfo from './tasks/getKubeProjectInfo';
 import getNexusProjectInfo from './tasks/getNexusProjectInfo';
