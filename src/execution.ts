@@ -27,8 +27,8 @@ const execute = (): TE.TaskEither<Error, any> => { // TODO improve type here
     buildLogger(`Starting build for: ${getCwd()}`);
 
     return pipe(
-        identify(),
-        TE.chain((projectInfo: ProjectInfo) => TE.fromEither(configValidation(projectInfo))),
+        identify(undefined),
+        TE.chain((projectInfo: ProjectInfo) => configValidation(projectInfo)),
         TE.map(() => {
             // TODO include more details on output
             buildLogger('Build finished successfully', SUCCESS_STATUS);
