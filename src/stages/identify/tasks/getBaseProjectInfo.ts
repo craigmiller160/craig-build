@@ -12,7 +12,7 @@ import * as TE from 'fp-ts/TaskEither';
 import { pipe } from 'fp-ts/pipeable';
 import handleUnknownError from '../../../utils/handleUnknownError';
 import { STAGE_NAME } from '../index';
-import createTask, { TaskFunction } from '../../../common/execution/task';
+import createTask, { TaskFunction, TaskShouldExecuteFunction } from '../../../common/execution/task';
 import { TaskContext } from '../../../common/execution/context';
 
 const TASK_NAME = 'Get Base Project Info';

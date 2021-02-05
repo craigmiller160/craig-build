@@ -8,8 +8,17 @@ import { isApplication } from '../../utils/projectTypeUtils';
 import getKubeProjectInfo from './tasks/getKubeProjectInfo';
 import getNexusProjectInfo from './tasks/getNexusProjectInfo';
 import createStage, { StageFunction } from '../../common/execution/stage';
+import { Task } from '../../common/execution/task';
 
 export const STAGE_NAME = 'Identify';
+
+/*
+ * 1. Create wrapper object containing
+ *      a. Task
+ *      b. Should execute rule. Returns undefined if should execute, otherwise returns message to log for skipping
+ * 2. Create array of task wrappers.
+ * 3. Iterate over this array, probably with a reduce to get a single output
+ */
 
 const identify: StageFunction<undefined,ProjectInfo> = () =>
     pipe(
