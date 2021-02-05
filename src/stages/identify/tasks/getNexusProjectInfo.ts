@@ -18,12 +18,6 @@ import { TaskContext } from '../../../common/execution/context';
 
 const TASK_NAME = 'Get Nexus Project Info';
 
-const createError = (message: string) =>
-    new BuildError(message, {
-        taskName: TASK_NAME,
-        stageName: STAGE_NAME
-    });
-
 const updateNexusProjectInfo = (releaseResult: NexusSearchResult, preReleaseResult: NexusSearchResult, projectInfo: ProjectInfo): ProjectInfo => {
     const preReleaseVersion = preReleaseResult.items.length > 0 ? preReleaseResult.items[0].version : undefined;
     const releaseVersion = releaseResult.items.length > 0 ? releaseResult.items[0].version : undefined;

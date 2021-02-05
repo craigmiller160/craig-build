@@ -10,12 +10,12 @@ import { isBuildError } from '../../error/BuildError';
 import { isApplication } from '../../utils/projectTypeUtils';
 import getKubeProjectInfo from './tasks/getKubeProjectInfo';
 import getNexusProjectInfo from './tasks/getNexusProjectInfo';
+import createStage, { StageFunction } from '../../common/execution/stage';
 
 export const STAGE_NAME = 'Identify';
 
-const identify: AsyncStage<ProjectInfo> = () => {
-    stageLogger(STAGE_NAME, 'Starting...');
-    return pipe(
+const identify: StageFunction<undefined,ProjectInfo> = () =>
+    pipe(
         identifyProject(undefined), // TODO is there some more graceful way to deal with this?
         TE.chain(getBaseProjectInfo),
         TE.chain((projectInfo) => {
@@ -28,9 +28,11 @@ const identify: AsyncStage<ProjectInfo> = () => {
         TE.map((projectInfo) => {
             const projectInfoString = JSON.stringify(projectInfo, null, 2);
             stageLogger(STAGE_NAME, `Finished successfully. Project Info: ${projectInfoString}`, SUCCESS_STATUS);
-            return projectInfo;
+            return {
+                message: `Project information successfully identified: ${projectInfoString}`,
+                value: projectInfo
+            }
         })
     );
-};
 
-export default identify;
+export default createStage(STAGE_NAME, identify);

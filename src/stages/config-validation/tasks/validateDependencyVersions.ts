@@ -2,12 +2,15 @@ import ProjectInfo, { Dependency } from '../../../types/ProjectInfo';
 import { InputTask } from '../../../types/Build';
 import * as E from 'fp-ts/Either';
 import * as A from 'fp-ts/Array';
+import * as TE from 'fp-ts/TaskEither';
 import ProjectType from '../../../types/ProjectType';
 import BuildError from '../../../error/BuildError';
 import { SUCCESS_STATUS, taskLogger } from '../../../common/logger';
 import { STAGE_NAME } from '../index';
 import { pipe } from 'fp-ts/pipeable';
 import { isLeft } from 'fp-ts/Either';
+import createTask, { TaskFunction } from '../../../common/execution/task';
+import { TaskContext } from '../../../common/execution/context';
 
 export const TASK_NAME = 'Validate Dependency Versions';
 
@@ -17,14 +20,9 @@ const MAVEN_PRE_RELEASE_FLAG = 'SNAPSHOT';
 const NPM_CRAIG_DEP_PREFIX = '@craigmiller160';
 const NPM_PRE_RELEASE_FLAG = 'beta';
 
-const createError = (message: string) =>
-    new BuildError(message, {
-        taskName: TASK_NAME,
-        stageName: STAGE_NAME
-    });
-
-const validateDependencies = (prefix: string, preReleaseFlag: string, projectInfo: ProjectInfo): E.Either<Error, ProjectInfo> => {
-    if (projectInfo.version.includes(preReleaseFlag)) {
+const validateDependencies = (prefix: string, preReleaseFlag: string, context: TaskContext<ProjectInfo>): E.Either<Error, ProjectInfo> => {
+    const projectInfo = context.input;
+    if (projectInfo.version.includes(preReleaseFlag)) { // TODO move this into stage level
         return E.right(projectInfo);
     }
 
@@ -42,33 +40,32 @@ const validateDependencies = (prefix: string, preReleaseFlag: string, projectInf
             return E.left(message);
         }),
         E.mapLeft((errorMessage: string) => {
-            return createError(`${preReleaseFlag} dependencies not allowed in release build: ${errorMessage}`);
+            return context.createBuildError(`${preReleaseFlag} dependencies not allowed in release build: ${errorMessage}`);
         })
     );
 };
 
-const doVersionValidation = (projectInfo: ProjectInfo): E.Either<Error, ProjectInfo> => {
-    switch (projectInfo.projectType) {
+const doVersionValidation = (context: TaskContext<ProjectInfo>): E.Either<Error, ProjectInfo> => {
+    switch (context.input.projectType) {
         case ProjectType.MavenApplication:
         case ProjectType.MavenLibrary:
-            return validateDependencies(MAVEN_CRAIG_DEP_PREFIX, MAVEN_PRE_RELEASE_FLAG, projectInfo);
+            return validateDependencies(MAVEN_CRAIG_DEP_PREFIX, MAVEN_PRE_RELEASE_FLAG, context);
         case ProjectType.NpmApplication:
         case ProjectType.NpmLibrary:
-            return validateDependencies(NPM_CRAIG_DEP_PREFIX, NPM_PRE_RELEASE_FLAG, projectInfo);
+            return validateDependencies(NPM_CRAIG_DEP_PREFIX, NPM_PRE_RELEASE_FLAG, context);
         default:
-            return E.left(createError('Cannot find or load project info'))
+            return E.left(context.createBuildError('Cannot find or load project info'))
     }
 };
 
-const validateDependencyVersions: InputTask<ProjectInfo,ProjectInfo> = (projectInfo: ProjectInfo) => {
-    taskLogger(STAGE_NAME, TASK_NAME, 'Starting...');
-    return pipe(
-        doVersionValidation(projectInfo),
-        E.map((projectInfo) => {
-            taskLogger(STAGE_NAME, TASK_NAME, 'Finished validating dependency versions successfully', SUCCESS_STATUS);
-            return projectInfo;
-        })
+const validateDependencyVersions: TaskFunction<ProjectInfo, ProjectInfo> = (context: TaskContext<ProjectInfo>) =>
+    pipe(
+        doVersionValidation(context),
+        E.map((projectInfo) => ({
+            message: 'Successfully validated dependency versions',
+            value: projectInfo
+        })),
+        TE.fromEither
     );
-};
 
-export default validateDependencyVersions;
+export default createTask(STAGE_NAME, TASK_NAME, validateDependencyVersions);
