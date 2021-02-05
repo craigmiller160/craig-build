@@ -10,10 +10,11 @@ import { createBuildError } from '../../error/BuildError';
 import { stageLogger } from '../logger';
 import * as E from 'fp-ts/Either';
 import { pipe } from 'fp-ts/pipeable';
+import { Result } from './result';
 
-export type StageFunction = <Input,Result>(context: StageContext<Input>) => E.Either<Error, Result>;
+export type StageFunction = <Input,ResultValue>(context: StageContext<Input>) => E.Either<Error, Result<ResultValue>>;
 
-const createStage = (stageName: string, stageFn: StageFunction) => <Input, Result>(input: Input): E.Either<Error, Result> => { // TODO improve types
+const createStage = (stageName: string, stageFn: StageFunction) => <Input, ResultValue>(input: Input): E.Either<Error, ResultValue> => { // TODO improve types
     const stageContext: StageContext<Input> = {
         stageName,
         createBuildError: createBuildError(stageName),
@@ -23,10 +24,10 @@ const createStage = (stageName: string, stageFn: StageFunction) => <Input, Resul
     stageLogger(stageName, 'Starting...');
 
     return pipe(
-        stageFn<Input,Result>(stageContext),
+        stageFn<Input,ResultValue>(stageContext),
         E.map((result) => {
-            // TODO final log message
-            return result;
+            stageLogger(stageName, `Finished. ${result.message}`);
+            return result.value;
         })
     );
 };
