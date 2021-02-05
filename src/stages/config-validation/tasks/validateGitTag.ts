@@ -8,8 +8,15 @@ import { STAGE_NAME } from '../index';
 import runCommand from '../../../utils/runCommand';
 import { pipe } from 'fp-ts/pipeable';
 import { isLeft } from 'fp-ts/Either';
+import BuildError from '../../../error/BuildError';
 
 export const TASK_NAME = 'Validate Git Tags';
+
+const createError = (message: string) =>
+    new BuildError(message, {
+        taskName: TASK_NAME,
+        stageName: STAGE_NAME
+    });
 
 // TODO make sure all tasks/stages have proper start/finish logging
 
@@ -24,13 +31,13 @@ const validateGitTag: InputTask<ProjectInfo,ProjectInfo> = (projectInfo: Project
         runCommand('git tag'),
         E.chain((output: string) =>
             pipe(
-                A.array.filter(output.split('\n'), (tag) => tag === `v${projectInfo.version}`),
+                A.array.filter(output.split('\n'), (tag) => tag.trim() === `v${projectInfo.version}`),
                 A.reduce(E.right('Git tags validated'), (acc, value: string) => {
                     if (E.isLeft(acc)) {
                         return acc;
                     }
 
-                    return E.left(new Error('Project version git tag already exists'));
+                    return E.left(createError('Project version git tag already exists'));
                 })
             )
         ),
