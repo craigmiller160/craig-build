@@ -9,19 +9,9 @@ import createStage, { StageFunction } from '../../common/execution/stage';
 import { BuildTask } from '../../common/execution/task';
 import { StageContext } from '../../common/execution/context';
 import ProjectType from '../../types/ProjectType';
+import conditionallyExecuteTask from '../../common/execution/conditionallyExecuteTask';
 
 export const STAGE_NAME = 'Identify';
-
-// TODO move this to shared place
-const conditionallyExecuteTask = <Input,ResultValue>(context: StageContext<unknown>, input: Input, task: BuildTask<Input, ResultValue>): TE.TaskEither<Error, ResultValue> => {
-    const shouldExecuteResult = task.shouldExecute(input);
-    if (shouldExecuteResult) {
-        context.logger(`Skipping task ${task.taskName}: ${shouldExecuteResult}`);
-        return TE.right(task.getDefaultResult(input));
-    } else {
-        return task.operation(input);
-    }
-};
 
 const identify: StageFunction<undefined, ProjectInfo> = (context: StageContext<undefined>) =>
     pipe(

@@ -20,14 +20,16 @@ export interface BuildTask<Input,ResultValue> {
 const defaultShouldExecute: TaskShouldExecuteFunction<any> = (input: any) => undefined;
 const defaultGetDefaultResult: TaskGetDefaultResultFunction<any, any> = (input: any) => null as any;
 
-// TODO when tasks are added to a stage, ensure they are of the Task type
-
 const createTask = <Input, ResultValue>(
     stageName: string,
     taskName: string,
     taskFn: TaskFunction<Input, ResultValue>,
     shouldExecuteFn?: TaskShouldExecuteFunction<Input>,
     getDefaultResultFn?: TaskGetDefaultResultFunction<Input, ResultValue>): BuildTask<Input,ResultValue> => {
+    if (shouldExecuteFn && !getDefaultResultFn) {
+        throw new Error('CRITICAL ERROR: if shouldExecute rules are defined for a task, then getDefaultResult needs to be defined as well');
+    }
+
     return {
         stageName,
         taskName,
