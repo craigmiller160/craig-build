@@ -5,9 +5,9 @@ const LOG_PREFIX = 'CRAIG-BUILD';
 
 export const SUCCESS_STATUS = 'success';
 export const ERROR_STATUS = 'error';
-type StatusType = typeof SUCCESS_STATUS | typeof ERROR_STATUS;
+export type LogStatus = typeof SUCCESS_STATUS | typeof ERROR_STATUS;
 
-const doLog = (message: string, status?: StatusType) => {
+const doLog = (message: string, status?: LogStatus) => {
     if (SUCCESS_STATUS === status) {
         console.log(chalk.green(message));
     } else if (ERROR_STATUS === status) {
@@ -17,17 +17,17 @@ const doLog = (message: string, status?: StatusType) => {
     }
 };
 
-export const taskLogger = (stageName: string, taskName: string, message: string, status?: StatusType) => {
+export const createTaskLogger = (stageName: string, taskName: string) => (message: string, status?: LogStatus) => {
     const fullMessage = `[${LOG_PREFIX}] [Stage: ${stageName}] [Task: ${taskName}] ${message}`;
     doLog(fullMessage, status);
 };
 
-export const stageLogger = (stageName: string, message: string, status?: StatusType) => {
+export const createStageLogger = (stageName: string) => (message: string, status?: LogStatus) => {
     const fullMessage = `[${LOG_PREFIX}] [Stage: ${stageName}] ${message}`;
     doLog(fullMessage, status);
 };
 
-export const buildLogger = (message: string, status?: StatusType) => {
+export const buildLogger = (message: string, status?: LogStatus) => { // TODO probably refactor this one too like the others
     const fullMessage = `[${LOG_PREFIX}] [Build] ${message}`;
     doLog(fullMessage, status);
 };

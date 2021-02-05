@@ -2,7 +2,7 @@ import { TaskContext } from './context';
 import * as TE from 'fp-ts/TaskEither';
 import { Result } from './result';
 import { createBuildError } from '../../error/BuildError';
-import { taskLogger } from '../logger';
+import { createTaskLogger, SUCCESS_STATUS } from '../logger';
 import { pipe } from 'fp-ts/pipeable';
 
 // TODO when input and output are the same, don't need to put it in twice
@@ -26,15 +26,16 @@ const createTask = <Input, ResultValue>(stageName: string, taskName: string, tas
             stageName,
             taskName,
             createBuildError: createBuildError(stageName, taskName),
-            input
+            input,
+            logger: createTaskLogger(stageName, taskName)
         };
 
-        taskLogger(stageName, taskName, 'Starting...');
+        taskContext.logger('Starting...');
 
         return pipe(
             taskFn(taskContext),
             TE.map((result) => {
-                taskLogger(stageName, taskName, `Finished. ${result.message}`);
+                taskContext.logger(`Finished. ${result.message}`, SUCCESS_STATUS);
                 return result.value;
             })
         );
