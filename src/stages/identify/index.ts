@@ -17,14 +17,13 @@ const identify: AsyncStage<ProjectInfo> = () => {
     stageLogger(STAGE_NAME, 'Starting...');
     return pipe(
         identifyProject(undefined), // TODO is there some more graceful way to deal with this?
-        E.chain(getBaseProjectInfo),
-        E.chain((projectInfo) => {
+        TE.chain(getBaseProjectInfo),
+        TE.chain((projectInfo) => {
             if (isApplication(projectInfo.projectType)) {
                 return getKubeProjectInfo(projectInfo);
             }
-            return E.right(projectInfo);
+            return TE.right(projectInfo);
         }),
-        TE.fromEither,
         TE.chain(getNexusProjectInfo),
         TE.map((projectInfo) => {
             const projectInfoString = JSON.stringify(projectInfo, null, 2);

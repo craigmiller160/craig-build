@@ -8,6 +8,7 @@ import { Parser } from 'xml2js';
 import ProjectType from '../../../types/ProjectType';
 import * as E from 'fp-ts/Either';
 import * as O from 'fp-ts/Option';
+import * as TE from 'fp-ts/TaskEither';
 import { pipe } from 'fp-ts/pipeable';
 import handleUnknownError from '../../../utils/handleUnknownError';
 import { InputTask } from '../../../types/Build';
@@ -124,7 +125,8 @@ const getBaseProjectInfo: TaskFunction<ProjectType,ProjectInfo> = (context: Task
         E.map((projectInfo) => ({
             message: 'Base ProjectInfo successfully loaded',
             value: projectInfo
-        }))
+        })),
+        TE.fromEither
     );
 
 export default createTask(STAGE_NAME, TASK_NAME, getBaseProjectInfo);

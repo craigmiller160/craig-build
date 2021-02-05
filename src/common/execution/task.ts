@@ -1,13 +1,13 @@
 import { TaskContext } from './context';
-import * as E from 'fp-ts/Either';
+import * as TE from 'fp-ts/TaskEither';
 import { Result } from './result';
 import { createBuildError } from '../../error/BuildError';
 import { taskLogger } from '../logger';
 import { pipe } from 'fp-ts/pipeable';
 
-export type TaskFunction<Input,ResultValue> = (context: TaskContext<Input>) => E.Either<Error, Result<ResultValue>>;
+export type TaskFunction<Input,ResultValue> = (context: TaskContext<Input>) => TE.TaskEither<Error, Result<ResultValue>>;
 
-const createTask = <Input, ResultValue>(stageName: string, taskName: string, taskFn: TaskFunction<Input, ResultValue>) => (input: Input): E.Either<Error, ResultValue> => {
+const createTask = <Input, ResultValue>(stageName: string, taskName: string, taskFn: TaskFunction<Input, ResultValue>) => (input: Input): TE.TaskEither<Error, ResultValue> => {
     const taskContext: TaskContext<Input> = {
         stageName,
         taskName,
@@ -19,7 +19,7 @@ const createTask = <Input, ResultValue>(stageName: string, taskName: string, tas
 
     return pipe(
         taskFn(taskContext),
-        E.map((result) => {
+        TE.map((result) => {
             taskLogger(stageName, taskName, `Finished. ${result.message}`);
             return result.value;
         })

@@ -1,4 +1,5 @@
 import * as E from 'fp-ts/Either';
+import * as TE from 'fp-ts/TaskEither';
 import fs from 'fs';
 import path from 'path';
 import getCwd from '../../../utils/getCwd';
@@ -44,7 +45,8 @@ const identifyProject: TaskFunction<undefined, ProjectType> = (context: TaskCont
         E.map((projectType) => ({
             message: `Project identified: ${projectType}`,
             value: projectType
-        }))
-    )
+        })),
+        TE.fromEither
+    );
 
 export default createTask(STAGE_NAME, TASK_NAME, identifyProject);

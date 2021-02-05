@@ -2,6 +2,7 @@ import { InputTask } from '../../../types/Build';
 import ProjectInfo from '../../../types/ProjectInfo';
 import { SUCCESS_STATUS, taskLogger } from '../../../common/logger';
 import * as E from 'fp-ts/Either';
+import * as TE from 'fp-ts/TaskEither';
 import { pipe } from 'fp-ts/pipeable';
 import path from 'path';
 import getCwd from '../../../utils/getCwd';
@@ -36,7 +37,8 @@ const getKubeProjectInfo: TaskFunction<ProjectInfo, ProjectInfo> = (context: Tas
         E.map((result) => ({
             message: 'Loaded Kubernetes ProjectInfo',
             value: result
-        }))
-    )
+        })),
+        TE.fromEither
+    );
 
 export default createTask(STAGE_NAME, TASK_NAME, getKubeProjectInfo);
