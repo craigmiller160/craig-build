@@ -6,11 +6,11 @@ import {
 } from '../../../../src/common/services/NexusRepoApi';
 import ProjectType from '../../../../src/types/ProjectType';
 import ProjectInfo from '../../../../src/types/ProjectInfo';
-import Mock = jest.Mock;
 import getNexusProjectInfo from '../../../../src/stages/identify/tasks/getNexusProjectInfo';
 import NexusSearchResult from '../../../../src/types/NexusSearchResult';
 import * as TE from 'fp-ts/TaskEither';
 import '@relmify/jest-fp-ts';
+import Mock = jest.Mock;
 
 jest.mock('../../../../src/common/services/NexusRepoApi', () => ({
     searchForNpmBetas: jest.fn(),
@@ -46,16 +46,37 @@ const createNexusResult = (version: string): NexusSearchResult => ({
     ]
 });
 
+const nexusEmptyResult: NexusSearchResult = {
+    items: []
+};
+
+const mockMavenVersionExists = () => {
+    searchForMavenReleasesMock.mockImplementation(() => TE.right(createNexusResult('Maven-Release')));
+    searchForMavenSnapshotsMock.mockImplementation(() => TE.right(createNexusResult('Maven-Pre-Release')));
+};
+
+const mockMavenVersionNotExists = () => {
+    searchForMavenReleasesMock.mockImplementation(() => TE.right(nexusEmptyResult));
+    searchForMavenSnapshotsMock.mockImplementation(() => TE.right(nexusEmptyResult));
+};
+
+const mockNpmVersionExists = () => {
+    searchForNpmReleasesMock.mockImplementation(() => TE.right(createNexusResult('Npm-Release')));
+    searchForNpmBetasMock.mockImplementation(() => TE.right(createNexusResult('Npm-Pre-Release')));
+};
+
+const mockNpmVersionNotExists = () => {
+    searchForNpmReleasesMock.mockImplementation(() => TE.right(nexusEmptyResult));
+    searchForNpmBetasMock.mockImplementation(() => TE.right(nexusEmptyResult));
+};
+
 describe('getNexusProjectInfo task', () => {
     beforeEach(() => {
         jest.resetAllMocks();
-        searchForMavenReleasesMock.mockImplementation(() => TE.right(createNexusResult('Maven-Release')));
-        searchForMavenSnapshotsMock.mockImplementation(() => TE.right(createNexusResult('Maven-Pre-Release')));
-        searchForNpmReleasesMock.mockImplementation(() => TE.right(createNexusResult('Npm-Release')));
-        searchForNpmBetasMock.mockImplementation(() => TE.right(createNexusResult('Npm-Pre-Release')));
     });
 
     it('get Maven Nexus Project Info', async () => {
+        mockMavenVersionExists();
         const projectInfo = createProjectInfo(ProjectType.MavenApplication);
         const result = await getNexusProjectInfo(projectInfo)();
         expect(result).toEqualRight({
@@ -68,6 +89,7 @@ describe('getNexusProjectInfo task', () => {
     });
 
     it('get NPM Nexus Project Info', async () => {
+        mockNpmVersionExists();
         const projectInfo = createProjectInfo(ProjectType.NpmApplication);
         const result = await getNexusProjectInfo(projectInfo)();
         expect(result).toEqualRight({
@@ -79,11 +101,29 @@ describe('getNexusProjectInfo task', () => {
         });
     });
 
-    it('NPM project does not exist in Nexus', () => {
-        throw new Error();
+    it('NPM project does not exist in Nexus', async () => {
+        mockNpmVersionNotExists();
+        const projectInfo = createProjectInfo(ProjectType.NpmApplication);
+        const result = await getNexusProjectInfo(projectInfo)();
+        expect(result).toEqualRight({
+            ...projectInfo,
+            latestNexusVersions: {
+                latestPreReleaseVersion: undefined,
+                latestReleaseVersion: undefined
+            }
+        });
     });
 
-    it('Maven project does not exist in Nexus', () => {
-        throw new Error();
+    it('Maven project does not exist in Nexus', async () => {
+        mockMavenVersionNotExists();
+        const projectInfo = createProjectInfo(ProjectType.MavenApplication);
+        const result = await getNexusProjectInfo(projectInfo)();
+        expect(result).toEqualRight({
+            ...projectInfo,
+            latestNexusVersions: {
+                latestPreReleaseVersion: undefined,
+                latestReleaseVersion: undefined
+            }
+        });
     });
 });
