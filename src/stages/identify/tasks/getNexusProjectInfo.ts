@@ -16,6 +16,8 @@ import NexusSearchResult from '../../../types/NexusSearchResult';
 
 const TASK_NAME = 'Get Nexus Project Info';
 
+// TODO need to handle scenario where artifact doesn't exist in nexus yet
+
 const createError = (message: string) =>
     new BuildError(message, {
         taskName: TASK_NAME,
