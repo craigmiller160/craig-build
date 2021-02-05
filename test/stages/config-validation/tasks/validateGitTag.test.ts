@@ -17,9 +17,9 @@ const projectInfo: ProjectInfo = {
 };
 
 describe('validateGitTag task', () => {
-    it('git tag already exists', () => {
+    it('git tag already exists', async () => {
         runCommandMock.mockImplementation(() => E.right('v0.0.1\nv0.1.0\nv1.0.0'));
-        const result = validateGitTag(projectInfo);
+        const result = await validateGitTag(projectInfo)();
         expect(result).toEqualLeft(new BuildError(
             'Project version git tag already exists',
             {
@@ -29,9 +29,9 @@ describe('validateGitTag task', () => {
         ));
     });
 
-    it('git tag does not exist', () => {
+    it('git tag does not exist', async () => {
         runCommandMock.mockImplementation(() => E.right('v0.0.1\nv0.1.0'));
-        const result = validateGitTag(projectInfo);
+        const result = await validateGitTag(projectInfo)();
         expect(result).toEqualRight(projectInfo);
     });
 });
