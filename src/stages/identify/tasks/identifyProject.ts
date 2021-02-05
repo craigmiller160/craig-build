@@ -8,14 +8,10 @@ import BuildError from '../../../error/BuildError';
 import { SUCCESS_STATUS, taskLogger } from '../../../common/logger';
 import { pipe } from 'fp-ts/pipeable';
 import { STAGE_NAME } from '../index';
+import createTask, { TaskFunction } from '../../../common/execution/task';
+import { TaskContext } from '../../../common/execution/context';
 
 export const TASK_NAME = 'Identify Project';
-
-const createError = (message: string) =>
-    new BuildError(message, {
-        taskName: TASK_NAME,
-        stageName: STAGE_NAME
-    });
 
 const NPM_PROJECT_FILE= 'package.json';
 const MVN_PROJECT_FILE = 'pom.xml';
@@ -24,7 +20,7 @@ const DEPLOY_PATH = path.join('deploy', 'deployment.yml');
 const fileExists = (file: string): boolean =>
     fs.existsSync(path.resolve(getCwd(), file));
 
-const getProjectType = (): E.Either<Error, ProjectType> => {
+const getProjectType = (context: TaskContext<undefined>): E.Either<Error, ProjectType> => {
     const hasNpmProjectFile = fileExists(NPM_PROJECT_FILE);
     const hasMvnProjectFile = fileExists(MVN_PROJECT_FILE);
     const hasDeployFile = fileExists(DEPLOY_PATH);
@@ -38,19 +34,17 @@ const getProjectType = (): E.Either<Error, ProjectType> => {
     } else if (hasMvnProjectFile) {
         return E.right(ProjectType.MavenLibrary);
     } else {
-        return E.left(createError('Unable to identify project type'));
+        return E.left(context.createBuildError('Unable to identify project type'));
     }
 };
 
-const identifyProject: Task<ProjectType> = () => {
-    taskLogger(STAGE_NAME, TASK_NAME, 'Starting...');
-    return pipe(
-        getProjectType(),
-        E.map((projectType) => {
-            taskLogger(STAGE_NAME, TASK_NAME, `Finished successfully. Project identified: ${projectType}`, SUCCESS_STATUS);
-            return projectType
-        })
-    );
-};
+const identifyProject: TaskFunction<undefined, ProjectType> = (context: TaskContext<undefined>) =>
+    pipe(
+        getProjectType(context),
+        E.map((projectType) => ({
+            message: `Project identified: ${projectType}`,
+            value: projectType
+        }))
+    )
 
-export default identifyProject;
+export default createTask(STAGE_NAME, TASK_NAME, identifyProject);

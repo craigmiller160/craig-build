@@ -10,6 +10,8 @@ import fs from 'fs';
 import KubeDeployment from '../../../types/KubeDeployment';
 import handleUnknownError from '../../../utils/handleUnknownError';
 import { STAGE_NAME } from '../index';
+import createTask, { TaskFunction } from '../../../common/execution/task';
+import { TaskContext } from '../../../common/execution/context';
 
 const TASK_NAME = 'Get Kubernetes Project Info';
 
@@ -28,15 +30,13 @@ const findKubeProjectInfo = (projectInfo: ProjectInfo): E.Either<Error, ProjectI
         handleUnknownError
     );
 
-const getKubeProjectInfo: InputTask<ProjectInfo, ProjectInfo> = (projectInfo: ProjectInfo) => {
-    taskLogger(STAGE_NAME, TASK_NAME, 'Starting...');
-    return pipe(
-        findKubeProjectInfo(projectInfo),
-        E.map((projectInfo) => {
-            taskLogger(STAGE_NAME, TASK_NAME, 'Finished loading Kubernetes ProjectInfo successfully', SUCCESS_STATUS);
-            return projectInfo;
-        })
-    );
-};
+const getKubeProjectInfo: TaskFunction<ProjectInfo, ProjectInfo> = (context: TaskContext<ProjectInfo>) =>
+    pipe(
+        findKubeProjectInfo(context.input),
+        E.map((result) => ({
+            message: 'Loaded Kubernetes ProjectInfo',
+            value: result
+        }))
+    )
 
-export default getKubeProjectInfo;
+export default createTask(STAGE_NAME, TASK_NAME, getKubeProjectInfo);

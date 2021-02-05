@@ -1,6 +1,8 @@
 import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
 
+// TODO delete this whole file if it remains unused
+
 type BuildStep<Result> = () => E.Either<Error, Result>;
 type AsyncBuildStep<Result> = () => TE.TaskEither<Error, Result>;
 type InputBuildStep<Input, Result> = (input: Input) => E.Either<Error, Result>;
