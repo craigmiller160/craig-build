@@ -22,11 +22,6 @@ const createError = (message: string) =>
 
 const validateGitTag: InputTask<ProjectInfo,ProjectInfo> = (projectInfo: ProjectInfo) => {
     taskLogger(STAGE_NAME, TASK_NAME, 'Starting...');
-    if (projectInfo.isPreRelease) {
-        taskLogger(STAGE_NAME, TASK_NAME, 'Finished. Skipping git tag check for pre-release version.', SUCCESS_STATUS);
-        return E.right(projectInfo);
-    }
-
     return pipe(
         runCommand('git tag'),
         E.chain((output: string) =>

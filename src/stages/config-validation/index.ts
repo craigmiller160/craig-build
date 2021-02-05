@@ -6,6 +6,7 @@ import { pipe } from 'fp-ts/pipeable';
 import validateDependencyVersions from './tasks/validateDependencyVersions';
 import { isApplication } from '../../utils/projectTypeUtils';
 import validateKubeVersion from './tasks/validateKubeVersion';
+import validateGitTag from './tasks/validateGitTag';
 
 export const STAGE_NAME = 'Config Validation';
 
@@ -16,6 +17,12 @@ const configValidation: InputStage<ProjectInfo, ProjectInfo> = (projectInfo: Pro
         E.chain((projectInfo) => {
             if (isApplication(projectInfo.projectType)) {
                 return validateKubeVersion(projectInfo);
+            }
+            return E.right(projectInfo);
+        }),
+        E.chain((projectInfo) => {
+            if (!projectInfo.isPreRelease) {
+                return validateGitTag(projectInfo);
             }
             return E.right(projectInfo);
         })

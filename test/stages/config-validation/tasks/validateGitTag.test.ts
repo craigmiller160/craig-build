@@ -34,14 +34,4 @@ describe('validateGitTag task', () => {
         const result = validateGitTag(projectInfo);
         expect(result).toEqualRight(projectInfo);
     });
-
-    it('no tag check because pre-release', () => {
-        const actualProjectInfo: ProjectInfo = {
-            ...projectInfo,
-            isPreRelease: true
-        };
-        runCommandMock.mockImplementation(() => E.left(new Error('Failing')));
-        const result = validateGitTag(actualProjectInfo);
-        expect(result).toEqualRight(actualProjectInfo);
-    });
 });
