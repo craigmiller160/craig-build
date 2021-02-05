@@ -78,4 +78,12 @@ describe('getNexusProjectInfo task', () => {
             }
         });
     });
+
+    it('NPM project does not exist in Nexus', () => {
+        throw new Error();
+    });
+
+    it('Maven project does not exist in Nexus', () => {
+        throw new Error();
+    });
 });
