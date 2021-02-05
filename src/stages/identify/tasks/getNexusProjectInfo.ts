@@ -13,6 +13,8 @@ import {
     searchForNpmReleases
 } from '../../../common/services/NexusRepoApi';
 import NexusSearchResult from '../../../types/NexusSearchResult';
+import createTask, { TaskFunction } from '../../../common/execution/task';
+import { TaskContext } from '../../../common/execution/context';
 
 const TASK_NAME = 'Get Nexus Project Info';
 
@@ -65,28 +67,26 @@ const lookupNpmNexusVersions = (projectInfo: ProjectInfo): TE.TaskEither<Error, 
         )
     );
 
-const findNexusVersionInfo = (projectInfo: ProjectInfo): TE.TaskEither<Error, ProjectInfo> => {
-    switch (projectInfo.projectType) {
+const findNexusVersionInfo = (context: TaskContext<ProjectInfo>): TE.TaskEither<Error, ProjectInfo> => {
+    switch (context.input.projectType) {
         case ProjectType.MavenLibrary:
         case ProjectType.MavenApplication:
-            return lookupMavenNexusVersions(projectInfo);
+            return lookupMavenNexusVersions(context.input);
         case ProjectType.NpmApplication:
         case ProjectType.NpmLibrary:
-            return lookupNpmNexusVersions(projectInfo);
+            return lookupNpmNexusVersions(context.input);
         default:
-            return TE.left(createError(`Invalid ProjectType for finding version info: ${projectInfo.projectType}`));
+            return TE.left(context.createBuildError(`Invalid ProjectType for finding version info: ${context.input.projectType}`));
     }
 };
 
-const getNexusProjectInfo: AsyncInputTask<ProjectInfo, ProjectInfo> = (projectInfo: ProjectInfo) => {
-    taskLogger(STAGE_NAME, TASK_NAME, 'Starting...');
-    return pipe(
-        findNexusVersionInfo(projectInfo),
-        TE.map((projectInfo) => {
-            taskLogger(STAGE_NAME, TASK_NAME, 'Finished loading Nexus ProjectInfo successfully', SUCCESS_STATUS);
-            return projectInfo;
-        })
+const getNexusProjectInfo: TaskFunction<ProjectInfo, ProjectInfo> = (context: TaskContext<ProjectInfo>) =>
+    pipe(
+        findNexusVersionInfo(context),
+        TE.map((projectInfo) => ({
+            message: 'Loaded Nexus ProjectInfo successfully',
+            value: projectInfo
+        }))
     );
-};
 
-export default getNexusProjectInfo;
+export default createTask(STAGE_NAME, TASK_NAME, getNexusProjectInfo);

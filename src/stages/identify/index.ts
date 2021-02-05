@@ -16,7 +16,7 @@ export const STAGE_NAME = 'Identify';
 const identify: AsyncStage<ProjectInfo> = () => {
     stageLogger(STAGE_NAME, 'Starting...');
     return pipe(
-        identifyProject(),
+        identifyProject(undefined), // TODO is there some more graceful way to deal with this?
         E.chain(getBaseProjectInfo),
         E.chain((projectInfo) => {
             if (isApplication(projectInfo.projectType)) {
