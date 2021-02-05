@@ -22,25 +22,39 @@ export const STAGE_NAME = 'Identify';
  * 3. Iterate over this array, probably with a reduce to get a single output
  */
 
-const conditionallyExecuteTask = <Input,ResultValue>(context: StageContext<unknown>, input: Input, task: BuildTask<Input, ResultValue>): TE.TaskEither<Error, ResultValue> => {
+// TODO move this to shared place
+const conditionallyExecuteTask = <Input,ResultValue>(context: StageContext<unknown>, input: Input, task: BuildTask<Input, ResultValue>, defaultResultValue: ResultValue): TE.TaskEither<Error, ResultValue> => {
     const shouldExecuteResult = task.shouldExecute(input);
     if (shouldExecuteResult) {
         context.logger(`Skipping task ${task.taskName}: ${shouldExecuteResult}`);
-        // return TE.right(input); // TODO how to handle output value.
-        return TE.left(new Error());
+        return TE.right(defaultResultValue);
     } else {
         return task.operation(input);
     }
-}
+};
 
-const newIdentify: StageFunction<undefined, ProjectType> = (context: StageContext<undefined>) =>
+// TODO figure out a better way to handle the task defaults... maybe in the task itself?
+const defaultProjectInfo: ProjectInfo = {
+    projectType: ProjectType.NpmLibrary,
+    name: '',
+    version: '',
+    isPreRelease: false,
+    dependencies: []
+};
+
+const newIdentify: StageFunction<undefined, ProjectInfo> = (context: StageContext<undefined>) =>
     pipe(
         TE.of<Error,BuildTask<undefined, ProjectType>>(identifyProject),
-        TE.chain((identifyProjectTask) => conditionallyExecuteTask(context, undefined, identifyProjectTask)),
-        TE.map((value) => ({
-            message: '',
-            value
-        }))
+        TE.chain((identifyProjectTask) => conditionallyExecuteTask(context, undefined, identifyProjectTask, ProjectType.NpmLibrary)),
+        TE.chain((projectType) => conditionallyExecuteTask(context, projectType, getBaseProjectInfo, defaultProjectInfo)),
+        TE.map((projectInfo) => {
+            const projectInfoString = JSON.stringify(projectInfo, null, 2);
+            context.logger(`Project information successfully identified: ${projectInfoString}`);
+            return {
+                message: '',
+                value: projectInfo
+            };
+        })
     );
 
 const identify: StageFunction<undefined,ProjectInfo> = () =>
