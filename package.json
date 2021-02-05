@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "@relmify/jest-fp-ts": "^1.1.1",
+    "@types/cross-spawn": "^6.0.2",
     "@types/jest": "^26.0.20",
     "@types/node": "^14.14.22",
     "@types/qs": "^6.9.5",
