@@ -9,33 +9,33 @@ import BuildError from '../../../../src/error/BuildError';
 const getCwdMock: Mock = getCwd as Mock;
 
 describe('identifyProject task', () => {
-    it('is NpmApplication', () => {
+    it('is NpmApplication', async () => {
         getCwdMock.mockImplementation(() => path.resolve(process.cwd(), 'test', '__working-dirs__', 'npmReleaseApplication'));
-        const result = identifyProject();
+        const result = await identifyProject(undefined)();
         expect(result).toEqualRight(ProjectType.NpmApplication);
     });
 
-    it('is NpmLibrary', () => {
+    it('is NpmLibrary', async () => {
         getCwdMock.mockImplementation(() => path.resolve(process.cwd(), 'test', '__working-dirs__', 'npmReleaseLibrary'));
-        const result = identifyProject();
+        const result = await identifyProject(undefined)();
         expect(result).toEqualRight(ProjectType.NpmLibrary);
     });
 
-    it('is MavenApplication', () => {
+    it('is MavenApplication', async () => {
         getCwdMock.mockImplementation(() => path.resolve(process.cwd(), 'test', '__working-dirs__', 'mavenReleaseApplication'));
-        const result = identifyProject();
+        const result = await identifyProject(undefined)();
         expect(result).toEqualRight(ProjectType.MavenApplication);
     });
 
-    it('is MavenLibrary', () => {
+    it('is MavenLibrary', async () => {
         getCwdMock.mockImplementation(() => path.resolve(process.cwd(), 'test', '__working-dirs__', 'mavenReleaseLibrary'));
-        const result = identifyProject();
+        const result = await identifyProject(undefined)();
         expect(result).toEqualRight(ProjectType.MavenLibrary);
     });
 
-    it('is unknown project', () => {
+    it('is unknown project', async () => {
         getCwdMock.mockImplementation(() => path.resolve(process.cwd(), 'test', '__working-dirs__'));
-        const result = identifyProject();
+        const result = await identifyProject(undefined)();
         expect(result).toEqualLeft(new BuildError('Unable to identify project type', {
             taskName: TASK_NAME
         }));

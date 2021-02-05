@@ -8,9 +8,9 @@ import '@relmify/jest-fp-ts';
 const getCwdMock: Mock = getCwd as Mock;
 
 describe('getBaseProjectInfo task', () => {
-    it('get Maven ProjectInfo', () => {
+    it('get Maven ProjectInfo', async () => {
         getCwdMock.mockImplementation(() => path.resolve(process.cwd(), 'test', '__working-dirs__', 'mavenReleaseApplication'));
-        const result = getBaseProjectInfo(ProjectType.MavenApplication);
+        const result = await getBaseProjectInfo(ProjectType.MavenApplication)();
         expect(result).toEqualRight({
             projectType: ProjectType.MavenApplication,
             name: 'email-service',
@@ -37,9 +37,9 @@ describe('getBaseProjectInfo task', () => {
         });
     });
 
-    it('get Maven ProjectInfo for snapshot', () => {
+    it('get Maven ProjectInfo for snapshot', async () => {
         getCwdMock.mockImplementation(() => path.resolve(process.cwd(), 'test', '__working-dirs__', 'mavenSnapshotApplication'));
-        const result = getBaseProjectInfo(ProjectType.MavenApplication);
+        const result = await getBaseProjectInfo(ProjectType.MavenApplication)();
         expect(result).toEqualRight({
             projectType: ProjectType.MavenApplication,
             name: 'email-service',
@@ -66,9 +66,9 @@ describe('getBaseProjectInfo task', () => {
         });
     });
 
-    it('get Npm ProjectInfo', () => {
+    it('get Npm ProjectInfo', async () => {
         getCwdMock.mockImplementation(() => path.resolve(process.cwd(), 'test', '__working-dirs__', 'npmReleaseApplication'));
-        const result = getBaseProjectInfo(ProjectType.NpmApplication);
+        const result = await getBaseProjectInfo(ProjectType.NpmApplication)();
         expect(result).toEqualRight({
             projectType: ProjectType.NpmApplication,
             name: 'craig-build',
@@ -95,9 +95,9 @@ describe('getBaseProjectInfo task', () => {
         });
     });
 
-    it('get Npm ProjectInfo for beta', () => {
+    it('get Npm ProjectInfo for beta', async () => {
         getCwdMock.mockImplementation(() => path.resolve(process.cwd(), 'test', '__working-dirs__', 'npmBetaApplication'));
-        const result = getBaseProjectInfo(ProjectType.NpmApplication);
+        const result = await getBaseProjectInfo(ProjectType.NpmApplication)();
         expect(result).toEqualRight({
             projectType: ProjectType.NpmApplication,
             name: 'craig-build',

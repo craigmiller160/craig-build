@@ -9,7 +9,7 @@ import ProjectType from '../../../../src/types/ProjectType';
 const getCwdMock: Mock = getCwd as Mock;
 
 describe('getKubeProjectInfo task', () => {
-    it('finds kubernetes info', () => {
+    it('finds kubernetes info', async () => {
         getCwdMock.mockImplementation(() => path.resolve(process.cwd(), 'test', '__working-dirs__', 'mavenReleaseApplication'));
         const projectInfo: ProjectInfo = {
             projectType: ProjectType.MavenApplication,
@@ -18,7 +18,7 @@ describe('getKubeProjectInfo task', () => {
             dependencies: [],
             isPreRelease: false
         };
-        const result = getKubeProjectInfo(projectInfo);
+        const result = await getKubeProjectInfo(projectInfo)();
         expect(result).toEqualRight({
             ...projectInfo,
             kubernetesDockerImage: 'craigmiller160.ddns.net:30004/email-service:1.2.0'
