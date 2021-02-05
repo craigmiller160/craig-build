@@ -3,13 +3,6 @@ import * as E from 'fp-ts/Either';
 import * as O from 'fp-ts/Option';
 import { pipe } from 'fp-ts/pipeable';
 
-/*
- * const spawn = require('cross-spawn');
-
-const result = spawn.sync('ls', ['-l']);
-console.log(result.stdout.toString());
- */
-
 const runCommand = (command: string): E.Either<Error, string> => {
     const commandParts = command.split(' ');
     const result = spawn.sync(commandParts[0], commandParts.slice(1));
