@@ -31,6 +31,3 @@ export const buildLogger = (message: string, status?: StatusType) => {
     const fullMessage = `[${LOG_PREFIX}] [Build] ${message}`;
     doLog(fullMessage, status);
 };
-
-// TODO if unused, delete this
-// TODO if used, needs another package

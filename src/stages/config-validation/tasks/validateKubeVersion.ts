@@ -1,12 +1,9 @@
 import * as E from 'fp-ts/Either';
 import * as O from 'fp-ts/Option';
 import * as TE from 'fp-ts/TaskEither';
-import { InputTask, Task } from '../../../types/Build';
 import ProjectInfo from '../../../types/ProjectInfo';
 import { pipe } from 'fp-ts/pipeable';
-import { taskLogger } from '../../../common/logger';
 import { STAGE_NAME } from '../index';
-import BuildError from '../../../error/BuildError';
 import createTask, { TaskFunction } from '../../../common/execution/task';
 import { TaskContext } from '../../../common/execution/context';
 

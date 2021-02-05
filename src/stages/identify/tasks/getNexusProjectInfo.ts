@@ -1,15 +1,12 @@
-import { AsyncInputTask, InputTask } from '../../../types/Build';
 import ProjectInfo from '../../../types/ProjectInfo';
-import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
-import { SUCCESS_STATUS, taskLogger } from '../../../common/logger';
 import { STAGE_NAME } from '../index';
 import ProjectType from '../../../types/ProjectType';
-import BuildError from '../../../error/BuildError';
 import { pipe } from 'fp-ts/pipeable';
 import {
     searchForMavenReleases,
-    searchForMavenSnapshots, searchForNpmBetas,
+    searchForMavenSnapshots,
+    searchForNpmBetas,
     searchForNpmReleases
 } from '../../../common/services/NexusRepoApi';
 import NexusSearchResult from '../../../types/NexusSearchResult';

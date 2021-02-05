@@ -1,9 +1,10 @@
-import * as E from 'fp-ts/Either';
-import { Task } from '../../../types/Build';
+import * as TE from 'fp-ts/TaskEither';
+import { TaskFunction } from '../../../common/execution/task';
+import { TaskContext } from '../../../common/execution/context';
 
-const validateNexusVersion: Task<boolean> = () => {
+const validateNexusVersion: TaskFunction<boolean,boolean> = (context: TaskContext<boolean>) => {
     // TODO finish this
-    return E.left(new Error());
+    return TE.left(new Error());
 };
 
 export default validateNexusVersion;

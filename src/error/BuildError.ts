@@ -1,26 +1,14 @@
 import { CustomError } from 'ts-custom-error';
-import { BuildContext } from '../types/Build';
-
-// TODO figure out a better way of always guaranteeing stage name
 
 class BuildError extends CustomError {
-    stageName: string = '';
-
-    taskName: string = '';
-
-    constructor(message: string, context?: BuildContext) {
+    constructor(message: string, public stageName: string, public taskName?: string) {
         super(message);
-        this.stageName = context?.stageName ?? '';
-        this.taskName = context?.taskName ?? '';
     }
 }
 
 export const isBuildError = (error: Error): error is BuildError => !!(error as any).stageName;
 
 export const createBuildError = (stageName: string, taskName?: string) => (message: string) =>
-    new BuildError(message, {
-        stageName,
-        taskName
-    });
+    new BuildError(message, stageName, taskName);
 
 export default BuildError;

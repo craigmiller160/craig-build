@@ -1,14 +1,11 @@
 import ProjectInfo, { Dependency } from '../../../types/ProjectInfo';
-import { InputTask } from '../../../types/Build';
 import * as E from 'fp-ts/Either';
+import { isLeft } from 'fp-ts/Either';
 import * as A from 'fp-ts/Array';
 import * as TE from 'fp-ts/TaskEither';
 import ProjectType from '../../../types/ProjectType';
-import BuildError from '../../../error/BuildError';
-import { SUCCESS_STATUS, taskLogger } from '../../../common/logger';
 import { STAGE_NAME } from '../index';
 import { pipe } from 'fp-ts/pipeable';
-import { isLeft } from 'fp-ts/Either';
 import createTask, { TaskFunction } from '../../../common/execution/task';
 import { TaskContext } from '../../../common/execution/context';
 
