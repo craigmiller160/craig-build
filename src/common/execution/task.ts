@@ -8,23 +8,34 @@ import { pipe } from 'fp-ts/pipeable';
 // TODO when input and output are the same, don't need to put it in twice
 export type TaskFunction<Input,ResultValue> = (context: TaskContext<Input>) => TE.TaskEither<Error, Result<ResultValue>>;
 export type TaskShouldExecuteFunction<Input> = (input: Input) => string | undefined;
+export type TaskGetDefaultResultFunction<Input,ResultValue> = (input: Input) => ResultValue;
 export interface BuildTask<Input,ResultValue> {
     stageName: string;
     taskName: string;
     operation: (input: Input) => TE.TaskEither<Error, ResultValue>;
     shouldExecute: (input: Input) => string | undefined;
+    getDefaultResult: (input: Input) => ResultValue;
 }
 
-const defaultShouldExecute: TaskShouldExecuteFunction<any> = (context: any) => undefined;
+const defaultShouldExecute: TaskShouldExecuteFunction<any> = (input: any) => undefined;
+const defaultGetDefaultResult: TaskGetDefaultResultFunction<any, any> = (input: any) => null as any;
 
 // TODO when tasks are added to a stage, ensure they are of the Task type
 
-const createTask = <Input, ResultValue>(stageName: string, taskName: string, taskFn: TaskFunction<Input, ResultValue>, shouldExecuteFn?: TaskShouldExecuteFunction<Input>): BuildTask<Input,ResultValue> => {
+const createTask = <Input, ResultValue>(
+    stageName: string,
+    taskName: string,
+    taskFn: TaskFunction<Input, ResultValue>,
+    shouldExecuteFn?: TaskShouldExecuteFunction<Input>,
+    getDefaultResultFn?: TaskGetDefaultResultFunction<Input, ResultValue>): BuildTask<Input,ResultValue> => {
     return {
         stageName,
         taskName,
         shouldExecute: (input: Input) => {
             return shouldExecuteFn ? shouldExecuteFn(input) : defaultShouldExecute(input);
+        },
+        getDefaultResult: (input: Input) => {
+            return getDefaultResultFn ? getDefaultResultFn(input) : defaultGetDefaultResult(input);
         },
         operation: (input: Input): TE.TaskEither<Error, ResultValue> => {
             const taskContext: TaskContext<Input> = {

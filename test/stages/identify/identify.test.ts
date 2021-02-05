@@ -21,6 +21,8 @@ const getBaseProjectInfoMock: Mock = getBaseProjectInfo as Mock;
 const getKubeProjectInfoMock: Mock = getKubeProjectInfo as Mock;
 const getNexusProjectInfoMock: Mock = getNexusProjectInfo as Mock;
 
+// TODO update this to test the logging as well
+
 describe('identify stage', () => {
     beforeEach(() => {
         jest.resetAllMocks();

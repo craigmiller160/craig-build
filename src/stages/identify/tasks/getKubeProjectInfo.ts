@@ -9,8 +9,13 @@ import fs from 'fs';
 import KubeDeployment from '../../../types/KubeDeployment';
 import handleUnknownError from '../../../utils/handleUnknownError';
 import { STAGE_NAME } from '../index';
-import createTask, { TaskFunction } from '../../../common/execution/task';
+import createTask, {
+    TaskFunction,
+    TaskGetDefaultResultFunction,
+    TaskShouldExecuteFunction
+} from '../../../common/execution/task';
 import { TaskContext } from '../../../common/execution/context';
+import { isApplication } from '../../../utils/projectTypeUtils';
 
 const TASK_NAME = 'Get Kubernetes Project Info';
 
@@ -39,4 +44,8 @@ const getKubeProjectInfo: TaskFunction<ProjectInfo, ProjectInfo> = (context: Tas
         TE.fromEither
     );
 
-export default createTask(STAGE_NAME, TASK_NAME, getKubeProjectInfo);
+const getDefaultResult: TaskGetDefaultResultFunction<ProjectInfo,ProjectInfo> = (input: ProjectInfo) => input;
+const shouldExecute: TaskShouldExecuteFunction<ProjectInfo> = (input: ProjectInfo) =>
+    isApplication(input.projectType) ? undefined : 'Project is not application';
+
+export default createTask(STAGE_NAME, TASK_NAME, getKubeProjectInfo, shouldExecute, getDefaultResult);
