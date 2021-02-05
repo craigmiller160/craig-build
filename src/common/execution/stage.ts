@@ -14,7 +14,7 @@ import { Result } from './result';
 
 export type StageFunction = <Input,ResultValue>(context: StageContext<Input>) => E.Either<Error, Result<ResultValue>>;
 
-const createStage = (stageName: string, stageFn: StageFunction) => <Input, ResultValue>(input: Input): E.Either<Error, ResultValue> => { // TODO improve types
+const createStage = (stageName: string, stageFn: StageFunction) => <Input, ResultValue>(input: Input): E.Either<Error, ResultValue> => {
     const stageContext: StageContext<Input> = {
         stageName,
         createBuildError: createBuildError(stageName),
