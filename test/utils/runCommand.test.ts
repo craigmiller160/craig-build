@@ -1,15 +1,48 @@
-import fs from 'fs';
+import runCommand from '../../src/utils/runCommand';
+import '@relmify/jest-fp-ts';
+import { sync } from 'cross-spawn';
+
+jest.mock('cross-spawn', () => ({
+    sync: jest.fn()
+}));
+
+const syncMock = sync as jest.Mock;
+
+const command = 'cross-env NODE_ENV=dev node script.js';
+const successResult = {
+    status: 0,
+    stdout: 'Success'
+};
+
+const failedResult = {
+    status: 1,
+    stderr: 'Failed'
+};
+
+const noStatusResult = {
+    status: null
+};
 
 describe('runCommand', () => {
+    beforeEach(() => {
+        jest.resetAllMocks();
+    });
+
     it('test successful command', () => {
-        throw new Error();
+        syncMock.mockImplementation(() => successResult);
+        const result = runCommand(command);
+        expect(result).toEqualRight('Success');
     });
 
     it('test failed command', () => {
-        throw new Error();
+        syncMock.mockImplementation(() => failedResult);
+        const result = runCommand(command);
+        expect(result).toEqualLeft(new Error('Failed'));
     });
 
     it('test no status command', () => {
-        throw new Error();
+        syncMock.mockImplementation(() => noStatusResult);
+        const result = runCommand(command);
+        expect(result).toEqualLeft(new Error('No status code returned from command'));
     });
 });
