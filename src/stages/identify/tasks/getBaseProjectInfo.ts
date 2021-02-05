@@ -1,5 +1,3 @@
-// TODO add retrieval of dependency versions here
-
 import path from 'path';
 import ProjectInfo, { Dependency } from '../../../types/ProjectInfo';
 import PackageJson, { Dependencies as NpmDependencies } from '../../../types/PackageJson';
@@ -16,18 +14,14 @@ import { InputTask } from '../../../types/Build';
 import BuildError from '../../../error/BuildError';
 import { SUCCESS_STATUS, taskLogger } from '../../../common/logger';
 import { STAGE_NAME } from '../index';
+import createTask, { TaskFunction } from '../../../common/execution/task';
+import { TaskContext } from '../../../common/execution/context';
 
 const TASK_NAME = 'Get Base Project Info';
 
 type KeyValueMap = {
     [key: string]: string;
 }
-
-const createError = (message: string) =>
-    new BuildError(message, {
-        taskName: TASK_NAME,
-        stageName: STAGE_NAME
-    });
 
 const mapNpmDependencies = (dependencies: NpmDependencies) =>
     Object.entries(dependencies)
@@ -111,28 +105,26 @@ const getProjectMaven = (projectType: ProjectType): E.Either<Error, ProjectInfo>
         })
     );
 
-const findProjectInfo = (projectType: ProjectType): E.Either<Error, ProjectInfo> => {
-    switch (projectType) {
+const findProjectInfo = (context: TaskContext<ProjectType>): E.Either<Error, ProjectInfo> => {
+    switch (context.input) {
         case ProjectType.NpmApplication:
         case ProjectType.NpmLibrary:
-            return E.right(getProjectNpm(projectType));
+            return E.right(getProjectNpm(context.input));
         case ProjectType.MavenLibrary:
         case ProjectType.MavenApplication:
-            return getProjectMaven(projectType);
+            return getProjectMaven(context.input);
         default:
-            return E.left(createError('Cannot find or load project info'));
+            return E.left(context.createBuildError('Cannot find or load project info'));
     }
 };
 
-const getBaseProjectInfo: InputTask<ProjectType, ProjectInfo> = (projectType: ProjectType) => {
-    taskLogger(STAGE_NAME, TASK_NAME, 'Starting...');
-    return pipe(
-        findProjectInfo(projectType),
-        E.map((projectInfo) => {
-            taskLogger(STAGE_NAME, TASK_NAME, 'Finished loading base ProjectInfo successfully', SUCCESS_STATUS);
-            return projectInfo;
-        })
+const getBaseProjectInfo: TaskFunction<ProjectType,ProjectInfo> = (context: TaskContext<ProjectType>) =>
+    pipe(
+        findProjectInfo(context),
+        E.map((projectInfo) => ({
+            message: 'Base ProjectInfo successfully loaded',
+            value: projectInfo
+        }))
     );
-};
 
-export default getBaseProjectInfo;
+export default createTask(STAGE_NAME, TASK_NAME, getBaseProjectInfo);

@@ -7,7 +7,7 @@
 
 import { StageContext } from './context';
 import { createBuildError } from '../../error/BuildError';
-import { stageLogger } from '../logger';
+import { stageLogger, SUCCESS_STATUS } from '../logger';
 import * as E from 'fp-ts/Either';
 import { pipe } from 'fp-ts/pipeable';
 import { Result } from './result';
@@ -26,7 +26,7 @@ const createStage = (stageName: string, stageFn: StageFunction) => <Input, Resul
     return pipe(
         stageFn<Input,ResultValue>(stageContext),
         E.map((result) => {
-            stageLogger(stageName, `Finished. ${result.message}`);
+            stageLogger(stageName, `Finished. ${result.message}`, SUCCESS_STATUS);
             return result.value;
         })
     );

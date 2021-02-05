@@ -13,8 +13,6 @@ import getNexusProjectInfo from './tasks/getNexusProjectInfo';
 
 export const STAGE_NAME = 'Identify';
 
-// TODO all tasks should make sure errors are wrapped in BuildError
-
 const identify: AsyncStage<ProjectInfo> = () => {
     stageLogger(STAGE_NAME, 'Starting...');
     return pipe(

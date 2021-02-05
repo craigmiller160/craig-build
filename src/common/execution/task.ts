@@ -5,9 +5,9 @@ import { createBuildError } from '../../error/BuildError';
 import { taskLogger } from '../logger';
 import { pipe } from 'fp-ts/pipeable';
 
-export type TaskFunction = <Input,ResultValue>(context: TaskContext<Input>) => E.Either<Error, Result<ResultValue>>;
+export type TaskFunction<Input,ResultValue> = (context: TaskContext<Input>) => E.Either<Error, Result<ResultValue>>;
 
-const createTask = (stageName: string, taskName: string, taskFn: TaskFunction) => <Input, ResultValue>(input: Input): E.Either<Error, ResultValue> => {
+const createTask = <Input, ResultValue>(stageName: string, taskName: string, taskFn: TaskFunction<Input, ResultValue>) => (input: Input): E.Either<Error, ResultValue> => {
     const taskContext: TaskContext<Input> = {
         stageName,
         taskName,
@@ -18,7 +18,7 @@ const createTask = (stageName: string, taskName: string, taskFn: TaskFunction) =
     taskLogger(stageName, taskName, 'Starting...');
 
     return pipe(
-        taskFn<Input,ResultValue>(taskContext),
+        taskFn(taskContext),
         E.map((result) => {
             taskLogger(stageName, taskName, `Finished. ${result.message}`);
             return result.value;
