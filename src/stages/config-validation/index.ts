@@ -10,6 +10,8 @@ import createStage, { StageFunction } from '../../common/execution/stage';
 
 export const STAGE_NAME = 'Config Validation';
 
+// TODO refactor the stage and all tasks to use the new API
+
 const configValidation: StageFunction<ProjectInfo, ProjectInfo> = (context: StageContext<ProjectInfo>) =>
     pipe(
         validateDependencyVersions(context.input),
