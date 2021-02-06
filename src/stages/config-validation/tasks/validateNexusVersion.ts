@@ -22,11 +22,15 @@ const validateNexusVersion: TaskFunction<ProjectInfo> = (context: TaskContext<Pr
         O.fold(
             () => O.of(version),
             (latestNexusVersions) => pipe(
-                // TODO if pre-release, then care about latest beta. on release, ignore betas.
                 O.fromNullable(latestNexusVersions.latestReleaseVersion),
                 O.filter((latestReleaseVersion) => compareVersions(trimVersion(version), trimVersion(latestReleaseVersion)) === 1),
                 O.chainNullableK(() => latestNexusVersions.latestPreReleaseVersion),
-                O.filter((latestPreReleaseVersion) => compareVersions(trimVersion(version), trimVersion(latestPreReleaseVersion)) >= 0)
+                O.filter((latestPreReleaseVersion) => {
+                    if (isPreRelease) {
+                        return compareVersions(trimVersion(version), trimVersion(latestPreReleaseVersion)) >= 0;
+                    }
+                    return true;
+                })
             )
         ),
         TE.fromOption(() =>
