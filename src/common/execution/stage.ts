@@ -12,12 +12,7 @@ import * as TE from 'fp-ts/TaskEither';
 import { pipe } from 'fp-ts/pipeable';
 import { Result } from './result';
 
-// TODO when input and output are the same, don't need to put it in twice
-export type StageFunction<Input,ResultValue> = (context: StageContext<Input>) => TE.TaskEither<Error, Result<ResultValue>>;
-
-// TODO when stages are added to execution, ensure they are the Stage type
-
-// TODO when skipping a stage, include a log entry for it
+export type StageFunction<Input,ResultValue = Input> = (context: StageContext<Input>) => TE.TaskEither<Error, Result<ResultValue>>;
 
 const createStage = <Input, ResultValue>(stageName: string, stageFn: StageFunction<Input, ResultValue>) => (input: Input): TE.TaskEither<Error, ResultValue> => {
     const stageContext: StageContext<Input> = {

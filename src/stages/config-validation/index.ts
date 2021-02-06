@@ -9,7 +9,7 @@ import createStage, { StageFunction } from '../../common/execution/stage';
 
 export const STAGE_NAME = 'Config Validation';
 
-const configValidation: StageFunction<ProjectInfo, ProjectInfo> = (context: StageContext<ProjectInfo>) =>
+const configValidation: StageFunction<ProjectInfo> = (context: StageContext<ProjectInfo>) =>
     pipe(
         validateDependencyVersions(context.input),
         TE.chain(validateKubeVersion),
