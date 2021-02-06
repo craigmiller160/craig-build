@@ -1,10 +1,3 @@
-/*
- * 1. Args for the function
- * 2. Starting log message
- * 3. Call implementation function, pass args
- * 4. Finish log message
- */
-
 import { StageContext } from './context';
 import { createBuildError } from '../../error/BuildError';
 import { createStageLogger, SUCCESS_STATUS } from '../logger';
