@@ -43,10 +43,15 @@ const getKubeProjectInfo: TaskFunction<ProjectInfo, ProjectInfo> = (context: Tas
         TE.fromEither
     );
 
-const shouldExecute: TaskShouldExecuteFunction<ProjectInfo,ProjectInfo> = (input: ProjectInfo) =>
-    isApplication(input.projectType) ? undefined : {
+const shouldExecute: TaskShouldExecuteFunction<ProjectInfo,ProjectInfo> = (input: ProjectInfo) => {
+    if (isApplication(input.projectType)) {
+        return undefined;
+    }
+
+    return {
         message: 'Project is not application',
         defaultResult: input
     };
+};
 
 export default createTask(STAGE_NAME, TASK_NAME, getKubeProjectInfo, shouldExecute);

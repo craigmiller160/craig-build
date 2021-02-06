@@ -4,8 +4,9 @@ import * as TE from 'fp-ts/TaskEither';
 import ProjectInfo from '../../../types/ProjectInfo';
 import { pipe } from 'fp-ts/pipeable';
 import { STAGE_NAME } from '../index';
-import createTask, { TaskFunction } from '../../../common/execution/task';
+import createTask, { TaskFunction, TaskShouldExecuteFunction } from '../../../common/execution/task';
 import { TaskContext } from '../../../common/execution/context';
+import { isApplication } from '../../../utils/projectTypeUtils';
 
 export const TASK_NAME = 'Validate Kubernetes Version';
 const KUBE_PRE_RELEASE_VERSION = 'latest';
@@ -36,4 +37,16 @@ const validateKubeVersion: TaskFunction<ProjectInfo, ProjectInfo> = (context: Ta
         TE.fromEither
     );
 
-export default createTask(STAGE_NAME, TASK_NAME, validateKubeVersion);
+// TODO test this and all other shouldExecute functions
+const shouldExecute: TaskShouldExecuteFunction<ProjectInfo,ProjectInfo> = (input: ProjectInfo) => {
+    if (isApplication(input.projectType)) {
+        return undefined;
+    }
+
+    return {
+        message: 'Project is not application',
+        defaultResult: input
+    };
+};
+
+export default createTask(STAGE_NAME, TASK_NAME, validateKubeVersion, shouldExecute);
