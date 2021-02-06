@@ -95,7 +95,6 @@ describe('validateNexusVersion task', () => {
             }
         };
         const result = await validateNexusVersion(projectInfo)();
-        console.log(result); // TODO delete this
         expect(result).toEqualRight(projectInfo);
     });
 
