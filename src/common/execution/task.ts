@@ -24,8 +24,6 @@ export interface BuildTask<Input,ResultValue> {
 
 const defaultShouldExecute: TaskShouldExecuteFunction<any,any> = (input: any) => undefined;
 
-// TODO the should execute function should return either undefined or an object with a message and default value
-
 const createTask = <Input, ResultValue>(
     stageName: string,
     taskName: string,

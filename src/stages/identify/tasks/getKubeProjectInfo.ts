@@ -11,7 +11,6 @@ import handleUnknownError from '../../../utils/handleUnknownError';
 import { STAGE_NAME } from '../index';
 import createTask, {
     TaskFunction,
-    TaskGetDefaultResultFunction,
     TaskShouldExecuteFunction
 } from '../../../common/execution/task';
 import { TaskContext } from '../../../common/execution/context';
@@ -44,8 +43,10 @@ const getKubeProjectInfo: TaskFunction<ProjectInfo, ProjectInfo> = (context: Tas
         TE.fromEither
     );
 
-const getDefaultResult: TaskGetDefaultResultFunction<ProjectInfo,ProjectInfo> = (input: ProjectInfo) => input;
-const shouldExecute: TaskShouldExecuteFunction<ProjectInfo> = (input: ProjectInfo) =>
-    isApplication(input.projectType) ? undefined : 'Project is not application';
+const shouldExecute: TaskShouldExecuteFunction<ProjectInfo,ProjectInfo> = (input: ProjectInfo) =>
+    isApplication(input.projectType) ? undefined : {
+        message: 'Project is not application',
+        defaultResult: input
+    };
 
-export default createTask(STAGE_NAME, TASK_NAME, getKubeProjectInfo, shouldExecute, getDefaultResult);
+export default createTask(STAGE_NAME, TASK_NAME, getKubeProjectInfo, shouldExecute);
