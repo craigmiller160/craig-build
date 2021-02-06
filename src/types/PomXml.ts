@@ -1,23 +1,23 @@
 interface Dependency {
-    groupId: string[];
-    artifactId: string[];
-    version: string[];
+  groupId: string[];
+  artifactId: string[];
+  version: string[];
 }
 
 interface Dependencies {
-    dependency: Dependency[];
+  dependency: Dependency[];
 }
 
 interface Properties {
-    [key: string]: string[];
+  [key: string]: string[];
 }
 
 export default interface PomXml {
-    project: {
-        groupId: string[];
-        artifactId: string[];
-        version: string[];
-        properties: Properties[];
-        dependencies: Dependencies[];
-    };
+  project: {
+    groupId: string[];
+    artifactId: string[];
+    version: string[];
+    properties: Properties[];
+    dependencies: Dependencies[];
+  };
 }

@@ -2,7 +2,7 @@ const path = require('path');
 
 const config = {
     extends: [
-        'airbnb'
+        'airbnb-typescript'
     ],
     plugins: [
         'unused-imports'
@@ -83,9 +83,7 @@ const config = {
                 prop: 'parens'
             }
         ],
-        'no-unused-vars': 0,
-        'unused-imports/no-unused-imports': 'error',
-        'unused-imports/no-unused-vars': 'error'
+        'no-unused-vars': 'error'
     },
     globals: {
         window: true,
@@ -109,6 +107,7 @@ const config = {
                     jsx: true,
                 },
                 warnOnUnsupportedTypeScriptVersion: true,
+                project: path.resolve(process.cwd(), 'tsconfig.json')
             },
             settings: {
                 'import/resolver': {
@@ -140,12 +139,10 @@ const config = {
                         allowTaggedTemplates: true,
                     },
                 ],
-                'no-unused-vars': 'off',
-                '@typescript-eslint/no-unused-vars': 0,
-                'unused-imports/no-unused-imports-ts': 'error',
-                'unused-imports/no-unused-vars-ts': 'error',
                 'no-useless-constructor': 'off',
                 '@typescript-eslint/no-useless-constructor': 'error',
+                'comma-dangle': 0,
+                '@typescript-eslint/comma-dangle': ['error', 'never'],
                 'import/extensions': [
                     'error',
                     {
@@ -155,7 +152,7 @@ const config = {
                 ],
                 'no-empty-function': 0,
                 '@typescript-eslint/no-empty-function': 'error',
-                'semi': 'error',
+                'semi': 0,
                 '@typescript-eslint/semi': ['error', 'always'],
                 '@typescript-eslint/member-delimiter-style': [
                     'error',
@@ -169,7 +166,9 @@ const config = {
                             requireLast: true
                         }
                     }
-                ]
+                ],
+                'no-unused-vars': 0,
+                '@typescript-eslint/no-unused-vars': 'error'
             }
         }
     ]

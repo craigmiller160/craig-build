@@ -1,23 +1,23 @@
 interface KubeContainer {
-    name: string;
-    image: string;
+  name: string;
+  image: string;
 }
 
 interface KubeTemplateSpec {
-    containers: KubeContainer[];
+  containers: KubeContainer[];
 }
 
 interface KubeTemplate {
-    spec: KubeTemplateSpec;
+  spec: KubeTemplateSpec;
 }
 
 interface KubeRootSpec {
-    replicas: number;
-    template: KubeTemplate;
+  replicas: number;
+  template: KubeTemplate;
 }
 
 export default interface KubeDeployment {
-    apiVersion: string;
-    kind: string;
-    spec: KubeRootSpec;
+  apiVersion: string;
+  kind: string;
+  spec: KubeRootSpec;
 }
