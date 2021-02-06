@@ -29,10 +29,7 @@ describe('validateDependencyVersions task', () => {
         };
         const result = await validateDependencyVersions(projectInfo)();
         const expectedMessage = 'SNAPSHOT dependencies not allowed in release build: io.craigmiller160/dep-1:1.0.0-SNAPSHOT ';
-        expect(result).toEqualLeft(new BuildError(expectedMessage, {
-            taskName: TASK_NAME,
-            stageName: STAGE_NAME
-        }));
+        expect(result).toEqualLeft(new BuildError(expectedMessage, TASK_NAME, STAGE_NAME));
     });
 
     it('validates maven for release successfully', async () => {
@@ -108,10 +105,7 @@ describe('validateDependencyVersions task', () => {
         };
         const result = await validateDependencyVersions(projectInfo)();
         const expectedMessage = 'beta dependencies not allowed in release build: @craigmiller160/dep-1:1.0.0-beta ';
-        expect(result).toEqualLeft(new BuildError(expectedMessage, {
-            taskName: TASK_NAME,
-            stageName: STAGE_NAME
-        }));
+        expect(result).toEqualLeft(new BuildError(expectedMessage, TASK_NAME, STAGE_NAME));
     });
 
     it('validates npm for release successfully', async () => {

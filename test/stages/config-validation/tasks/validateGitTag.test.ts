@@ -22,10 +22,8 @@ describe('validateGitTag task', () => {
         const result = await validateGitTag(projectInfo)();
         expect(result).toEqualLeft(new BuildError(
             'Project version git tag already exists',
-            {
-                stageName: STAGE_NAME,
-                taskName: TASK_NAME
-            }
+            STAGE_NAME,
+            TASK_NAME
         ));
     });
 
