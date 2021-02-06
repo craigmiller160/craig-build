@@ -37,7 +37,6 @@ const validateKubeVersion: TaskFunction<ProjectInfo, ProjectInfo> = (context: Ta
         TE.fromEither
     );
 
-// TODO test this and all other shouldExecute functions
 const shouldExecute: TaskShouldExecuteFunction<ProjectInfo,ProjectInfo> = (input: ProjectInfo) => {
     if (isApplication(input.projectType)) {
         return undefined;
