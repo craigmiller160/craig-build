@@ -7,8 +7,8 @@ const conditionallyExecuteTask = <Input,ResultValue>(context: StageContext<unkno
     console.log(task.shouldExecute); // TODO delete this
     const shouldExecuteResult = task.shouldExecute(input);
     if (shouldExecuteResult) {
-        context.logger(`Skipping task ${task.taskName}: ${shouldExecuteResult}`);
-        return TE.right(task.getDefaultResult(input));
+        context.logger(`Skipping task ${task.taskName}: ${shouldExecuteResult.message}`);
+        return TE.right(shouldExecuteResult.defaultResult);
     } else {
         return task.operation(input);
     }
