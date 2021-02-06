@@ -11,15 +11,39 @@ import getKubeProjectInfo from '../../../src/stages/identify/tasks/getKubeProjec
 import BuildError from '../../../src/error/BuildError';
 import getNexusProjectInfo from '../../../src/stages/identify/tasks/getNexusProjectInfo';
 
-jest.mock('../../../src/stages/identify/tasks/identifyProject', () => jest.fn());
-jest.mock('../../../src/stages/identify/tasks/getBaseProjectInfo', () => jest.fn());
-jest.mock('../../../src/stages/identify/tasks/getKubeProjectInfo', () => jest.fn());
-jest.mock('../../../src/stages/identify/tasks/getNexusProjectInfo', () => jest.fn());
+jest.mock('../../../src/stages/identify/tasks/identifyProject', () => {
+    const real = jest.requireActual('../../../src/stages/identify/tasks/identifyProject');
+    return {
+        ...real,
+        operation: jest.fn()
+    };
+});
+jest.mock('../../../src/stages/identify/tasks/getBaseProjectInfo', () => {
+    const real = jest.requireActual('../../../src/stages/identify/tasks/getBaseProjectInfo');
+    return {
+        ...real,
+        operation: jest.fn()
+    };
+});
+jest.mock('../../../src/stages/identify/tasks/getKubeProjectInfo', () => {
+    const real = jest.requireActual('../../../src/stages/identify/tasks/getKubeProjectInfo');
+    return {
+        ...real,
+        operation: jest.fn()
+    };
+});
+jest.mock('../../../src/stages/identify/tasks/getNexusProjectInfo', () => {
+    const real = jest.requireActual('../../../src/stages/identify/tasks/getNexusProjectInfo');
+    return {
+        ...real,
+        operation: jest.fn()
+    };
+});
 
-const identifyProjectMock: Mock = identifyProject as Mock;
-const getBaseProjectInfoMock: Mock = getBaseProjectInfo as Mock;
-const getKubeProjectInfoMock: Mock = getKubeProjectInfo as Mock;
-const getNexusProjectInfoMock: Mock = getNexusProjectInfo as Mock;
+const identifyProjectMock: Mock = identifyProject.operation as Mock;
+const getBaseProjectInfoMock: Mock = getBaseProjectInfo.operation as Mock;
+const getKubeProjectInfoMock: Mock = getKubeProjectInfo.operation as Mock;
+const getNexusProjectInfoMock: Mock = getNexusProjectInfo.operation as Mock;
 
 // TODO update this to test the logging as well
 
@@ -48,7 +72,7 @@ describe('identify stage', () => {
         getBaseProjectInfoMock.mockImplementation(() => E.right(projectInfo));
         getNexusProjectInfoMock.mockImplementation(() => TE.right(nexusProjectInfo));
 
-        const result = await identify()();
+        const result = await identify(undefined)();
         expect(result).toEqualRight(nexusProjectInfo);
 
         expect(identifyProjectMock).toHaveBeenCalled();
@@ -82,7 +106,7 @@ describe('identify stage', () => {
         getKubeProjectInfoMock.mockImplementation(() => E.right(kubeProjectInfo));
         getNexusProjectInfoMock.mockImplementation(() => TE.right(nexusProjectInfo));
 
-        const result = await identify()();
+        const result = await identify(undefined)();
         expect(result).toEqualRight(nexusProjectInfo);
 
         expect(identifyProjectMock).toHaveBeenCalled();
@@ -101,10 +125,10 @@ describe('identify stage', () => {
             isPreRelease: false
         };
         identifyProjectMock.mockImplementation(() => E.right(projectType));
-        getBaseProjectInfoMock.mockImplementation(() => E.left(new BuildError('Failing')));
+        getBaseProjectInfoMock.mockImplementation(() => E.left(new BuildError('Failing', STAGE_NAME)));
 
-        const result = await identify()();
-        expect(result).toEqualLeft(new BuildError('Failing', { stageName: STAGE_NAME }));
+        const result = await identify(undefined)();
+        expect(result).toEqualLeft(new BuildError('Failing', STAGE_NAME));
 
         expect(identifyProjectMock).toHaveBeenCalled();
         expect(getBaseProjectInfoMock).toHaveBeenCalledWith(projectType);
