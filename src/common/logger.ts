@@ -27,7 +27,7 @@ export const createStageLogger = (stageName: string) => (message: string, status
     doLog(fullMessage, status);
 };
 
-export const buildLogger = (message: string, status?: LogStatus) => { // TODO probably refactor this one too like the others
+export const buildLogger = (message: string, status?: LogStatus) => {
     const fullMessage = `[${LOG_PREFIX}] [Build] ${message}`;
     doLog(fullMessage, status);
 };

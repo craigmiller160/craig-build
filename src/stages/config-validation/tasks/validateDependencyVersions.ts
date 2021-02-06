@@ -6,7 +6,7 @@ import * as TE from 'fp-ts/TaskEither';
 import ProjectType from '../../../types/ProjectType';
 import { STAGE_NAME } from '../index';
 import { pipe } from 'fp-ts/pipeable';
-import createTask, { TaskFunction } from '../../../common/execution/task';
+import createTask, { TaskFunction, TaskShouldExecuteFunction } from '../../../common/execution/task';
 import { TaskContext } from '../../../common/execution/context';
 
 export const TASK_NAME = 'Validate Dependency Versions';
@@ -19,10 +19,6 @@ const NPM_PRE_RELEASE_FLAG = 'beta';
 
 const validateDependencies = (prefix: string, preReleaseFlag: string, context: TaskContext<ProjectInfo>): E.Either<Error, ProjectInfo> => {
     const projectInfo = context.input;
-    if (projectInfo.version.includes(preReleaseFlag)) { // TODO move this into stage level
-        return E.right(projectInfo);
-    }
-
     return pipe(
         projectInfo.dependencies,
         A.filter((dependency) => dependency.name.startsWith(prefix)),
@@ -64,5 +60,16 @@ const validateDependencyVersions: TaskFunction<ProjectInfo> = (context: TaskCont
         })),
         TE.fromEither
     );
+
+const shouldExecute: TaskShouldExecuteFunction<ProjectInfo> = (input: ProjectInfo) => {
+    if (!input.isPreRelease) {
+        return undefined;
+    }
+
+    return {
+        message: 'Project is not release version',
+        defaultResult: input
+    };
+};
 
 export default createTask(STAGE_NAME, TASK_NAME, validateDependencyVersions);

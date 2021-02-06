@@ -57,31 +57,6 @@ describe('validateDependencyVersions task', () => {
         expect(result).toEqualRight(projectInfo);
     });
 
-    it('validates maven for snapshot, with snapshot dependency', async () => {
-        const projectInfo: ProjectInfo = {
-            projectType: ProjectType.MavenLibrary,
-            isPreRelease: true,
-            name: 'my-project',
-            version: '1.0.0-SNAPSHOT',
-            dependencies: [
-                {
-                    name: 'foo-bar',
-                    version: '1.0.0-SNAPSHOT'
-                },
-                {
-                    name: 'io.craigmiller160/dep-1',
-                    version: '1.0.0-SNAPSHOT'
-                },
-                {
-                    name: 'io.craigmiller160/dep-2',
-                    version: '1.0.0'
-                }
-            ]
-        };
-        const result = await validateDependencyVersions(projectInfo)();
-        expect(result).toEqualRight(projectInfo);
-    });
-
     it('validates npm for release, with beta dependency', async () => {
         const projectInfo: ProjectInfo = {
             projectType: ProjectType.NpmLibrary,
@@ -134,29 +109,13 @@ describe('validateDependencyVersions task', () => {
         expect(result).toEqualRight(projectInfo);
     });
 
-    it('validates npm for beta, with beta dependency', async () => {
-        const projectInfo: ProjectInfo = {
-            projectType: ProjectType.NpmLibrary,
-            isPreRelease: false,
-            name: 'my-project',
-            version: '1.0.0-beta',
-            dependencies: [
-                {
-                    name: 'foo-bar',
-                    version: '1.0.0-beta'
-                },
-                {
-                    name: '@craigmiller160/dep-1',
-                    version: '1.0.0-beta'
-                },
-                {
-                    name: '@craigmiller160/dep-2',
-                    version: '1.0.0'
-                }
-            ]
-        };
-        const result = await validateDependencyVersions(projectInfo)();
-        const expectedMessage = 'beta dependencies not allowed in release build: io.craigmiller160/dep-1:1.0.0-SNAPSHOT ';
-        expect(result).toEqualRight(projectInfo);
+    describe('shouldExecute', () => {
+        it('is application', () => {
+            throw new Error();
+        });
+
+        it('is not application', () => {
+            throw new Error();
+        });
     });
 });
