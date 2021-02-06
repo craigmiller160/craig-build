@@ -15,6 +15,7 @@ import createTask, {
 } from '../../../common/execution/task';
 import { TaskContext } from '../../../common/execution/context';
 import { isApplication } from '../../../utils/projectTypeUtils';
+import { executeIfApplication } from '../../../common/execution/commonTaskConditions';
 
 const TASK_NAME = 'Get Kubernetes Project Info';
 
@@ -43,15 +44,4 @@ const getKubeProjectInfo: TaskFunction<ProjectInfo> = (context: TaskContext<Proj
         TE.fromEither
     );
 
-const shouldExecute: TaskShouldExecuteFunction<ProjectInfo> = (input: ProjectInfo) => {
-    if (isApplication(input.projectType)) {
-        return undefined;
-    }
-
-    return {
-        message: 'Project is not application',
-        defaultResult: input
-    };
-};
-
-export default createTask(STAGE_NAME, TASK_NAME, getKubeProjectInfo, shouldExecute);
+export default createTask(STAGE_NAME, TASK_NAME, getKubeProjectInfo, executeIfApplication);

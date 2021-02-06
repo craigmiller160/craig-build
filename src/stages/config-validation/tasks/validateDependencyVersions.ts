@@ -8,6 +8,7 @@ import { STAGE_NAME } from '../index';
 import { pipe } from 'fp-ts/pipeable';
 import createTask, { TaskFunction, TaskShouldExecuteFunction } from '../../../common/execution/task';
 import { TaskContext } from '../../../common/execution/context';
+import { executeIfNotPreRelease } from '../../../common/execution/commonTaskConditions';
 
 export const TASK_NAME = 'Validate Dependency Versions';
 
@@ -61,15 +62,4 @@ const validateDependencyVersions: TaskFunction<ProjectInfo> = (context: TaskCont
         TE.fromEither
     );
 
-const shouldExecute: TaskShouldExecuteFunction<ProjectInfo> = (input: ProjectInfo) => {
-    if (!input.isPreRelease) {
-        return undefined;
-    }
-
-    return {
-        message: 'Project is not release version',
-        defaultResult: input
-    };
-};
-
-export default createTask(STAGE_NAME, TASK_NAME, validateDependencyVersions);
+export default createTask(STAGE_NAME, TASK_NAME, validateDependencyVersions, executeIfNotPreRelease);

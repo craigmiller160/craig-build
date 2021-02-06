@@ -7,6 +7,7 @@ import { STAGE_NAME } from '../index';
 import createTask, { TaskFunction, TaskShouldExecuteFunction } from '../../../common/execution/task';
 import { TaskContext } from '../../../common/execution/context';
 import { isApplication } from '../../../utils/projectTypeUtils';
+import { executeIfApplication } from '../../../common/execution/commonTaskConditions';
 
 export const TASK_NAME = 'Validate Kubernetes Version';
 const KUBE_PRE_RELEASE_VERSION = 'latest';
@@ -37,15 +38,4 @@ const validateKubeVersion: TaskFunction<ProjectInfo> = (context: TaskContext<Pro
         TE.fromEither
     );
 
-const shouldExecute: TaskShouldExecuteFunction<ProjectInfo> = (input: ProjectInfo) => {
-    if (isApplication(input.projectType)) {
-        return undefined;
-    }
-
-    return {
-        message: 'Project is not application',
-        defaultResult: input
-    };
-};
-
-export default createTask(STAGE_NAME, TASK_NAME, validateKubeVersion, shouldExecute);
+export default createTask(STAGE_NAME, TASK_NAME, validateKubeVersion, executeIfApplication);
