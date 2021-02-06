@@ -15,10 +15,11 @@ const trimVersion = (version: string) =>
 const validateNexusVersion: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectInfo>) => {
     const {
         version,
-        isPreRelease
+        isPreRelease,
+        latestNexusVersions
     } = context.input;
     return pipe(
-        O.fromNullable(context.input.latestNexusVersions),
+        O.fromNullable(latestNexusVersions),
         O.fold(
             () => O.of(version),
             (latestNexusVersions) => pipe(
