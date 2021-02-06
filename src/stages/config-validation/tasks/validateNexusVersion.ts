@@ -10,17 +10,20 @@ import { STAGE_NAME } from '../index';
 export const TASK_NAME = 'Validate Nexus Versions';
 
 const validateNexusVersion: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectInfo>) => {
-    const currentVersion = context.input.version;
+    const {
+        version,
+        isPreRelease
+    } = context.input;
     return pipe(
         O.fromNullable(context.input.latestNexusVersions),
         O.fold(
-            () => O.of(currentVersion),
+            () => O.of(version),
             (latestNexusVersions) => pipe(
                 // TODO if pre-release, then care about latest beta. on release, ignore betas.
                 O.fromNullable(latestNexusVersions.latestReleaseVersion),
-                O.filter((latestReleaseVersion) => compareVersions(currentVersion, latestReleaseVersion) === 1),
+                O.filter((latestReleaseVersion) => compareVersions(version, latestReleaseVersion) === 1),
                 O.chainNullableK(() => latestNexusVersions.latestPreReleaseVersion),
-                O.filter((latestPreReleaseVersion) => compareVersions(currentVersion, latestPreReleaseVersion) >= 0)
+                O.filter((latestPreReleaseVersion) => compareVersions(version, latestPreReleaseVersion) >= 0)
             )
         ),
         TE.fromOption(() =>
