@@ -33,7 +33,7 @@ const findKubeProjectInfo = (projectInfo: ProjectInfo): E.Either<Error, ProjectI
         handleUnknownError
     );
 
-const getKubeProjectInfo: TaskFunction<ProjectInfo, ProjectInfo> = (context: TaskContext<ProjectInfo>) =>
+const getKubeProjectInfo: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectInfo>) =>
     pipe(
         findKubeProjectInfo(context.input),
         E.map((result) => ({
@@ -43,7 +43,7 @@ const getKubeProjectInfo: TaskFunction<ProjectInfo, ProjectInfo> = (context: Tas
         TE.fromEither
     );
 
-const shouldExecute: TaskShouldExecuteFunction<ProjectInfo,ProjectInfo> = (input: ProjectInfo) => {
+const shouldExecute: TaskShouldExecuteFunction<ProjectInfo> = (input: ProjectInfo) => {
     if (isApplication(input.projectType)) {
         return undefined;
     }

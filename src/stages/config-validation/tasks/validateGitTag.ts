@@ -10,7 +10,7 @@ import { TaskContext } from '../../../common/execution/context';
 
 export const TASK_NAME = 'Validate Git Tags';
 
-const validateGitTag: TaskFunction<ProjectInfo,ProjectInfo> = (context: TaskContext<ProjectInfo>) =>
+const validateGitTag: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectInfo>) =>
     pipe(
         runCommand('git tag'),
         E.chain((output: string) =>
@@ -32,7 +32,7 @@ const validateGitTag: TaskFunction<ProjectInfo,ProjectInfo> = (context: TaskCont
         TE.fromEither
     );
 
-const shouldExecute: TaskShouldExecuteFunction<ProjectInfo, ProjectInfo> = (projectInfo: ProjectInfo) => {
+const shouldExecute: TaskShouldExecuteFunction<ProjectInfo> = (projectInfo: ProjectInfo) => {
     if (!projectInfo.isPreRelease) {
         return undefined;
     }

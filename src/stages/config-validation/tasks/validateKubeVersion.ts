@@ -11,7 +11,7 @@ import { isApplication } from '../../../utils/projectTypeUtils';
 export const TASK_NAME = 'Validate Kubernetes Version';
 const KUBE_PRE_RELEASE_VERSION = 'latest';
 
-const validateKubeVersion: TaskFunction<ProjectInfo, ProjectInfo> = (context: TaskContext<ProjectInfo>) =>
+const validateKubeVersion: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectInfo>) =>
     pipe(
         O.fromNullable(context.input.kubernetesDockerImage),
         O.map((image: string) => {
@@ -37,7 +37,7 @@ const validateKubeVersion: TaskFunction<ProjectInfo, ProjectInfo> = (context: Ta
         TE.fromEither
     );
 
-const shouldExecute: TaskShouldExecuteFunction<ProjectInfo,ProjectInfo> = (input: ProjectInfo) => {
+const shouldExecute: TaskShouldExecuteFunction<ProjectInfo> = (input: ProjectInfo) => {
     if (isApplication(input.projectType)) {
         return undefined;
     }

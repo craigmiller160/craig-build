@@ -71,7 +71,7 @@ const findNexusVersionInfo = (context: TaskContext<ProjectInfo>): TE.TaskEither<
     }
 };
 
-const getNexusProjectInfo: TaskFunction<ProjectInfo, ProjectInfo> = (context: TaskContext<ProjectInfo>) =>
+const getNexusProjectInfo: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectInfo>) =>
     pipe(
         findNexusVersionInfo(context),
         TE.map((projectInfo) => ({

@@ -55,7 +55,7 @@ const doVersionValidation = (context: TaskContext<ProjectInfo>): E.Either<Error,
     }
 };
 
-const validateDependencyVersions: TaskFunction<ProjectInfo, ProjectInfo> = (context: TaskContext<ProjectInfo>) =>
+const validateDependencyVersions: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectInfo>) =>
     pipe(
         doVersionValidation(context),
         E.map((projectInfo) => ({

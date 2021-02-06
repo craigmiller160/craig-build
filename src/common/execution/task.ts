@@ -6,20 +6,18 @@ import { createBuildError } from '../../error/BuildError';
 import { createTaskLogger, SUCCESS_STATUS } from '../logger';
 import { pipe } from 'fp-ts/pipeable';
 
-// TODO when input and output are the same, don't need to put it in twice. Apply this to all types here and all their uses in the app
-
 export interface TaskSkipExecutionResult<ResultValue> {
     message: string;
     defaultResult: ResultValue;
 }
 
-export type TaskFunction<Input,ResultValue> = (context: TaskContext<Input>) => TE.TaskEither<Error, Result<ResultValue>>;
-export type TaskShouldExecuteFunction<Input,ResultValue> = (input: Input) =>  TaskSkipExecutionResult<ResultValue> | undefined;
-export type BuildTask<Input,ResultValue> = (input: Input) => TE.TaskEither<Error, ResultValue>;
+export type TaskFunction<Input,ResultValue = Input> = (context: TaskContext<Input>) => TE.TaskEither<Error, Result<ResultValue>>;
+export type TaskShouldExecuteFunction<Input,ResultValue = Input> = (input: Input) =>  TaskSkipExecutionResult<ResultValue> | undefined;
+export type BuildTask<Input,ResultValue = Input> = (input: Input) => TE.TaskEither<Error, ResultValue>;
 
-const defaultShouldExecute: TaskShouldExecuteFunction<any,any> = (input: any) => undefined;
+const defaultShouldExecute: TaskShouldExecuteFunction<any> = (input: any) => undefined;
 
-const createTask = <Input, ResultValue>(
+const createTask = <Input, ResultValue = Input>(
     stageName: string,
     taskName: string,
     taskFn: TaskFunction<Input, ResultValue>,
