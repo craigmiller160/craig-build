@@ -45,6 +45,7 @@
   },
   "dependencies": {
     "axios": "^0.21.1",
+    "compare-versions": "^3.6.0",
     "cross-spawn": "^7.0.3",
     "fp-ts": "^2.9.3",
     "qs": "^6.9.6",

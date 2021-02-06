@@ -6,6 +6,7 @@ import validateKubeVersion from './tasks/validateKubeVersion';
 import validateGitTag from './tasks/validateGitTag';
 import { StageContext } from '../../common/execution/context';
 import createStage, { StageFunction } from '../../common/execution/stage';
+import validateNexusVersion from './tasks/validateNexusVersion';
 
 export const STAGE_NAME = 'Config Validation';
 
@@ -14,6 +15,7 @@ const configValidation: StageFunction<ProjectInfo> = (context: StageContext<Proj
         validateDependencyVersions(context.input),
         TE.chain(validateKubeVersion),
         TE.chain(validateGitTag),
+        TE.chain(validateNexusVersion),
         TE.map((projectInfo) => ({
             message: 'Configuration validation successful',
             value: projectInfo
