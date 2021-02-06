@@ -2,7 +2,6 @@ import * as TE from 'fp-ts/TaskEither';
 import ProjectInfo from '../../types/ProjectInfo';
 import { pipe } from 'fp-ts/pipeable';
 import validateDependencyVersions from './tasks/validateDependencyVersions';
-import { isApplication } from '../../utils/projectTypeUtils';
 import validateKubeVersion from './tasks/validateKubeVersion';
 import validateGitTag from './tasks/validateGitTag';
 import { StageContext } from '../../common/execution/context';
@@ -14,12 +13,7 @@ const configValidation: StageFunction<ProjectInfo, ProjectInfo> = (context: Stag
     pipe(
         validateDependencyVersions(context.input),
         TE.chain(validateKubeVersion),
-        TE.chain((projectInfo) => {
-            if (!projectInfo.isPreRelease) {
-                return validateGitTag(projectInfo);
-            }
-            return TE.right(projectInfo);
-        }),
+        TE.chain(validateGitTag),
         TE.map((projectInfo) => ({
             message: 'Configuration validation successful',
             value: projectInfo

@@ -32,4 +32,14 @@ describe('validateGitTag task', () => {
         const result = await validateGitTag(projectInfo)();
         expect(result).toEqualRight(projectInfo);
     });
+
+    describe('shouldExecute', () => {
+        it('is application', () => {
+            throw new Error();
+        });
+
+        it('is not application', () => {
+            throw new Error();
+        });
+    });
 });

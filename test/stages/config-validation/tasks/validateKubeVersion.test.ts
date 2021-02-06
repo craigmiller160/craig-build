@@ -74,5 +74,5 @@ describe('validateKubeVersion task', () => {
         it('is not application', () => {
             throw new Error();
         });
-    })
+    });
 });

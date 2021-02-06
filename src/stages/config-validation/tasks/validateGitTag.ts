@@ -5,7 +5,7 @@ import ProjectInfo from '../../../types/ProjectInfo';
 import { STAGE_NAME } from '../index';
 import runCommand from '../../../utils/runCommand';
 import { pipe } from 'fp-ts/pipeable';
-import createTask, { TaskFunction } from '../../../common/execution/task';
+import createTask, { TaskFunction, TaskShouldExecuteFunction } from '../../../common/execution/task';
 import { TaskContext } from '../../../common/execution/context';
 
 export const TASK_NAME = 'Validate Git Tags';
@@ -32,4 +32,15 @@ const validateGitTag: TaskFunction<ProjectInfo,ProjectInfo> = (context: TaskCont
         TE.fromEither
     );
 
-export default createTask(STAGE_NAME, TASK_NAME, validateGitTag);
+const shouldExecute: TaskShouldExecuteFunction<ProjectInfo, ProjectInfo> = (projectInfo: ProjectInfo) => {
+    if (!projectInfo.isPreRelease) {
+        return undefined;
+    }
+
+    return {
+        message: 'Project is not release version',
+        defaultResult: projectInfo
+    };
+};
+
+export default createTask(STAGE_NAME, TASK_NAME, validateGitTag, shouldExecute);
