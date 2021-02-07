@@ -16,12 +16,20 @@ const trimVersion = (version: string) =>
 const compareReleaseVersion = (latestNexusVersions: NexusVersions, version: string): O.Option<string> =>
     pipe(
         O.fromNullable(latestNexusVersions.latestReleaseVersion),
+        O.fold(
+            () => O.of('0.0.0'),
+            (latestReleaseVersion) => O.of(latestReleaseVersion)
+        ),
         O.filter((latestReleaseVersion) => semver.compare(trimVersion(version), trimVersion(latestReleaseVersion)) === 1)
     );
 
 const comparePreReleaseVersion = (latestNexusVersions: NexusVersions, version: string, isPreRelease: boolean): O.Option<string> =>
     pipe(
         O.fromNullable(latestNexusVersions.latestPreReleaseVersion),
+        O.fold(
+            () => O.of('0.0.0'),
+            (latestReleaseVersion) => O.of(latestReleaseVersion)
+        ),
         O.filter((latestPreReleaseVersion) => {
             if (isPreRelease) {
                 return semver.compare(trimVersion(version), trimVersion(latestPreReleaseVersion)) >= 0;
@@ -30,34 +38,11 @@ const comparePreReleaseVersion = (latestNexusVersions: NexusVersions, version: s
         })
     );
 
-const compareNexusVersions = (latestNexusVersions: NexusVersions, version: string, isPreRelease: boolean): O.Option<string> => {
-    console.log('IsPreRelease', isPreRelease); // TODO delete this
-    // if (isPreRelease) {
-    //     return pipe(
-    //         [
-    //             compareReleaseVersion(latestNexusVersions, version),
-    //             comparePreReleaseVersion(latestNexusVersions, version, isPreRelease)
-    //         ],
-    //         A.reduce<O.Option<string>,O.Option<string>>(O.none, (acc, option) => {
-    //             console.log('Option', option); // TODO delete this
-    //             if (O.isSome(acc)) {
-    //                 return acc;
-    //             }
-    //
-    //             if (O.isSome(option)) {
-    //                 return option;
-    //             }
-    //
-    //             return O.none;
-    //         })
-    //     )
-    // }
-
-    return pipe(
+const compareNexusVersions = (latestNexusVersions: NexusVersions, version: string, isPreRelease: boolean): O.Option<string> =>
+    pipe(
         compareReleaseVersion(latestNexusVersions, version),
         O.chain(() => comparePreReleaseVersion(latestNexusVersions,version, isPreRelease))
     );
-};
 
 const validateNexusVersion: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectInfo>) => {
     const {
