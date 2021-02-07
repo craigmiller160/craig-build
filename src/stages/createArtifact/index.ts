@@ -1,4 +1,4 @@
-import { StageFunction } from '../../common/execution/stage';
+import createStage, { StageFunction } from '../../common/execution/stage';
 import ProjectInfo from '../../types/ProjectInfo';
 import { StageContext } from '../../common/execution/context';
 import { pipe } from 'fp-ts/pipeable';
@@ -21,3 +21,5 @@ const createArtifact: StageFunction<ProjectInfo> = (context: StageContext<Projec
             value: projectInfo
         }))
     );
+
+export default createStage(STAGE_NAME, createArtifact);
