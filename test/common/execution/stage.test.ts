@@ -12,7 +12,7 @@ jest.mock('../../../src/common/logger', () => ({
 jest.mock('../../../src/error/BuildError', () => ({
     ...(jest.requireActual('../../../src/error/BuildError') as object),
     createBuildError: jest.fn()
-}))
+}));
 
 const createStageLoggerMock = createStageLogger as jest.Mock;
 const createBuildErrorMock = createBuildError as jest.Mock;

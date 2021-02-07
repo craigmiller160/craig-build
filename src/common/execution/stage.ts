@@ -2,7 +2,6 @@ import { StageContext } from './context';
 import { createBuildError } from '../../error/BuildError';
 import { createStageLogger, SUCCESS_STATUS } from '../logger';
 import * as TE from 'fp-ts/TaskEither';
-import * as T from 'fp-ts/Task';
 import { pipe } from 'fp-ts/pipeable';
 import { Result } from './result';
 
