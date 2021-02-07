@@ -5,7 +5,7 @@ import createTask, { TaskFunction } from '../../../common/execution/task';
 import { TaskContext } from '../../../common/execution/context';
 import ProjectInfo, { NexusVersions } from '../../../types/ProjectInfo';
 import { pipe } from 'fp-ts/pipeable';
-import compareVersions from 'compare-versions';
+import semver from 'semver';
 import { STAGE_NAME } from '../index';
 
 export const TASK_NAME = 'Validate Nexus Versions';
@@ -16,7 +16,7 @@ const trimVersion = (version: string) =>
 const compareReleaseVersion = (latestNexusVersions: NexusVersions, version: string): O.Option<string> =>
     pipe(
         O.fromNullable(latestNexusVersions.latestReleaseVersion),
-        O.filter((latestReleaseVersion) => compareVersions(trimVersion(version), trimVersion(latestReleaseVersion)) === 1)
+        O.filter((latestReleaseVersion) => semver.compare(trimVersion(version), trimVersion(latestReleaseVersion)) === 1)
     );
 
 const comparePreReleaseVersion = (latestNexusVersions: NexusVersions, version: string, isPreRelease: boolean): O.Option<string> =>
@@ -24,7 +24,7 @@ const comparePreReleaseVersion = (latestNexusVersions: NexusVersions, version: s
         O.fromNullable(latestNexusVersions.latestPreReleaseVersion),
         O.filter((latestPreReleaseVersion) => {
             if (isPreRelease) {
-                return compareVersions(trimVersion(version), trimVersion(latestPreReleaseVersion)) >= 0;
+                return semver.compare(trimVersion(version), trimVersion(latestPreReleaseVersion)) >= 0;
             }
             return true;
         })
