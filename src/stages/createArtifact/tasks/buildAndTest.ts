@@ -9,12 +9,12 @@ import runCommand from '../../../utils/runCommand';
 
 export const TASK_NAME = 'Build & Test';
 
-const MAVEN_BUILD_CMD = 'mvn clean deploy';
-const NPM_BUILD_CMD = 'yarn build';
+export const MAVEN_BUILD_CMD = 'mvn clean deploy';
+export const NPM_BUILD_CMD = 'yarn build';
 
 const npmBuildAndTest = (context: TaskContext<ProjectInfo>): TE.TaskEither<Error, ProjectInfo> =>
     pipe(
-        runCommand(NPM_BUILD_CMD),
+        runCommand(NPM_BUILD_CMD, true),
         TE.fromEither,
         TE.map(() => context.input)
     );
@@ -22,7 +22,7 @@ const npmBuildAndTest = (context: TaskContext<ProjectInfo>): TE.TaskEither<Error
 const mavenBuildAndTest = (context: TaskContext<ProjectInfo>): TE.TaskEither<Error, ProjectInfo> => {
     context.logger('Maven will automatically perform publish step if build successful');
     return pipe(
-        runCommand(MAVEN_BUILD_CMD),
+        runCommand(MAVEN_BUILD_CMD, true),
         TE.fromEither,
         TE.map(() => context.input)
     );
