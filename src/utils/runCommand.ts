@@ -7,7 +7,7 @@ import getCwd from './getCwd';
 const runCommand = (command: string, logOutput: boolean = false): E.Either<Error, string> => {
   const commandParts = command.split(' ');
   const result = spawn.sync(commandParts[0], commandParts.slice(1), {
-      cwd: getCwd()
+    cwd: getCwd()
   });
   return pipe(
     O.fromNullable(result.status),
@@ -15,20 +15,20 @@ const runCommand = (command: string, logOutput: boolean = false): E.Either<Error
     E.of,
     E.chain<Error, number, string>((status) => {
       if (status === 0) {
-          const output = result.stdout.toString();
-          if (logOutput) {
-              console.log(output);
-          }
-          return E.right(output);
+        const output = result.stdout.toString();
+        if (logOutput) {
+          console.log(output); // eslint-disable-line no-console
+        }
+        return E.right(output);
       }
 
       if (status === -1) {
-          return E.left(new Error('No status code returned from command'));
+        return E.left(new Error('No status code returned from command'));
       }
 
       const error = result.stderr.toString();
       if (logOutput) {
-          console.error(error);
+        console.error(error);
       }
       return E.left(new Error(error));
     })
