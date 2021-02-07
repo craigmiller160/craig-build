@@ -13,7 +13,7 @@ export const NPM_PUBLISH_COMMAND = 'yarn publish --no-git-tag-version --new-vers
 
 const publish: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectInfo>) =>
     pipe(
-        runCommand(`${NPM_PUBLISH_COMMAND} ${context.input.version}`, true),
+        runCommand(`${NPM_PUBLISH_COMMAND} ${context.input.version}`, { logOutput: true }),
         TE.fromEither,
         TE.map(() => ({
             message: 'Published artifact',

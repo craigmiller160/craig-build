@@ -25,8 +25,8 @@ const commitNpmVersionChanges: TaskFunction<ProjectInfo> = (context: TaskContext
             if (output.length > 0) {
                 context.logger('Package.json was changed during publish, committing changes');
                 return pipe(
-                    runCommand(GIT_COMMIT, true),
-                    E.chain(() => runCommand(GIT_PUSH, true))
+                    runCommand(GIT_COMMIT, { logOutput: true }),
+                    E.chain(() => runCommand(GIT_PUSH, { logOutput: true }))
                 );
             }
             context.logger('Package.json was not changed during publish');
