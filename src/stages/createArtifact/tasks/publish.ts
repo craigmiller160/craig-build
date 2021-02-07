@@ -9,7 +9,7 @@ import * as TE from 'fp-ts/TaskEither';
 
 export const TASK_NAME = 'Publish';
 
-const NPM_PUBLISH_COMMAND = 'yarn publish --no-git-tag-version --new-version';
+export const NPM_PUBLISH_COMMAND = 'yarn publish --no-git-tag-version --new-version';
 
 const publish: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectInfo>) =>
     pipe(
