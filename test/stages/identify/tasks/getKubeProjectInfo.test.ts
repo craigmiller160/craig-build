@@ -24,14 +24,4 @@ describe('getKubeProjectInfo task', () => {
             kubernetesDockerImage: 'craigmiller160.ddns.net:30004/email-service:1.2.0'
         });
     });
-
-    describe('shouldExecute', () => {
-        it('is application', () => {
-            throw new Error();
-        });
-
-        it('is not application', () => {
-            throw new Error();
-        });
-    });
 });

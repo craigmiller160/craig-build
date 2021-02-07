@@ -65,14 +65,4 @@ describe('validateKubeVersion task', () => {
             STAGE_NAME
         ));
     });
-
-    describe('shouldExecute', () => {
-        it('is application', () => {
-            throw new Error();
-        });
-
-        it('is not application', () => {
-            throw new Error();
-        });
-    });
 });

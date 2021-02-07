@@ -36,8 +36,8 @@ describe('identifyProject task', () => {
     it('is unknown project', async () => {
         getCwdMock.mockImplementation(() => path.resolve(process.cwd(), 'test', '__working-dirs__'));
         const result = await identifyProject(undefined)();
-        expect(result).toEqualLeft(new BuildError('Unable to identify project type', {
-            taskName: TASK_NAME
-        }));
+        expect(result).toEqualLeft(new BuildError('Unable to identify project type',
+           TASK_NAME
+        ));
     });
 });
