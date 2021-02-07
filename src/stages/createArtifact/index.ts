@@ -6,6 +6,7 @@ import buildAndTest from './tasks/buildAndTest';
 import * as TE from 'fp-ts/TaskEither';
 import bumpNpmBeta from './tasks/bumpNpmBeta';
 import publish from './tasks/publish';
+import commitNpmVersionChanges from './tasks/commitNpmVersionChanges';
 
 export const STAGE_NAME = 'Create Artifact';
 
@@ -14,6 +15,7 @@ const createArtifact: StageFunction<ProjectInfo> = (context: StageContext<Projec
         buildAndTest(context.input),
         TE.chain(bumpNpmBeta),
         TE.chain(publish),
+        TE.chain(commitNpmVersionChanges),
         TE.map((projectInfo) => ({
             message: 'Artifact created successfully',
             value: projectInfo
