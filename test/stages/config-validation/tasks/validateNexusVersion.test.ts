@@ -90,12 +90,44 @@ describe('validateNexusVersion task', () => {
         expect(result).toEqualRight(projectInfo);
     });
 
-    it('is pre-release, higher than all releases, not pre-releases', () => {
-        throw new Error();
+    it('is pre-release, higher than all releases, not pre-releases', async () => {
+        const projectInfo: ProjectInfo = {
+            projectType: ProjectType.NpmLibrary,
+            isPreRelease: true,
+            name: 'my-project',
+            version: '1.1.0-beta',
+            dependencies: [],
+            latestNexusVersions: {
+                latestPreReleaseVersion: '1.2.0-beta.1',
+                latestReleaseVersion: '1.0.0'
+            }
+        };
+        const result = await validateNexusVersion(projectInfo)();
+        expect(result).toEqualLeft(new BuildError(
+            'Project version is not higher than versions in Nexus',
+            STAGE_NAME,
+            TASK_NAME
+        ));
     });
 
-    it('is pre-release, lower than releases, higher than pre-releases', () => {
-        throw new Error();
+    it('is pre-release, lower than releases, higher than pre-releases', async () => {
+        const projectInfo: ProjectInfo = {
+            projectType: ProjectType.NpmLibrary,
+            isPreRelease: true,
+            name: 'my-project',
+            version: '1.1.0-beta',
+            dependencies: [],
+            latestNexusVersions: {
+                latestPreReleaseVersion: '1.0.0-beta.1',
+                latestReleaseVersion: '1.2.0'
+            }
+        };
+        const result = await validateNexusVersion(projectInfo)();
+        expect(result).toEqualLeft(new BuildError(
+            'Project version is not higher than versions in Nexus',
+            STAGE_NAME,
+            TASK_NAME
+        ));
     });
 
     it('is release, no nexus versions', async () => {
