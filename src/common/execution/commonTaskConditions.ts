@@ -32,6 +32,17 @@ export const executeIfNpmPreRelease: TaskShouldExecuteFunction<ProjectInfo> = (i
     return undefined;
 };
 
+export const executeIfNpmProject: TaskShouldExecuteFunction<ProjectInfo> = (input: ProjectInfo) => {
+    if (input.projectType !== ProjectType.NpmLibrary && input.projectType !== ProjectType.NpmApplication) {
+        return {
+            message: 'Project is not Npm project',
+            defaultResult: input
+        };
+    }
+
+    return undefined;
+}
+
 export const executeIfApplication: TaskShouldExecuteFunction<ProjectInfo> = (input: ProjectInfo) => {
     if (isApplication(input.projectType)) {
         return undefined;

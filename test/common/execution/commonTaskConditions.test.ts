@@ -87,4 +87,14 @@ describe('commonTaskConditions', () => {
                 });
         });
     });
+
+    describe('executeIfNpmProject', () => {
+        it('is npm project', () => {
+            throw new Error();
+        });
+
+        it('is maven project', () => {
+            throw new Error();
+        });
+    });
 });
