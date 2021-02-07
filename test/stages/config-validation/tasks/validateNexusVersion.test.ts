@@ -56,11 +56,38 @@ describe('validateNexusVersion task', () => {
             STAGE_NAME,
             TASK_NAME
         ));
-
     });
 
-    it('is pre-release, higher than all releases & pre-releases', () => {
-        throw new Error();
+    it('is pre-release, higher than all releases & pre-releases', async () => {
+        const projectInfo: ProjectInfo = {
+            projectType: ProjectType.NpmLibrary,
+            isPreRelease: true,
+            name: 'my-project',
+            version: '1.1.0-beta',
+            dependencies: [],
+            latestNexusVersions: {
+                latestPreReleaseVersion: '1.0.0-beta',
+                latestReleaseVersion: '1.0.0'
+            }
+        };
+        const result = await validateNexusVersion(projectInfo)();
+        expect(result).toEqualRight(projectInfo);
+    });
+
+    it('is pre-release, higher than all releases and equal to pre-release', async () => {
+        const projectInfo: ProjectInfo = {
+            projectType: ProjectType.NpmLibrary,
+            isPreRelease: true,
+            name: 'my-project',
+            version: '1.1.0-beta',
+            dependencies: [],
+            latestNexusVersions: {
+                latestPreReleaseVersion: '1.1.0-beta.1',
+                latestReleaseVersion: '1.0.0'
+            }
+        };
+        const result = await validateNexusVersion(projectInfo)();
+        expect(result).toEqualRight(projectInfo);
     });
 
     it('is pre-release, higher than all releases, not pre-releases', () => {
@@ -99,6 +126,17 @@ describe('validateNexusVersion task', () => {
     });
 
     it('is pre-release, has release version, no pre-release', async () => {
-        throw new Error();
+        const projectInfo: ProjectInfo = {
+            projectType: ProjectType.NpmLibrary,
+            isPreRelease: true,
+            name: 'my-project',
+            version: '1.1.0-beta',
+            dependencies: [],
+            latestNexusVersions: {
+                latestReleaseVersion: '1.0.0'
+            }
+        };
+        const result = await validateNexusVersion(projectInfo)();
+        expect(result).toEqualRight(projectInfo);
     });
 });
