@@ -1,6 +1,6 @@
 import fs from 'fs';
 
-describe('doPublish task', () => {
+describe('publish task', () => {
     it('test', () => {
         throw new Error();
     });
