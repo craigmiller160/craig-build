@@ -1,10 +1,3 @@
-
-/*
- * 1) Increment beta version
- * 2) Update ProjectInfo with new version
- * 3) Update package.json with new version
- */
-
 import ProjectInfo from '../../../types/ProjectInfo';
 import { TaskFunction } from '../../../common/execution/task';
 import { TaskContext } from '../../../common/execution/context';
@@ -24,8 +17,6 @@ const bumpNpmBeta: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectInfo
         ...context.input,
         version: newVersion
     };
-
-    // TODO write it to package.json
 
     return TE.right({
         message: `Bumped Npm project beta version: ${newVersion}`,
