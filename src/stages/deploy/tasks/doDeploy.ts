@@ -27,8 +27,6 @@ const createDockerBuild = (tag: string) =>
 const createDockerPush = (tag: string) =>
     `sudo docker push ${tag}`;
 
-// TODO need to be able to change CWD in runCommand
-
 const doDeploy: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectInfo>) => {
     const deployDir = path.resolve(getCwd(), 'deploy');
     const {
