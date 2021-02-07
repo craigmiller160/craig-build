@@ -3,6 +3,7 @@ import ProjectType from '../../../src/types/ProjectType';
 import {
     executeIfApplication,
     executeIfNpmPreRelease,
+    executeIfNpmProject,
     executeIfRelease
 } from '../../../src/common/execution/commonTaskConditions';
 
@@ -90,11 +91,20 @@ describe('commonTaskConditions', () => {
 
     describe('executeIfNpmProject', () => {
         it('is npm project', () => {
-            throw new Error();
+            expect(executeIfNpmProject(baseProjectInfo))
+                .toBeUndefined();
         });
 
         it('is maven project', () => {
-            throw new Error();
+            const projectInfo: ProjectInfo = {
+                ...baseProjectInfo,
+                projectType: ProjectType.MavenLibrary
+            };
+            expect(executeIfNpmProject(projectInfo))
+                .toEqual({
+                    message: 'Project is not Npm project',
+                    defaultResult: projectInfo
+                });
         });
     });
 });
