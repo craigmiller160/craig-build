@@ -7,7 +7,7 @@ import runCommand from '../../../utils/runCommand';
 import { pipe } from 'fp-ts/pipeable';
 import createTask, { TaskFunction, TaskShouldExecuteFunction } from '../../../common/execution/task';
 import { TaskContext } from '../../../common/execution/context';
-import { executeIfNotPreRelease } from '../../../common/execution/commonTaskConditions';
+import { executeIfRelease } from '../../../common/execution/commonTaskConditions';
 
 export const TASK_NAME = 'Validate Git Tags';
 
@@ -33,4 +33,4 @@ const validateGitTag: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectI
         TE.fromEither
     );
 
-export default createTask(STAGE_NAME, TASK_NAME, validateGitTag, executeIfNotPreRelease);
+export default createTask(STAGE_NAME, TASK_NAME, validateGitTag, executeIfRelease);

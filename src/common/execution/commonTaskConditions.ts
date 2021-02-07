@@ -2,7 +2,7 @@ import { TaskShouldExecuteFunction } from './task';
 import ProjectInfo from '../../types/ProjectInfo';
 import { isApplication } from '../../utils/projectTypeUtils';
 
-export const executeIfNotPreRelease: TaskShouldExecuteFunction<ProjectInfo> = (input: ProjectInfo) => {
+export const executeIfRelease: TaskShouldExecuteFunction<ProjectInfo> = (input: ProjectInfo) => {
     if (!input.isPreRelease) {
         return undefined;
     }

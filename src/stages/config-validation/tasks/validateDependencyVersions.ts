@@ -8,7 +8,7 @@ import { STAGE_NAME } from '../index';
 import { pipe } from 'fp-ts/pipeable';
 import createTask, { TaskFunction, TaskShouldExecuteFunction } from '../../../common/execution/task';
 import { TaskContext } from '../../../common/execution/context';
-import { executeIfNotPreRelease } from '../../../common/execution/commonTaskConditions';
+import { executeIfRelease } from '../../../common/execution/commonTaskConditions';
 
 export const TASK_NAME = 'Validate Dependency Versions';
 
@@ -62,4 +62,4 @@ const validateDependencyVersions: TaskFunction<ProjectInfo> = (context: TaskCont
         TE.fromEither
     );
 
-export default createTask(STAGE_NAME, TASK_NAME, validateDependencyVersions, executeIfNotPreRelease);
+export default createTask(STAGE_NAME, TASK_NAME, validateDependencyVersions, executeIfRelease);
