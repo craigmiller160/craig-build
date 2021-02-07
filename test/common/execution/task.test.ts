@@ -1,6 +1,6 @@
 import { createTaskLogger, SUCCESS_STATUS } from '../../../src/common/logger';
 import { createBuildError } from '../../../src/error/BuildError';
-import createTask, { TaskFunction } from '../../../src/common/execution/task';
+import createTask, { TaskFunction, TaskShouldExecuteFunction } from '../../../src/common/execution/task';
 import { TaskContext } from '../../../src/common/execution/context';
 import * as TE from 'fp-ts/TaskEither';
 import '@relmify/jest-fp-ts';
@@ -24,6 +24,10 @@ const taskFn: TaskFunction<string> = (context: TaskContext<string>) =>
         message: 'The message',
         value: `${context.input}-result`
     });
+const shouldExecute: TaskShouldExecuteFunction<string> = (input: string) => ({
+    message: 'Skipping',
+    defaultResult: input
+});
 
 describe('createTask', () => {
     beforeEach(() => {
@@ -32,12 +36,12 @@ describe('createTask', () => {
     });
 
     it('creates executable task', async () => {
-        const executeableTask = createTask(stageName, taskName, taskFn);
+        const executableTask = createTask(stageName, taskName, taskFn);
 
         expect(mockLogger).not.toHaveBeenCalled();
-        expect(executeableTask).toEqual(expect.any(Function));
+        expect(executableTask).toEqual(expect.any(Function));
 
-        const result = await executeableTask('Hello')();
+        const result = await executableTask('Hello')();
         expect(result).toEqualRight('Hello-result');
 
         expect(mockLogger).toHaveBeenCalledTimes(2);
@@ -45,7 +49,16 @@ describe('createTask', () => {
         expect(mockLogger).toHaveBeenNthCalledWith(2, 'Finished. The message', SUCCESS_STATUS);
     });
 
-    it('creates task that skips execution', () => {
-        throw new Error();
+    it('creates task that skips execution', async () => {
+        const executableTask = createTask(stageName, taskName, taskFn, shouldExecute);
+
+        expect(mockLogger).not.toHaveBeenCalled();
+        expect(executableTask).toEqual(expect.any(Function));
+
+        const result = await executableTask('Hello')();
+        expect(result).toEqualRight('Hello');
+
+        expect(mockLogger).toHaveBeenCalledTimes(1);
+        expect(mockLogger).toHaveBeenNthCalledWith(1, `Skipping task ${taskName}: Skipping`);
     });
 });
