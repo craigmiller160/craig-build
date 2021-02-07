@@ -1,7 +1,7 @@
 import fs from 'fs';
 
 describe('createStage', () => {
-    it('test', () => {
+    it('creates executable stage', () => {
         throw new Error();
     });
 });
