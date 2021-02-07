@@ -2,10 +2,13 @@ import spawn from 'cross-spawn';
 import * as E from 'fp-ts/Either';
 import * as O from 'fp-ts/Option';
 import { pipe } from 'fp-ts/pipeable';
+import getCwd from './getCwd';
 
 const runCommand = (command: string, logOutput: boolean = false): E.Either<Error, string> => {
   const commandParts = command.split(' ');
-  const result = spawn.sync(commandParts[0], commandParts.slice(1));
+  const result = spawn.sync(commandParts[0], commandParts.slice(1), {
+      cwd: getCwd()
+  });
   return pipe(
     O.fromNullable(result.status),
     O.getOrElse(() => -1),
