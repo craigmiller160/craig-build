@@ -31,25 +31,27 @@ const comparePreReleaseVersion = (latestNexusVersions: NexusVersions, version: s
     );
 
 const compareNexusVersions = (latestNexusVersions: NexusVersions, version: string, isPreRelease: boolean): O.Option<string> => {
-    if (isPreRelease) {
-        return pipe(
-            [
-                compareReleaseVersion(latestNexusVersions, version),
-                comparePreReleaseVersion(latestNexusVersions, version, isPreRelease)
-            ],
-            A.reduce<O.Option<string>,O.Option<string>>(O.none, (acc, option) => {
-                if (O.isSome(acc)) {
-                    return acc;
-                }
-
-                if (O.isSome(option)) {
-                    return option;
-                }
-
-                return O.none;
-            })
-        )
-    }
+    console.log('IsPreRelease', isPreRelease); // TODO delete this
+    // if (isPreRelease) {
+    //     return pipe(
+    //         [
+    //             compareReleaseVersion(latestNexusVersions, version),
+    //             comparePreReleaseVersion(latestNexusVersions, version, isPreRelease)
+    //         ],
+    //         A.reduce<O.Option<string>,O.Option<string>>(O.none, (acc, option) => {
+    //             console.log('Option', option); // TODO delete this
+    //             if (O.isSome(acc)) {
+    //                 return acc;
+    //             }
+    //
+    //             if (O.isSome(option)) {
+    //                 return option;
+    //             }
+    //
+    //             return O.none;
+    //         })
+    //     )
+    // }
 
     return pipe(
         compareReleaseVersion(latestNexusVersions, version),
