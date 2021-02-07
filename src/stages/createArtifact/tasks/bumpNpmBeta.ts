@@ -1,7 +1,11 @@
 import ProjectInfo from '../../../types/ProjectInfo';
-import { TaskFunction } from '../../../common/execution/task';
+import createTask, { TaskFunction } from '../../../common/execution/task';
 import { TaskContext } from '../../../common/execution/context';
 import * as TE from 'fp-ts/TaskEither';
+import { STAGE_NAME } from '../index';
+import { executeIfNpmPreRelease } from '../../../common/execution/commonTaskConditions';
+
+export const TASK_NAME = 'Bump Npm Beta';
 
 const separateBetaNumber = (version: string): [string, number] => {
     const [versionNumber, betaPart] = version.split('-');
@@ -24,4 +28,4 @@ const bumpNpmBeta: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectInfo
     });
 };
 
-export default {};
+export default createTask(STAGE_NAME, TASK_NAME, bumpNpmBeta, executeIfNpmPreRelease);
