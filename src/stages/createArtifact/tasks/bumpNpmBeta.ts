@@ -9,8 +9,8 @@ export const TASK_NAME = 'Bump Npm Beta';
 
 const separateBetaNumber = (version: string): [string, number] => {
     const [versionNumber, betaPart] = version.split('-');
-    const [beta, betaNumber] = betaPart.split('.'); // TODO what if there is no beta number yet?
-    return [`${versionNumber}-${beta}`, parseInt(betaNumber)];
+    const [beta, betaNumber] = betaPart.split('.');
+    return [`${versionNumber}-${beta}`, parseInt(betaNumber ?? 0)];
 };
 
 const bumpNpmBeta: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectInfo>) => {
