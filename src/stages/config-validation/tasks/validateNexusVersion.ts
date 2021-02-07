@@ -66,4 +66,6 @@ const validateNexusVersion: TaskFunction<ProjectInfo> = (context: TaskContext<Pr
     );
 };
 
+// TODO if redeploy only, then skip this
+
 export default createTask(STAGE_NAME, TASK_NAME, validateNexusVersion);
