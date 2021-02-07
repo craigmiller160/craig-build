@@ -1,4 +1,4 @@
 
-export const STAGE_NAME = 'Build';
+export const STAGE_NAME = 'Create Artifact';
 
 export default {};
