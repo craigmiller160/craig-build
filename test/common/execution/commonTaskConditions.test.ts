@@ -49,4 +49,18 @@ describe('commonTaskConditions', () => {
                 });
         });
     });
+
+    describe('executeIfNpmPreRelease', () => {
+        it('is npm pre-release', () => {
+            throw new Error();
+        });
+
+        it('is npm release', () => {
+            throw new Error();
+        });
+
+        it('is maven pre-release', () => {
+            throw new Error();
+        });
+    });
 });
