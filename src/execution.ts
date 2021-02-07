@@ -28,7 +28,7 @@ const execute = (): TE.TaskEither<Error, any> => { // TODO improve type here
 
     return pipe(
         identify(undefined),
-        TE.chain((projectInfo: ProjectInfo) => configValidation(projectInfo)),
+        TE.chain(configValidation),
         TE.map(() => {
             // TODO include more details on output
             buildLogger('Build finished successfully', SUCCESS_STATUS);
