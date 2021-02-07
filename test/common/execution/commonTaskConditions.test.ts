@@ -1,6 +1,10 @@
 import ProjectInfo from '../../../src/types/ProjectInfo';
 import ProjectType from '../../../src/types/ProjectType';
-import { executeIfApplication, executeIfRelease } from '../../../src/common/execution/commonTaskConditions';
+import {
+    executeIfApplication,
+    executeIfNpmPreRelease,
+    executeIfRelease
+} from '../../../src/common/execution/commonTaskConditions';
 
 const baseProjectInfo: ProjectInfo = {
     projectType: ProjectType.NpmLibrary,
@@ -52,15 +56,35 @@ describe('commonTaskConditions', () => {
 
     describe('executeIfNpmPreRelease', () => {
         it('is npm pre-release', () => {
-            throw new Error();
+            const projectInfo: ProjectInfo = {
+                ...baseProjectInfo,
+                version: '1.0.0-beta',
+                isPreRelease: true
+            };
+            expect(executeIfNpmPreRelease(projectInfo))
+                .toBeUndefined();
         });
 
         it('is npm release', () => {
-            throw new Error();
+            expect(executeIfNpmPreRelease(baseProjectInfo))
+                .toEqual({
+                    message: 'Npm project is not pre-release version',
+                    defaultResult: baseProjectInfo
+                });
         });
 
         it('is maven pre-release', () => {
-            throw new Error();
+            const projectInfo: ProjectInfo = {
+                ...baseProjectInfo,
+                projectType: ProjectType.MavenLibrary,
+                version: '1.0.0-SNAPSHOT',
+                isPreRelease: true
+            };
+            expect(executeIfNpmPreRelease(projectInfo))
+                .toEqual({
+                    message: 'Project is not Npm project',
+                    defaultResult: projectInfo
+                });
         });
     });
 });
