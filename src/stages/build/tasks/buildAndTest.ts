@@ -19,8 +19,6 @@ const npmBuildAndTest = (context: TaskContext<ProjectInfo>): TE.TaskEither<Error
         TE.map(() => context.input)
     );
 
-
-
 const mavenBuildAndTest = (context: TaskContext<ProjectInfo>): TE.TaskEither<Error, ProjectInfo> => {
     context.logger('Maven will automatically perform publish step if build successful');
     return pipe(
