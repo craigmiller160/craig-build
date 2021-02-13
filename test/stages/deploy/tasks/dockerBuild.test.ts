@@ -7,6 +7,7 @@ import BuildError from '../../../../src/error/BuildError';
 import { STAGE_NAME } from '../../../../src/stages/deploy';
 import getCwd from '../../../../src/utils/getCwd';
 import shellEnv from 'shell-env';
+import * as E from 'fp-ts/Either';
 
 jest.mock('shell-env', () => ({
     sync: jest.fn()
@@ -56,7 +57,40 @@ describe('dockerBuild task', () => {
         });
     });
 
-    it('builds and pushes docker image', () => {
-        throw new Error();
+    it('builds and pushes docker image', async () => {
+        getCwdMock.mockImplementation(() => '/');
+        syncMock.mockImplementationOnce(() => ({
+            NEXUS_DOCKER_USER: 'abc',
+            NEXUS_DOCKER_PASSWORD: 'def'
+        }));
+        runCommandMock.mockImplementation(() => E.right(''));
+
+        const result = await dockerBuild(baseProjectInfo)();
+        expect(result).toEqualRight(baseProjectInfo);
+
+        expect(runCommandMock).toHaveBeenCalledTimes(3);
+        expect(runCommandMock).toHaveBeenNthCalledWith(
+            1,
+            'sudo docker login craigmiller160.ddns.net:30004 -u abc -p def',
+            {
+                logOutput: true
+            }
+        );
+        expect(runCommandMock).toHaveBeenNthCalledWith(
+            2,
+            'sudo docker build --network=host -t my-project:1.0.0 .',
+            {
+                cwd: '/deploy',
+                logOutput: true
+            }
+        );
+        expect(runCommandMock).toHaveBeenNthCalledWith(
+            3,
+            'sudo docker push my-project:1.0.0',
+            {
+                cwd: '/deploy',
+                logOutput: true
+            }
+        );
     });
 });

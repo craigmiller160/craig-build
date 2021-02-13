@@ -11,7 +11,6 @@ import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
 import { executeIfApplication } from '../../../common/execution/commonTaskConditions';
 import { STAGE_NAME } from '../index';
-import fs from 'fs';
 
 export const TASK_NAME = 'Docker Build';
 
