@@ -1,10 +1,11 @@
-import runCommand from '../../src/utils/runCommand';
 import '@relmify/jest-fp-ts';
 import { sync } from 'cross-spawn';
 
 jest.mock('cross-spawn', () => ({
     sync: jest.fn()
 }));
+
+const runCommand = jest.requireActual('../../src/utils/runCommand').default;
 
 const syncMock = sync as jest.Mock;
 
