@@ -33,8 +33,12 @@ describe('commitNpmVersionChanges', () => {
         expect(runCommandMock).toHaveBeenNthCalledWith(1, RESET_GIT_STAGING);
         expect(runCommandMock).toHaveBeenNthCalledWith(2, ADD_PACKAGE_JSON_IF_CHANGED);
         expect(runCommandMock).toHaveBeenNthCalledWith(3, CHECK_IF_PACKAGE_JSON_CHANGED);
-        expect(runCommandMock).toHaveBeenNthCalledWith(4, GIT_COMMIT, true);
-        expect(runCommandMock).toHaveBeenNthCalledWith(5, GIT_PUSH, true);
+        expect(runCommandMock).toHaveBeenNthCalledWith(4, GIT_COMMIT, {
+            logOutput: true
+        });
+        expect(runCommandMock).toHaveBeenNthCalledWith(5, GIT_PUSH, {
+            logOutput: true
+        });
     });
 
     it('no package.json changes to commit', async () => {
