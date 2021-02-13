@@ -1,6 +1,6 @@
 import fs from 'fs';
 
-describe('doDeploy task', () => {
+describe('kubeDeploy task', () => {
     it('test', () => {
         throw new Error();
     });
