@@ -29,6 +29,7 @@ describe('validateKubeVersion task', () => {
             kubernetesDockerImage: 'localhost:30000/my-project:1.0.0-beta'
         };
         const result = await validateKubeVersion(projectInfo)();
+        console.log(result); // TODO delete this
         const message = 'Invalid Kubernetes Version. Project Version: 1.0.0-beta Kubernetes Image: localhost:30000/my-project:1.0.0-beta';
         expect(result).toEqualLeft(new BuildError(message,
             TASK_NAME,

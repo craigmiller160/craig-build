@@ -25,7 +25,9 @@ describe('buildAndTest task', () => {
         const result = await buildAndTest(projectInfo)();
         expect(result).toEqualRight(projectInfo);
 
-        expect(runCommandMock).toHaveBeenCalledWith(NPM_BUILD_CMD, true);
+        expect(runCommandMock).toHaveBeenCalledWith(NPM_BUILD_CMD, {
+            logOutput: true
+        });
     });
 
     it('runs Maven build', async () => {
@@ -33,6 +35,8 @@ describe('buildAndTest task', () => {
         const result = await buildAndTest(projectInfo)();
         expect(result).toEqualRight(projectInfo);
 
-        expect(runCommandMock).toHaveBeenCalledWith(MAVEN_BUILD_CMD, true);
+        expect(runCommandMock).toHaveBeenCalledWith(MAVEN_BUILD_CMD, {
+            logOutput: true
+        });
     });
 });

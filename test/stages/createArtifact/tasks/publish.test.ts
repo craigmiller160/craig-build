@@ -23,6 +23,8 @@ describe('publish task', () => {
         expect(result).toEqualRight(projectInfo);
 
         expect(runCommandMock)
-            .toHaveBeenCalledWith(`${NPM_PUBLISH_COMMAND} ${projectInfo.version}`, true);
+            .toHaveBeenCalledWith(`${NPM_PUBLISH_COMMAND} ${projectInfo.version}`, {
+                logOutput: true
+            });
     });
 });

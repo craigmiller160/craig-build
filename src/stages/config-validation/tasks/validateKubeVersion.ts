@@ -17,9 +17,11 @@ const validateKubeVersion: TaskFunction<ProjectInfo> = (context: TaskContext<Pro
         O.fromNullable(context.input.kubernetesDockerImage),
         O.map((image: string) => {
             const parts = image.split(':');
+            console.log('Parts', parts); // TODO delete this
             return parts[parts.length - 1];
         }),
         O.filter((version: string) => {
+            console.log('Filter', context.input.isPreRelease, version); // TODO delete this
             if (context.input.isPreRelease) {
                 return KUBE_PRE_RELEASE_VERSION === version;
             }
