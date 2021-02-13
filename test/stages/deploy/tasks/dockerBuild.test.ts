@@ -1,4 +1,14 @@
-import fs from 'fs';
+import ProjectInfo from '../../../../src/types/ProjectInfo';
+import ProjectType from '../../../../src/types/ProjectType';
+
+const baseProjectInfo: ProjectInfo = {
+    projectType: ProjectType.MavenApplication,
+    isPreRelease: false,
+    name: 'my-project',
+    version: '1.0.0',
+    kubernetesDockerImage: 'my-project:1.0.0',
+    dependencies: []
+};
 
 describe('dockerBuild task', () => {
     describe('validations', () => {
