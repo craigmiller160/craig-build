@@ -1,7 +1,7 @@
 import fs from 'fs';
 
 describe('deploy stage', () => {
-    it('test', () => {
+    it('completes successfully', () => {
         throw new Error();
     });
 });
