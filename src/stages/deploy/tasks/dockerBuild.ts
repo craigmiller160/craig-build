@@ -35,6 +35,10 @@ const dockerBuild: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectInfo
         return TE.left(context.createBuildError('Missing Kubernetes Docker Image'));
     }
 
+    if (!NEXUS_DOCKER_USER || !NEXUS_DOCKER_PASSWORD) {
+        return TE.left(context.createBuildError('Missing Docker credential environment variables'));
+    }
+
     return pipe(
         runCommand(createDockerLogin(NEXUS_DOCKER_USER, NEXUS_DOCKER_PASSWORD), { logOutput: true }),
         E.chain(() => runCommand(createDockerBuild(context.input.kubernetesDockerImage!!), { cwd: deployDir, logOutput: true })),
