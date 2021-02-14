@@ -29,7 +29,7 @@ const applyConfigmap = (context: TaskContext<ProjectInfo>): E.Either<Error, stri
 
 const applyDeployment = (): E.Either<Error, string> => {
     const deployDir = path.resolve(getCwd(), 'deploy');
-    return runCommand(APPLY_CONFIGMAP, { cwd: deployDir, logOutput: true });
+    return runCommand(APPLY_DEPLOYMENT, { cwd: deployDir, logOutput: true });
 };
 
 const kubeDeploy: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectInfo>) => {
