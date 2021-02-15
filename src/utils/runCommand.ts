@@ -3,6 +3,7 @@ import * as E from 'fp-ts/Either';
 import * as O from 'fp-ts/Option';
 import { pipe } from 'fp-ts/pipeable';
 import getCwd from './getCwd';
+import { LOG_PREFIX } from '../common/logger';
 
 export interface Options {
   logOutput?: boolean;
@@ -12,6 +13,8 @@ export interface Options {
 const runCommand = (command: string, options?: Options): E.Either<Error, string> => {
   const logOutput = options?.logOutput ?? false;
   const cwd = options?.cwd ?? getCwd();
+
+  console.log(`[${LOG_PREFIX}] [Command]: ${command}`);
 
   const commandParts = command.split(' ');
   const result = spawn.sync(commandParts[0], commandParts.slice(1), {

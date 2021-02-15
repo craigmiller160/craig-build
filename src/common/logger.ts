@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import chalk from 'chalk';
 
-const LOG_PREFIX = 'CRAIG-BUILD';
+export const LOG_PREFIX = 'CRAIG-BUILD';
 
 export const SUCCESS_STATUS = 'success';
 export const ERROR_STATUS = 'error';
