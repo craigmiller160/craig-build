@@ -14,7 +14,7 @@ const runCommand = (command: string, options?: Options): E.Either<Error, string>
   const logOutput = options?.logOutput ?? false;
   const cwd = options?.cwd ?? getCwd();
 
-  console.log(`[${LOG_PREFIX}] [Command]: ${command}`);
+  console.log(`[${LOG_PREFIX}] [Command]: ${command}`); // eslint-disable-line no-console
 
   const commandParts = command.split(' ');
   const result = spawn.sync(commandParts[0], commandParts.slice(1), {
