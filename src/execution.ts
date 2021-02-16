@@ -7,6 +7,9 @@ import * as TE from 'fp-ts/TaskEither';
 import { isBuildError } from './error/BuildError';
 import ProjectInfo from './types/ProjectInfo';
 import configValidation from './stages/config-validation';
+import createArtifact from './stages/createArtifact';
+import cleanup from './stages/cleanup';
+import deploy from './stages/deploy';
 
 // TODO no matter what type of error, need to know how far the service got
 
@@ -29,6 +32,9 @@ const execute = (): TE.TaskEither<Error, any> => { // TODO improve type here
     return pipe(
         identify(undefined),
         TE.chain(configValidation),
+        TE.chain(createArtifact),
+        TE.chain(deploy),
+        TE.chain(cleanup),
         TE.map(() => {
             // TODO include more details on output
             buildLogger('Build finished successfully', SUCCESS_STATUS);
