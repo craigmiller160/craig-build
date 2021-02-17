@@ -1359,6 +1359,11 @@ combined-stream@^1.0.6, combined-stream@~1.0.6:
   dependencies:
     delayed-stream "~1.0.0"
 
+commander@^7.1.0:
+  version "7.1.0"
+  resolved "https://craigmiller160.ddns.net:30003/repository/npm-group/commander/-/commander-7.1.0.tgz#f2eaecf131f10e36e07d894698226e36ae0eb5ff"
+  integrity sha512-pRxBna3MJe6HKnBGsDyMv8ETbptw3axEdYHoqNh7gu5oDcew8fs0xnivZGm06Ogk8zGAJ9VX+OPEr2GXEQK4dg==
+
 component-emitter@^1.2.1:
   version "1.3.0"
   resolved "https://craigmiller160.ddns.net:30003/repository/npm-group/component-emitter/-/component-emitter-1.3.0.tgz#16e4070fba8ae29b679f2215853ee181ab2eabc0"

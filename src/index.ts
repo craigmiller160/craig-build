@@ -1,14 +1,40 @@
 #!/usr/bin/env node
 
-import execute from './execution';
 import { pipe } from 'fp-ts/pipeable';
 import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
+import { program } from 'commander';
+import PackageJson from './types/PackageJson';
+import fs from 'fs';
+import path from 'path';
+import deployOnly from './execution/deployOnly';
+import ProjectInfo from './types/ProjectInfo';
+import buildAndDeploy from './execution/buildAndDeploy';
 
-// TODO accept commands of "build" for the full build/deploy and redeploy to redeploy a production artifact
+const projectPackageJson: PackageJson = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), 'package.json'), 'utf8'));
+program.version(projectPackageJson.version)
+    .option('-b, --build-and-deploy', 'Build and deploy project')
+    .option('-d', '--deploy-only', 'Only deploy the project')
+    .parse(process.argv);
+
+const opts = program.opts();
+
+const findExecution = (): () => TE.TaskEither<Error, ProjectInfo> => {
+    if (opts.b) {
+        return buildAndDeploy;
+    }
+
+    if (opts.d) {
+        return deployOnly;
+    }
+
+    throw new Error('No command set');
+};
+
+const execution = findExecution();
 
 pipe(
-    execute(),
+    execution(),
     TE.fold(
         () => process.exit(1),
         () => process.exit(0)
