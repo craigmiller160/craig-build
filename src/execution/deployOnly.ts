@@ -3,6 +3,7 @@ import ProjectInfo from '../types/ProjectInfo';
 import { buildLogger, ERROR_STATUS, SUCCESS_STATUS } from '../common/logger';
 import getCwd from '../utils/getCwd';
 import { pipe } from 'fp-ts/pipeable';
+import selfValidation from '../stages/self-validation';
 import identify from '../stages/identify';
 import configValidation from '../stages/config-validation';
 import deploy from '../stages/deploy';
@@ -12,7 +13,8 @@ const deployOnly = (): TE.TaskEither<Error, ProjectInfo> => {
     buildLogger(`Deploying only ${getCwd()}`);
 
     return pipe(
-        identify(undefined),
+        selfValidation(null), // TODO review this arg
+        TE.chain(() => identify(undefined)), // TODO review this arg
         TE.chain(configValidation),
         TE.chain(deploy),
         TE.map((projectInfo) => {

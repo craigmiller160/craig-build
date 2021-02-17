@@ -1,4 +1,5 @@
 import '@relmify/jest-fp-ts';
+import selfValidation from '../../src/stages/self-validation';
 import identify from '../../src/stages/identify';
 import configValidation from '../../src/stages/config-validation';
 import deploy from '../../src/stages/deploy';
@@ -12,6 +13,7 @@ import BuildError from '../../src/error/BuildError';
 jest.mock('../../src/stages/identify', () => jest.fn());
 jest.mock('../../src/stages/config-validation', () => jest.fn());
 jest.mock('../../src/stages/deploy', () => jest.fn());
+jest.mock('../../src/stages/self-validation', () => jest.fn());
 jest.mock('../../src/common/logger', () => {
     const logger = jest.requireActual('../../src/common/logger');
     return {
@@ -20,6 +22,7 @@ jest.mock('../../src/common/logger', () => {
     }
 });
 
+const selfValidationMock = selfValidation as jest.Mock;
 const identifyMock = identify as jest.Mock;
 const configValidationMock = configValidation as jest.Mock;
 const deployMock = deploy as jest.Mock;
@@ -39,6 +42,7 @@ describe('deployOnly', () => {
     });
 
     it('runs successfully', async () => {
+        selfValidationMock.mockImplementation(() => TE.right('')); // TODO review this type
         identifyMock.mockImplementation(() => TE.right(projectInfo));
         configValidationMock.mockImplementation(() => TE.right(projectInfo));
         deployMock.mockImplementation(() => TE.right(projectInfo));
@@ -50,12 +54,14 @@ describe('deployOnly', () => {
         expect(buildLogger).toHaveBeenNthCalledWith(1, 'Deploying only undefined');
         expect(buildLogger).toHaveBeenNthCalledWith(2, 'Deploy only finished successfully', 'success');
 
+        expect(selfValidationMock).toHaveBeenCalledWith(null); // TODO review this argument
         expect(identifyMock).toHaveBeenCalledWith(undefined);
         expect(configValidationMock).toHaveBeenCalledWith(projectInfo);
         expect(deployMock).toHaveBeenCalledWith(projectInfo);
     });
 
     it('logs build error', async () => {
+        selfValidationMock.mockImplementation(() => TE.right('')); // TODO review this type
         const buildError = new BuildError('Error', 'TheStage', 'TheTask');
         identifyMock.mockImplementation(() => TE.left(buildError));
 
@@ -66,6 +72,7 @@ describe('deployOnly', () => {
         expect(buildLogger).toHaveBeenNthCalledWith(1, 'Deploying only undefined');
         expect(buildLogger).toHaveBeenNthCalledWith(2, 'Deploy only failed on Stage TheStage and Task TheTask: Error', 'error');
 
+        expect(selfValidationMock).toHaveBeenCalledWith(null); // TODO review this argument
         expect(identifyMock).toHaveBeenCalledWith(undefined);
         expect(configValidationMock).not.toHaveBeenCalled();
         expect(deployMock).not.toHaveBeenCalled();
@@ -73,6 +80,7 @@ describe('deployOnly', () => {
 
     it('logs other error', async () => {
         const error = new Error('Error');
+        selfValidationMock.mockImplementation(() => TE.right('')); // TODO review this type
         identifyMock.mockImplementation(() => TE.left(error));
 
         const result = await deployOnly()();
@@ -82,6 +90,7 @@ describe('deployOnly', () => {
         expect(buildLogger).toHaveBeenNthCalledWith(1, 'Deploying only undefined');
         expect(buildLogger).toHaveBeenNthCalledWith(2, 'Deploy Only Error: Error', 'error');
 
+        expect(selfValidationMock).toHaveBeenCalledWith(null); // TODO review this argument
         expect(identifyMock).toHaveBeenCalledWith(undefined);
         expect(configValidationMock).not.toHaveBeenCalled();
         expect(deployMock).not.toHaveBeenCalled();
