@@ -1,9 +1,9 @@
-import ProjectInfo from '../../../../src/types/ProjectInfo';
-import ProjectType from '../../../../src/types/ProjectType';
-import validateNexusVersion, { TASK_NAME } from '../../../../src/stages/config-validation/tasks/validateNexusVersion';
+import ProjectInfo from '../../../src/types/ProjectInfo';
+import ProjectType from '../../../src/types/ProjectType';
+import validateNexusVersion, { TASK_NAME } from '../../../src/common/tasks/validateNexusVersion';
 import '@relmify/jest-fp-ts';
-import BuildError from '../../../../src/error/BuildError';
-import { STAGE_NAME } from '../../../../src/stages/config-validation';
+import BuildError from '../../../src/error/BuildError';
+import { STAGE_NAME } from '../../../src/stages/config-validation';
 
 describe('validateNexusVersion task', () => {
     it('is release, higher than all releases & pre-releases', async () => {

@@ -3,11 +3,11 @@ import {
     searchForMavenSnapshots,
     searchForNpmBetas,
     searchForNpmReleases
-} from '../../../../src/common/services/NexusRepoApi';
-import ProjectType from '../../../../src/types/ProjectType';
-import ProjectInfo from '../../../../src/types/ProjectInfo';
-import getNexusProjectInfo from '../../../../src/stages/identify/tasks/getNexusProjectInfo';
-import NexusSearchResult from '../../../../src/types/NexusSearchResult';
+} from '../../../src/common/services/NexusRepoApi';
+import ProjectType from '../../../src/types/ProjectType';
+import ProjectInfo from '../../../src/types/ProjectInfo';
+import getNexusProjectInfo from '../../../src/common/tasks/getNexusProjectInfo';
+import NexusSearchResult from '../../../src/types/NexusSearchResult';
 import * as TE from 'fp-ts/TaskEither';
 import '@relmify/jest-fp-ts';
 import Mock = jest.Mock;

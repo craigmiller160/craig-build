@@ -1,17 +1,17 @@
-import ProjectInfo from '../../../types/ProjectInfo';
+import ProjectInfo from '../../types/ProjectInfo';
 import * as TE from 'fp-ts/TaskEither';
-import { STAGE_NAME } from '../index';
-import ProjectType from '../../../types/ProjectType';
+import { STAGE_NAME } from '../../stages/identify';
+import ProjectType from '../../types/ProjectType';
 import { pipe } from 'fp-ts/pipeable';
 import {
     searchForMavenReleases,
     searchForMavenSnapshots,
     searchForNpmBetas,
     searchForNpmReleases
-} from '../../../common/services/NexusRepoApi';
-import NexusSearchResult from '../../../types/NexusSearchResult';
-import createTask, { TaskFunction } from '../../../common/execution/task';
-import { TaskContext } from '../../../common/execution/context';
+} from '../services/NexusRepoApi';
+import NexusSearchResult from '../../types/NexusSearchResult';
+import createTask, { TaskFunction } from '../execution/task';
+import { TaskContext } from '../execution/context';
 
 const TASK_NAME = 'Get Nexus Project Info';
 

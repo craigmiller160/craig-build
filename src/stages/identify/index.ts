@@ -4,7 +4,7 @@ import * as TE from 'fp-ts/TaskEither';
 import { pipe } from 'fp-ts/pipeable';
 import ProjectInfo from '../../types/ProjectInfo';
 import getKubeProjectInfo from './tasks/getKubeProjectInfo';
-import getNexusProjectInfo from './tasks/getNexusProjectInfo';
+import getNexusProjectInfo from '../../common/tasks/getNexusProjectInfo';
 import createStage, { StageFunction } from '../../common/execution/stage';
 import { StageContext } from '../../common/execution/context';
 

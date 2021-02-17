@@ -6,7 +6,7 @@ import validateKubeVersion from './tasks/validateKubeVersion';
 import validateGitTag from './tasks/validateGitTag';
 import { StageContext } from '../../common/execution/context';
 import createStage, { StageFunction } from '../../common/execution/stage';
-import validateNexusVersion from './tasks/validateNexusVersion';
+import validateNexusVersion from '../../common/tasks/validateNexusVersion';
 
 export const STAGE_NAME = 'Config Validation';
 

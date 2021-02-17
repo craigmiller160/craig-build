@@ -1,12 +1,12 @@
 import * as TE from 'fp-ts/TaskEither';
 import * as O from 'fp-ts/Option';
 import * as A from 'fp-ts/Array';
-import createTask, { TaskFunction } from '../../../common/execution/task';
-import { TaskContext } from '../../../common/execution/context';
-import ProjectInfo, { NexusVersions } from '../../../types/ProjectInfo';
+import createTask, { TaskFunction } from '../execution/task';
+import { TaskContext } from '../execution/context';
+import ProjectInfo, { NexusVersions } from '../../types/ProjectInfo';
 import { pipe } from 'fp-ts/pipeable';
 import semver from 'semver';
-import { STAGE_NAME } from '../index';
+import { STAGE_NAME } from '../../stages/config-validation';
 
 export const TASK_NAME = 'Validate Nexus Versions';
 

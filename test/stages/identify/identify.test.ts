@@ -8,7 +8,7 @@ import getBaseProjectInfo from '../../../src/stages/identify/tasks/getBaseProjec
 import '@relmify/jest-fp-ts';
 import getKubeProjectInfo from '../../../src/stages/identify/tasks/getKubeProjectInfo';
 import BuildError from '../../../src/error/BuildError';
-import getNexusProjectInfo from '../../../src/stages/identify/tasks/getNexusProjectInfo';
+import getNexusProjectInfo from '../../../src/common/tasks/getNexusProjectInfo';
 
 jest.mock('../../../src/stages/identify/tasks/identifyProject', () => jest.fn());
 jest.mock('../../../src/stages/identify/tasks/getBaseProjectInfo', () => jest.fn());
