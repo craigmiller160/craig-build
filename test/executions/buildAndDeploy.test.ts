@@ -1,4 +1,5 @@
 import '@relmify/jest-fp-ts';
+import selfValidation from '../../src/stages/self-validation';
 import identify from '../../src/stages/identify';
 import configValidation from '../../src/stages/config-validation';
 import createArtifact from '../../src/stages/createArtifact';
@@ -16,6 +17,7 @@ jest.mock('../../src/stages/config-validation', () => jest.fn());
 jest.mock('../../src/stages/createArtifact', () => jest.fn());
 jest.mock('../../src/stages/deploy', () => jest.fn());
 jest.mock('../../src/stages/cleanup', () => jest.fn());
+jest.mock('../../src/stages/self-validation', () => jest.fn());
 jest.mock('../../src/common/logger', () => {
     const logger = jest.requireActual('../../src/common/logger');
     return {
@@ -24,6 +26,7 @@ jest.mock('../../src/common/logger', () => {
     }
 });
 
+const selfValidationMock = selfValidation as jest.Mock;
 const identifyMock = identify as jest.Mock;
 const configValidationMock = configValidation as jest.Mock;
 const createArtifactMock = createArtifact as jest.Mock;
@@ -45,6 +48,7 @@ describe('buildAndDeploy', () => {
     });
 
     it('runs successfully', async () => {
+        selfValidationMock.mockImplementation(() => TE.right('')); // TODO review this type
         identifyMock.mockImplementation(() => TE.right(projectInfo));
         configValidationMock.mockImplementation(() => TE.right(projectInfo));
         createArtifactMock.mockImplementation(() => TE.right(projectInfo));
@@ -58,6 +62,7 @@ describe('buildAndDeploy', () => {
         expect(buildLogger).toHaveBeenNthCalledWith(1, 'Building and deploying undefined');
         expect(buildLogger).toHaveBeenNthCalledWith(2, 'Build and deploy finished successfully', 'success');
 
+        expect(selfValidationMock).toHaveBeenCalledWith(null); // TODO review this argument
         expect(identifyMock).toHaveBeenCalledWith(undefined);
         expect(configValidationMock).toHaveBeenCalledWith(projectInfo);
         expect(createArtifactMock).toHaveBeenCalledWith(projectInfo);
@@ -67,6 +72,7 @@ describe('buildAndDeploy', () => {
 
     it('logs build error', async () => {
         const buildError = new BuildError('Error', 'TheStage', 'TheTask');
+        selfValidationMock.mockImplementation(() => TE.right('')); // TODO review this type
         identifyMock.mockImplementation(() => TE.right(projectInfo));
         configValidationMock.mockImplementation(() => TE.right(projectInfo));
         createArtifactMock.mockImplementation(() => TE.left(buildError));
@@ -78,6 +84,7 @@ describe('buildAndDeploy', () => {
         expect(buildLogger).toHaveBeenNthCalledWith(1, 'Building and deploying undefined');
         expect(buildLogger).toHaveBeenNthCalledWith(2, 'Build and deploy failed on Stage TheStage and Task TheTask: Error', 'error');
 
+        expect(selfValidationMock).toHaveBeenCalledWith(null); // TODO review this argument
         expect(identifyMock).toHaveBeenCalledWith(undefined);
         expect(configValidationMock).toHaveBeenCalledWith(projectInfo);
         expect(createArtifactMock).toHaveBeenCalledWith(projectInfo);
@@ -87,6 +94,7 @@ describe('buildAndDeploy', () => {
 
     it('logs other error', async () => {
         const error = new Error('Error');
+        selfValidationMock.mockImplementation(() => TE.right('')); // TODO review this type
         identifyMock.mockImplementation(() => TE.right(projectInfo));
         configValidationMock.mockImplementation(() => TE.right(projectInfo));
         createArtifactMock.mockImplementation(() => TE.left(error));
@@ -98,6 +106,7 @@ describe('buildAndDeploy', () => {
         expect(buildLogger).toHaveBeenNthCalledWith(1, 'Building and deploying undefined');
         expect(buildLogger).toHaveBeenNthCalledWith(2, 'Build and Deploy Error: Error', 'error');
 
+        expect(selfValidationMock).toHaveBeenCalledWith(null); // TODO review this argument
         expect(identifyMock).toHaveBeenCalledWith(undefined);
         expect(configValidationMock).toHaveBeenCalledWith(projectInfo);
         expect(createArtifactMock).toHaveBeenCalledWith(projectInfo);

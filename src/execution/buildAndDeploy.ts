@@ -9,12 +9,14 @@ import createArtifact from '../stages/createArtifact';
 import deploy from '../stages/deploy';
 import cleanup from '../stages/cleanup';
 import { isBuildError } from '../error/BuildError';
+import confirmLatestVersion from '../stages/self-validation/tasks/confirmLatestVersion';
 
 const buildAndDeploy = (): TE.TaskEither<Error, ProjectInfo> => {
     buildLogger(`Building and deploying ${getCwd()}`);
 
     return pipe(
-        identify(undefined),
+        confirmLatestVersion(null), // TODO figure out input here
+        TE.chain(() => identify(undefined)), // TODO figure out input here
         TE.chain(configValidation),
         TE.chain(createArtifact),
         TE.chain(deploy),
