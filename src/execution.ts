@@ -11,8 +11,6 @@ import createArtifact from './stages/createArtifact';
 import cleanup from './stages/cleanup';
 import deploy from './stages/deploy';
 
-// TODO no matter what type of error, need to know how far the service got
-
 /*
  * TODO eventually delete this
  * Order of Operations
