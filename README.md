@@ -16,6 +16,7 @@ Then use `craig-build -h` to see available commands.
 ```
 /
     deploy/
+        Dockerfile
         deployment.yml
     package.json
 ```
@@ -31,6 +32,7 @@ Optional `configmap.yml` can be included in `deploy` directory.
 ```
 /
     deploy/
+        Dockerfile
         deployment.yml
     pom.xml
 ```
