@@ -26,7 +26,7 @@ import deploy from './stages/deploy';
  * 7. Cleanup
  */
 
-const execute = (): TE.TaskEither<Error, any> => { // TODO improve type here
+const execute = (): TE.TaskEither<Error, ProjectInfo> => {
     buildLogger(`Starting build for: ${getCwd()}`);
 
     return pipe(
@@ -35,9 +35,9 @@ const execute = (): TE.TaskEither<Error, any> => { // TODO improve type here
         TE.chain(createArtifact),
         TE.chain(deploy),
         TE.chain(cleanup),
-        TE.map(() => {
-            // TODO include more details on output
+        TE.map((projectInfo) => {
             buildLogger('Build finished successfully', SUCCESS_STATUS);
+            return projectInfo;
         }),
         TE.mapLeft((error) => {
             if (isBuildError(error)) {
