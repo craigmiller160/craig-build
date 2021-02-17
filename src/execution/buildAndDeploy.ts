@@ -20,16 +20,16 @@ const buildAndDeploy = (): TE.TaskEither<Error, ProjectInfo> => {
         TE.chain(deploy),
         TE.chain(cleanup),
         TE.map((projectInfo) => {
-            buildLogger('Build finished successfully', SUCCESS_STATUS);
+            buildLogger('Build and deploy finished successfully', SUCCESS_STATUS);
             return projectInfo;
         }),
         TE.mapLeft((error) => {
             if (isBuildError(error)) {
-                const message = `Build failed on Stage ${error.stageName} and Task ${error.taskName}: ${error.message}`;
+                const message = `Build and deploy failed on Stage ${error.stageName} and Task ${error.taskName}: ${error.message}`;
                 buildLogger(message, ERROR_STATUS);
                 console.error(error);
             } else {
-                const message = `Build Error: ${error.message}`;
+                const message = `Build and Deploy Error: ${error.message}`;
                 buildLogger(message, ERROR_STATUS);
                 console.error(error);
             }
