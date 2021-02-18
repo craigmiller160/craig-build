@@ -10,6 +10,10 @@ Install it with `npm i -g @craigmiller160/craig-build`.
 
 Then use `craig-build -h` to see available commands.
 
+## How to Update
+
+Run `npm update -g @craigmiller160/craig-build`
+
 ## Project Types
 
 ### NpmApplication
