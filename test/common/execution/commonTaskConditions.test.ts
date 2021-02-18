@@ -1,11 +1,12 @@
 import ProjectInfo from '../../../src/types/ProjectInfo';
 import ProjectType from '../../../src/types/ProjectType';
 import {
-    executeIfApplication,
+    executeIfApplication, executeIfNotDeployOnlyBuild,
     executeIfNpmPreRelease,
     executeIfNpmProject,
     executeIfRelease
 } from '../../../src/common/execution/commonTaskConditions';
+import { BUILD_NAME as deployOnlyBuildName } from '../../../src/execution/deployOnly';
 
 const baseProjectInfo: ProjectInfo = {
     projectType: ProjectType.NpmLibrary,
@@ -109,12 +110,23 @@ describe('commonTaskConditions', () => {
     });
 
     describe('executeIfNotDeployOnlyBuild', () => {
+        beforeEach(() => {
+            process.env.BUILD_NAME = undefined;
+        });
+
         it('is deploy only build', () => {
-            throw new Error();
+            process.env.BUILD_NAME = deployOnlyBuildName;
+            expect(executeIfNotDeployOnlyBuild(baseProjectInfo))
+                .toEqual({
+                    message: 'Not running for deploy only build',
+                    defaultResult: baseProjectInfo
+                });
         });
 
         it('is not deploy only build', () => {
-            throw new Error();
+            process.env.BUILD_NAME = 'abc';
+            expect(executeIfNotDeployOnlyBuild(baseProjectInfo))
+                .toEqual(undefined);
         });
     });
 });
