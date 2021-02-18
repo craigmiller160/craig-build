@@ -28,7 +28,7 @@ const createTask = <Input, ResultValue = Input>(
             taskName,
             createBuildError: createBuildError(stageName, taskName),
             input,
-            logger: createTaskLogger(stageName, taskName)
+            logger: createTaskLogger(stageName, taskName) // TODO the stageName is undefined in task logs
         };
 
         return pipe(

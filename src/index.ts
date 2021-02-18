@@ -21,11 +21,11 @@ const opts = program.opts();
 console.log('Opts', opts); // TODO delete this
 
 const findExecution = (): () => TE.TaskEither<Error, ProjectInfo> => {
-    if (opts.b) {
+    if (opts.buildAndDeploy) {
         return buildAndDeploy;
     }
 
-    if (opts.d) {
+    if (opts.deployOnly) {
         return deployOnly;
     }
 
