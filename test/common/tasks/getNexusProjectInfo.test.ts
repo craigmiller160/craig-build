@@ -11,6 +11,7 @@ import NexusSearchResult from '../../../src/types/NexusSearchResult';
 import * as TE from 'fp-ts/TaskEither';
 import '@relmify/jest-fp-ts';
 import Mock = jest.Mock;
+import stageName from '../../../src/stages/identify/stageName';
 
 jest.mock('../../../src/common/services/NexusRepoApi', () => ({
     searchForNpmBetas: jest.fn(),
@@ -78,7 +79,7 @@ describe('getNexusProjectInfo task', () => {
     it('get Maven Nexus Project Info', async () => {
         mockMavenVersionExists();
         const projectInfo = createProjectInfo(ProjectType.MavenApplication);
-        const result = await getNexusProjectInfo(projectInfo)();
+        const result = await getNexusProjectInfo(stageName)(projectInfo)();
         expect(result).toEqualRight({
             ...projectInfo,
             latestNexusVersions: {
@@ -91,7 +92,7 @@ describe('getNexusProjectInfo task', () => {
     it('get NPM Nexus Project Info', async () => {
         mockNpmVersionExists();
         const projectInfo = createProjectInfo(ProjectType.NpmApplication);
-        const result = await getNexusProjectInfo(projectInfo)();
+        const result = await getNexusProjectInfo(stageName)(projectInfo)();
         expect(result).toEqualRight({
             ...projectInfo,
             latestNexusVersions: {
@@ -104,7 +105,7 @@ describe('getNexusProjectInfo task', () => {
     it('NPM project does not exist in Nexus', async () => {
         mockNpmVersionNotExists();
         const projectInfo = createProjectInfo(ProjectType.NpmApplication);
-        const result = await getNexusProjectInfo(projectInfo)();
+        const result = await getNexusProjectInfo(stageName)(projectInfo)();
         expect(result).toEqualRight({
             ...projectInfo,
             latestNexusVersions: {
@@ -117,7 +118,7 @@ describe('getNexusProjectInfo task', () => {
     it('Maven project does not exist in Nexus', async () => {
         mockMavenVersionNotExists();
         const projectInfo = createProjectInfo(ProjectType.MavenApplication);
-        const result = await getNexusProjectInfo(projectInfo)();
+        const result = await getNexusProjectInfo(stageName)(projectInfo)();
         expect(result).toEqualRight({
             ...projectInfo,
             latestNexusVersions: {

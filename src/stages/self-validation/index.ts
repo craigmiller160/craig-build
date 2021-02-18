@@ -10,8 +10,8 @@ import stageName from './stageName';
 const selfValidation: StageFunction<undefined> = (context: StageContext<undefined>) =>
     pipe(
         getSelfProjectInfo(undefined),
-        TE.chain(getNexusProjectInfo),
-        TE.chain(validateNexusVersion),
+        TE.chain(getNexusProjectInfo(stageName)),
+        TE.chain(validateNexusVersion(stageName)),
         TE.map(() => ({
             message: 'Successfully validated build application',
             value: undefined

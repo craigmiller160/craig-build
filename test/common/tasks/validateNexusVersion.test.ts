@@ -3,7 +3,7 @@ import ProjectType from '../../../src/types/ProjectType';
 import validateNexusVersion, { TASK_NAME } from '../../../src/common/tasks/validateNexusVersion';
 import '@relmify/jest-fp-ts';
 import BuildError from '../../../src/error/BuildError';
-import { STAGE_NAME } from '../../../src/stages/config-validation';
+import stageName from '../../../src/stages/config-validation/stageName';
 
 describe('validateNexusVersion task', () => {
     it('is release, higher than all releases & pre-releases', async () => {
@@ -18,7 +18,7 @@ describe('validateNexusVersion task', () => {
                 latestPreReleaseVersion: '1.0.0-beta'
             }
         };
-        const result = await validateNexusVersion(projectInfo)();
+        const result = await validateNexusVersion(stageName)(projectInfo)();
         expect(result).toEqualRight(projectInfo);
     });
 
@@ -34,7 +34,7 @@ describe('validateNexusVersion task', () => {
                 latestPreReleaseVersion: '2.0.0-beta'
             }
         };
-        const result = await validateNexusVersion(projectInfo)();
+        const result = await validateNexusVersion(stageName)(projectInfo)();
         expect(result).toEqualRight(projectInfo);
     });
 
@@ -50,10 +50,10 @@ describe('validateNexusVersion task', () => {
                 latestPreReleaseVersion: '1.0.0-beta'
             }
         };
-        const result = await validateNexusVersion(projectInfo)();
+        const result = await validateNexusVersion(stageName)(projectInfo)();
         expect(result).toEqualLeft(new BuildError(
             'Project version is not higher than versions in Nexus',
-            STAGE_NAME,
+            stageName,
             TASK_NAME
         ));
     });
@@ -70,7 +70,7 @@ describe('validateNexusVersion task', () => {
                 latestReleaseVersion: '1.0.0'
             }
         };
-        const result = await validateNexusVersion(projectInfo)();
+        const result = await validateNexusVersion(stageName)(projectInfo)();
         expect(result).toEqualRight(projectInfo);
     });
 
@@ -86,7 +86,7 @@ describe('validateNexusVersion task', () => {
                 latestReleaseVersion: '1.0.0'
             }
         };
-        const result = await validateNexusVersion(projectInfo)();
+        const result = await validateNexusVersion(stageName)(projectInfo)();
         expect(result).toEqualRight(projectInfo);
     });
 
@@ -102,10 +102,10 @@ describe('validateNexusVersion task', () => {
                 latestReleaseVersion: '1.0.0'
             }
         };
-        const result = await validateNexusVersion(projectInfo)();
+        const result = await validateNexusVersion(stageName)(projectInfo)();
         expect(result).toEqualLeft(new BuildError(
             'Project version is not higher than versions in Nexus',
-            STAGE_NAME,
+            stageName,
             TASK_NAME
         ));
     });
@@ -122,10 +122,10 @@ describe('validateNexusVersion task', () => {
                 latestReleaseVersion: '1.2.0'
             }
         };
-        const result = await validateNexusVersion(projectInfo)();
+        const result = await validateNexusVersion(stageName)(projectInfo)();
         expect(result).toEqualLeft(new BuildError(
             'Project version is not higher than versions in Nexus',
-            STAGE_NAME,
+            stageName,
             TASK_NAME
         ));
     });
@@ -138,7 +138,7 @@ describe('validateNexusVersion task', () => {
             version: '1.1.0',
             dependencies: []
         };
-        const result = await validateNexusVersion(projectInfo)();
+        const result = await validateNexusVersion(stageName)(projectInfo)();
         expect(result).toEqualRight(projectInfo);
     });
 
@@ -153,7 +153,7 @@ describe('validateNexusVersion task', () => {
                 latestPreReleaseVersion: '1.0.0-beta'
             }
         };
-        const result = await validateNexusVersion(projectInfo)();
+        const result = await validateNexusVersion(stageName)(projectInfo)();
         expect(result).toEqualRight(projectInfo);
     });
 
@@ -168,7 +168,7 @@ describe('validateNexusVersion task', () => {
                 latestReleaseVersion: '1.0.0'
             }
         };
-        const result = await validateNexusVersion(projectInfo)();
+        const result = await validateNexusVersion(stageName)(projectInfo)();
         expect(result).toEqualRight(projectInfo);
     });
 });

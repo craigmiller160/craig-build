@@ -14,7 +14,7 @@ const identify: StageFunction<undefined, ProjectInfo> = (context: StageContext<u
         identifyProject(undefined),
         TE.chain(getBaseProjectInfo),
         TE.chain(getKubeProjectInfo),
-        TE.chain(getNexusProjectInfo),
+        TE.chain(getNexusProjectInfo(stageName)),
         TE.map((projectInfo) => {
             const projectInfoString = JSON.stringify(projectInfo, null, 2);
             return {

@@ -6,6 +6,7 @@ import * as TE from 'fp-ts/TaskEither';
 import getNexusProjectInfo from '../../../src/common/tasks/getNexusProjectInfo';
 import validateNexusVersion from '../../../src/common/tasks/validateNexusVersion';
 import selfValidation from '../../../src/stages/self-validation';
+import stageName from '../../../src/stages/self-validation/stageName';
 
 jest.mock('../../../src/stages/self-validation/tasks/getSelfProjectInfo', () => jest.fn());
 jest.mock('../../../src/common/tasks/getNexusProjectInfo', () => jest.fn());
@@ -30,14 +31,14 @@ describe('selfValidation stage', () => {
 
     it('completes successfully', async () => {
         getSelfProjectInfoMock.mockImplementation(() => TE.right(projectInfo));
-        getNexusProjectInfoMock.mockImplementation(() => TE.right(projectInfo));
-        validateNexusVersionMock.mockImplementation(() => TE.right(projectInfo));
+        getNexusProjectInfoMock.mockImplementation(() => () => TE.right(projectInfo));
+        validateNexusVersionMock.mockImplementation(() => () => TE.right(projectInfo));
 
         const result = await selfValidation(undefined)();
         expect(result).toEqualRight(undefined);
 
         expect(getSelfProjectInfoMock).toHaveBeenCalledWith(undefined);
-        expect(getNexusProjectInfoMock).toHaveBeenCalledWith(projectInfo);
-        expect(validateNexusVersionMock).toHaveBeenCalledWith(projectInfo);
+        expect(getNexusProjectInfoMock).toHaveBeenCalledWith(stageName);
+        expect(validateNexusVersionMock).toHaveBeenCalledWith(stageName);
     });
 });

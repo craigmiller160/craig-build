@@ -14,7 +14,7 @@ const configValidation: StageFunction<ProjectInfo> = (context: StageContext<Proj
         validateDependencyVersions(context.input),
         TE.chain(validateKubeVersion),
         TE.chain(validateGitTag),
-        TE.chain(validateNexusVersion),
+        TE.chain(validateNexusVersion(stageName)),
         TE.map((projectInfo) => ({
             message: 'Configuration validation successful',
             value: projectInfo
