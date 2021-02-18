@@ -18,6 +18,7 @@ program.version(projectPackageJson.version)
     .parse(process.argv);
 
 const opts = program.opts();
+console.log('Opts', opts); // TODO delete this
 
 const findExecution = (): () => TE.TaskEither<Error, ProjectInfo> => {
     if (opts.b) {
