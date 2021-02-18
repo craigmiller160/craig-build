@@ -11,10 +11,10 @@ import deployOnly from './execution/deployOnly';
 import ProjectInfo from './types/ProjectInfo';
 import buildAndDeploy from './execution/buildAndDeploy';
 
-const projectPackageJson: PackageJson = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), 'package.json'), 'utf8'));
+const projectPackageJson: PackageJson = JSON.parse(fs.readFileSync(path.resolve(__dirname, '..', 'package.json'), 'utf8'));
 program.version(projectPackageJson.version)
     .option('-b, --build-and-deploy', 'Build and deploy project')
-    .option('-d', '--deploy-only', 'Only deploy the project')
+    .option('-d, --deploy-only', 'Only deploy the project')
     .parse(process.argv);
 
 const opts = program.opts();
