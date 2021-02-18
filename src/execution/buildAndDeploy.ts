@@ -11,8 +11,11 @@ import cleanup from '../stages/cleanup';
 import { isBuildError } from '../error/BuildError';
 import selfValidation from '../stages/self-validation';
 
+export const BUILD_NAME = 'Build and Deploy';
+
 const buildAndDeploy = (): TE.TaskEither<Error, ProjectInfo> => {
   buildLogger(`Building and deploying ${getCwd()}`);
+  process.env.BUILD_NAME = BUILD_NAME;
 
   return pipe(
     selfValidation(undefined),

@@ -9,8 +9,11 @@ import configValidation from '../stages/config-validation';
 import deploy from '../stages/deploy';
 import { isBuildError } from '../error/BuildError';
 
+export const BUILD_NAME = 'Deploy Only';
+
 const deployOnly = (): TE.TaskEither<Error, ProjectInfo> => {
   buildLogger(`Deploying only ${getCwd()}`);
+  process.env.BUILD_NAME = BUILD_NAME;
 
   return pipe(
     selfValidation(undefined),
