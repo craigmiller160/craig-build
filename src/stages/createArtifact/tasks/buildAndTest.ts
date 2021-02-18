@@ -9,7 +9,7 @@ import stageName from '../stageName';
 
 export const TASK_NAME = 'Build & Test';
 
-export const MAVEN_BUILD_CMD = 'mvn clean deploy';
+export const MAVEN_BUILD_CMD = 'mvn clean deploy -Ddependency-check.skip=true';
 export const NPM_BUILD_CMD = 'yarn build';
 
 const npmBuildAndTest = (context: TaskContext<ProjectInfo>): TE.TaskEither<Error, ProjectInfo> =>
