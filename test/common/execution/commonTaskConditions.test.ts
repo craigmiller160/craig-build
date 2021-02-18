@@ -107,4 +107,14 @@ describe('commonTaskConditions', () => {
                 });
         });
     });
+
+    describe('executeIfNotDeployOnlyBuild', () => {
+        it('is deploy only build', () => {
+            throw new Error();
+        });
+
+        it('is not deploy only build', () => {
+            throw new Error();
+        });
+    });
 });
