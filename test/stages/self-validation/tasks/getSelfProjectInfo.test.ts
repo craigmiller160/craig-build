@@ -1,6 +1,6 @@
 import fs from 'fs';
 
-describe('confirmLatestVersion task', () => {
+describe('getSelfProjectInfo task', () => {
     it('test', () => {
         throw new Error();
     });
