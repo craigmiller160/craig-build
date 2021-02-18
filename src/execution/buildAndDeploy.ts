@@ -10,12 +10,11 @@ import deploy from '../stages/deploy';
 import cleanup from '../stages/cleanup';
 import { isBuildError } from '../error/BuildError';
 import selfValidation from '../stages/self-validation';
-
-export const BUILD_NAME = 'Build and Deploy';
+import { BUILD_AND_DEPLOY_BUILD } from './executionConstants';
 
 const buildAndDeploy = (): TE.TaskEither<Error, ProjectInfo> => {
   buildLogger(`Building and deploying ${getCwd()}`);
-  process.env.BUILD_NAME = BUILD_NAME;
+  process.env.BUILD_NAME = BUILD_AND_DEPLOY_BUILD;
 
   return pipe(
     selfValidation(undefined),

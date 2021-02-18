@@ -2,7 +2,7 @@ import { TaskShouldExecuteFunction } from './task';
 import ProjectInfo from '../../types/ProjectInfo';
 import { isApplication } from '../../utils/projectTypeUtils';
 import ProjectType from '../../types/ProjectType';
-import { BUILD_NAME as deployOnlyBuildName } from '../../execution/deployOnly';
+import { DEPLOY_ONLY_BUILD } from '../../execution/executionConstants';
 
 export const executeIfRelease: TaskShouldExecuteFunction<ProjectInfo> = (input: ProjectInfo) => {
     if (!input.isPreRelease) {
@@ -56,7 +56,7 @@ export const executeIfApplication: TaskShouldExecuteFunction<ProjectInfo> = (inp
 };
 
 export const executeIfNotDeployOnlyBuild: TaskShouldExecuteFunction<ProjectInfo> = (input: ProjectInfo) => {
-    if (process.env.BUILD_NAME !== deployOnlyBuildName) {
+    if (process.env.BUILD_NAME !== DEPLOY_ONLY_BUILD) {
         return undefined;
     }
 

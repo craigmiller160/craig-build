@@ -6,7 +6,7 @@ import {
     executeIfNpmProject,
     executeIfRelease
 } from '../../../src/common/execution/commonTaskConditions';
-import { BUILD_NAME as deployOnlyBuildName } from '../../../src/execution/deployOnly';
+import { DEPLOY_ONLY_BUILD } from '../../../src/execution/executionConstants';
 
 const baseProjectInfo: ProjectInfo = {
     projectType: ProjectType.NpmLibrary,
@@ -115,7 +115,7 @@ describe('commonTaskConditions', () => {
         });
 
         it('is deploy only build', () => {
-            process.env.BUILD_NAME = deployOnlyBuildName;
+            process.env.BUILD_NAME = DEPLOY_ONLY_BUILD;
             expect(executeIfNotDeployOnlyBuild(baseProjectInfo))
                 .toEqual({
                     message: 'Not running for deploy only build',
