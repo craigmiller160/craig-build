@@ -2,6 +2,7 @@ import { TaskShouldExecuteFunction } from './task';
 import ProjectInfo from '../../types/ProjectInfo';
 import { isApplication } from '../../utils/projectTypeUtils';
 import ProjectType from '../../types/ProjectType';
+import { BUILD_NAME as deployOnlyBuildName } from '../../execution/deployOnly';
 
 export const executeIfRelease: TaskShouldExecuteFunction<ProjectInfo> = (input: ProjectInfo) => {
     if (!input.isPreRelease) {
@@ -53,3 +54,14 @@ export const executeIfApplication: TaskShouldExecuteFunction<ProjectInfo> = (inp
         defaultResult: input
     };
 };
+
+export const executeIfNotDeployOnlyBuild: TaskShouldExecuteFunction<ProjectInfo> = (input: ProjectInfo) => {
+    if (process.env.BUILD_NAME !== deployOnlyBuildName) {
+        return undefined;
+    }
+
+    return {
+        message: 'Not running for deploy only build',
+        defaultResult: input
+    };
+}
