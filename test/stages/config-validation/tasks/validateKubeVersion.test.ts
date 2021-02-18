@@ -3,7 +3,7 @@ import ProjectInfo from '../../../../src/types/ProjectInfo';
 import ProjectType from '../../../../src/types/ProjectType';
 import validateKubeVersion, { TASK_NAME } from '../../../../src/stages/config-validation/tasks/validateKubeVersion';
 import BuildError from '../../../../src/error/BuildError';
-import { STAGE_NAME } from '../../../../src/stages/config-validation';
+import stageName from '../../../../src/stages/config-validation/stageName';
 
 describe('validateKubeVersion task', () => {
     it('valid pre-release kubernetes version', async () => {
@@ -32,7 +32,7 @@ describe('validateKubeVersion task', () => {
         const message = 'Invalid Kubernetes Version. Project Version: 1.0.0-beta Kubernetes Image: localhost:30000/my-project:1.0.0-beta';
         expect(result).toEqualLeft(new BuildError(message,
             TASK_NAME,
-            STAGE_NAME
+            stageName
         ));
     });
 
@@ -62,7 +62,7 @@ describe('validateKubeVersion task', () => {
         const message = 'Invalid Kubernetes Version. Project Version: 1.0.0 Kubernetes Image: localhost:30000/my-project:1.0.1';
         expect(result).toEqualLeft(new BuildError(message,
             TASK_NAME,
-            STAGE_NAME
+            stageName
         ));
     });
 });

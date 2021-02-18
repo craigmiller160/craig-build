@@ -1,6 +1,5 @@
 import ProjectInfo from '../../types/ProjectInfo';
 import * as TE from 'fp-ts/TaskEither';
-import { STAGE_NAME } from '../../stages/identify';
 import ProjectType from '../../types/ProjectType';
 import { pipe } from 'fp-ts/pipeable';
 import {
@@ -80,6 +79,4 @@ const getNexusProjectInfo: TaskFunction<ProjectInfo> = (context: TaskContext<Pro
         }))
     );
 
-// TODO fix the stage name here for the common task
-
-export default createTask(STAGE_NAME, TASK_NAME, getNexusProjectInfo);
+export default (stageName: string) => createTask(stageName, TASK_NAME, getNexusProjectInfo);

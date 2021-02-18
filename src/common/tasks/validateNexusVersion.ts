@@ -6,7 +6,6 @@ import { TaskContext } from '../execution/context';
 import ProjectInfo, { NexusVersions } from '../../types/ProjectInfo';
 import { pipe } from 'fp-ts/pipeable';
 import semver from 'semver';
-import { STAGE_NAME } from '../../stages/config-validation';
 import { executeIfNotDeployOnlyBuild } from '../execution/commonTaskConditions';
 
 export const TASK_NAME = 'Validate Nexus Versions';
@@ -67,6 +66,4 @@ const validateNexusVersion: TaskFunction<ProjectInfo> = (context: TaskContext<Pr
     );
 };
 
-// TODO fix the stage name here for the common task
-
-export default createTask(STAGE_NAME, TASK_NAME, validateNexusVersion, executeIfNotDeployOnlyBuild);
+export default (stageName: string) => createTask(stageName, TASK_NAME, validateNexusVersion, executeIfNotDeployOnlyBuild);

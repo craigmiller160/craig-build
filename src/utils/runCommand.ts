@@ -18,8 +18,8 @@ const runCommand = (command: string, options?: Options): E.Either<Error, string>
 
   const commandParts = command.split(' ');
   const result = spawn.sync(commandParts[0], commandParts.slice(1), {
-      stdio: logOutput ? 'inherit' : 'pipe',
-      cwd
+    stdio: logOutput ? 'inherit' : 'pipe',
+    cwd
   });
   return pipe(
     O.fromNullable(result.status),

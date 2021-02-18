@@ -7,15 +7,14 @@ import getKubeProjectInfo from './tasks/getKubeProjectInfo';
 import getNexusProjectInfo from '../../common/tasks/getNexusProjectInfo';
 import createStage, { StageFunction } from '../../common/execution/stage';
 import { StageContext } from '../../common/execution/context';
-
-export const STAGE_NAME = 'Identify';
+import stageName from './stageName';
 
 const identify: StageFunction<undefined, ProjectInfo> = (context: StageContext<undefined>) =>
     pipe(
         identifyProject(undefined),
         TE.chain(getBaseProjectInfo),
         TE.chain(getKubeProjectInfo),
-        TE.chain(getNexusProjectInfo),
+        TE.chain(getNexusProjectInfo(stageName)),
         TE.map((projectInfo) => {
             const projectInfoString = JSON.stringify(projectInfo, null, 2);
             return {
@@ -25,4 +24,4 @@ const identify: StageFunction<undefined, ProjectInfo> = (context: StageContext<u
         })
     );
 
-export default createStage(STAGE_NAME, identify);
+export default createStage(stageName, identify);

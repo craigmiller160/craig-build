@@ -4,8 +4,7 @@ import { StageContext } from '../../common/execution/context';
 import { pipe } from 'fp-ts/pipeable';
 import gitTag from './tasks/gitTag';
 import * as TE from 'fp-ts/TaskEither';
-
-export const STAGE_NAME = 'Cleanup';
+import stageName from './stageName';
 
 const cleanup: StageFunction<ProjectInfo> = (context: StageContext<ProjectInfo>) =>
     pipe(
@@ -16,4 +15,4 @@ const cleanup: StageFunction<ProjectInfo> = (context: StageContext<ProjectInfo>)
         }))
     );
 
-export default createStage(STAGE_NAME, cleanup);
+export default createStage(stageName, cleanup);

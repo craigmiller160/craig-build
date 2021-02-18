@@ -10,7 +10,7 @@ import EnvironmentVariables from '../../../types/EnvironmentVariables';
 import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
 import { executeIfApplication } from '../../../common/execution/commonTaskConditions';
-import { STAGE_NAME } from '../index';
+import stageName from '../stageName';
 
 export const TASK_NAME = 'Docker Build';
 
@@ -50,4 +50,4 @@ const dockerBuild: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectInfo
     );
 };
 
-export default createTask(STAGE_NAME, TASK_NAME, dockerBuild, executeIfApplication);
+export default createTask(stageName, TASK_NAME, dockerBuild, executeIfApplication);

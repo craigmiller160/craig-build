@@ -8,7 +8,7 @@ import configValidation from '../../../src/stages/config-validation';
 import * as TE from 'fp-ts/TaskEither';
 import '@relmify/jest-fp-ts';
 import BuildError from '../../../src/error/BuildError';
-import { STAGE_NAME } from '../../../src/stages/identify';
+import stageName from '../../../src/stages/config-validation/stageName';
 
 jest.mock('../../../src/stages/config-validation/tasks/validateDependencyVersions', () => jest.fn());
 jest.mock('../../../src/stages/config-validation/tasks/validateKubeVersion', () => jest.fn());
@@ -37,7 +37,7 @@ describe('configValidation stage', () => {
         validateDependencyVersionsMock.mockImplementation(() => TE.right(projectInfo));
         validateKubeVersionMock.mockImplementation(() => TE.right(projectInfo));
         validateGitTagMock.mockImplementation(() => TE.right(projectInfo));
-        validateNexusVersionMock.mockImplementation(() => TE.right(projectInfo));
+        validateNexusVersionMock.mockImplementation(() => () => TE.right(projectInfo));
 
         const result = await configValidation(projectInfo)();
         expect(result).toEqualRight(projectInfo);
@@ -45,21 +45,21 @@ describe('configValidation stage', () => {
         expect(validateDependencyVersionsMock).toHaveBeenCalledWith(projectInfo);
         expect(validateKubeVersionMock).toHaveBeenCalledWith(projectInfo);
         expect(validateGitTagMock).toHaveBeenCalledWith(projectInfo);
-        expect(validateNexusVersionMock).toHaveBeenCalledWith(projectInfo);
+        expect(validateNexusVersionMock).toHaveBeenCalledWith(stageName);
     });
 
     it('completes with error', async () => {
         validateDependencyVersionsMock.mockImplementation(() => TE.right(projectInfo));
-        validateKubeVersionMock.mockImplementation(() => TE.left(new BuildError('Failing', STAGE_NAME)));
+        validateKubeVersionMock.mockImplementation(() => TE.left(new BuildError('Failing', stageName)));
         validateGitTagMock.mockImplementation(() => TE.right(projectInfo));
         validateNexusVersionMock.mockImplementation(() => TE.right(projectInfo));
 
         const result = await configValidation(projectInfo)();
-        expect(result).toEqualLeft(new BuildError('Failing', STAGE_NAME));
+        expect(result).toEqualLeft(new BuildError('Failing', stageName));
 
         expect(validateDependencyVersionsMock).toHaveBeenCalledWith(projectInfo);
         expect(validateKubeVersionMock).toHaveBeenCalledWith(projectInfo);
         expect(validateGitTagMock).not.toHaveBeenCalled();
-        expect(validateNexusVersionMock).not.toHaveBeenCalled();
+        expect(validateNexusVersionMock).toHaveBeenCalledWith(stageName);
     });
 });

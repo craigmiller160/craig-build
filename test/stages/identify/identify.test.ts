@@ -1,4 +1,4 @@
-import identify, { STAGE_NAME } from '../../../src/stages/identify';
+import identify from '../../../src/stages/identify';
 import identifyProject from '../../../src/stages/identify/tasks/identifyProject';
 import Mock = jest.Mock;
 import * as TE from 'fp-ts/TaskEither';
@@ -9,6 +9,7 @@ import '@relmify/jest-fp-ts';
 import getKubeProjectInfo from '../../../src/stages/identify/tasks/getKubeProjectInfo';
 import BuildError from '../../../src/error/BuildError';
 import getNexusProjectInfo from '../../../src/common/tasks/getNexusProjectInfo';
+import stageName from '../../../src/stages/identify/stageName';
 
 jest.mock('../../../src/stages/identify/tasks/identifyProject', () => jest.fn());
 jest.mock('../../../src/stages/identify/tasks/getBaseProjectInfo', () => jest.fn());
@@ -48,7 +49,7 @@ describe('identify stage', () => {
         identifyProjectMock.mockImplementation(() => TE.right(projectType));
         getBaseProjectInfoMock.mockImplementation(() => TE.right(projectInfo));
         getKubeProjectInfoMock.mockImplementation(() => TE.right(kubeProjectInfo));
-        getNexusProjectInfoMock.mockImplementation(() => TE.right(nexusProjectInfo));
+        getNexusProjectInfoMock.mockImplementation(() => () => TE.right(nexusProjectInfo));
 
         const result = await identify(undefined)();
         expect(result).toEqualRight(nexusProjectInfo);
@@ -56,7 +57,7 @@ describe('identify stage', () => {
         expect(identifyProjectMock).toHaveBeenCalled();
         expect(getBaseProjectInfoMock).toHaveBeenCalledWith(projectType);
         expect(getKubeProjectInfoMock).toHaveBeenCalledWith(projectInfo);
-        expect(getNexusProjectInfoMock).toHaveBeenCalledWith(kubeProjectInfo);
+        expect(getNexusProjectInfoMock).toHaveBeenCalledWith(stageName);
     });
 
     it('completes with error', async () => {
@@ -69,14 +70,14 @@ describe('identify stage', () => {
             isPreRelease: false
         };
         identifyProjectMock.mockImplementation(() => TE.right(projectType));
-        getBaseProjectInfoMock.mockImplementation(() => TE.left(new BuildError('Failing', STAGE_NAME)));
+        getBaseProjectInfoMock.mockImplementation(() => TE.left(new BuildError('Failing', stageName)));
 
         const result = await identify(undefined)();
-        expect(result).toEqualLeft(new BuildError('Failing', STAGE_NAME));
+        expect(result).toEqualLeft(new BuildError('Failing', stageName));
 
         expect(identifyProjectMock).toHaveBeenCalled();
         expect(getBaseProjectInfoMock).toHaveBeenCalledWith(projectType);
         expect(getKubeProjectInfoMock).not.toHaveBeenCalled();
-        expect(getNexusProjectInfoMock).not.toHaveBeenCalled();
+        expect(getNexusProjectInfoMock).toHaveBeenCalledWith(stageName);
     });
 });

@@ -2,11 +2,11 @@ import createTask, { TaskFunction } from '../../../common/execution/task';
 import ProjectInfo from '../../../types/ProjectInfo';
 import { TaskContext } from '../../../common/execution/context';
 import { pipe } from 'fp-ts/pipeable';
-import { STAGE_NAME } from '../index';
 import { executeIfNpmPreRelease } from '../../../common/execution/commonTaskConditions';
 import runCommand from '../../../utils/runCommand';
 import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
+import stageName from '../stageName';
 
 export const TASK_NAME = 'Commit Npm Version Changes';
 
@@ -39,4 +39,4 @@ const commitNpmVersionChanges: TaskFunction<ProjectInfo> = (context: TaskContext
         }))
     );
 
-export default createTask(STAGE_NAME, TASK_NAME, commitNpmVersionChanges, executeIfNpmPreRelease);
+export default createTask(stageName, TASK_NAME, commitNpmVersionChanges, executeIfNpmPreRelease);

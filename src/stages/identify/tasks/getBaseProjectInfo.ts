@@ -11,9 +11,9 @@ import * as O from 'fp-ts/Option';
 import * as TE from 'fp-ts/TaskEither';
 import { pipe } from 'fp-ts/pipeable';
 import handleUnknownError from '../../../utils/handleUnknownError';
-import { STAGE_NAME } from '../index';
 import createTask, { TaskFunction, TaskShouldExecuteFunction } from '../../../common/execution/task';
 import { TaskContext } from '../../../common/execution/context';
+import stageName from '../stageName';
 
 const TASK_NAME = 'Get Base Project Info';
 
@@ -126,4 +126,4 @@ const getBaseProjectInfo: TaskFunction<ProjectType,ProjectInfo> = (context: Task
         TE.fromEither
     );
 
-export default createTask(STAGE_NAME, TASK_NAME, getBaseProjectInfo);
+export default createTask(stageName, TASK_NAME, getBaseProjectInfo);

@@ -5,7 +5,7 @@ import ProjectInfo from '../../../../src/types/ProjectInfo';
 import ProjectType from '../../../../src/types/ProjectType';
 import '@relmify/jest-fp-ts';
 import BuildError from '../../../../src/error/BuildError';
-import { STAGE_NAME } from '../../../../src/stages/config-validation';
+import stageName from '../../../../src/stages/config-validation/stageName';
 
 const runCommandMock = runCommand as jest.Mock;
 const projectInfo: ProjectInfo = {
@@ -22,7 +22,7 @@ describe('validateGitTag task', () => {
         const result = await validateGitTag(projectInfo)();
         expect(result).toEqualLeft(new BuildError(
             'Project version git tag already exists',
-            STAGE_NAME,
+            stageName,
             TASK_NAME
         ));
     });

@@ -1,11 +1,11 @@
 import createTask, { TaskFunction } from '../../../common/execution/task';
 import ProjectInfo from '../../../types/ProjectInfo';
 import { TaskContext } from '../../../common/execution/context';
-import { STAGE_NAME } from '../index';
 import { executeIfNpmProject } from '../../../common/execution/commonTaskConditions';
 import runCommand from '../../../utils/runCommand';
 import { pipe } from 'fp-ts/pipeable';
 import * as TE from 'fp-ts/TaskEither';
+import stageName from '../stageName';
 
 export const TASK_NAME = 'Publish';
 
@@ -21,4 +21,4 @@ const publish: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectInfo>) =
         }))
     );
 
-export default createTask(STAGE_NAME, TASK_NAME, publish, executeIfNpmProject);
+export default createTask(stageName, TASK_NAME, publish, executeIfNpmProject);

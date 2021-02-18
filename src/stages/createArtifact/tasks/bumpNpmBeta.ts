@@ -2,8 +2,8 @@ import ProjectInfo from '../../../types/ProjectInfo';
 import createTask, { TaskFunction } from '../../../common/execution/task';
 import { TaskContext } from '../../../common/execution/context';
 import * as TE from 'fp-ts/TaskEither';
-import { STAGE_NAME } from '../index';
 import { executeIfNpmPreRelease } from '../../../common/execution/commonTaskConditions';
+import stageName from '../stageName';
 
 export const TASK_NAME = 'Bump Npm Beta';
 
@@ -28,4 +28,4 @@ const bumpNpmBeta: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectInfo
     });
 };
 
-export default createTask(STAGE_NAME, TASK_NAME, bumpNpmBeta, executeIfNpmPreRelease);
+export default createTask(stageName, TASK_NAME, bumpNpmBeta, executeIfNpmPreRelease);

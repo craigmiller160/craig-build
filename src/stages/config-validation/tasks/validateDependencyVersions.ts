@@ -4,11 +4,11 @@ import { isLeft } from 'fp-ts/Either';
 import * as A from 'fp-ts/Array';
 import * as TE from 'fp-ts/TaskEither';
 import ProjectType from '../../../types/ProjectType';
-import { STAGE_NAME } from '../index';
 import { pipe } from 'fp-ts/pipeable';
 import createTask, { TaskFunction, TaskShouldExecuteFunction } from '../../../common/execution/task';
 import { TaskContext } from '../../../common/execution/context';
 import { executeIfRelease } from '../../../common/execution/commonTaskConditions';
+import stageName from '../stageName';
 
 export const TASK_NAME = 'Validate Dependency Versions';
 
@@ -62,4 +62,4 @@ const validateDependencyVersions: TaskFunction<ProjectInfo> = (context: TaskCont
         TE.fromEither
     );
 
-export default createTask(STAGE_NAME, TASK_NAME, validateDependencyVersions, executeIfRelease);
+export default createTask(stageName, TASK_NAME, validateDependencyVersions, executeIfRelease);

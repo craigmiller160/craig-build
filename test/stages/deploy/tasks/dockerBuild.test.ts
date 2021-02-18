@@ -4,10 +4,10 @@ import '@relmify/jest-fp-ts';
 import runCommand from '../../../../src/utils/runCommand';
 import dockerBuild, { TASK_NAME } from '../../../../src/stages/deploy/tasks/dockerBuild';
 import BuildError from '../../../../src/error/BuildError';
-import { STAGE_NAME } from '../../../../src/stages/deploy';
 import getCwd from '../../../../src/utils/getCwd';
 import shellEnv from 'shell-env';
 import * as E from 'fp-ts/Either';
+import stageName from '../../../../src/stages/deploy/stageName';
 
 jest.mock('shell-env', () => ({
     sync: jest.fn()
@@ -35,7 +35,7 @@ describe('dockerBuild task', () => {
                 ...baseProjectInfo,
                 kubernetesDockerImage: undefined
             })();
-            expect(result).toEqualLeft(new BuildError('Missing Kubernetes Docker Image', STAGE_NAME, TASK_NAME));
+            expect(result).toEqualLeft(new BuildError('Missing Kubernetes Docker Image', stageName, TASK_NAME));
         });
 
         it('has no docker username', async () => {
@@ -44,7 +44,7 @@ describe('dockerBuild task', () => {
                 NEXUS_DOCKER_PASSWORD: 'abc'
             }));
             const result = await dockerBuild(baseProjectInfo)();
-            expect(result).toEqualLeft(new BuildError('Missing Docker credential environment variables', STAGE_NAME, TASK_NAME));
+            expect(result).toEqualLeft(new BuildError('Missing Docker credential environment variables', stageName, TASK_NAME));
         });
 
         it('has no docker password', async () => {
@@ -53,7 +53,7 @@ describe('dockerBuild task', () => {
                 NEXUS_DOCKER_USER: 'abc'
             }));
             const result = await dockerBuild(baseProjectInfo)();
-            expect(result).toEqualLeft(new BuildError('Missing Docker credential environment variables', STAGE_NAME, TASK_NAME));
+            expect(result).toEqualLeft(new BuildError('Missing Docker credential environment variables', stageName, TASK_NAME));
         });
     });
 

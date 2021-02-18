@@ -18,7 +18,7 @@ export type BuildTask<Input,ResultValue = Input> = (input: Input) => TE.TaskEith
 const defaultShouldExecute: TaskShouldExecuteFunction<any> = (input: any) => undefined;
 
 const createTask = <Input, ResultValue = Input>(
-    stageName: string, // TODO stageName cannot come from the stage file. Recursive import breaks shit
+    stageName: string,
     taskName: string,
     taskFn: TaskFunction<Input, ResultValue>,
     shouldExecuteFn?: TaskShouldExecuteFunction<Input,ResultValue>): BuildTask<Input,ResultValue> =>

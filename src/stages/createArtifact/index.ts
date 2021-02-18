@@ -7,8 +7,7 @@ import * as TE from 'fp-ts/TaskEither';
 import bumpNpmBeta from './tasks/bumpNpmBeta';
 import publish from './tasks/publish';
 import commitNpmVersionChanges from './tasks/commitNpmVersionChanges';
-
-export const STAGE_NAME = 'Create Artifact';
+import stageName from './stageName';
 
 const createArtifact: StageFunction<ProjectInfo> = (context: StageContext<ProjectInfo>) =>
     pipe(
@@ -22,4 +21,4 @@ const createArtifact: StageFunction<ProjectInfo> = (context: StageContext<Projec
         }))
     );
 
-export default createStage(STAGE_NAME, createArtifact);
+export default createStage(stageName, createArtifact);
