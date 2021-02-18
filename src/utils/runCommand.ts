@@ -17,9 +17,9 @@ const runCommand = (command: string, options?: Options): E.Either<Error, string>
   console.log(`[${LOG_PREFIX}] [Command]: ${command}`); // eslint-disable-line no-console
 
   const commandParts = command.split(' ');
-  // TODO output does not print while the command executes, only after it
   const result = spawn.sync(commandParts[0], commandParts.slice(1), {
-    cwd
+      stdio: logOutput ? 'inherit' : 'ignore',
+      cwd
   });
   return pipe(
     O.fromNullable(result.status),
@@ -28,9 +28,6 @@ const runCommand = (command: string, options?: Options): E.Either<Error, string>
     E.chain<Error, number, string>((status) => {
       if (status === 0) {
         const output = result.stdout.toString();
-        if (logOutput) {
-          console.log(output); // eslint-disable-line no-console
-        }
         return E.right(output);
       }
 
@@ -39,9 +36,6 @@ const runCommand = (command: string, options?: Options): E.Either<Error, string>
       }
 
       const error = result.stderr.toString();
-      if (logOutput) {
-        console.error(error);
-      }
       return E.left(new Error(error));
     })
   );
