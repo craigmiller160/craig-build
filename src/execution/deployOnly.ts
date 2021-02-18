@@ -13,8 +13,8 @@ const deployOnly = (): TE.TaskEither<Error, ProjectInfo> => {
   buildLogger(`Deploying only ${getCwd()}`);
 
   return pipe(
-    selfValidation(null), // TODO review this arg
-    TE.chain(() => identify(undefined)), // TODO review this arg
+    selfValidation(undefined),
+    TE.chain(identify),
     TE.chain(configValidation),
     TE.chain(deploy),
     TE.map((projectInfo) => {

@@ -13,7 +13,7 @@ import { STAGE_NAME } from '../../../src/stages/identify';
 jest.mock('../../../src/stages/config-validation/tasks/validateDependencyVersions', () => jest.fn());
 jest.mock('../../../src/stages/config-validation/tasks/validateKubeVersion', () => jest.fn());
 jest.mock('../../../src/stages/config-validation/tasks/validateGitTag', () => jest.fn());
-jest.mock('../../../src/stages/config-validation/tasks/validateNexusVersion', () => jest.fn());
+jest.mock('../../../src/common/tasks/validateNexusVersion', () => jest.fn());
 
 const validateDependencyVersionsMock = validateDependencyVersions as jest.Mock;
 const validateKubeVersionMock = validateKubeVersion as jest.Mock;

@@ -13,7 +13,7 @@ import getNexusProjectInfo from '../../../src/common/tasks/getNexusProjectInfo';
 jest.mock('../../../src/stages/identify/tasks/identifyProject', () => jest.fn());
 jest.mock('../../../src/stages/identify/tasks/getBaseProjectInfo', () => jest.fn());
 jest.mock('../../../src/stages/identify/tasks/getKubeProjectInfo', () => jest.fn());
-jest.mock('../../../src/stages/identify/tasks/getNexusProjectInfo', () => jest.fn());
+jest.mock('../../../src/common/tasks/getNexusProjectInfo', () => jest.fn());
 
 const identifyProjectMock: Mock = identifyProject as Mock;
 const getBaseProjectInfoMock: Mock = getBaseProjectInfo as Mock;

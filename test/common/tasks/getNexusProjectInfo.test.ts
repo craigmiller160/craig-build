@@ -12,7 +12,7 @@ import * as TE from 'fp-ts/TaskEither';
 import '@relmify/jest-fp-ts';
 import Mock = jest.Mock;
 
-jest.mock('../../../../src/common/services/NexusRepoApi', () => ({
+jest.mock('../../../src/common/services/NexusRepoApi', () => ({
     searchForNpmBetas: jest.fn(),
     searchForNpmReleases: jest.fn(),
     searchForMavenReleases: jest.fn(),
