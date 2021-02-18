@@ -8,7 +8,6 @@ import yaml from 'yaml';
 import fs from 'fs';
 import KubeDeployment from '../../../types/KubeDeployment';
 import handleUnknownError from '../../../utils/handleUnknownError';
-import { STAGE_NAME } from '../index';
 import createTask, {
     TaskFunction,
     TaskShouldExecuteFunction
@@ -16,6 +15,7 @@ import createTask, {
 import { TaskContext } from '../../../common/execution/context';
 import { isApplication } from '../../../utils/projectTypeUtils';
 import { executeIfApplication } from '../../../common/execution/commonTaskConditions';
+import stageName from '../stageName';
 
 const TASK_NAME = 'Get Kubernetes Project Info';
 
@@ -44,4 +44,4 @@ const getKubeProjectInfo: TaskFunction<ProjectInfo> = (context: TaskContext<Proj
         TE.fromEither
     );
 
-export default createTask(STAGE_NAME, TASK_NAME, getKubeProjectInfo, executeIfApplication);
+export default createTask(stageName, TASK_NAME, getKubeProjectInfo, executeIfApplication);

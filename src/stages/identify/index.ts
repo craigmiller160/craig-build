@@ -7,8 +7,7 @@ import getKubeProjectInfo from './tasks/getKubeProjectInfo';
 import getNexusProjectInfo from '../../common/tasks/getNexusProjectInfo';
 import createStage, { StageFunction } from '../../common/execution/stage';
 import { StageContext } from '../../common/execution/context';
-
-export const STAGE_NAME = 'Identify';
+import stageName from './stageName';
 
 const identify: StageFunction<undefined, ProjectInfo> = (context: StageContext<undefined>) =>
     pipe(
@@ -25,4 +24,4 @@ const identify: StageFunction<undefined, ProjectInfo> = (context: StageContext<u
         })
     );
 
-export default createStage(STAGE_NAME, identify);
+export default createStage(stageName, identify);

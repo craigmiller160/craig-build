@@ -2,10 +2,10 @@ import createTask, { TaskFunction } from '../../../common/execution/task';
 import ProjectInfo from '../../../types/ProjectInfo';
 import { TaskContext } from '../../../common/execution/context';
 import { pipe } from 'fp-ts/pipeable';
-import { STAGE_NAME } from '../index';
 import * as TE from 'fp-ts/TaskEither';
 import ProjectType from '../../../types/ProjectType';
 import runCommand from '../../../utils/runCommand';
+import stageName from '../stageName';
 
 export const TASK_NAME = 'Build & Test';
 
@@ -50,4 +50,4 @@ const buildAndTest: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectInf
         }))
     );
 
-export default createTask(STAGE_NAME, TASK_NAME, buildAndTest);
+export default createTask(stageName, TASK_NAME, buildAndTest);

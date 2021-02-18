@@ -5,9 +5,9 @@ import path from 'path';
 import getCwd from '../../../utils/getCwd';
 import ProjectType from '../../../types/ProjectType';
 import { pipe } from 'fp-ts/pipeable';
-import { STAGE_NAME } from '../index';
 import createTask, { TaskFunction } from '../../../common/execution/task';
 import { TaskContext } from '../../../common/execution/context';
+import stageName from '../stageName';
 
 export const TASK_NAME = 'Identify Project';
 
@@ -46,4 +46,4 @@ const identifyProject: TaskFunction<undefined, ProjectType> = (context: TaskCont
         TE.fromEither
     );
 
-export default createTask(STAGE_NAME, TASK_NAME, identifyProject);
+export default createTask(stageName, TASK_NAME, identifyProject);

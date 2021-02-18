@@ -3,11 +3,10 @@ import * as O from 'fp-ts/Option';
 import * as TE from 'fp-ts/TaskEither';
 import ProjectInfo from '../../../types/ProjectInfo';
 import { pipe } from 'fp-ts/pipeable';
-import { STAGE_NAME } from '../index';
 import createTask, { TaskFunction, TaskShouldExecuteFunction } from '../../../common/execution/task';
 import { TaskContext } from '../../../common/execution/context';
-import { isApplication } from '../../../utils/projectTypeUtils';
 import { executeIfApplication } from '../../../common/execution/commonTaskConditions';
+import stageName from '../stageName';
 
 export const TASK_NAME = 'Validate Kubernetes Version';
 const KUBE_PRE_RELEASE_VERSION = 'latest';
@@ -38,4 +37,4 @@ const validateKubeVersion: TaskFunction<ProjectInfo> = (context: TaskContext<Pro
         TE.fromEither
     );
 
-export default createTask(STAGE_NAME, TASK_NAME, validateKubeVersion, executeIfApplication);
+export default createTask(stageName, TASK_NAME, validateKubeVersion, executeIfApplication);

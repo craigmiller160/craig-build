@@ -5,8 +5,7 @@ import { pipe } from 'fp-ts/pipeable';
 import dockerBuild from './tasks/dockerBuild';
 import * as TE from 'fp-ts/TaskEither';
 import kubeDeploy from './tasks/kubeDeploy';
-
-export const STAGE_NAME = 'Deploy';
+import stageName from './stageName';
 
 const deploy: StageFunction<ProjectInfo> = (context: StageContext<ProjectInfo>) =>
     pipe(
@@ -18,4 +17,4 @@ const deploy: StageFunction<ProjectInfo> = (context: StageContext<ProjectInfo>) 
         }))
     );
 
-export default createStage(STAGE_NAME, deploy);
+export default createStage(stageName, deploy);

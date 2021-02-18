@@ -1,7 +1,6 @@
 import createTask, { TaskFunction } from '../../../common/execution/task';
 import ProjectInfo from '../../../types/ProjectInfo';
 import { TaskContext } from '../../../common/execution/context';
-import { STAGE_NAME } from '../index';
 import { executeIfApplication } from '../../../common/execution/commonTaskConditions';
 import { pipe } from 'fp-ts/pipeable';
 import path from 'path';
@@ -10,6 +9,7 @@ import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
 import fs from 'fs';
 import runCommand from '../../../utils/runCommand';
+import stageName from '../stageName';
 
 export const TASK_NAME = 'Kubernetes Deployment';
 
@@ -46,4 +46,4 @@ const kubeDeploy: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectInfo>
     );
 };
 
-export default createTask(STAGE_NAME, TASK_NAME, kubeDeploy, executeIfApplication);
+export default createTask(stageName, TASK_NAME, kubeDeploy, executeIfApplication);
