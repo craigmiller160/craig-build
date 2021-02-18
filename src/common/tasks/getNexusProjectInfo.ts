@@ -80,4 +80,6 @@ const getNexusProjectInfo: TaskFunction<ProjectInfo> = (context: TaskContext<Pro
         }))
     );
 
+// TODO fix the stage name here for the common task
+
 export default createTask(STAGE_NAME, TASK_NAME, getNexusProjectInfo);

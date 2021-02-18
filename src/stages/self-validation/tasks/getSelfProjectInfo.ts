@@ -1,12 +1,12 @@
 import ProjectInfo from '../../../types/ProjectInfo';
 import createTask, { TaskFunction } from '../../../common/execution/task';
 import { TaskContext } from '../../../common/execution/context';
-import { STAGE_NAME } from '../index';
 import path from 'path';
 import fs from 'fs';
 import PackageJson from '../../../types/PackageJson';
 import * as TE from 'fp-ts/TaskEither';
 import ProjectType from '../../../types/ProjectType';
+import stageName from '../stageName';
 
 export const TASK_NAME = 'Get Self Project Info';
 
@@ -24,4 +24,4 @@ const getSelfProjectInfo: TaskFunction<undefined,ProjectInfo> = (context: TaskCo
     });
 };
 
-export default createTask(STAGE_NAME, TASK_NAME, getSelfProjectInfo);
+export default createTask(stageName, TASK_NAME, getSelfProjectInfo);

@@ -5,8 +5,7 @@ import getSelfProjectInfo from './tasks/getSelfProjectInfo';
 import { pipe } from 'fp-ts/pipeable';
 import getNexusProjectInfo from '../../common/tasks/getNexusProjectInfo';
 import validateNexusVersion from '../../common/tasks/validateNexusVersion';
-
-export const STAGE_NAME = 'Self-Validation';
+import stageName from './stageName';
 
 const selfValidation: StageFunction<undefined> = (context: StageContext<undefined>) =>
     pipe(
@@ -19,4 +18,4 @@ const selfValidation: StageFunction<undefined> = (context: StageContext<undefine
         }))
     );
 
-export default createStage(STAGE_NAME, selfValidation);
+export default createStage(stageName, selfValidation);

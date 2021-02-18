@@ -67,4 +67,6 @@ const validateNexusVersion: TaskFunction<ProjectInfo> = (context: TaskContext<Pr
     );
 };
 
+// TODO fix the stage name here for the common task
+
 export default createTask(STAGE_NAME, TASK_NAME, validateNexusVersion, executeIfNotDeployOnlyBuild);
