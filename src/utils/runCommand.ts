@@ -27,7 +27,7 @@ const runCommand = (command: string, options?: Options): E.Either<Error, string>
     E.of,
     E.chain<Error, number, string>((status) => {
       if (status === 0) {
-        const output = result.stdout.toString();
+        const output = !logOutput ? result.stdout.toString() : 'Output was printed to console';
         return E.right(output);
       }
 
@@ -35,7 +35,7 @@ const runCommand = (command: string, options?: Options): E.Either<Error, string>
         return E.left(new Error('No status code returned from command'));
       }
 
-      const error = result.stderr.toString();
+      const error = !logOutput ? result.stderr.toString() : 'Error was printed to console';
       return E.left(new Error(error));
     })
   );
