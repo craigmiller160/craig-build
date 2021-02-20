@@ -2,12 +2,10 @@ import ProjectInfo from '../../../types/ProjectInfo';
 import createTask, { TaskFunction } from '../../../common/execution/task';
 import { TaskContext } from '../../../common/execution/context';
 import * as TE from 'fp-ts/TaskEither';
+import * as O from 'fp-ts/Option';
 import { executeIfNpmPreRelease } from '../../../common/execution/commonTaskConditions';
 import stageName from '../stageName';
-
-// TODO use the nexus versions to do this
-// TODO if no preReleaseVersion, then it's beta.1
-// TODO otherwise, increment based on beta.#
+import { pipe } from 'fp-ts/pipeable';
 
 export const TASK_NAME = 'Bump Npm Beta';
 
@@ -17,10 +15,22 @@ const separateBetaNumber = (version: string): [string, number] => {
     return [`${versionNumber}-${beta}`, parseInt(betaNumber ?? 0)];
 };
 
-const bumpNpmBeta: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectInfo>) => {
-    const [versionWithoutBetaNum, betaNumber] = separateBetaNumber(context.input.version);
+const bumpVersion = (version: string) => {
+    const [versionWithoutBetaNum, betaNumber] = separateBetaNumber(version);
     const newBetaNumber = betaNumber + 1;
-    const newVersion = `${versionWithoutBetaNum}.${newBetaNumber}`;
+    return `${versionWithoutBetaNum}.${newBetaNumber}`;
+};
+
+const bumpNpmBeta: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectInfo>) => {
+    const projectVersion = pipe(
+        O.fromNullable(context.input.latestNexusVersions),
+        O.chain((latestNexusVersions) => O.fromNullable(latestNexusVersions.latestPreReleaseVersion)),
+        O.fold(
+            () => context.input.version,
+            (version) => version
+        )
+    );
+    const newVersion = bumpVersion(projectVersion);
     const newProjectInfo: ProjectInfo = {
         ...context.input,
         version: newVersion

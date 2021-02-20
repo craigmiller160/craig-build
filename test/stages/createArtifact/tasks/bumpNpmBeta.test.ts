@@ -12,23 +12,11 @@ const baseProjectInfo: ProjectInfo = {
 };
 
 describe('bumpNpmBeta task', () => {
-    it('bumps beta version', async () => {
-        const result = await bumpNpmBeta(baseProjectInfo)();
-        expect(result).toEqualRight({
-            ...baseProjectInfo,
-            version: '1.0.0-beta.2'
-        });
+    it('bumps npm beta with nexus pre-release version', () => {
+        throw new Error();
     });
 
-    it('bumps beta version when there is no beta number', async () => {
-        const projectInfo: ProjectInfo = {
-            ...baseProjectInfo,
-            version: '1.0.0-beta'
-        };
-        const result = await bumpNpmBeta(projectInfo)();
-        expect(result).toEqualRight({
-            ...projectInfo,
-            version: '1.0.0-beta.1'
-        });
+    it('bumps npm beta with no nexus pre-release version', () => {
+        throw new Error();
     });
 });
