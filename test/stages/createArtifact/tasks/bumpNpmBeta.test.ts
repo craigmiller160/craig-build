@@ -7,27 +7,29 @@ const baseProjectInfo: ProjectInfo = {
     projectType: ProjectType.NpmApplication,
     isPreRelease: true,
     name: 'my-project',
-    version: '1.0.0-beta.1',
+    version: '1.0.0-beta',
     dependencies: []
 };
 
 describe('bumpNpmBeta task', () => {
-    it('bumps beta version', async () => {
-        const result = await bumpNpmBeta(baseProjectInfo)();
-        expect(result).toEqualRight({
-            ...baseProjectInfo,
-            version: '1.0.0-beta.2'
-        });
-    });
-
-    it('bumps beta version when there is no beta number', async () => {
+    it('bumps npm beta with nexus pre-release version', async () => {
         const projectInfo: ProjectInfo = {
             ...baseProjectInfo,
-            version: '1.0.0-beta'
+            latestNexusVersions: {
+                latestPreReleaseVersion: '1.0.0-beta.2'
+            }
         };
         const result = await bumpNpmBeta(projectInfo)();
         expect(result).toEqualRight({
             ...projectInfo,
+            version: '1.0.0-beta.3'
+        });
+    });
+
+    it('bumps npm beta with no nexus pre-release version', async () => {
+        const result = await bumpNpmBeta(baseProjectInfo)();
+        expect(result).toEqualRight({
+            ...baseProjectInfo,
             version: '1.0.0-beta.1'
         });
     });

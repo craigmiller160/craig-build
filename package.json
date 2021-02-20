@@ -1,6 +1,6 @@
 {
   "name": "@craigmiller160/craig-build",
-  "version": "1.0.0-beta.29",
+  "version": "1.0.0-beta.36",
   "main": "index.js",
   "author": "craigmiller160",
   "bin": {
@@ -52,6 +52,7 @@
     "qs": "^6.9.6",
     "semver": "^7.3.4",
     "shell-env": "^3.0.1",
+    "simple-git": "^2.35.1",
     "sync-env": "^1.0.5",
     "ts-custom-error": "^3.2.0",
     "xml2js": "^0.4.23",

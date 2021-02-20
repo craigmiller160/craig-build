@@ -32,7 +32,6 @@ const buildAndDeploy = (): TE.TaskEither<Error, ProjectInfo> => {
         const message = `Build and deploy failed on Stage ${error.stageName} and Task ${error.taskName}: ` +
             `${error.message}`;
         buildLogger(message, ERROR_STATUS);
-        console.error(error);
       } else {
         const message = `Build and Deploy Error: ${error.message}`;
         buildLogger(message, ERROR_STATUS);
