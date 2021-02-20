@@ -15,7 +15,6 @@ export const TASK_NAME = 'Publish';
 
 export const NPM_PUBLISH_COMMAND = 'yarn publish --no-git-tag-version --new-version';
 
-// TODO update tests to mock the command
 const publish: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectInfo>) => {
     const git = simpleGit({
         baseDir: getCwd()
