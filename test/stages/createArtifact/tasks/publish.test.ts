@@ -1,11 +1,20 @@
 import runCommand from '../../../../src/utils/runCommand';
 import ProjectInfo from '../../../../src/types/ProjectInfo';
 import ProjectType from '../../../../src/types/ProjectType';
-import publish, { CLEAR_GIT_COMMAND, NPM_PUBLISH_COMMAND } from '../../../../src/stages/createArtifact/tasks/publish';
+import publish, { NPM_PUBLISH_COMMAND } from '../../../../src/stages/createArtifact/tasks/publish';
 import '@relmify/jest-fp-ts';
 import * as E from 'fp-ts/Either';
+import simpleGit from 'simple-git';
+
+jest.mock('simple-git', () => {
+    const checkout = jest.fn();
+    return () => ({
+        checkout
+    });
+})
 
 const runCommandMock = runCommand as jest.Mock;
+const checkoutMock = simpleGit().checkout as jest.Mock;
 
 describe('publish task', () => {
     it('publishes NPM package', async () => {
@@ -18,15 +27,16 @@ describe('publish task', () => {
         };
 
         runCommandMock.mockImplementation(() => E.of(''));
+        checkoutMock.mockResolvedValue('');
 
         const result = await publish(projectInfo)();
         expect(result).toEqualRight(projectInfo);
 
-        expect(runCommandMock).toHaveBeenCalledTimes(2);
+        expect(runCommandMock).toHaveBeenCalledTimes(1);
         expect(runCommandMock)
             .toHaveBeenNthCalledWith(1, `${NPM_PUBLISH_COMMAND} ${projectInfo.version}`, {
                 logOutput: true
             });
-        expect(runCommandMock).toHaveBeenNthCalledWith(2, CLEAR_GIT_COMMAND);
+        expect(checkoutMock).toHaveBeenCalledWith('.');
     });
 });
