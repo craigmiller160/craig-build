@@ -1,7 +1,7 @@
 import runCommand from '../../../../src/utils/runCommand';
 import ProjectInfo from '../../../../src/types/ProjectInfo';
 import ProjectType from '../../../../src/types/ProjectType';
-import publish, { NPM_PUBLISH_COMMAND } from '../../../../src/stages/createArtifact/tasks/publish';
+import publish, { CLEAR_GIT_COMMAND, NPM_PUBLISH_COMMAND } from '../../../../src/stages/createArtifact/tasks/publish';
 import '@relmify/jest-fp-ts';
 import * as E from 'fp-ts/Either';
 
@@ -22,9 +22,11 @@ describe('publish task', () => {
         const result = await publish(projectInfo)();
         expect(result).toEqualRight(projectInfo);
 
+        expect(runCommandMock).toHaveBeenCalledTimes(2);
         expect(runCommandMock)
-            .toHaveBeenCalledWith(`${NPM_PUBLISH_COMMAND} ${projectInfo.version}`, {
+            .toHaveBeenNthCalledWith(1, `${NPM_PUBLISH_COMMAND} ${projectInfo.version}`, {
                 logOutput: true
             });
+        expect(runCommandMock).toHaveBeenNthCalledWith(2, CLEAR_GIT_COMMAND);
     });
 });
