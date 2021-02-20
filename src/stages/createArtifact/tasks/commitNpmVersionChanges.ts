@@ -8,6 +8,8 @@ import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
 import stageName from '../stageName';
 
+// TODO do not do this, remove any changes to package.json
+
 export const TASK_NAME = 'Commit Npm Version Changes';
 
 export const RESET_GIT_STAGING = 'git reset HEAD';

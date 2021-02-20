@@ -5,6 +5,10 @@ import * as TE from 'fp-ts/TaskEither';
 import { executeIfNpmPreRelease } from '../../../common/execution/commonTaskConditions';
 import stageName from '../stageName';
 
+// TODO use the nexus versions to do this
+// TODO if no preReleaseVersion, then it's beta.1
+// TODO otherwise, increment based on beta.#
+
 export const TASK_NAME = 'Bump Npm Beta';
 
 const separateBetaNumber = (version: string): [string, number] => {
