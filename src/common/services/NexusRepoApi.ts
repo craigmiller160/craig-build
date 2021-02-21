@@ -16,6 +16,8 @@ export const restApiInstance = axios.create({
     baseURL: 'https://craigmiller160.ddns.net:30003/service/rest/v1'
 });
 
+export type NexusRepoSearchFn = (name: string) => TE.TaskEither<Error, NexusSearchResult>;
+
 export const searchForMavenSnapshots = (artifactId: string): TE.TaskEither<Error, NexusSearchResult> =>
     pipe(
         TE.tryCatch(

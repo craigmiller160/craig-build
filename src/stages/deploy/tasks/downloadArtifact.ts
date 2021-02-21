@@ -9,7 +9,12 @@ import { executeIfApplication } from '../../../common/execution/commonTaskCondit
 import { isMaven } from '../../../utils/projectTypeUtils';
 import { pipe } from 'fp-ts/pipeable';
 import getCwd from '../../../utils/getCwd';
-import { searchForMavenSnapshots, downloadArtifact as downloadArtifactApi } from '../../../common/services/NexusRepoApi';
+import {
+    searchForMavenSnapshots,
+    downloadArtifact as downloadArtifactApi,
+    NexusRepoSearchFn, searchForMavenReleases
+} from '../../../common/services/NexusRepoApi';
+import NexusSearchResult from '../../../types/NexusSearchResult';
 
 export const TASK_NAME = 'Download Artifact';
 
@@ -21,9 +26,9 @@ const prepareDownloadDirectory = () => {
     fs.mkdirSync(deployBuildDir);
 };
 
-const downloadMavenSnapshot = (context: TaskContext<ProjectInfo>): TE.TaskEither<Error, ProjectInfo> =>
+const executeDownload = (context: TaskContext<ProjectInfo>, searchFn: NexusRepoSearchFn) =>
     pipe(
-        searchForMavenSnapshots(context.input.name),
+        searchFn(context.input.name),
         TE.map((nexusSearchResult) => nexusSearchResult.items[0].assets[0].downloadUrl),
         TE.chain((downloadUrl) => {
             const targetFileName = `${context.input.name}-${context.input.version}.jar`;
@@ -35,17 +40,13 @@ const downloadMavenSnapshot = (context: TaskContext<ProjectInfo>): TE.TaskEither
         TE.map(() => context.input)
     );
 
-const downloadMavenRelease = (context: TaskContext<ProjectInfo>): TE.TaskEither<Error, ProjectInfo> => {
-    return TE.left(new Error());
-};
-
 const doDownloadArtifact = (context: TaskContext<ProjectInfo>): TE.TaskEither<Error, ProjectInfo> => {
     if (isMaven(context.input.projectType) && context.input.isPreRelease) {
-        return downloadMavenSnapshot(context);
+        return executeDownload(context, searchForMavenSnapshots);
     }
 
     if (isMaven(context.input.projectType)) {
-        return downloadMavenRelease(context);
+        return executeDownload(context, searchForMavenReleases);
     }
 
     return TE.left(context.createBuildError(`Invalid project for downloading artifact: ${JSON.stringify(context.input)}`));
