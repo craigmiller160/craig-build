@@ -9,6 +9,7 @@ import { executeIfApplication } from '../../../common/execution/commonTaskCondit
 import { isMaven } from '../../../utils/projectTypeUtils';
 import { pipe } from 'fp-ts/pipeable';
 import getCwd from '../../../utils/getCwd';
+import { searchForMavenSnapshots } from '../../../common/services/NexusRepoApi';
 
 export const TASK_NAME = 'Download Artifact';
 
@@ -20,9 +21,13 @@ const prepareDownloadDirectory = () => {
     fs.mkdirSync(deployBuildDir);
 };
 
-const downloadMavenSnapshot = (projectInfo: ProjectInfo): TE.TaskEither<Error, ProjectInfo> => {
-    return TE.left(new Error());
-};
+const downloadMavenSnapshot = (projectInfo: ProjectInfo): TE.TaskEither<Error, ProjectInfo> =>
+    pipe(
+        searchForMavenSnapshots(projectInfo.name),
+        TE.map((nexusSearchResult) => nexusSearchResult.items[0].assets[0].downloadUrl),
+        // TODO do the download
+        TE.map(() => projectInfo)
+    );
 
 const downloadMavenRelease = (projectInfo: ProjectInfo): TE.TaskEither<Error, ProjectInfo> => {
     return TE.left(new Error());
