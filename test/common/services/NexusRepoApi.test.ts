@@ -1,5 +1,5 @@
 import {
-    axiosInstance,
+    restApiInstance,
     searchForMavenReleases,
     searchForMavenSnapshots, searchForNpmBetas, searchForNpmReleases
 } from '../../../src/common/services/NexusRepoApi';
@@ -7,7 +7,7 @@ import MockAdapter from 'axios-mock-adapter';
 import NexusSearchResult from '../../../src/types/NexusSearchResult';
 import '@relmify/jest-fp-ts';
 
-const mockApi = new MockAdapter(axiosInstance);
+const mockApi = new MockAdapter(restApiInstance);
 
 const expectedResult: NexusSearchResult = {
     items: [
@@ -54,5 +54,9 @@ describe('NexusRepoApi', () => {
             .reply(200, expectedResult);
         const actualResult = await searchForNpmReleases('My Name')();
         expect(actualResult).toEqualRight(expectedResult);
+    });
+
+    it('downloadArtifact', async () => {
+        throw new Error();
     });
 });

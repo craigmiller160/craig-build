@@ -9,7 +9,7 @@ import { executeIfApplication } from '../../../common/execution/commonTaskCondit
 import { isMaven } from '../../../utils/projectTypeUtils';
 import { pipe } from 'fp-ts/pipeable';
 import getCwd from '../../../utils/getCwd';
-import { searchForMavenSnapshots } from '../../../common/services/NexusRepoApi';
+import { searchForMavenSnapshots, downloadArtifact as downloadArtifactApi } from '../../../common/services/NexusRepoApi';
 
 export const TASK_NAME = 'Download Artifact';
 
@@ -21,12 +21,18 @@ const prepareDownloadDirectory = () => {
     fs.mkdirSync(deployBuildDir);
 };
 
-const downloadMavenSnapshot = (projectInfo: ProjectInfo): TE.TaskEither<Error, ProjectInfo> =>
+const downloadMavenSnapshot = (context: TaskContext<ProjectInfo>): TE.TaskEither<Error, ProjectInfo> =>
     pipe(
-        searchForMavenSnapshots(projectInfo.name),
+        searchForMavenSnapshots(context.input.name),
         TE.map((nexusSearchResult) => nexusSearchResult.items[0].assets[0].downloadUrl),
-        // TODO do the download
-        TE.map(() => projectInfo)
+        TE.chain((downloadUrl) => {
+            const targetFileName = `${context.input.name}-${context.input.version}.jar`;
+            const targetFilePath = path.resolve(getCwd(), 'deploy', 'build', targetFileName);
+            context.logger(`Download URL: ${downloadUrl}`);
+            context.logger(`Target File: ${targetFilePath}`);
+            return downloadArtifactApi(downloadUrl, fs.createWriteStream(targetFilePath));
+        }),
+        TE.map(() => context.input)
     );
 
 const downloadMavenRelease = (projectInfo: ProjectInfo): TE.TaskEither<Error, ProjectInfo> => {
@@ -35,7 +41,7 @@ const downloadMavenRelease = (projectInfo: ProjectInfo): TE.TaskEither<Error, Pr
 
 const doDownloadArtifact = (context: TaskContext<ProjectInfo>): TE.TaskEither<Error, ProjectInfo> => {
     if (isMaven(context.input.projectType) && context.input.isPreRelease) {
-        return downloadMavenSnapshot(context.input);
+        return downloadMavenSnapshot(context);
     }
 
     if (isMaven(context.input.projectType)) {

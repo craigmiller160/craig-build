@@ -5,13 +5,14 @@ import handleUnknownError from '../../utils/handleUnknownError';
 import NexusSearchResult from '../../types/NexusSearchResult';
 import qs from 'qs';
 import { extractResponseData } from './apiUtils';
+import { WriteStream } from 'fs';
 
 const mavenGroupId = 'io.craigmiller160';
 const npmGroup = 'craigmiller160';
 const sort = 'version';
 const direction = 'desc';
 
-export const axiosInstance = axios.create({
+export const restApiInstance = axios.create({
     baseURL: 'https://craigmiller160.ddns.net:30003/service/rest/v1'
 });
 
@@ -26,7 +27,7 @@ export const searchForMavenSnapshots = (artifactId: string): TE.TaskEither<Error
                     sort,
                     direction
                 });
-                return axiosInstance.get<NexusSearchResult>(`/search?${query}`);
+                return restApiInstance.get<NexusSearchResult>(`/search?${query}`);
             },
             handleUnknownError
         ),
@@ -44,7 +45,7 @@ export const searchForMavenReleases = (artifactId: string): TE.TaskEither<Error,
                     sort,
                     direction
                 });
-                return axiosInstance.get<NexusSearchResult>(`/search?${query}`);
+                return restApiInstance.get<NexusSearchResult>(`/search?${query}`);
             },
             handleUnknownError
         ),
@@ -63,7 +64,7 @@ export const searchForNpmBetas = (name: string): TE.TaskEither<Error, NexusSearc
                     direction,
                     prerelease: true
                 });
-                return axiosInstance.get<NexusSearchResult>(`/search?${query}`);
+                return restApiInstance.get<NexusSearchResult>(`/search?${query}`);
             },
             handleUnknownError
         ),
@@ -82,9 +83,21 @@ export const searchForNpmReleases = (name: string): TE.TaskEither<Error, NexusSe
                     direction,
                     prerelease: false
                 });
-                return axiosInstance.get<NexusSearchResult>(`/search?${query}`);
+                return restApiInstance.get<NexusSearchResult>(`/search?${query}`);
             },
             handleUnknownError
         ),
         extractResponseData
+    );
+
+export const downloadArtifact = (url: string, writeStream: WriteStream): TE.TaskEither<Error, string> =>
+    pipe(
+        TE.tryCatch(
+            () => axios.get('', {
+                responseType: 'stream'
+            }),
+            handleUnknownError
+        ),
+        TE.map((res) => res.data.pipe(writeStream)),
+        TE.map(() => url)
     );
