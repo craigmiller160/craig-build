@@ -34,7 +34,7 @@ const executeDownload = (context: TaskContext<ProjectInfo>, searchFn: NexusRepoS
             const targetFilePath = path.resolve(getCwd(), 'deploy', 'build', targetFileName);
             context.logger(`Download URL: ${downloadUrl}`);
             context.logger(`Target File: ${targetFilePath}`);
-            return downloadArtifactApi(downloadUrl, fs.createWriteStream(targetFilePath));
+            return downloadArtifactApi(downloadUrl, targetFilePath);
         }),
         TE.map(() => context.input)
     );

@@ -5,7 +5,7 @@ import handleUnknownError from '../../utils/handleUnknownError';
 import NexusSearchResult from '../../types/NexusSearchResult';
 import qs from 'qs';
 import { extractResponseData } from './apiUtils';
-import { WriteStream } from 'fs';
+import fs from 'fs';
 
 const mavenGroupId = 'io.craigmiller160';
 const npmGroup = 'craigmiller160';
@@ -92,7 +92,7 @@ export const searchForNpmReleases = (name: string): TE.TaskEither<Error, NexusSe
         extractResponseData
     );
 
-export const downloadArtifact = (url: string, writeStream: WriteStream): TE.TaskEither<Error, string> =>
+export const downloadArtifact = (url: string, targetPath: string): TE.TaskEither<Error, string> =>
     pipe(
         TE.tryCatch(
             () => axios.get('', {
@@ -100,6 +100,6 @@ export const downloadArtifact = (url: string, writeStream: WriteStream): TE.Task
             }),
             handleUnknownError
         ),
-        TE.map((res) => res.data.pipe(writeStream)),
+        TE.map((res) => res.data.pipe(fs.createWriteStream(targetPath))),
         TE.map(() => url)
     );
