@@ -95,11 +95,18 @@ export const searchForNpmReleases = (name: string): TE.TaskEither<Error, NexusSe
 export const downloadArtifact = (url: string, targetPath: string): TE.TaskEither<Error, string> =>
     pipe(
         TE.tryCatch(
-            () => axios.get('', {
+            () => axios.get(url, {
                 responseType: 'stream'
             }),
             handleUnknownError
         ),
-        TE.map((res) => res.data.pipe(fs.createWriteStream(targetPath))),
-        TE.map(() => url)
+        TE.map((res) => {
+            const stream = res.data.pipe(fs.createWriteStream(targetPath, {
+                flags: 'w'
+            }));
+            if (stream.close) {
+                stream.close();
+            }
+        }),
+        TE.map(() => targetPath)
     );

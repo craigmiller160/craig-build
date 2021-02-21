@@ -1,4 +1,5 @@
 import {
+    downloadArtifact,
     restApiInstance,
     searchForMavenReleases,
     searchForMavenSnapshots, searchForNpmBetas, searchForNpmReleases
@@ -6,8 +7,16 @@ import {
 import MockAdapter from 'axios-mock-adapter';
 import NexusSearchResult from '../../../src/types/NexusSearchResult';
 import '@relmify/jest-fp-ts';
+import fs from 'fs';
+import tmp from 'tmp';
+import axios from 'axios';
+import path from 'path';
 
-const mockApi = new MockAdapter(restApiInstance);
+const mockRestApi = new MockAdapter(restApiInstance);
+const mockAxios = new MockAdapter(axios);
+
+const inputData = path.resolve(process.cwd(), 'input.temp.txt');
+const outputData = path.resolve(process.cwd(), 'output.temp.txt');
 
 const expectedResult: NexusSearchResult = {
     items: [
@@ -25,38 +34,68 @@ const expectedResult: NexusSearchResult = {
 
 describe('NexusRepoApi', () => {
     beforeEach(() => {
-        mockApi.reset();
+        mockRestApi.reset();
+    });
+
+    afterEach(() => {
+        if (fs.existsSync(inputData)) {
+            fs.rmSync(inputData);
+        }
+
+        if (fs.existsSync(outputData)) {
+            fs.rmSync(outputData);
+        }
     });
 
     it('searchForMavenSnapshots', async () => {
-        mockApi.onGet('/search?repository=maven-snapshots&maven.groupId=io.craigmiller160&maven.artifactId=My%20Name&sort=version&direction=desc')
+        mockRestApi.onGet('/search?repository=maven-snapshots&maven.groupId=io.craigmiller160&maven.artifactId=My%20Name&sort=version&direction=desc')
             .reply(200, expectedResult);
         const actualResult = await searchForMavenSnapshots('My Name')();
         expect(actualResult).toEqualRight(expectedResult);
     });
 
     it('searchForMavenReleases', async () => {
-        mockApi.onGet('/search?repository=maven-releases&maven.groupId=io.craigmiller160&maven.artifactId=My%20Name&sort=version&direction=desc')
+        mockRestApi.onGet('/search?repository=maven-releases&maven.groupId=io.craigmiller160&maven.artifactId=My%20Name&sort=version&direction=desc')
             .reply(200, expectedResult);
         const actualResult = await searchForMavenReleases('My Name')();
         expect(actualResult).toEqualRight(expectedResult);
     });
 
     it('searchForNpmBetas', async () => {
-        mockApi.onGet('/search?format=npm&group=craigmiller160&name=My%20Name&sort=version&direction=desc&prerelease=true')
+        mockRestApi.onGet('/search?format=npm&group=craigmiller160&name=My%20Name&sort=version&direction=desc&prerelease=true')
             .reply(200, expectedResult);
         const actualResult = await searchForNpmBetas('My Name')();
         expect(actualResult).toEqualRight(expectedResult);
     });
 
     it('searchForNpmReleases', async () => {
-        mockApi.onGet('/search?format=npm&group=craigmiller160&name=My%20Name&sort=version&direction=desc&prerelease=false')
+        mockRestApi.onGet('/search?format=npm&group=craigmiller160&name=My%20Name&sort=version&direction=desc&prerelease=false')
             .reply(200, expectedResult);
         const actualResult = await searchForNpmReleases('My Name')();
         expect(actualResult).toEqualRight(expectedResult);
     });
 
+    it('downloadArtifact old', async () => {
+        const outputData = path.resolve(process.cwd(), 'output-temp.txt');
+        const inputData = path.resolve(process.cwd(), 'temp.txt');
+
+        fs.writeFileSync(inputData, 'Hello World');
+        fs.createReadStream(inputData).pipe(fs.createWriteStream(outputData, {
+            flags: 'w'
+        })).close();
+        console.log(fs.readFileSync(inputData, 'utf8')); // TODO delete this
+        console.log(fs.readFileSync(outputData, 'utf8')); // TODO delete this
+    });
+
     it('downloadArtifact', async () => {
-        throw new Error();
+        fs.writeFileSync(inputData, 'Hello World');
+
+        const url = '/the/url';
+        mockAxios.onGet(url)
+            .reply(200, fs.createReadStream(inputData));
+
+        const result = await downloadArtifact(url, outputData)();
+        expect(result).toEqualRight(outputData);
+        expect(fs.readFileSync(outputData, 'utf8')).toEqual('Hello World');
     });
 });
