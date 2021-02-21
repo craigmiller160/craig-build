@@ -35,7 +35,7 @@ const downloadMavenSnapshot = (context: TaskContext<ProjectInfo>): TE.TaskEither
         TE.map(() => context.input)
     );
 
-const downloadMavenRelease = (projectInfo: ProjectInfo): TE.TaskEither<Error, ProjectInfo> => {
+const downloadMavenRelease = (context: TaskContext<ProjectInfo>): TE.TaskEither<Error, ProjectInfo> => {
     return TE.left(new Error());
 };
 
@@ -45,11 +45,10 @@ const doDownloadArtifact = (context: TaskContext<ProjectInfo>): TE.TaskEither<Er
     }
 
     if (isMaven(context.input.projectType)) {
-        return downloadMavenRelease(context.input);
+        return downloadMavenRelease(context);
     }
 
-    // TODO improve this
-    return TE.left(new Error());
+    return TE.left(context.createBuildError(`Invalid project for downloading artifact: ${JSON.stringify(context.input)}`));
 };
 
 const downloadArtifact: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectInfo>) => {
