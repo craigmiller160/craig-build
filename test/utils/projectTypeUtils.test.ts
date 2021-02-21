@@ -1,4 +1,4 @@
-import { isApplication, isLibrary } from '../../src/utils/projectTypeUtils';
+import { isApplication, isLibrary, isMaven, isNpm } from '../../src/utils/projectTypeUtils';
 import ProjectType from '../../src/types/ProjectType';
 
 describe('projectTypeUtils', () => {
@@ -21,6 +21,28 @@ describe('projectTypeUtils', () => {
         expect(isLibrary(ProjectType.MavenLibrary))
             .toEqual(true);
         expect(isLibrary(ProjectType.NpmLibrary))
+            .toEqual(true);
+    });
+
+    it('isMaven', () => {
+        expect(isMaven(ProjectType.MavenApplication))
+            .toEqual(true);
+        expect(isMaven(ProjectType.NpmApplication))
+            .toEqual(false);
+        expect(isMaven(ProjectType.MavenLibrary))
+            .toEqual(true);
+        expect(isMaven(ProjectType.NpmLibrary))
+            .toEqual(false);
+    });
+
+    it('isNpm', () => {
+        expect(isNpm(ProjectType.MavenApplication))
+            .toEqual(false);
+        expect(isNpm(ProjectType.NpmApplication))
+            .toEqual(true);
+        expect(isNpm(ProjectType.MavenLibrary))
+            .toEqual(false);
+        expect(isNpm(ProjectType.NpmLibrary))
             .toEqual(true);
     });
 });
