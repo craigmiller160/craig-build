@@ -14,7 +14,6 @@ import {
     downloadArtifact as downloadArtifactApi,
     NexusRepoSearchFn, searchForMavenReleases
 } from '../../../common/services/NexusRepoApi';
-import NexusSearchResult from '../../../types/NexusSearchResult';
 
 export const TASK_NAME = 'Download Artifact';
 
