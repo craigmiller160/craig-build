@@ -6,10 +6,12 @@ import dockerBuild from './tasks/dockerBuild';
 import * as TE from 'fp-ts/TaskEither';
 import kubeDeploy from './tasks/kubeDeploy';
 import stageName from './stageName';
+import downloadArtifact from './tasks/downloadArtifact';
 
 const deploy: StageFunction<ProjectInfo> = (context: StageContext<ProjectInfo>) =>
     pipe(
-        dockerBuild(context.input),
+        downloadArtifact(context.input),
+        TE.chain(dockerBuild),
         TE.chain(kubeDeploy),
         TE.map((projectInfo) => ({
             message: 'Deployment complete',
