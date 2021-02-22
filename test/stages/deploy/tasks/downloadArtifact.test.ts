@@ -85,11 +85,36 @@ describe('downloadArtifact task', () => {
         downloadArtifactApiMock.mockImplementation(() => TE.right(''));
         searchForMavenSnapshotsMock.mockImplementation(() => TE.right(searchResult));
 
-        const result = downloadArtifact(projectInfo)();
+        const result = await downloadArtifact(projectInfo)();
         expect(result).toEqualRight(projectInfo);
+
+        const targetPath = path.resolve(mavenPreReleaseBuildDir, 'my-project-1.0.0-SNAPSHOT.jar');
+
+        expect(downloadArtifactApi).toHaveBeenCalledWith(downloadUrl, targetPath);
+        expect(searchForMavenSnapshotsMock).toHaveBeenCalledWith('my-project');
+        expect(searchForMavenReleasesMock).not.toHaveBeenCalled();
     });
 
-    it('downloads maven release', () => {
-        throw new Error();
+    it('downloads maven release', async () => {
+        const projectInfo: ProjectInfo = {
+            projectType: ProjectType.MavenApplication,
+            name: 'my-project',
+            version: '1.0.0',
+            isPreRelease: false,
+            dependencies: []
+        };
+
+        getCwdMock.mockImplementation(() => mavenReleaseWorkDir);
+        downloadArtifactApiMock.mockImplementation(() => TE.right(''));
+        searchForMavenReleasesMock.mockImplementation(() => TE.right(searchResult));
+
+        const result = await downloadArtifact(projectInfo)();
+        expect(result).toEqualRight(projectInfo);
+
+        const targetPath = path.resolve(mavenReleaseBuildDir, 'my-project-1.0.0.jar');
+
+        expect(downloadArtifactApi).toHaveBeenCalledWith(downloadUrl, targetPath);
+        expect(searchForMavenReleasesMock).toHaveBeenCalledWith('my-project');
+        expect(searchForMavenSnapshotsMock).not.toHaveBeenCalled();
     });
 });

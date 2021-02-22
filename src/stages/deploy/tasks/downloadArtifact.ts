@@ -36,7 +36,7 @@ const executeDownload = (context: TaskContext<ProjectInfo>, searchFn: NexusRepoS
             context.logger(`Target File: ${targetFilePath}`);
             return downloadArtifactApi(downloadUrl, targetFilePath);
         }),
-        TE.map(() => context.input)
+        TE.map((result) => context.input)
     );
 
 const doDownloadArtifact = (context: TaskContext<ProjectInfo>): TE.TaskEither<Error, ProjectInfo> => {
