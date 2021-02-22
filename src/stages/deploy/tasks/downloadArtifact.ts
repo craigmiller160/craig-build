@@ -15,7 +15,9 @@ import {
     NexusRepoSearchFn, searchForMavenReleases
 } from '../../../common/services/NexusRepoApi';
 
-// TODO need to make sure I'm using the right version
+// TODO need to make sure I'm using the right version. ie, the url from Nexus matches the current project version, to support deploy only
+// TODO maven has the maven.baseVersion option, which solves the pre-release versioning issue
+// TODO wildcard searches are supported... hell yes!
 
 export const TASK_NAME = 'Download Artifact';
 
