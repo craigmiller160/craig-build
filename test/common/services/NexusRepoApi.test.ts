@@ -15,9 +15,6 @@ import path from 'path';
 const mockRestApi = new MockAdapter(restApiInstance);
 const mockAxios = new MockAdapter(axios);
 
-const inputData = path.resolve(process.cwd(), 'input.temp.txt');
-const outputData = path.resolve(process.cwd(), 'output.temp.txt');
-
 const expectedResult: NexusSearchResult = {
     items: [
         {
@@ -35,16 +32,6 @@ const expectedResult: NexusSearchResult = {
 describe('NexusRepoApi', () => {
     beforeEach(() => {
         mockRestApi.reset();
-    });
-
-    afterEach(() => {
-        if (fs.existsSync(inputData)) {
-            fs.rmSync(inputData);
-        }
-
-        if (fs.existsSync(outputData)) {
-            fs.rmSync(outputData);
-        }
     });
 
     it('searchForMavenSnapshots', async () => {
@@ -75,15 +62,31 @@ describe('NexusRepoApi', () => {
         expect(actualResult).toEqualRight(expectedResult);
     });
 
+    it('experiment', (done) => {
+        // TODO delete this
+        const input = tmp.tmpNameSync();
+        const output = tmp.tmpNameSync();
+
+        fs.writeFileSync(input, 'Hello World');
+
+        const stream = fs.createReadStream(input)
+            .pipe(fs.createWriteStream(output));
+        stream.on('finish', () => {
+            console.log(fs.readFileSync(output, 'utf8'));
+            done();
+        });
+    });
+
     it('downloadArtifact', async () => {
-        fs.writeFileSync(inputData, 'Hello World');
-
-        const url = '/the/url';
-        mockAxios.onGet(url)
-            .reply(200, fs.createReadStream(inputData));
-
-        const result = await downloadArtifact(url, outputData)();
-        expect(result).toEqualRight(outputData);
-        expect(fs.readFileSync(outputData, 'utf8')).toEqual('Hello World');
+        // fs.writeFileSync(inputData, 'Hello World');
+        //
+        // const url = '/the/url';
+        // mockAxios.onGet(url)
+        //     .reply(200, fs.createReadStream(inputData));
+        //
+        // const result = await downloadArtifact(url, outputData)();
+        // expect(result).toEqualRight(outputData);
+        // expect(fs.readFileSync(outputData, 'utf8')).toEqual('Hello World');
+        throw new Error();
     });
 });
