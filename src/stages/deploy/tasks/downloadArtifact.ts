@@ -15,9 +15,7 @@ import {
     NexusRepoSearchFn, searchForMavenReleases
 } from '../../../common/services/NexusRepoApi';
 
-// TODO need to make sure I'm using the right version. ie, the url from Nexus matches the current project version, to support deploy only
-// TODO maven has the maven.baseVersion option, which solves the pre-release versioning issue
-// TODO wildcard searches are supported... hell yes!
+// TODO NPM will need a wildcard at the end of the pre-release version. aka 1.0.0-beta*
 
 export const TASK_NAME = 'Download Artifact';
 
@@ -31,8 +29,14 @@ const prepareDownloadDirectory = () => {
 
 const executeDownload = (context: TaskContext<ProjectInfo>, searchFn: NexusRepoSearchFn) =>
     pipe(
-        searchFn(context.input.name),
-        TE.map((nexusSearchResult) => nexusSearchResult.items[0].assets[0].downloadUrl),
+        searchFn(context.input.name, context.input.version),
+        TE.chain((nexusSearchResult) => {
+            if (nexusSearchResult.items.length > 0) {
+                return TE.right(nexusSearchResult.items[0].assets[0].downloadUrl);
+            }
+            return TE.left(context.createBuildError(`Unable to find artifact in nexus. ` +
+                `${context.input.projectType} ${context.input.name} ${context.input.version}`));
+        }),
         TE.chain((downloadUrl) => {
             const targetFileName = `${context.input.name}-${context.input.version}.jar`;
             const targetFilePath = path.resolve(getCwd(), 'deploy', 'build', targetFileName);

@@ -91,8 +91,12 @@ describe('downloadArtifact task', () => {
         const targetPath = path.resolve(mavenPreReleaseBuildDir, 'my-project-1.0.0-SNAPSHOT.jar');
 
         expect(downloadArtifactApi).toHaveBeenCalledWith(downloadUrl, targetPath);
-        expect(searchForMavenSnapshotsMock).toHaveBeenCalledWith('my-project');
+        expect(searchForMavenSnapshotsMock).toHaveBeenCalledWith('my-project', '1.0.0-SNAPSHOT');
         expect(searchForMavenReleasesMock).not.toHaveBeenCalled();
+    });
+
+    it('cannot find maven release', async () => {
+        throw new Error();
     });
 
     it('downloads maven release', async () => {
@@ -114,7 +118,7 @@ describe('downloadArtifact task', () => {
         const targetPath = path.resolve(mavenReleaseBuildDir, 'my-project-1.0.0.jar');
 
         expect(downloadArtifactApi).toHaveBeenCalledWith(downloadUrl, targetPath);
-        expect(searchForMavenReleasesMock).toHaveBeenCalledWith('my-project');
+        expect(searchForMavenReleasesMock).toHaveBeenCalledWith('my-project', '1.0.0');
         expect(searchForMavenSnapshotsMock).not.toHaveBeenCalled();
     });
 });
