@@ -10,7 +10,6 @@ import '@relmify/jest-fp-ts';
 import fs from 'fs';
 import tmp from 'tmp';
 import axios from 'axios';
-import path from 'path';
 
 const mockRestApi = new MockAdapter(restApiInstance);
 const mockAxios = new MockAdapter(axios);
@@ -62,31 +61,17 @@ describe('NexusRepoApi', () => {
         expect(actualResult).toEqualRight(expectedResult);
     });
 
-    it('experiment', (done) => {
-        // TODO delete this
+    it('downloadArtifact', async () => {
         const input = tmp.tmpNameSync();
         const output = tmp.tmpNameSync();
 
         fs.writeFileSync(input, 'Hello World');
+        const url = '/the/url';
+        mockAxios.onGet(url)
+            .reply(200, fs.createReadStream(input));
 
-        const stream = fs.createReadStream(input)
-            .pipe(fs.createWriteStream(output));
-        stream.on('finish', () => {
-            console.log(fs.readFileSync(output, 'utf8'));
-            done();
-        });
-    });
-
-    it('downloadArtifact', async () => {
-        // fs.writeFileSync(inputData, 'Hello World');
-        //
-        // const url = '/the/url';
-        // mockAxios.onGet(url)
-        //     .reply(200, fs.createReadStream(inputData));
-        //
-        // const result = await downloadArtifact(url, outputData)();
-        // expect(result).toEqualRight(outputData);
-        // expect(fs.readFileSync(outputData, 'utf8')).toEqual('Hello World');
-        throw new Error();
+        const result = await downloadArtifact(url, output)();
+        expect(result).toEqualRight(output);
+        expect(fs.readFileSync(output, 'utf8')).toEqual('Hello World');
     });
 });

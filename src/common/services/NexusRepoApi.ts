@@ -6,6 +6,7 @@ import NexusSearchResult from '../../types/NexusSearchResult';
 import qs from 'qs';
 import { extractResponseData } from './apiUtils';
 import fs from 'fs';
+import streamPromisify from '../../utils/streamPromisify';
 
 const mavenGroupId = 'io.craigmiller160';
 const npmGroup = 'craigmiller160';
@@ -100,8 +101,9 @@ export const downloadArtifact = (url: string, targetPath: string): TE.TaskEither
             }),
             handleUnknownError
         ),
-        TE.map((res) => {
-            res.data.pipe(fs.createWriteStream(targetPath));
-        }),
+        TE.chain((res) => TE.tryCatch(
+            () => streamPromisify(res.data.pipe(fs.createWriteStream(targetPath))),
+            handleUnknownError
+        )),
         TE.map(() => targetPath)
     );
