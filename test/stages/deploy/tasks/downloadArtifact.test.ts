@@ -1,7 +1,8 @@
 import '@relmify/jest-fp-ts';
 import * as TE from 'fp-ts/TaskEither';
 import {
-    downloadArtifact as downloadArtifactService, searchForMavenReleases,
+    downloadArtifact as downloadArtifactApi,
+    searchForMavenReleases,
     searchForMavenSnapshots
 } from '../../../../src/common/services/NexusRepoApi';
 import path from 'path';
@@ -19,7 +20,7 @@ jest.mock('../../../../src/common/services/NexusRepoApi', () => ({
 }));
 
 const getCwdMock = getCwd as jest.Mock;
-const downloadArtifactServiceMock = downloadArtifactService as jest.Mock;
+const downloadArtifactApiMock = downloadArtifactApi as jest.Mock;
 const searchForMavenSnapshotsMock = searchForMavenSnapshots as jest.Mock;
 const searchForMavenReleasesMock = searchForMavenReleases as jest.Mock;
 
@@ -81,13 +82,11 @@ describe('downloadArtifact task', () => {
         };
 
         getCwdMock.mockImplementation(() => mavenPreReleaseWorkDir);
-        downloadArtifactServiceMock.mockImplementation(() => TE.right(''));
+        downloadArtifactApiMock.mockImplementation(() => TE.right(''));
         searchForMavenSnapshotsMock.mockImplementation(() => TE.right(searchResult));
 
         const result = downloadArtifact(projectInfo)();
         expect(result).toEqualRight(projectInfo);
-
-        throw new Error();
     });
 
     it('downloads maven release', () => {
