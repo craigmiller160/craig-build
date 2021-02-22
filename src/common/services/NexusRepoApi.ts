@@ -101,12 +101,7 @@ export const downloadArtifact = (url: string, targetPath: string): TE.TaskEither
             handleUnknownError
         ),
         TE.map((res) => {
-            const stream = res.data.pipe(fs.createWriteStream(targetPath, {
-                flags: 'w'
-            }));
-            if (stream.close) {
-                stream.close();
-            }
+            res.data.pipe(fs.createWriteStream(targetPath));
         }),
         TE.map(() => targetPath)
     );

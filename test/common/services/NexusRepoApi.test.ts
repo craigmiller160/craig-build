@@ -75,18 +75,6 @@ describe('NexusRepoApi', () => {
         expect(actualResult).toEqualRight(expectedResult);
     });
 
-    it('downloadArtifact old', async () => {
-        const outputData = path.resolve(process.cwd(), 'output-temp.txt');
-        const inputData = path.resolve(process.cwd(), 'temp.txt');
-
-        fs.writeFileSync(inputData, 'Hello World');
-        fs.createReadStream(inputData).pipe(fs.createWriteStream(outputData, {
-            flags: 'w'
-        })).close();
-        console.log(fs.readFileSync(inputData, 'utf8')); // TODO delete this
-        console.log(fs.readFileSync(outputData, 'utf8')); // TODO delete this
-    });
-
     it('downloadArtifact', async () => {
         fs.writeFileSync(inputData, 'Hello World');
 
