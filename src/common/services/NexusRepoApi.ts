@@ -17,9 +17,9 @@ export const restApiInstance = axios.create({
     baseURL: 'https://craigmiller160.ddns.net:30003/service/rest/v1'
 });
 
-export type NexusRepoSearchFn = (name: string) => TE.TaskEither<Error, NexusSearchResult>;
+export type NexusRepoSearchFn = (name: string, version?: string) => TE.TaskEither<Error, NexusSearchResult>;
 
-export const searchForMavenSnapshots = (artifactId: string): TE.TaskEither<Error, NexusSearchResult> =>
+export const searchForMavenSnapshots: NexusRepoSearchFn = (artifactId: string, version?: string) =>
     pipe(
         TE.tryCatch(
             () => {
@@ -37,7 +37,7 @@ export const searchForMavenSnapshots = (artifactId: string): TE.TaskEither<Error
         extractResponseData
     );
 
-export const searchForMavenReleases = (artifactId: string): TE.TaskEither<Error, NexusSearchResult> =>
+export const searchForMavenReleases: NexusRepoSearchFn = (artifactId: string, version?: string) =>
     pipe(
         TE.tryCatch(
             () => {
@@ -55,7 +55,7 @@ export const searchForMavenReleases = (artifactId: string): TE.TaskEither<Error,
         extractResponseData
     );
 
-export const searchForNpmBetas = (name: string): TE.TaskEither<Error, NexusSearchResult> =>
+export const searchForNpmBetas: NexusRepoSearchFn = (name: string, version?: string) =>
     pipe(
         TE.tryCatch(
             () => {
@@ -74,7 +74,7 @@ export const searchForNpmBetas = (name: string): TE.TaskEither<Error, NexusSearc
         extractResponseData
     );
 
-export const searchForNpmReleases = (name: string): TE.TaskEither<Error, NexusSearchResult> =>
+export const searchForNpmReleases = (name: string, version?: string) =>
     pipe(
         TE.tryCatch(
             () => {
