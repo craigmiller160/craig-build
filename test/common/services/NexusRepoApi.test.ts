@@ -69,7 +69,7 @@ describe('NexusRepoApi', () => {
     });
 
     it('searchForNpmBetas with version', async () => {
-        mockRestApi.onGet('/search?format=npm&group=craigmiller160&name=My%20Name&sort=version&direction=desc&prerelease=true&version=1*')
+        mockRestApi.onGet('/search?format=npm&group=craigmiller160&name=My%20Name&sort=version&direction=desc&prerelease=true&version=1%2A')
             .reply(200, expectedResult);
         const actualResult = await searchForNpmBetas('My Name', '1*')();
         expect(actualResult).toEqualRight(expectedResult);
