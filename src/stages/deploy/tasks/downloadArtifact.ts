@@ -15,6 +15,8 @@ import {
     NexusRepoSearchFn, searchForMavenReleases
 } from '../../../common/services/NexusRepoApi';
 
+// TODO need to make sure I'm using the right version
+
 export const TASK_NAME = 'Download Artifact';
 
 const prepareDownloadDirectory = () => {
