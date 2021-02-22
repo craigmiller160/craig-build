@@ -9,9 +9,9 @@ export const isLibrary = (projectType: ProjectType) =>
     ProjectType.NpmLibrary === projectType;
 
 export const isMaven = (projectType: ProjectType) =>
-    ProjectType.MavenLibrary === projectType ||
+  ProjectType.MavenLibrary === projectType ||
     ProjectType.MavenApplication === projectType;
 
 export const isNpm = (projectType: ProjectType) =>
-    ProjectType.NpmLibrary === projectType ||
+  ProjectType.NpmLibrary === projectType ||
     ProjectType.NpmApplication === projectType;
