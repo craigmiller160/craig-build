@@ -28,7 +28,8 @@ export const searchForMavenSnapshots: NexusRepoSearchFn = (artifactId: string, v
                     'maven.groupId': mavenGroupId,
                     'maven.artifactId': artifactId,
                     sort,
-                    direction
+                    direction,
+                    'maven.baseVersion': version
                 });
                 return restApiInstance.get<NexusSearchResult>(`/search?${query}`);
             },
@@ -46,7 +47,8 @@ export const searchForMavenReleases: NexusRepoSearchFn = (artifactId: string, ve
                     'maven.groupId': mavenGroupId,
                     'maven.artifactId': artifactId,
                     sort,
-                    direction
+                    direction,
+                    version
                 });
                 return restApiInstance.get<NexusSearchResult>(`/search?${query}`);
             },
@@ -65,7 +67,8 @@ export const searchForNpmBetas: NexusRepoSearchFn = (name: string, version?: str
                     name,
                     sort,
                     direction,
-                    prerelease: true
+                    prerelease: true,
+                    version
                 });
                 return restApiInstance.get<NexusSearchResult>(`/search?${query}`);
             },
@@ -84,7 +87,8 @@ export const searchForNpmReleases = (name: string, version?: string) =>
                     name,
                     sort,
                     direction,
-                    prerelease: false
+                    prerelease: false,
+                    version
                 });
                 return restApiInstance.get<NexusSearchResult>(`/search?${query}`);
             },

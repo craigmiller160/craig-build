@@ -41,7 +41,10 @@ describe('NexusRepoApi', () => {
     });
 
     it('searchForMavenSnapshots with version', async () => {
-        throw new Error();
+        mockRestApi.onGet('/search?repository=maven-snapshots&maven.groupId=io.craigmiller160&maven.artifactId=My%20Name&sort=version&direction=desc&maven.baseVersion=1')
+            .reply(200, expectedResult);
+        const actualResult = await searchForMavenSnapshots('My Name', '1')();
+        expect(actualResult).toEqualRight(expectedResult);
     });
 
     it('searchForMavenReleases', async () => {
@@ -52,7 +55,10 @@ describe('NexusRepoApi', () => {
     });
 
     it('searchForMavenReleases with version', async () => {
-        throw new Error();
+        mockRestApi.onGet('/search?repository=maven-releases&maven.groupId=io.craigmiller160&maven.artifactId=My%20Name&sort=version&direction=desc&version=1')
+            .reply(200, expectedResult);
+        const actualResult = await searchForMavenReleases('My Name', '1')();
+        expect(actualResult).toEqualRight(expectedResult);
     });
 
     it('searchForNpmBetas', async () => {
@@ -63,7 +69,10 @@ describe('NexusRepoApi', () => {
     });
 
     it('searchForNpmBetas with version', async () => {
-        throw new Error();
+        mockRestApi.onGet('/search?format=npm&group=craigmiller160&name=My%20Name&sort=version&direction=desc&prerelease=true&version=1*')
+            .reply(200, expectedResult);
+        const actualResult = await searchForNpmBetas('My Name', '1*')();
+        expect(actualResult).toEqualRight(expectedResult);
     });
 
     it('searchForNpmReleases', async () => {
@@ -74,7 +83,10 @@ describe('NexusRepoApi', () => {
     });
 
     it('searchForNpmReleases with version', async () => {
-        throw new Error();
+        mockRestApi.onGet('/search?format=npm&group=craigmiller160&name=My%20Name&sort=version&direction=desc&prerelease=false&version=1')
+            .reply(200, expectedResult);
+        const actualResult = await searchForNpmReleases('My Name', '1')();
+        expect(actualResult).toEqualRight(expectedResult);
     });
 
     it('downloadArtifact', async () => {
