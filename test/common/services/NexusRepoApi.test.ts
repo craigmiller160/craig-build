@@ -62,11 +62,19 @@ describe('NexusRepoApi', () => {
         expect(actualResult).toEqualRight(expectedResult);
     });
 
+    it('searchForNpmBetas with version', async () => {
+        throw new Error();
+    });
+
     it('searchForNpmReleases', async () => {
         mockRestApi.onGet('/search?format=npm&group=craigmiller160&name=My%20Name&sort=version&direction=desc&prerelease=false')
             .reply(200, expectedResult);
         const actualResult = await searchForNpmReleases('My Name')();
         expect(actualResult).toEqualRight(expectedResult);
+    });
+
+    it('searchForNpmReleases with version', async () => {
+        throw new Error();
     });
 
     it('downloadArtifact', async () => {
