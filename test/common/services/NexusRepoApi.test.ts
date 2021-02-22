@@ -40,11 +40,19 @@ describe('NexusRepoApi', () => {
         expect(actualResult).toEqualRight(expectedResult);
     });
 
+    it('searchForMavenSnapshots with version', async () => {
+        throw new Error();
+    });
+
     it('searchForMavenReleases', async () => {
         mockRestApi.onGet('/search?repository=maven-releases&maven.groupId=io.craigmiller160&maven.artifactId=My%20Name&sort=version&direction=desc')
             .reply(200, expectedResult);
         const actualResult = await searchForMavenReleases('My Name')();
         expect(actualResult).toEqualRight(expectedResult);
+    });
+
+    it('searchForMavenReleases with version', async () => {
+        throw new Error();
     });
 
     it('searchForNpmBetas', async () => {
