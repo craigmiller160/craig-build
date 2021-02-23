@@ -9,9 +9,10 @@ import stageName from './stageName';
 import downloadArtifact from './tasks/downloadArtifact';
 import wait from '../../utils/wait';
 
-const deploy: StageFunction<ProjectInfo> = (context: StageContext<ProjectInfo>) =>
-    pipe(
-        wait(1000),
+const deploy: StageFunction<ProjectInfo> = (context: StageContext<ProjectInfo>) => {
+    context.logger('Waiting for Neuxs to update before deployment.');
+    return pipe(
+        wait(3000),
         TE.fromTask,
         TE.chain(() => downloadArtifact(context.input)),
         TE.chain(dockerBuild),
@@ -21,5 +22,6 @@ const deploy: StageFunction<ProjectInfo> = (context: StageContext<ProjectInfo>) 
             value: projectInfo
         }))
     );
+}
 
 export default createStage(stageName, deploy);
