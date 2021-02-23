@@ -25,7 +25,7 @@ const createDockerPush = (tag: string) =>
 const createDockerRemoveMatch = (name: string, version: string) =>
     `sudo docker image ls | grep ${name} | grep ${version} | awk '{ print $3 }' | xargs docker image rm`
 const createDockerFindMatch = (name: string, version: string) =>
-    `sudo docker image ls | grep ${name} | grep ${version}`;
+    `sudo docker image ls | grep ${name} | grep ${version} | cat`;
 
 const removeExistingDockerImages = (context: TaskContext<ProjectInfo>): E.Either<Error, string> => {
     const tag = context.input.kubernetesDockerImage!!;
@@ -38,7 +38,7 @@ const removeExistingDockerImages = (context: TaskContext<ProjectInfo>): E.Either
         E.chain((matches: string) => {
             if (matches.length > 0) {
                 context.logger('Removing existing Docker image');
-                return runCommand(createDockerRemoveMatch(name, version));
+                return runCommand(createDockerRemoveMatch(name, version), { logOutput: true });
             }
             context.logger('No Docker images exist to remove');
             return E.right('');
