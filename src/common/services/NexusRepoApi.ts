@@ -5,17 +5,21 @@ import handleUnknownError from '../../utils/handleUnknownError';
 import NexusSearchResult from '../../types/NexusSearchResult';
 import qs from 'qs';
 import { extractResponseData } from './apiUtils';
+import fs from 'fs';
+import streamPromisify from '../../utils/streamPromisify';
 
 const mavenGroupId = 'io.craigmiller160';
 const npmGroup = 'craigmiller160';
 const sort = 'version';
 const direction = 'desc';
 
-export const axiosInstance = axios.create({
+export const restApiInstance = axios.create({
     baseURL: 'https://craigmiller160.ddns.net:30003/service/rest/v1'
 });
 
-export const searchForMavenSnapshots = (artifactId: string): TE.TaskEither<Error, NexusSearchResult> =>
+export type NexusRepoSearchFn = (name: string, version?: string) => TE.TaskEither<Error, NexusSearchResult>;
+
+export const searchForMavenSnapshots: NexusRepoSearchFn = (artifactId: string, version?: string) =>
     pipe(
         TE.tryCatch(
             () => {
@@ -24,16 +28,17 @@ export const searchForMavenSnapshots = (artifactId: string): TE.TaskEither<Error
                     'maven.groupId': mavenGroupId,
                     'maven.artifactId': artifactId,
                     sort,
-                    direction
+                    direction,
+                    'maven.baseVersion': version
                 });
-                return axiosInstance.get<NexusSearchResult>(`/search?${query}`);
+                return restApiInstance.get<NexusSearchResult>(`/search?${query}`);
             },
             handleUnknownError
         ),
         extractResponseData
     );
 
-export const searchForMavenReleases = (artifactId: string): TE.TaskEither<Error, NexusSearchResult> =>
+export const searchForMavenReleases: NexusRepoSearchFn = (artifactId: string, version?: string) =>
     pipe(
         TE.tryCatch(
             () => {
@@ -42,16 +47,17 @@ export const searchForMavenReleases = (artifactId: string): TE.TaskEither<Error,
                     'maven.groupId': mavenGroupId,
                     'maven.artifactId': artifactId,
                     sort,
-                    direction
+                    direction,
+                    version
                 });
-                return axiosInstance.get<NexusSearchResult>(`/search?${query}`);
+                return restApiInstance.get<NexusSearchResult>(`/search?${query}`);
             },
             handleUnknownError
         ),
         extractResponseData
     );
 
-export const searchForNpmBetas = (name: string): TE.TaskEither<Error, NexusSearchResult> =>
+export const searchForNpmBetas: NexusRepoSearchFn = (name: string, version?: string) =>
     pipe(
         TE.tryCatch(
             () => {
@@ -61,16 +67,17 @@ export const searchForNpmBetas = (name: string): TE.TaskEither<Error, NexusSearc
                     name,
                     sort,
                     direction,
-                    prerelease: true
+                    prerelease: true,
+                    version
                 });
-                return axiosInstance.get<NexusSearchResult>(`/search?${query}`);
+                return restApiInstance.get<NexusSearchResult>(`/search?${query}`);
             },
             handleUnknownError
         ),
         extractResponseData
     );
 
-export const searchForNpmReleases = (name: string): TE.TaskEither<Error, NexusSearchResult> =>
+export const searchForNpmReleases = (name: string, version?: string) =>
     pipe(
         TE.tryCatch(
             () => {
@@ -80,11 +87,27 @@ export const searchForNpmReleases = (name: string): TE.TaskEither<Error, NexusSe
                     name,
                     sort,
                     direction,
-                    prerelease: false
+                    prerelease: false,
+                    version
                 });
-                return axiosInstance.get<NexusSearchResult>(`/search?${query}`);
+                return restApiInstance.get<NexusSearchResult>(`/search?${query}`);
             },
             handleUnknownError
         ),
         extractResponseData
+    );
+
+export const downloadArtifact = (url: string, targetPath: string): TE.TaskEither<Error, string> =>
+    pipe(
+        TE.tryCatch(
+            () => axios.get(url, {
+                responseType: 'stream'
+            }),
+            handleUnknownError
+        ),
+        TE.chain((res) => TE.tryCatch(
+            () => streamPromisify(res.data.pipe(fs.createWriteStream(targetPath))),
+            handleUnknownError
+        )),
+        TE.map(() => targetPath)
     );

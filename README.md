@@ -2,6 +2,15 @@
 
 A special, lightweight build utility designed to build and deploy any project of mine to my ecosystem.
 
+## Setup
+
+These environment variables must exist on the host system:
+
+```
+NEXUS_DOCKER_USERNAME
+NEXUS_DOCKER_PASSWORD
+```
+
 ## How to Use
 
 Make sure the repository is properly set to Nexus.
