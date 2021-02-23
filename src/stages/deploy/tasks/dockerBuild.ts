@@ -22,8 +22,10 @@ const createDockerBuild = (tag: string) =>
     `sudo docker build --network=host -t ${tag} .`;
 const createDockerPush = (tag: string) =>
     `sudo docker push ${tag}`;
-const createDockerRemoveLatest = (tag: string) =>
-    `sudo docker image ls | grep ${tag} | grep latest | awk '{ print $3 }' | xargs docker image rm`;
+const createDockerRemoveLatest = (tag: string) => {
+    const endIndex = tag.lastIndexOf(':');
+    return `sudo docker image ls | grep ${tag.substring(0, endIndex)} | grep latest | awk '{ print $3 }' | xargs docker image rm`;
+};
 
 const dockerBuild: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectInfo>) => {
     const deployDir = path.resolve(getCwd(), 'deploy');

@@ -78,7 +78,7 @@ describe('dockerBuild task', () => {
         );
         expect(runCommandMock).toHaveBeenNthCalledWith(
             2,
-            'sudo docker image ls | grep my-project:1.0.0 | grep latest | awk \'{ print $3 }\' | xargs docker image rm',
+            'sudo docker image ls | grep my-project | grep latest | awk \'{ print $3 }\' | xargs docker image rm',
             {
                 cwd: '/deploy',
                 logOutput: true
