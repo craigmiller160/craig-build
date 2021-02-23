@@ -21,6 +21,7 @@ describe('getKubeProjectInfo task', () => {
         const result = await getKubeProjectInfo(projectInfo)();
         expect(result).toEqualRight({
             ...projectInfo,
+            kubernetesDeploymentName: 'email-service',
             kubernetesDockerImage: 'craigmiller160.ddns.net:30004/email-service:1.2.0'
         });
     });
