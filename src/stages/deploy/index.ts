@@ -7,10 +7,13 @@ import * as TE from 'fp-ts/TaskEither';
 import kubeDeploy from './tasks/kubeDeploy';
 import stageName from './stageName';
 import downloadArtifact from './tasks/downloadArtifact';
+import wait from '../../utils/wait';
 
 const deploy: StageFunction<ProjectInfo> = (context: StageContext<ProjectInfo>) =>
     pipe(
-        downloadArtifact(context.input),
+        wait(1000),
+        TE.fromTask,
+        TE.chain(() => downloadArtifact(context.input)),
         TE.chain(dockerBuild),
         TE.chain(kubeDeploy),
         TE.map((projectInfo) => ({
