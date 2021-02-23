@@ -64,4 +64,22 @@ export const executeIfNotDeployOnlyBuild: TaskShouldExecuteFunction<ProjectInfo>
         message: 'Not running for deploy only build',
         defaultResult: input
     };
-}
+};
+
+export const executeIfReleaseAndNotDeployOnlyBuild: TaskShouldExecuteFunction<ProjectInfo> = (input: ProjectInfo) => {
+    if (input.isPreRelease) {
+        return {
+            message: 'Project is not release',
+            defaultResult: input
+        };
+    }
+
+    if (process.env.BUILD_NAME === DEPLOY_ONLY_BUILD) {
+        return {
+            message: 'Not running for deploy only build',
+            defaultResult: input
+        };
+    }
+
+    return undefined;
+};

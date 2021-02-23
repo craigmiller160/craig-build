@@ -129,4 +129,18 @@ describe('commonTaskConditions', () => {
                 .toEqual(undefined);
         });
     });
+
+    describe('executeIfReleaseAndNotDeployOnlyBuild', () => {
+        it('is release and not deploy only', () => {
+            throw new Error();
+        });
+
+        it('is release and deploy only', () => {
+            throw new Error();
+        });
+
+        it('is not release and not deploy only', () => {
+            throw new Error();
+        });
+    });
 });

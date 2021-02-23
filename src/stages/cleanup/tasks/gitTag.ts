@@ -1,7 +1,7 @@
 import createTask, { TaskFunction } from '../../../common/execution/task';
 import ProjectInfo from '../../../types/ProjectInfo';
 import { TaskContext } from '../../../common/execution/context';
-import { executeIfRelease } from '../../../common/execution/commonTaskConditions';
+import { executeIfReleaseAndNotDeployOnlyBuild } from '../../../common/execution/commonTaskConditions';
 import { pipe } from 'fp-ts/pipeable';
 import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
@@ -28,4 +28,4 @@ const gitTag: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectInfo>) =>
         }))
     );
 
-export default createTask(stageName, TASK_NAME, gitTag, executeIfRelease);
+export default createTask(stageName, TASK_NAME, gitTag, executeIfReleaseAndNotDeployOnlyBuild);
