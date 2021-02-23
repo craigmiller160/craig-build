@@ -4,7 +4,7 @@ import {
     executeIfApplication, executeIfNotDeployOnlyBuild,
     executeIfNpmPreRelease,
     executeIfNpmProject,
-    executeIfRelease
+    executeIfRelease, executeIfReleaseAndNotDeployOnlyBuild
 } from '../../../src/common/execution/commonTaskConditions';
 import { DEPLOY_ONLY_BUILD } from '../../../src/execution/executionConstants';
 
@@ -132,15 +132,29 @@ describe('commonTaskConditions', () => {
 
     describe('executeIfReleaseAndNotDeployOnlyBuild', () => {
         it('is release and not deploy only', () => {
-            throw new Error();
+            expect(executeIfReleaseAndNotDeployOnlyBuild(baseProjectInfo))
+                .toEqual(undefined);
         });
 
         it('is release and deploy only', () => {
-            throw new Error();
+            process.env.BUILD_NAME = DEPLOY_ONLY_BUILD;
+            expect(executeIfReleaseAndNotDeployOnlyBuild(baseProjectInfo))
+                .toEqual({
+                    message: 'Not running for deploy only build',
+                    defaultResult: baseProjectInfo
+                });
         });
 
         it('is not release and not deploy only', () => {
-            throw new Error();
+            const projectInfo: ProjectInfo = {
+                ...baseProjectInfo,
+                isPreRelease: true
+            };
+            expect(executeIfReleaseAndNotDeployOnlyBuild(projectInfo))
+                .toEqual({
+                    message: 'Project is not release',
+                    defaultResult: projectInfo
+                });
         });
     });
 });
