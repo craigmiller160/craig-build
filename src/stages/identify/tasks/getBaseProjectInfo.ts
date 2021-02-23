@@ -69,6 +69,10 @@ const getMavenDependencies = (pomXml: PomXml): Dependency[] => {
             acc[key] = value[0];
             return acc;
         }, {});
+    if (!pomXml.project.dependencies || pomXml.project.dependencies.length === 0) {
+        return [];
+    }
+
     return pomXml.project.dependencies[0].dependency
         .map((dependency) => {
             let version = dependency.version?.[0] ?? '';
