@@ -17,7 +17,7 @@ interface KubeRootSpec {
 }
 
 interface KubeRootMetadata {
-    name: string;
+  name: string;
 }
 
 export default interface KubeDeployment {
