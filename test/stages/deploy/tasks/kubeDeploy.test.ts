@@ -2,7 +2,11 @@ import path from 'path';
 import getCwd from '../../../../src/utils/getCwd';
 import ProjectInfo from '../../../../src/types/ProjectInfo';
 import ProjectType from '../../../../src/types/ProjectType';
-import kubeDeploy, { APPLY_CONFIGMAP, APPLY_DEPLOYMENT } from '../../../../src/stages/deploy/tasks/kubeDeploy';
+import kubeDeploy, {
+    APPLY_CONFIGMAP,
+    APPLY_DEPLOYMENT,
+    RESTART_APP_BASE
+} from '../../../../src/stages/deploy/tasks/kubeDeploy';
 import '@relmify/jest-fp-ts';
 import runCommand from '../../../../src/utils/runCommand';
 import * as E from 'fp-ts/Either';
@@ -18,7 +22,8 @@ const projectInfo: ProjectInfo = {
     name: 'my-project',
     version: '1.0.0',
     dependencies: [],
-    isPreRelease: false
+    isPreRelease: false,
+    kubernetesDeploymentName: 'my-project'
 };
 
 describe('kubeDeploy task', () => {
@@ -29,7 +34,7 @@ describe('kubeDeploy task', () => {
         const result = await kubeDeploy(projectInfo)();
         expect(result).toEqualRight(projectInfo);
 
-        expect(runCommandMock).toHaveBeenCalledTimes(2);
+        expect(runCommandMock).toHaveBeenCalledTimes(3);
         expect(runCommandMock).toHaveBeenNthCalledWith(
             1,
             APPLY_CONFIGMAP,
@@ -46,6 +51,14 @@ describe('kubeDeploy task', () => {
                 logOutput: true
             }
         );
+        expect(runCommandMock).toHaveBeenNthCalledWith(
+            3,
+            `${RESTART_APP_BASE} my-project`,
+            {
+                cwd: path.resolve(configmapPath, 'deploy'),
+                logOutput: true
+            }
+        );
     });
 
     it('deploys without configmap', async () => {
@@ -55,10 +68,18 @@ describe('kubeDeploy task', () => {
         const result = await kubeDeploy(projectInfo)();
         expect(result).toEqualRight(projectInfo);
 
-        expect(runCommandMock).toHaveBeenCalledTimes(1);
+        expect(runCommandMock).toHaveBeenCalledTimes(2);
         expect(runCommandMock).toHaveBeenNthCalledWith(
             1,
             APPLY_DEPLOYMENT,
+            {
+                cwd: path.resolve(noConfigmapPath, 'deploy'),
+                logOutput: true
+            }
+        );
+        expect(runCommandMock).toHaveBeenNthCalledWith(
+            2,
+            `${RESTART_APP_BASE} my-project`,
             {
                 cwd: path.resolve(noConfigmapPath, 'deploy'),
                 logOutput: true

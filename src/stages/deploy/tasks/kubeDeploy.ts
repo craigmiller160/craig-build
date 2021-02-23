@@ -15,6 +15,7 @@ export const TASK_NAME = 'Kubernetes Deployment';
 
 export const APPLY_CONFIGMAP = 'kubectl apply -f configmap.yml';
 export const APPLY_DEPLOYMENT = 'kubectl apply -f deployment.yml';
+export const RESTART_APP_BASE = 'kubectl rollout restart deployment';
 
 const applyConfigmap = (context: TaskContext<ProjectInfo>): E.Either<Error, string> => {
     const deployDir = path.resolve(getCwd(), 'deploy');
@@ -32,12 +33,21 @@ const applyDeployment = (): E.Either<Error, string> => {
     return runCommand(APPLY_DEPLOYMENT, { cwd: deployDir, logOutput: true });
 };
 
+const restartApp = (projectInfo: ProjectInfo): E.Either<Error, string> => {
+    const deployDir = path.resolve(getCwd(), 'deploy');
+    return runCommand(`${RESTART_APP_BASE} ${projectInfo.kubernetesDeploymentName}`, {
+        cwd: deployDir,
+        logOutput: true
+    });
+}
+
 const kubeDeploy: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectInfo>) => {
     const deployDir = path.resolve(getCwd(), 'deploy');
 
     return pipe(
         applyConfigmap(context),
         E.chain(applyDeployment),
+        E.chain(() => restartApp(context.input)),
         TE.fromEither,
         TE.map(() => ({
             message: 'Kubernetes deployment complete',
