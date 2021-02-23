@@ -31,7 +31,7 @@ const removeExistingDockerImages = (context: TaskContext<ProjectInfo>): E.Either
     const tag = context.input.kubernetesDockerImage!!;
     const endIndex = tag.lastIndexOf(':');
     const name = tag.substring(0, endIndex);
-    const version = tag.substring(endIndex);
+    const version = tag.substring(endIndex + 1);
 
     return pipe(
         runCommand(createDockerFindMatch(name, version)),

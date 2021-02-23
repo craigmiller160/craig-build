@@ -78,11 +78,7 @@ describe('dockerBuild task', () => {
         );
         expect(runCommandMock).toHaveBeenNthCalledWith(
             2,
-            'sudo docker image ls | grep my-project | grep latest | awk \'{ print $3 }\' | xargs docker image rm',
-            {
-                cwd: '/deploy',
-                logOutput: true
-            }
+            'sudo docker image ls | grep my-project | grep 1.0.0'
         );
         expect(runCommandMock).toHaveBeenNthCalledWith(
             3,
@@ -100,10 +96,56 @@ describe('dockerBuild task', () => {
                 logOutput: true
             }
         );
-        throw new Error();
     });
 
-    it('builds and pushes docker image, with existing match', () => {
-        throw new Error();
+    it('builds and pushes docker image, with existing match', async () => {
+        getCwdMock.mockImplementation(() => '/');
+        syncMock.mockImplementationOnce(() => ({
+            NEXUS_DOCKER_USER: 'abc',
+            NEXUS_DOCKER_PASSWORD: 'def'
+        }));
+        runCommandMock.mockImplementation((command) => {
+            if (/sudo docker image ls/.test(command)) {
+                return E.right('Foo');
+            }
+
+            return E.right('');
+        });
+
+        const result = await dockerBuild(baseProjectInfo)();
+        expect(result).toEqualRight(baseProjectInfo);
+
+        expect(runCommandMock).toHaveBeenCalledTimes(5);
+        expect(runCommandMock).toHaveBeenNthCalledWith(
+            1,
+            'sudo docker login craigmiller160.ddns.net:30004 -u abc -p def',
+            {
+                logOutput: true
+            }
+        );
+        expect(runCommandMock).toHaveBeenNthCalledWith(
+            2,
+            'sudo docker image ls | grep my-project | grep 1.0.0'
+        );
+        expect(runCommandMock).toHaveBeenNthCalledWith(
+            3,
+            'sudo docker image ls | grep my-project | grep 1.0.0 | awk \'{ print $3 }\' | xargs docker image rm'
+        );
+        expect(runCommandMock).toHaveBeenNthCalledWith(
+            4,
+            'sudo docker build --network=host -t my-project:1.0.0 .',
+            {
+                cwd: '/deploy',
+                logOutput: true
+            }
+        );
+        expect(runCommandMock).toHaveBeenNthCalledWith(
+            5,
+            'sudo docker push my-project:1.0.0',
+            {
+                cwd: '/deploy',
+                logOutput: true
+            }
+        );
     });
 });
