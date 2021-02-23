@@ -23,6 +23,8 @@ const createDockerBuild = (tag: string) =>
 const createDockerPush = (tag: string) =>
     `sudo docker push ${tag}`;
 
+// docker image ls | grep email-service | grep latest | awk '{ print $3 }' | xargs docker image rm
+
 const dockerBuild: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectInfo>) => {
     const deployDir = path.resolve(getCwd(), 'deploy');
     const {
