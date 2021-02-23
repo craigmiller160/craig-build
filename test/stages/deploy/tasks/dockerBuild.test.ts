@@ -78,7 +78,7 @@ describe('dockerBuild task', () => {
         );
         expect(runCommandMock).toHaveBeenNthCalledWith(
             2,
-            'sudo docker image ls | grep my-project | grep 1.0.0'
+            'sudo docker image ls | grep my-project | grep 1.0.0 | cat'
         );
         expect(runCommandMock).toHaveBeenNthCalledWith(
             3,
@@ -125,11 +125,14 @@ describe('dockerBuild task', () => {
         );
         expect(runCommandMock).toHaveBeenNthCalledWith(
             2,
-            'sudo docker image ls | grep my-project | grep 1.0.0'
+            'sudo docker image ls | grep my-project | grep 1.0.0 | cat'
         );
         expect(runCommandMock).toHaveBeenNthCalledWith(
             3,
-            'sudo docker image ls | grep my-project | grep 1.0.0 | awk \'{ print $3 }\' | xargs docker image rm'
+            'sudo docker image ls | grep my-project | grep 1.0.0 | awk \'{ print $3 }\' | xargs docker image rm',
+            {
+                logOutput: true
+            }
         );
         expect(runCommandMock).toHaveBeenNthCalledWith(
             4,
