@@ -22,8 +22,8 @@ const createDockerBuild = (tag: string) =>
     `sudo docker build --network=host -t ${tag} .`;
 const createDockerPush = (tag: string) =>
     `sudo docker push ${tag}`;
-
-// docker image ls | grep email-service | grep latest | awk '{ print $3 }' | xargs docker image rm
+const createDockerRemoveLatest = (tag: string) =>
+    `sudo docker image ls | grep ${tag} | grep latest | awk '{ print $3 }' | xargs docker image rm`;
 
 const dockerBuild: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectInfo>) => {
     const deployDir = path.resolve(getCwd(), 'deploy');
@@ -42,6 +42,7 @@ const dockerBuild: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectInfo
 
     return pipe(
         runCommand(createDockerLogin(NEXUS_DOCKER_USER, NEXUS_DOCKER_PASSWORD), { logOutput: true }),
+        E.chain(() => runCommand(createDockerRemoveLatest(context.input.kubernetesDockerImage!!), { cwd: deployDir, logOutput: true })),
         E.chain(() => runCommand(createDockerBuild(context.input.kubernetesDockerImage!!), { cwd: deployDir, logOutput: true })),
         E.chain(() => runCommand(createDockerPush(context.input.kubernetesDockerImage!!), { cwd: deployDir, logOutput: true })),
         TE.fromEither,

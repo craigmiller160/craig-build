@@ -68,7 +68,7 @@ describe('dockerBuild task', () => {
         const result = await dockerBuild(baseProjectInfo)();
         expect(result).toEqualRight(baseProjectInfo);
 
-        expect(runCommandMock).toHaveBeenCalledTimes(3);
+        expect(runCommandMock).toHaveBeenCalledTimes(4);
         expect(runCommandMock).toHaveBeenNthCalledWith(
             1,
             'sudo docker login craigmiller160.ddns.net:30004 -u abc -p def',
@@ -78,7 +78,7 @@ describe('dockerBuild task', () => {
         );
         expect(runCommandMock).toHaveBeenNthCalledWith(
             2,
-            'sudo docker build --network=host -t my-project:1.0.0 .',
+            'sudo docker image ls | grep my-project:1.0.0 | grep latest | awk \'{ print $3 }\' | xargs docker image rm',
             {
                 cwd: '/deploy',
                 logOutput: true
@@ -86,6 +86,14 @@ describe('dockerBuild task', () => {
         );
         expect(runCommandMock).toHaveBeenNthCalledWith(
             3,
+            'sudo docker build --network=host -t my-project:1.0.0 .',
+            {
+                cwd: '/deploy',
+                logOutput: true
+            }
+        );
+        expect(runCommandMock).toHaveBeenNthCalledWith(
+            4,
             'sudo docker push my-project:1.0.0',
             {
                 cwd: '/deploy',
