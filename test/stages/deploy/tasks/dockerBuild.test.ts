@@ -57,7 +57,7 @@ describe('dockerBuild task', () => {
         });
     });
 
-    it('builds and pushes docker image', async () => {
+    it('builds and pushes docker image, no existing matches', async () => {
         getCwdMock.mockImplementation(() => '/');
         syncMock.mockImplementationOnce(() => ({
             NEXUS_DOCKER_USER: 'abc',
@@ -100,5 +100,10 @@ describe('dockerBuild task', () => {
                 logOutput: true
             }
         );
+        throw new Error();
+    });
+
+    it('builds and pushes docker image, with existing match', () => {
+        throw new Error();
     });
 });
