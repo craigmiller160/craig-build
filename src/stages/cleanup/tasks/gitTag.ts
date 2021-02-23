@@ -8,6 +8,8 @@ import * as TE from 'fp-ts/TaskEither';
 import runCommand from '../../../utils/runCommand';
 import stageName from '../stageName';
 
+// TODO do not run on deployOnly
+
 export const TASK_NAME = 'Git Tag';
 
 const createGitTag = (version: string) =>
