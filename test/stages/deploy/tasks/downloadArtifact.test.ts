@@ -9,9 +9,11 @@ import path from 'path';
 import fs from 'fs';
 import ProjectInfo from '../../../../src/types/ProjectInfo';
 import ProjectType from '../../../../src/types/ProjectType';
-import downloadArtifact from '../../../../src/stages/deploy/tasks/downloadArtifact';
+import downloadArtifact, { TASK_NAME } from '../../../../src/stages/deploy/tasks/downloadArtifact';
 import getCwd from '../../../../src/utils/getCwd';
 import NexusSearchResult from '../../../../src/types/NexusSearchResult';
+import BuildError from '../../../../src/error/BuildError';
+import stageName from '../../../../src/stages/deploy/stageName';
 
 jest.mock('../../../../src/common/services/NexusRepoApi', () => ({
     searchForMavenSnapshots: jest.fn(),
@@ -62,6 +64,10 @@ const searchResult: NexusSearchResult = {
     ]
 };
 
+const emptySearchResult: NexusSearchResult = {
+    items: []
+};
+
 describe('downloadArtifact task', () => {
     beforeEach(() => {
         jest.resetAllMocks();
@@ -96,7 +102,28 @@ describe('downloadArtifact task', () => {
     });
 
     it('cannot find maven release', async () => {
-        throw new Error();
+        const projectInfo: ProjectInfo = {
+            projectType: ProjectType.MavenApplication,
+            name: 'my-project',
+            version: '1.0.0',
+            isPreRelease: false,
+            dependencies: []
+        };
+
+        getCwdMock.mockImplementation(() => mavenPreReleaseWorkDir);
+        downloadArtifactApiMock.mockImplementation(() => TE.right(''));
+        searchForMavenReleasesMock.mockImplementation(() => TE.right(emptySearchResult));
+
+        const result = await downloadArtifact(projectInfo)();
+        expect(result).toEqualLeft(new BuildError(
+            'Unable to find artifact in Nexus. MavenApplication my-project 1.0.0',
+            stageName,
+            TASK_NAME
+        ));
+
+        expect(searchForMavenReleasesMock).toHaveBeenCalledWith('my-project', '1.0.0');
+        expect(downloadArtifactApi).not.toHaveBeenCalled();
+        expect(searchForMavenSnapshotsMock).not.toHaveBeenCalled();
     });
 
     it('downloads maven release', async () => {

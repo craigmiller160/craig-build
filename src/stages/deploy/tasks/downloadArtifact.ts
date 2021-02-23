@@ -34,7 +34,7 @@ const executeDownload = (context: TaskContext<ProjectInfo>, searchFn: NexusRepoS
             if (nexusSearchResult.items.length > 0) {
                 return TE.right(nexusSearchResult.items[0].assets[0].downloadUrl);
             }
-            return TE.left(context.createBuildError(`Unable to find artifact in nexus. ` +
+            return TE.left(context.createBuildError(`Unable to find artifact in Nexus. ` +
                 `${context.input.projectType} ${context.input.name} ${context.input.version}`));
         }),
         TE.chain((downloadUrl) => {
