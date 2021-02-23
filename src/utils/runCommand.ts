@@ -16,7 +16,7 @@ const runCommand = (command: string, options?: Options): E.Either<Error, string>
 
   console.log(`[${LOG_PREFIX}] [Command]: ${command}`); // eslint-disable-line no-console
 
-  const result = spawn.sync('bash', ['-c', command], {
+  const result = spawn.sync('bash', [ '-c', command ], {
     stdio: logOutput ? 'inherit' : 'pipe',
     cwd
   });
