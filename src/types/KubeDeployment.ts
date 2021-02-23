@@ -16,8 +16,13 @@ interface KubeRootSpec {
   template: KubeTemplate;
 }
 
+interface KubeRootMetadata {
+    name: string;
+}
+
 export default interface KubeDeployment {
   apiVersion: string;
   kind: string;
   spec: KubeRootSpec;
+  metadata: KubeRootMetadata;
 }

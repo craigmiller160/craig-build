@@ -28,6 +28,7 @@ const findKubeProjectInfo = (projectInfo: ProjectInfo): E.Either<Error, ProjectI
             const kubeDeployment = yaml.parse(kubeDeploymentContent) as KubeDeployment;
             return {
                 ...projectInfo,
+                kubernetesDeploymentName: kubeDeployment.metadata.name,
                 kubernetesDockerImage: kubeDeployment.spec.template.spec.containers[0].image
             };
         },
