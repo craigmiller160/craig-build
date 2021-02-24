@@ -6,13 +6,13 @@ import ProjectInfo from '../../../types/ProjectInfo';
 import { TaskContext } from '../../../common/execution/context';
 import stageName from '../stageName';
 import { executeIfApplication } from '../../../common/execution/commonTaskConditions';
-import { isMaven } from '../../../utils/projectTypeUtils';
+import { isMaven, isNpm } from '../../../utils/projectTypeUtils';
 import { pipe } from 'fp-ts/pipeable';
 import getCwd from '../../../utils/getCwd';
 import {
     searchForMavenSnapshots,
     downloadArtifact as downloadArtifactApi,
-    NexusRepoSearchFn, searchForMavenReleases
+    NexusRepoSearchFn, searchForMavenReleases, searchForNpmBetas, searchForNpmReleases
 } from '../../../common/services/NexusRepoApi';
 
 // TODO NPM will need a wildcard at the end of the pre-release version. aka 1.0.0-beta*
@@ -54,6 +54,14 @@ const doDownloadArtifact = (context: TaskContext<ProjectInfo>): TE.TaskEither<Er
 
     if (isMaven(context.input.projectType)) {
         return executeDownload(context, searchForMavenReleases);
+    }
+
+    if (isNpm(context.input.projectType) && context.input.isPreRelease) {
+        return executeDownload(context, searchForNpmBetas); // TODO need wildcard
+    }
+
+    if (isNpm(context.input.projectType)) {
+        return executeDownload(context, searchForNpmReleases);
     }
 
     return TE.left(context.createBuildError(`Invalid project for downloading artifact: ${JSON.stringify(context.input)}`));
