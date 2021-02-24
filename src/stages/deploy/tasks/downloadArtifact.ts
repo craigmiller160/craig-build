@@ -6,16 +6,15 @@ import ProjectInfo from '../../../types/ProjectInfo';
 import { TaskContext } from '../../../common/execution/context';
 import stageName from '../stageName';
 import { executeIfApplication } from '../../../common/execution/commonTaskConditions';
-import { isMaven } from '../../../utils/projectTypeUtils';
+import { isMaven, isNpm } from '../../../utils/projectTypeUtils';
 import { pipe } from 'fp-ts/pipeable';
 import getCwd from '../../../utils/getCwd';
 import {
     searchForMavenSnapshots,
     downloadArtifact as downloadArtifactApi,
-    NexusRepoSearchFn, searchForMavenReleases
+    NexusRepoSearchFn, searchForMavenReleases, searchForNpmBetas, searchForNpmReleases
 } from '../../../common/services/NexusRepoApi';
-
-// TODO NPM will need a wildcard at the end of the pre-release version. aka 1.0.0-beta*
+import ProjectType from '../../../types/ProjectType';
 
 export const TASK_NAME = 'Download Artifact';
 
@@ -25,6 +24,18 @@ const prepareDownloadDirectory = () => {
         fs.rmSync(deployBuildDir, { recursive: true });
     }
     fs.mkdirSync(deployBuildDir);
+};
+
+const getExtension = (projectType: ProjectType) => {
+    if (isMaven(projectType)) {
+        return 'jar';
+    }
+
+    if (isNpm(projectType)) {
+        return 'tgz';
+    }
+
+    throw new Error(`Unsupported ProjectType`);
 };
 
 const executeDownload = (context: TaskContext<ProjectInfo>, searchFn: NexusRepoSearchFn) =>
@@ -38,7 +49,8 @@ const executeDownload = (context: TaskContext<ProjectInfo>, searchFn: NexusRepoS
                 `${context.input.projectType} ${context.input.name} ${context.input.version}`));
         }),
         TE.chain((downloadUrl) => {
-            const targetFileName = `${context.input.name}-${context.input.version}.jar`;
+            const ext = getExtension(context.input.projectType);
+            const targetFileName = `${context.input.name}-${context.input.version}.${ext}`;
             const targetFilePath = path.resolve(getCwd(), 'deploy', 'build', targetFileName);
             context.logger(`Download URL: ${downloadUrl}`);
             context.logger(`Target File: ${targetFilePath}`);
@@ -54,6 +66,16 @@ const doDownloadArtifact = (context: TaskContext<ProjectInfo>): TE.TaskEither<Er
 
     if (isMaven(context.input.projectType)) {
         return executeDownload(context, searchForMavenReleases);
+    }
+
+    if (isNpm(context.input.projectType) && context.input.isPreRelease) {
+        return executeDownload(context, (name: string, version?: string) =>
+            searchForNpmBetas(name, version ? `${version}*` : undefined)
+        );
+    }
+
+    if (isNpm(context.input.projectType)) {
+        return executeDownload(context, searchForNpmReleases);
     }
 
     return TE.left(context.createBuildError(`Invalid project for downloading artifact: ${JSON.stringify(context.input)}`));
