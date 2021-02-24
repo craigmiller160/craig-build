@@ -15,8 +15,6 @@ import {
     NexusRepoSearchFn, searchForMavenReleases, searchForNpmBetas, searchForNpmReleases
 } from '../../../common/services/NexusRepoApi';
 
-// TODO NPM will need a wildcard at the end of the pre-release version. aka 1.0.0-beta*
-
 export const TASK_NAME = 'Download Artifact';
 
 const prepareDownloadDirectory = () => {
@@ -57,7 +55,9 @@ const doDownloadArtifact = (context: TaskContext<ProjectInfo>): TE.TaskEither<Er
     }
 
     if (isNpm(context.input.projectType) && context.input.isPreRelease) {
-        return executeDownload(context, searchForNpmBetas); // TODO need wildcard
+        return executeDownload(context, (name: string, version?: string) =>
+            searchForNpmBetas(name, version ? `${version}*` : undefined)
+        );
     }
 
     if (isNpm(context.input.projectType)) {

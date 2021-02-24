@@ -148,4 +148,12 @@ describe('downloadArtifact task', () => {
         expect(searchForMavenReleasesMock).toHaveBeenCalledWith('my-project', '1.0.0');
         expect(searchForMavenSnapshotsMock).not.toHaveBeenCalled();
     });
+
+    it('downloads npm release', async () => {
+        throw new Error();
+    });
+
+    it('downloads npm beta', async () => {
+        throw new Error();
+    });
 });
