@@ -187,7 +187,7 @@ describe('downloadArtifact task', () => {
         const result = await downloadArtifact(projectInfo)();
         expect(result).toEqualRight(projectInfo);
 
-        const targetPath = path.resolve(npmReleaseBuildDir, 'my-project-1.0.0.jar');
+        const targetPath = path.resolve(npmReleaseBuildDir, 'my-project-1.0.0.tgz');
 
         expect(downloadArtifactApi).toHaveBeenCalledWith(downloadUrl, targetPath);
         expect(searchForNpmReleasesMock).toHaveBeenCalledWith('my-project', '1.0.0');
@@ -212,7 +212,7 @@ describe('downloadArtifact task', () => {
         const result = await downloadArtifact(projectInfo)();
         expect(result).toEqualRight(projectInfo);
 
-        const targetPath = path.resolve(npmPreReleaseBuildDir, 'my-project-1.0.0-beta.jar');
+        const targetPath = path.resolve(npmPreReleaseBuildDir, 'my-project-1.0.0-beta.tgz');
 
         expect(downloadArtifactApi).toHaveBeenCalledWith(downloadUrl, targetPath);
         expect(searchForNpmBetasMock).toHaveBeenCalledWith('my-project', '1.0.0-beta*');

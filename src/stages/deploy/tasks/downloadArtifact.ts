@@ -14,6 +14,7 @@ import {
     downloadArtifact as downloadArtifactApi,
     NexusRepoSearchFn, searchForMavenReleases, searchForNpmBetas, searchForNpmReleases
 } from '../../../common/services/NexusRepoApi';
+import ProjectType from '../../../types/ProjectType';
 
 export const TASK_NAME = 'Download Artifact';
 
@@ -23,6 +24,18 @@ const prepareDownloadDirectory = () => {
         fs.rmSync(deployBuildDir, { recursive: true });
     }
     fs.mkdirSync(deployBuildDir);
+};
+
+const getExtension = (projectType: ProjectType) => {
+    if (isMaven(projectType)) {
+        return 'jar';
+    }
+
+    if (isNpm(projectType)) {
+        return 'tgz';
+    }
+
+    throw new Error(`Unsupported ProjectType`);
 };
 
 const executeDownload = (context: TaskContext<ProjectInfo>, searchFn: NexusRepoSearchFn) =>
@@ -36,7 +49,8 @@ const executeDownload = (context: TaskContext<ProjectInfo>, searchFn: NexusRepoS
                 `${context.input.projectType} ${context.input.name} ${context.input.version}`));
         }),
         TE.chain((downloadUrl) => {
-            const targetFileName = `${context.input.name}-${context.input.version}.jar`;
+            const ext = getExtension(context.input.projectType);
+            const targetFileName = `${context.input.name}-${context.input.version}.${ext}`;
             const targetFilePath = path.resolve(getCwd(), 'deploy', 'build', targetFileName);
             context.logger(`Download URL: ${downloadUrl}`);
             context.logger(`Target File: ${targetFilePath}`);
