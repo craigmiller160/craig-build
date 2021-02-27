@@ -123,4 +123,12 @@ describe('getBaseProjectInfo task', () => {
             ]
         });
     });
+
+    it('get DockerDeployment ProjectInfo for beta', () => {
+        throw new Error();
+    });
+
+    it('get DockerDeployment ProjectInfo for release', () => {
+        throw new Error();
+    });
 });

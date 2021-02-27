@@ -127,4 +127,12 @@ describe('getNexusProjectInfo task', () => {
             }
         });
     });
+
+    it('get DockerDeployment Nexus Project Info', async () => {
+        throw new Error();
+    });
+
+    it('DockerDeployment does not exist in Nexus', async () => {
+        throw new Error();
+    });
 });

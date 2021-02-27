@@ -33,6 +33,10 @@ describe('identifyProject task', () => {
         expect(result).toEqualRight(ProjectType.MavenLibrary);
     });
 
+    it('is DockerDeployment', async () => {
+        throw new Error();
+    });
+
     it('is unknown project', async () => {
         getCwdMock.mockImplementation(() => path.resolve(process.cwd(), 'test', '__working-dirs__'));
         const result = await identifyProject(undefined)();
