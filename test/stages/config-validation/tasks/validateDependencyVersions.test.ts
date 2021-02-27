@@ -136,5 +136,9 @@ describe('validateDependencyVersions task', () => {
             expect(result).toEqualRight(projectInfo);
             expect(mockLogger).toHaveBeenCalledWith('Skipping task Validate Dependency Versions: Project is not release version');
         });
+
+        it('is DockerDeployment', async () => {
+            throw new Error();
+        });
     });
 });
