@@ -151,4 +151,14 @@ describe('dockerBuild task', () => {
             }
         );
     });
+
+    describe('skip execution', () => {
+        it('is not application', () => {
+            throw new Error();
+        });
+
+        it('is DockerDeployment and deploy only command', () => {
+            throw new Error();
+        });
+    });
 });

@@ -220,4 +220,14 @@ describe('downloadArtifact task', () => {
         expect(searchForMavenSnapshotsMock).not.toHaveBeenCalled();
         expect(searchForMavenReleasesMock).not.toHaveBeenCalled();
     });
+
+    describe('skip execution', () => {
+        it('is not application', () => {
+            throw new Error();
+        });
+
+        it('is DockerDeployment', () => {
+            throw new Error();
+        });
+    });
 });
