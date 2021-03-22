@@ -14,7 +14,7 @@ const deploy: StageFunction<ProjectInfo> = (context: StageContext<ProjectInfo>) 
     return pipe(
         wait(3000),
         TE.fromTask,
-        TE.chain(() => downloadArtifact(context.input)), // TODO I'm here
+        TE.chain(() => downloadArtifact(context.input)),
         TE.chain(dockerBuild),
         TE.chain(kubeDeploy),
         TE.map((projectInfo) => ({
