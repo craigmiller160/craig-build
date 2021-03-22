@@ -190,5 +190,9 @@ describe('validateNexusVersion task', () => {
             const result = await validateNexusVersion(stageName)(projectInfo)();
             expect(result).toEqualRight(projectInfo);
         });
+
+        it('is docker pre-release', async () => {
+            throw new Error();
+        });
     });
 });
