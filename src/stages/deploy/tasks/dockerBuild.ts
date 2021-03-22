@@ -1,7 +1,7 @@
-import createTask, { TaskFunction } from '../../../common/execution/task';
+import createTask, {TaskFunction, TaskShouldExecuteFunction} from '../../../common/execution/task';
 import ProjectInfo from '../../../types/ProjectInfo';
-import { TaskContext } from '../../../common/execution/context';
-import { pipe } from 'fp-ts/pipeable';
+import {TaskContext} from '../../../common/execution/context';
+import {pipe} from 'fp-ts/pipeable';
 import path from 'path';
 import getCwd from '../../../utils/getCwd';
 import runCommand from '../../../utils/runCommand';
@@ -9,8 +9,8 @@ import shellEnv from 'shell-env';
 import EnvironmentVariables from '../../../types/EnvironmentVariables';
 import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
-import { executeIfApplication } from '../../../common/execution/commonTaskConditions';
 import stageName from '../stageName';
+import {isApplication, isDocker} from "../../../utils/projectTypeUtils";
 
 export const TASK_NAME = 'Docker Build';
 
@@ -74,4 +74,15 @@ const dockerBuild: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectInfo
     );
 };
 
-export default createTask(stageName, TASK_NAME, dockerBuild, [executeIfApplication]);
+const shouldExecute: TaskShouldExecuteFunction<ProjectInfo> = (input: ProjectInfo) => {
+    if (isDocker(input.projectType) || isApplication(input.projectType)) {
+        return undefined;
+    }
+
+    return {
+        message: 'Is not application or a Docker project',
+        defaultResult: input
+    };
+};
+
+export default createTask(stageName, TASK_NAME, dockerBuild, [shouldExecute]);

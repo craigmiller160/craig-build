@@ -163,9 +163,5 @@ describe('dockerBuild task', () => {
 
             expect(runCommandMock).not.toHaveBeenCalled();
         });
-
-        it('is DockerDeployment and deploy only command', () => {
-            throw new Error();
-        });
     });
 });
