@@ -171,4 +171,8 @@ describe('validateNexusVersion task', () => {
         const result = await validateNexusVersion(stageName)(projectInfo)();
         expect(result).toEqualRight(projectInfo);
     });
+
+    it('skips execution for deploy only build', () => {
+        throw new Error();
+    });
 });

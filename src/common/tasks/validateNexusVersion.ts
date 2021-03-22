@@ -66,4 +66,4 @@ const validateNexusVersion: TaskFunction<ProjectInfo> = (context: TaskContext<Pr
     );
 };
 
-export default (stageName: string) => createTask(stageName, TASK_NAME, validateNexusVersion, executeIfNotDeployOnlyBuild);
+export default (stageName: string) => createTask(stageName, TASK_NAME, validateNexusVersion, [executeIfNotDeployOnlyBuild]);

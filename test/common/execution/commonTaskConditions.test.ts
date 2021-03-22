@@ -20,14 +20,6 @@ const baseProjectInfo: ProjectInfo = {
 };
 
 describe('commonTaskConditions', () => {
-    beforeEach(() => {
-        process.env.BUILD_NAME = undefined;
-    });
-
-    afterEach(() => {
-        process.env.BUILD_NAME = undefined;
-    });
-
     describe('executeIfRelease', () => {
         it('is not release', () => {
             const projectInfo: ProjectInfo = {
