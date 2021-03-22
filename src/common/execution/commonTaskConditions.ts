@@ -101,3 +101,14 @@ export const executeIfNotDocker: TaskShouldExecuteFunction<ProjectInfo> = (input
         defaultResult: input
     };
 };
+
+export const executeIfNotDockerPreRelease: TaskShouldExecuteFunction<ProjectInfo> = (input: ProjectInfo) => {
+    if (!isDocker(input.projectType) || !input.isPreRelease) {
+        return undefined;
+    }
+
+    return {
+        message: 'Is a docker pre-release project',
+        defaultResult: input
+    };
+};

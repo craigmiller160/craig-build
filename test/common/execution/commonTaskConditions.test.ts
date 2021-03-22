@@ -189,4 +189,18 @@ describe('commonTaskConditions', () => {
                 .toBeUndefined();
         });
     });
+
+    describe('executeIfNotDockerPreRelease', () => {
+        it('is docker pre-release', () => {
+            throw new Error();
+        });
+
+        it('is npm pre-release', () => {
+            throw new Error();
+        });
+
+        it('is docker release', () => {
+            throw new Error();
+        });
+    });
 });
