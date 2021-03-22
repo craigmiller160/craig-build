@@ -173,28 +173,30 @@ describe('validateNexusVersion task', () => {
         expect(result).toEqualRight(projectInfo);
     });
 
-    it('skips execution for deploy only build', async () => {
-        process.env.BUILD_NAME = DEPLOY_ONLY_BUILD;
-        const projectInfo: ProjectInfo = {
-            projectType: ProjectType.NpmLibrary,
-            isPreRelease: true,
-            name: 'my-project',
-            version: '1.1.0-beta',
-            dependencies: [],
-            latestNexusVersions: {
-                latestPreReleaseVersion: '1.0.0-beta.1',
-                latestReleaseVersion: '1.2.0'
-            }
-        };
-        const result = await validateNexusVersion(stageName)(projectInfo)();
-        expect(result).toEqualRight(projectInfo);
-    });
-
     it('is DockerDeployment pre-release', async () => {
         throw new Error();
     });
 
     it('is DockerDeployment release, higher than existing releases', async () => {
         throw new Error();
+    });
+
+    describe('skips execution', () => {
+        it('deploy only build', async () => {
+            process.env.BUILD_NAME = DEPLOY_ONLY_BUILD;
+            const projectInfo: ProjectInfo = {
+                projectType: ProjectType.NpmLibrary,
+                isPreRelease: true,
+                name: 'my-project',
+                version: '1.1.0-beta',
+                dependencies: [],
+                latestNexusVersions: {
+                    latestPreReleaseVersion: '1.0.0-beta.1',
+                    latestReleaseVersion: '1.2.0'
+                }
+            };
+            const result = await validateNexusVersion(stageName)(projectInfo)();
+            expect(result).toEqualRight(projectInfo);
+        });
     });
 });
