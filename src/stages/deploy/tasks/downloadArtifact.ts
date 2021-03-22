@@ -5,7 +5,7 @@ import createTask, { TaskFunction } from '../../../common/execution/task';
 import ProjectInfo from '../../../types/ProjectInfo';
 import { TaskContext } from '../../../common/execution/context';
 import stageName from '../stageName';
-import { executeIfApplication } from '../../../common/execution/commonTaskConditions';
+import {executeIfApplication, executeIfNotDocker} from '../../../common/execution/commonTaskConditions';
 import { isMaven, isNpm } from '../../../utils/projectTypeUtils';
 import { pipe } from 'fp-ts/pipeable';
 import getCwd from '../../../utils/getCwd';
@@ -92,4 +92,4 @@ const downloadArtifact: TaskFunction<ProjectInfo> = (context: TaskContext<Projec
     );
 };
 
-export default createTask(stageName, TASK_NAME, downloadArtifact, [executeIfApplication]);
+export default createTask(stageName, TASK_NAME, downloadArtifact, [executeIfApplication, executeIfNotDocker]);
