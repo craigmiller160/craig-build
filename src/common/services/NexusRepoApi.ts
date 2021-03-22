@@ -97,7 +97,7 @@ export const searchForNpmReleases = (name: string, version?: string) =>
         extractResponseData
     );
 
-export const searchForDockerPreReleases = (name: string) =>
+export const searchForDockerReleases = (name: string) =>
     pipe(
         TE.tryCatch(
             () => {
@@ -105,26 +105,7 @@ export const searchForDockerPreReleases = (name: string) =>
                     repository: 'docker-private',
                     name,
                     sort,
-                    direction,
-                    version: 'latest'
-                });
-                return restApiInstance.get<NexusSearchResult>(`/search?${query}`)
-            },
-            handleUnknownError
-        ),
-        extractResponseData
-    );
-
-export const searchForDockerReleases = (name: string, version: string) =>
-    pipe(
-        TE.tryCatch(
-            () => {
-                const query = qs.stringify({
-                    repository: 'docker-private',
-                    name,
-                    sort,
-                    direction,
-                    version
+                    direction
                 });
                 return restApiInstance.get<NexusSearchResult>(`/search?${query}`);
             },
