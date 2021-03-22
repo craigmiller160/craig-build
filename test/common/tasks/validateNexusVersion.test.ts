@@ -192,7 +192,15 @@ describe('validateNexusVersion task', () => {
         });
 
         it('is docker pre-release', async () => {
-            throw new Error();
+            const projectInfo: ProjectInfo = {
+                projectType: ProjectType.DockerImage,
+                isPreRelease: true,
+                name: 'my-project',
+                version: 'latest',
+                dependencies: []
+            };
+            const result = await validateNexusVersion(stageName)(projectInfo)();
+            expect(result).toEqualRight(projectInfo);
         });
     });
 });
