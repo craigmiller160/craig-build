@@ -12,7 +12,12 @@ jest.mock('../src/utils/runCommand', () => {
 });
 
 beforeEach(() => {
+    process.env.BUILD_NAME = undefined;
     jest.clearAllMocks();
     (getCwd as Mock).mockReset();
     (runCommand as Mock).mockReset();
+});
+
+afterEach(() => {
+    process.env.BUILD_NAME = undefined;
 });

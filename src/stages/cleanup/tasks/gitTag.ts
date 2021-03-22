@@ -1,14 +1,12 @@
 import createTask, { TaskFunction } from '../../../common/execution/task';
 import ProjectInfo from '../../../types/ProjectInfo';
 import { TaskContext } from '../../../common/execution/context';
-import { executeIfReleaseAndNotDeployOnlyBuild } from '../../../common/execution/commonTaskConditions';
+import { executeIfRelease, executeIfNotDeployOnlyBuild } from '../../../common/execution/commonTaskConditions';
 import { pipe } from 'fp-ts/pipeable';
 import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
 import runCommand from '../../../utils/runCommand';
 import stageName from '../stageName';
-
-// TODO do not run on deployOnly
 
 export const TASK_NAME = 'Git Tag';
 
@@ -28,4 +26,7 @@ const gitTag: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectInfo>) =>
         }))
     );
 
-export default createTask(stageName, TASK_NAME, gitTag, executeIfReleaseAndNotDeployOnlyBuild);
+export default createTask(stageName, TASK_NAME, gitTag, [
+    executeIfRelease,
+    executeIfNotDeployOnlyBuild
+]);

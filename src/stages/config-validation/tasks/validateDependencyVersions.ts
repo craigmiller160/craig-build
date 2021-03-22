@@ -62,4 +62,4 @@ const validateDependencyVersions: TaskFunction<ProjectInfo> = (context: TaskCont
         TE.fromEither
     );
 
-export default createTask(stageName, TASK_NAME, validateDependencyVersions, executeIfRelease);
+export default createTask(stageName, TASK_NAME, validateDependencyVersions, [executeIfRelease]);

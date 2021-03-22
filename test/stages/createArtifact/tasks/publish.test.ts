@@ -39,4 +39,20 @@ describe('publish task', () => {
             });
         expect(checkoutMock).toHaveBeenCalledWith('.');
     });
+
+    describe('skip execution', () => {
+        it('is maven project', async () => {
+            const projectInfo: ProjectInfo = {
+                projectType: ProjectType.MavenApplication,
+                isPreRelease: false,
+                name: 'my-project',
+                version: '1.0.0',
+                dependencies: []
+            };
+            const result = await publish(projectInfo)();
+            expect(result).toEqualRight(projectInfo);
+
+            expect(runCommandMock).not.toHaveBeenCalled();
+        });
+    });
 });

@@ -153,8 +153,15 @@ describe('dockerBuild task', () => {
     });
 
     describe('skip execution', () => {
-        it('is not application', () => {
-            throw new Error();
+        it('is library', async () => {
+            const projectInfo: ProjectInfo = {
+                ...baseProjectInfo,
+                projectType: ProjectType.NpmLibrary
+            };
+            const result = await dockerBuild(projectInfo)();
+            expect(result).toEqualRight(projectInfo);
+
+            expect(runCommandMock).not.toHaveBeenCalled();
         });
 
         it('is DockerDeployment and deploy only command', () => {

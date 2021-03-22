@@ -25,4 +25,18 @@ describe('getKubeProjectInfo task', () => {
             kubernetesDockerImage: 'craigmiller160.ddns.net:30004/email-service:1.2.0'
         });
     });
+
+    describe('skip execution', () => {
+        it('is library', async () => {
+            const projectInfo: ProjectInfo = {
+                projectType: ProjectType.MavenLibrary,
+                name: 'email-service',
+                version: '1.2.0',
+                dependencies: [],
+                isPreRelease: false
+            };
+            const result = await getKubeProjectInfo(projectInfo)();
+            expect(result).toEqualRight(projectInfo);
+        });
+    });
 });

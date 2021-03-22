@@ -1,6 +1,7 @@
 import { TaskContext } from './context';
 import * as TE from 'fp-ts/TaskEither';
 import * as O from 'fp-ts/Option';
+import * as A from 'fp-ts/Array';
 import { Result } from './result';
 import { createBuildError } from '../../error/BuildError';
 import { createTaskLogger, SUCCESS_STATUS } from '../logger';
@@ -21,7 +22,7 @@ const createTask = <Input, ResultValue = Input>(
     stageName: string,
     taskName: string,
     taskFn: TaskFunction<Input, ResultValue>,
-    shouldExecuteFn?: TaskShouldExecuteFunction<Input,ResultValue>): BuildTask<Input,ResultValue> =>
+    shouldExecuteFns: TaskShouldExecuteFunction<Input,ResultValue>[] = []): BuildTask<Input,ResultValue> =>
     (input: Input): TE.TaskEither<Error, ResultValue> => {
         const taskContext: TaskContext<Input> = {
             stageName,
@@ -31,9 +32,18 @@ const createTask = <Input, ResultValue = Input>(
             logger: createTaskLogger(stageName, taskName)
         };
 
+        type ReduceType1 = TaskShouldExecuteFunction<Input,ResultValue>;
+        type ReduceType2 = TaskSkipExecutionResult<ResultValue> | undefined;
+
         return pipe(
-            O.fromNullable(shouldExecuteFn),
-            O.chainNullableK((fn) => fn(input)),
+            shouldExecuteFns,
+            A.reduce<ReduceType1,ReduceType2>(undefined, (result, fn) => {
+                if (result !== undefined) {
+                    return result;
+                }
+                return fn(input);
+            }),
+            O.fromNullable,
             O.map((result: TaskSkipExecutionResult<ResultValue>) => {
                 taskContext.logger(`Skipping task ${taskName}: ${result.message}`);
                 return result.defaultResult;

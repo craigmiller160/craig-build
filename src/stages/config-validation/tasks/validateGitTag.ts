@@ -4,7 +4,7 @@ import * as TE from 'fp-ts/TaskEither';
 import ProjectInfo from '../../../types/ProjectInfo';
 import runCommand from '../../../utils/runCommand';
 import { pipe } from 'fp-ts/pipeable';
-import createTask, { TaskFunction, TaskShouldExecuteFunction } from '../../../common/execution/task';
+import createTask, { TaskFunction } from '../../../common/execution/task';
 import { TaskContext } from '../../../common/execution/context';
 import { executeIfRelease } from '../../../common/execution/commonTaskConditions';
 import stageName from '../stageName';
@@ -33,4 +33,4 @@ const validateGitTag: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectI
         TE.fromEither
     );
 
-export default createTask(stageName, TASK_NAME, validateGitTag, executeIfRelease);
+export default createTask(stageName, TASK_NAME, validateGitTag, [executeIfRelease]);

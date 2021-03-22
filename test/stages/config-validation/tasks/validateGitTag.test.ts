@@ -32,4 +32,16 @@ describe('validateGitTag task', () => {
         const result = await validateGitTag(projectInfo)();
         expect(result).toEqualRight(projectInfo);
     });
+
+    describe('skip execution', () => {
+        it('is pre-release', async () => {
+            const newProjectInfo: ProjectInfo = {
+                ...projectInfo,
+                isPreRelease: true
+            };
+            runCommandMock.mockImplementation(() => E.right('v0.0.1\nv0.1.0\nv1.0.0'));
+            const result = await validateGitTag(newProjectInfo)();
+            expect(result).toEqualRight(newProjectInfo);
+        });
+    });
 });

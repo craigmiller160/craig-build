@@ -222,8 +222,18 @@ describe('downloadArtifact task', () => {
     });
 
     describe('skip execution', () => {
-        it('is not application', () => {
-            throw new Error();
+        it('is library', async () => {
+            const projectInfo: ProjectInfo = {
+                projectType: ProjectType.NpmLibrary,
+                name: 'my-project',
+                version: '1.0.0-beta',
+                isPreRelease: true,
+                dependencies: []
+            };
+
+            const result = await downloadArtifact(projectInfo)();
+            expect(result).toEqualRight(projectInfo);
+            expect(downloadArtifactApi).not.toHaveBeenCalled();
         });
 
         it('is DockerDeployment', () => {

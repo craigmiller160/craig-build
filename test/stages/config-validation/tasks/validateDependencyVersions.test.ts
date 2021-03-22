@@ -124,17 +124,29 @@ describe('validateDependencyVersions task', () => {
     });
 
     describe('skip execution', () => {
-        it('is pre-release', async () => {
+        it('is not release', async () => {
             const projectInfo: ProjectInfo = {
-                projectType: ProjectType.NpmApplication,
+                projectType: ProjectType.MavenLibrary,
                 isPreRelease: true,
                 name: 'my-project',
                 version: '1.0.0-beta',
-                dependencies: []
+                dependencies: [
+                    {
+                        name: 'foo-bar',
+                        version: '1.0.0-SNAPSHOT'
+                    },
+                    {
+                        name: 'io.craigmiller160/dep-1',
+                        version: '1.0.0-SNAPSHOT'
+                    },
+                    {
+                        name: 'io.craigmiller160/dep-2',
+                        version: '1.0.0'
+                    }
+                ]
             };
             const result = await validateDependencyVersions(projectInfo)();
             expect(result).toEqualRight(projectInfo);
-            expect(mockLogger).toHaveBeenCalledWith('Skipping task Validate Dependency Versions: Project is not release version');
         });
 
         it('is DockerDeployment', async () => {
