@@ -173,14 +173,6 @@ describe('validateNexusVersion task', () => {
         expect(result).toEqualRight(projectInfo);
     });
 
-    it('is DockerDeployment pre-release', async () => {
-        throw new Error();
-    });
-
-    it('is DockerDeployment release, higher than existing releases', async () => {
-        throw new Error();
-    });
-
     describe('skips execution', () => {
         it('deploy only build', async () => {
             process.env.BUILD_NAME = DEPLOY_ONLY_BUILD;

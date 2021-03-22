@@ -11,10 +11,10 @@ import stageName from './stageName';
 
 const configValidation: StageFunction<ProjectInfo> = (context: StageContext<ProjectInfo>) =>
     pipe(
-        validateDependencyVersions(context.input), // TODO I'm here
+        validateDependencyVersions(context.input),
         TE.chain(validateKubeVersion),
         TE.chain(validateGitTag),
-        TE.chain(validateNexusVersion(stageName)),
+        TE.chain(validateNexusVersion(stageName)), // TODO I'm here
         TE.map((projectInfo) => ({
             message: 'Configuration validation successful',
             value: projectInfo
