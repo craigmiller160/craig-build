@@ -1,19 +1,20 @@
 import path from 'path';
-import ProjectInfo, { Dependency } from '../../../types/ProjectInfo';
-import PackageJson, { Dependencies as NpmDependencies } from '../../../types/PackageJson';
+import ProjectInfo, {Dependency} from '../../../types/ProjectInfo';
+import PackageJson, {Dependencies as NpmDependencies} from '../../../types/PackageJson';
 import getCwd from '../../../utils/getCwd';
 import fs from 'fs';
 import PomXml from '../../../types/PomXml';
-import { Parser } from 'xml2js';
+import {Parser} from 'xml2js';
 import ProjectType from '../../../types/ProjectType';
 import * as E from 'fp-ts/Either';
 import * as O from 'fp-ts/Option';
 import * as TE from 'fp-ts/TaskEither';
-import { pipe } from 'fp-ts/pipeable';
+import {pipe} from 'fp-ts/pipeable';
 import handleUnknownError from '../../../utils/handleUnknownError';
-import createTask, { TaskFunction } from '../../../common/execution/task';
-import { TaskContext } from '../../../common/execution/context';
+import createTask, {TaskFunction} from '../../../common/execution/task';
+import {TaskContext} from '../../../common/execution/context';
 import stageName from '../stageName';
+import DockerJson from "../../../types/DockerJson";
 
 const TASK_NAME = 'Get Base Project Info';
 
@@ -27,20 +28,6 @@ const mapNpmDependencies = (dependencies: NpmDependencies) =>
             name: key,
             version: value
         }));
-
-const getProjectNpm = (projectType: ProjectType): ProjectInfo => {
-    const packageJson: PackageJson = require(path.resolve(getCwd(), 'package.json')) as PackageJson;
-    return {
-        projectType,
-        name: packageJson.name.replace('@craigmiller160/', ''),
-        version: packageJson.version,
-        dependencies: [
-            ...mapNpmDependencies(packageJson.dependencies),
-            ...mapNpmDependencies(packageJson.devDependencies)
-        ],
-        isPreRelease: packageJson.version.includes('beta')
-    };
-};
 
 const parseXml = (xml: string): E.Either<Error, PomXml> =>
     pipe(
@@ -107,6 +94,31 @@ const getProjectMaven = (projectType: ProjectType): E.Either<Error, ProjectInfo>
         })
     );
 
+const getProjectNpm = (projectType: ProjectType): ProjectInfo => {
+    const packageJson: PackageJson = require(path.resolve(getCwd(), 'package.json')) as PackageJson;
+    return {
+        projectType,
+        name: packageJson.name.replace('@craigmiller160/', ''),
+        version: packageJson.version,
+        dependencies: [
+            ...mapNpmDependencies(packageJson.dependencies),
+            ...mapNpmDependencies(packageJson.devDependencies)
+        ],
+        isPreRelease: packageJson.version.includes('beta')
+    };
+};
+
+const getProjectDocker = (projectType: ProjectType): ProjectInfo => {
+    const dockerJson: DockerJson = require(path.resolve(getCwd(), 'docker.json')) as DockerJson;
+    return {
+        projectType,
+        name: dockerJson.name.replace('@craigmiller160/', ''),
+        version: dockerJson.version,
+        dependencies: [],
+        isPreRelease: dockerJson.version === 'latest'
+    };
+};
+
 const findProjectInfo = (context: TaskContext<ProjectType>): E.Either<Error, ProjectInfo> => {
     switch (context.input) {
         case ProjectType.NpmApplication:
@@ -115,6 +127,9 @@ const findProjectInfo = (context: TaskContext<ProjectType>): E.Either<Error, Pro
         case ProjectType.MavenLibrary:
         case ProjectType.MavenApplication:
             return getProjectMaven(context.input);
+        case ProjectType.DockerApplication:
+        case ProjectType.DockerImage:
+            return E.right(getProjectDocker(context.input));
         default:
             return E.left(context.createBuildError('Cannot find or load project info'));
     }
