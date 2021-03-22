@@ -36,10 +36,4 @@ describe('build stage', () => {
         expect(bumpNpmBetaMock).toHaveBeenCalledWith(projectInfo);
         expect(publishMock).toHaveBeenCalledWith(projectInfo);
     });
-
-    describe('skip execution', () => {
-        it('is DockerDeployment', () => {
-            throw new Error();
-        });
-    });
 });
