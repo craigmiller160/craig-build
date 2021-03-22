@@ -10,7 +10,7 @@ import stageName from './stageName';
 
 const createArtifact: StageFunction<ProjectInfo> = (context: StageContext<ProjectInfo>) =>
     pipe(
-        buildAndTest(context.input),
+        buildAndTest(context.input), // TODO I'm here
         TE.chain(bumpNpmBeta),
         TE.chain(publish),
         TE.map((projectInfo) => ({

@@ -168,4 +168,14 @@ describe('commonTaskConditions', () => {
                 });
         });
     });
+
+    describe('executeIfNotDocker', () => {
+        it('is docker', () => {
+            throw new Error();
+        });
+
+        it('is not docker', () => {
+            throw new Error();
+        });
+    });
 });
