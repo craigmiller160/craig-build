@@ -3,7 +3,7 @@ import createTask, { TaskFunction } from '../../../common/execution/task';
 import { TaskContext } from '../../../common/execution/context';
 import * as TE from 'fp-ts/TaskEither';
 import * as O from 'fp-ts/Option';
-import { executeIfNpmPreRelease } from '../../../common/execution/commonTaskConditions';
+import { executeIfNpmProject, executeIfPreRelease } from '../../../common/execution/commonTaskConditions';
 import stageName from '../stageName';
 import { pipe } from 'fp-ts/pipeable';
 
@@ -42,4 +42,7 @@ const bumpNpmBeta: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectInfo
     });
 };
 
-export default createTask(stageName, TASK_NAME, bumpNpmBeta, executeIfNpmPreRelease);
+export default createTask(stageName, TASK_NAME, bumpNpmBeta, [
+    executeIfNpmProject,
+    executeIfPreRelease
+]);

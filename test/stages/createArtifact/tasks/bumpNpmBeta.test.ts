@@ -33,4 +33,14 @@ describe('bumpNpmBeta task', () => {
             version: '1.0.0-beta.1'
         });
     });
+
+    describe('skip execution', () => {
+        it('is maven project', () => {
+            throw new Error();
+        });
+
+        it('is release version', () => {
+            throw new Error();
+        });
+    });
 });
