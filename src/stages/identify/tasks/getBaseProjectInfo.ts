@@ -11,7 +11,7 @@ import * as O from 'fp-ts/Option';
 import * as TE from 'fp-ts/TaskEither';
 import { pipe } from 'fp-ts/pipeable';
 import handleUnknownError from '../../../utils/handleUnknownError';
-import createTask, { TaskFunction, TaskShouldExecuteFunction } from '../../../common/execution/task';
+import createTask, { TaskFunction } from '../../../common/execution/task';
 import { TaskContext } from '../../../common/execution/context';
 import stageName from '../stageName';
 
