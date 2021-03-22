@@ -124,11 +124,19 @@ describe('getBaseProjectInfo task', () => {
         });
     });
 
-    it('get DockerDeployment ProjectInfo for beta', () => {
+    it('get DockerImage ProjectInfo for beta', () => {
         throw new Error();
     });
 
-    it('get DockerDeployment ProjectInfo for release', () => {
+    it('get DockerImage ProjectInfo for release', () => {
+        throw new Error();
+    });
+
+    it('get DockerApplication ProjectInfo for beta', () => {
+        throw new Error();
+    });
+
+    it('get DockerApplication ProjectInfo for release', () => {
         throw new Error();
     });
 });
