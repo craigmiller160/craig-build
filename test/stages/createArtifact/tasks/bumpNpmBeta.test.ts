@@ -35,12 +35,23 @@ describe('bumpNpmBeta task', () => {
     });
 
     describe('skip execution', () => {
-        it('is maven project', () => {
-            throw new Error();
+        it('is maven project', async () => {
+            const projectInfo: ProjectInfo = {
+                ...baseProjectInfo,
+                projectType: ProjectType.MavenApplication
+            };
+            const result = await bumpNpmBeta(projectInfo)();
+            expect(result).toEqualRight(projectInfo);
         });
 
-        it('is release version', () => {
-            throw new Error();
+        it('is release version', async () => {
+            const projectInfo: ProjectInfo = {
+                ...baseProjectInfo,
+                isPreRelease: false,
+                version: '1.0.0'
+            };
+            const result = await bumpNpmBeta(projectInfo)();
+            expect(result).toEqualRight(projectInfo);
         });
     });
 });
