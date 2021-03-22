@@ -123,6 +123,31 @@ describe('validateDependencyVersions task', () => {
         expect(result).toEqualRight(projectInfo);
     });
 
+    it('validates for docker release', async () => {
+        const projectInfo: ProjectInfo = {
+            projectType: ProjectType.DockerApplication,
+            isPreRelease: false,
+            name: 'my-project',
+            version: '1.0.0',
+            dependencies: [
+                {
+                    name: 'foo-bar',
+                    version: '1.0.0-beta'
+                },
+                {
+                    name: '@craigmiller160/dep-1',
+                    version: '1.0.0-beta'
+                },
+                {
+                    name: '@craigmiller160/dep-2',
+                    version: '1.0.0'
+                }
+            ]
+        };
+        const result = await validateDependencyVersions(projectInfo)();
+        expect(result).toEqualRight(projectInfo);
+    });
+
     describe('skip execution', () => {
         it('is not release', async () => {
             const projectInfo: ProjectInfo = {
@@ -147,10 +172,6 @@ describe('validateDependencyVersions task', () => {
             };
             const result = await validateDependencyVersions(projectInfo)();
             expect(result).toEqualRight(projectInfo);
-        });
-
-        it('is DockerDeployment', async () => {
-            throw new Error();
         });
     });
 });

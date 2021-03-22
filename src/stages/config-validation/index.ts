@@ -11,7 +11,7 @@ import stageName from './stageName';
 
 const configValidation: StageFunction<ProjectInfo> = (context: StageContext<ProjectInfo>) =>
     pipe(
-        validateDependencyVersions(context.input),
+        validateDependencyVersions(context.input), // TODO I'm here
         TE.chain(validateKubeVersion),
         TE.chain(validateGitTag),
         TE.chain(validateNexusVersion(stageName)),
