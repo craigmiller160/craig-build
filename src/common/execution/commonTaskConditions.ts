@@ -69,7 +69,6 @@ export const executeIfLibrary: TaskShouldExecuteFunction<ProjectInfo> = (input: 
     };
 };
 
-// TODO write tests
 export const executeIfDeployOnlyBuild: TaskShouldExecuteFunction<ProjectInfo> = (input: ProjectInfo) => {
     if (process.env.BUILD_NAME === DEPLOY_ONLY_BUILD) {
         return undefined;
