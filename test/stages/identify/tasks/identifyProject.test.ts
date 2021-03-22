@@ -34,11 +34,15 @@ describe('identifyProject task', () => {
     });
 
     it('is DockerImage', async () => {
-        throw new Error();
+        getCwdMock.mockImplementation(() => path.resolve(process.cwd(), 'test', '__working-dirs__', 'dockerReleaseImage'));
+        const result = await identifyProject(undefined)();
+        expect(result).toEqualRight(ProjectType.DockerImage);
     });
 
     it('is DockerApplication', async () => {
-        throw new Error();
+        getCwdMock.mockImplementation(() => path.resolve(process.cwd(), 'test', '__working-dirs__', 'dockerReleaseApplication'));
+        const result = await identifyProject(undefined)();
+        expect(result).toEqualRight(ProjectType.DockerApplication);
     });
 
     it('is unknown project', async () => {
