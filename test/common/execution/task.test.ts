@@ -50,7 +50,7 @@ describe('createTask', () => {
     });
 
     it('creates task that skips execution', async () => {
-        const executableTask = createTask(stageName, taskName, taskFn, shouldExecute);
+        const executableTask = createTask(stageName, taskName, taskFn, [shouldExecute]);
 
         expect(mockLogger).not.toHaveBeenCalled();
         expect(executableTask).toEqual(expect.any(Function));
