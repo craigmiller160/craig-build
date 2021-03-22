@@ -1,6 +1,6 @@
 import { TaskShouldExecuteFunction } from './task';
 import ProjectInfo from '../../types/ProjectInfo';
-import {isApplication, isLibrary, isNpm} from '../../utils/projectTypeUtils';
+import {isApplication, isLibrary, isMaven, isNpm} from '../../utils/projectTypeUtils';
 import { DEPLOY_ONLY_BUILD } from '../../execution/executionConstants';
 
 export const executeIfRelease: TaskShouldExecuteFunction<ProjectInfo> = (input: ProjectInfo) => {
@@ -14,7 +14,6 @@ export const executeIfRelease: TaskShouldExecuteFunction<ProjectInfo> = (input: 
     };
 };
 
-// TODO write tests
 export const executeIfPreRelease: TaskShouldExecuteFunction<ProjectInfo> = (input: ProjectInfo) => {
     if (input.isPreRelease) {
         return undefined;
@@ -26,7 +25,6 @@ export const executeIfPreRelease: TaskShouldExecuteFunction<ProjectInfo> = (inpu
     };
 };
 
-// TODO write tests
 export const executeIfNpmProject: TaskShouldExecuteFunction<ProjectInfo> = (input: ProjectInfo) => {
     if (isNpm(input.projectType)) {
         return undefined;
@@ -34,6 +32,17 @@ export const executeIfNpmProject: TaskShouldExecuteFunction<ProjectInfo> = (inpu
 
     return {
         message: 'Project is not Npm project',
+        defaultResult: input
+    };
+};
+
+export const executeIfMavenProject: TaskShouldExecuteFunction<ProjectInfo> = (input: ProjectInfo) => {
+    if (isMaven(input.projectType)) {
+        return undefined;
+    }
+
+    return {
+        message: 'Project is not Maven project',
         defaultResult: input
     };
 };
@@ -49,7 +58,6 @@ export const executeIfApplication: TaskShouldExecuteFunction<ProjectInfo> = (inp
     };
 };
 
-// TODO write tests
 export const executeIfLibrary: TaskShouldExecuteFunction<ProjectInfo> = (input: ProjectInfo) => {
     if (isLibrary(input.projectType)) {
         return undefined;

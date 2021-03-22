@@ -1,10 +1,10 @@
 import ProjectInfo from '../../../src/types/ProjectInfo';
 import ProjectType from '../../../src/types/ProjectType';
 import {
-    executeIfApplication, executeIfNotDeployOnlyBuild,
-    executeIfNpmPreRelease,
+    executeIfApplication,
+    executeIfNotDeployOnlyBuild,
     executeIfNpmProject,
-    executeIfRelease, executeIfReleaseAndNotDeployOnlyBuild
+    executeIfRelease,
 } from '../../../src/common/execution/commonTaskConditions';
 import { DEPLOY_ONLY_BUILD } from '../../../src/execution/executionConstants';
 
@@ -17,6 +17,14 @@ const baseProjectInfo: ProjectInfo = {
 };
 
 describe('commonTaskConditions', () => {
+    beforeEach(() => {
+        process.env.BUILD_NAME = undefined;
+    });
+
+    afterEach(() => {
+        process.env.BUILD_NAME = undefined;
+    });
+
     describe('executeIfRelease', () => {
         it('is not release', () => {
             const projectInfo: ProjectInfo = {
@@ -34,6 +42,16 @@ describe('commonTaskConditions', () => {
         it('is release', () => {
             expect(executeIfRelease(baseProjectInfo))
                 .toBeUndefined();
+        });
+    });
+
+    describe('executeIfPreRelease', () => {
+        it('is release', () => {
+            throw new Error();
+        });
+
+        it('is pre-release', () => {
+            throw new Error();
         });
     });
 
@@ -56,37 +74,23 @@ describe('commonTaskConditions', () => {
         });
     });
 
-    describe('executeIfNpmPreRelease', () => {
-        it('is npm pre-release', () => {
-            const projectInfo: ProjectInfo = {
-                ...baseProjectInfo,
-                version: '1.0.0-beta',
-                isPreRelease: true
-            };
-            expect(executeIfNpmPreRelease(projectInfo))
-                .toBeUndefined();
+    describe('executeIfLibrary', () => {
+        it('is library', () => {
+            throw new Error();
         });
 
-        it('is npm release', () => {
-            expect(executeIfNpmPreRelease(baseProjectInfo))
-                .toEqual({
-                    message: 'Npm project is not pre-release version',
-                    defaultResult: baseProjectInfo
-                });
+        it('is not library', () => {
+            throw new Error();
+        });
+    });
+
+    describe('executeIfMavenProject', () => {
+        it('is npm project', () => {
+            throw new Error();
         });
 
-        it('is maven pre-release', () => {
-            const projectInfo: ProjectInfo = {
-                ...baseProjectInfo,
-                projectType: ProjectType.MavenLibrary,
-                version: '1.0.0-SNAPSHOT',
-                isPreRelease: true
-            };
-            expect(executeIfNpmPreRelease(projectInfo))
-                .toEqual({
-                    message: 'Project is not Npm project',
-                    defaultResult: projectInfo
-                });
+        it('is maven project', () => {
+            throw new Error();
         });
     });
 
@@ -110,10 +114,6 @@ describe('commonTaskConditions', () => {
     });
 
     describe('executeIfNotDeployOnlyBuild', () => {
-        beforeEach(() => {
-            process.env.BUILD_NAME = undefined;
-        });
-
         it('is deploy only build', () => {
             process.env.BUILD_NAME = DEPLOY_ONLY_BUILD;
             expect(executeIfNotDeployOnlyBuild(baseProjectInfo))
@@ -130,31 +130,13 @@ describe('commonTaskConditions', () => {
         });
     });
 
-    describe('executeIfReleaseAndNotDeployOnlyBuild', () => {
-        it('is release and not deploy only', () => {
-            expect(executeIfReleaseAndNotDeployOnlyBuild(baseProjectInfo))
-                .toEqual(undefined);
+    describe('executeIfDeployOnlyBuild', () => {
+        it('is deploy only build', () => {
+            throw new Error();
         });
 
-        it('is release and deploy only', () => {
-            process.env.BUILD_NAME = DEPLOY_ONLY_BUILD;
-            expect(executeIfReleaseAndNotDeployOnlyBuild(baseProjectInfo))
-                .toEqual({
-                    message: 'Not running for deploy only build',
-                    defaultResult: baseProjectInfo
-                });
-        });
-
-        it('is not release and not deploy only', () => {
-            const projectInfo: ProjectInfo = {
-                ...baseProjectInfo,
-                isPreRelease: true
-            };
-            expect(executeIfReleaseAndNotDeployOnlyBuild(projectInfo))
-                .toEqual({
-                    message: 'Project is not release',
-                    defaultResult: projectInfo
-                });
+        it('is not deploy only build', () => {
+            throw new Error();
         });
     });
 });
