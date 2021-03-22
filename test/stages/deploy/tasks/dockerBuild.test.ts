@@ -2,7 +2,7 @@ import ProjectInfo from '../../../../src/types/ProjectInfo';
 import ProjectType from '../../../../src/types/ProjectType';
 import '@relmify/jest-fp-ts';
 import runCommand from '../../../../src/utils/runCommand';
-import dockerBuild, { TASK_NAME } from '../../../../src/stages/deploy/tasks/dockerBuild';
+import dockerBuild, {TASK_NAME} from '../../../../src/stages/deploy/tasks/dockerBuild';
 import BuildError from '../../../../src/error/BuildError';
 import getCwd from '../../../../src/utils/getCwd';
 import shellEnv from 'shell-env';
@@ -150,5 +150,18 @@ describe('dockerBuild task', () => {
                 logOutput: true
             }
         );
+    });
+
+    describe('skip execution', () => {
+        it('is library', async () => {
+            const projectInfo: ProjectInfo = {
+                ...baseProjectInfo,
+                projectType: ProjectType.NpmLibrary
+            };
+            const result = await dockerBuild(projectInfo)();
+            expect(result).toEqualRight(projectInfo);
+
+            expect(runCommandMock).not.toHaveBeenCalled();
+        });
     });
 });

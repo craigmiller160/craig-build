@@ -74,4 +74,4 @@ const dockerBuild: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectInfo
     );
 };
 
-export default createTask(stageName, TASK_NAME, dockerBuild, executeIfApplication);
+export default createTask(stageName, TASK_NAME, dockerBuild, [executeIfApplication]);
