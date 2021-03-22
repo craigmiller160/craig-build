@@ -1,10 +1,12 @@
 import ProjectInfo from '../../../src/types/ProjectInfo';
 import ProjectType from '../../../src/types/ProjectType';
 import {
-    executeIfApplication, executeIfDeployOnlyBuild,
+    executeIfApplication,
+    executeIfDeployOnlyBuild,
     executeIfLibrary,
     executeIfMavenProject,
     executeIfNotDeployOnlyBuild,
+    executeIfNotDocker,
     executeIfNpmProject,
     executeIfPreRelease,
     executeIfRelease,
@@ -171,11 +173,20 @@ describe('commonTaskConditions', () => {
 
     describe('executeIfNotDocker', () => {
         it('is docker', () => {
-            throw new Error();
+            const projectInfo: ProjectInfo = {
+                ...baseProjectInfo,
+                projectType: ProjectType.DockerApplication
+            };
+            expect(executeIfNotDocker(projectInfo))
+                .toEqual({
+                    message: 'Is docker project',
+                    defaultResult: projectInfo
+                });
         });
 
         it('is not docker', () => {
-            throw new Error();
+            expect(executeIfNotDocker(baseProjectInfo))
+                .toBeUndefined();
         });
     });
 });
