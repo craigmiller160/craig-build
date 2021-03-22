@@ -46,8 +46,4 @@ describe('createStage', () => {
         expect(mockLogger).toHaveBeenNthCalledWith(1, 'Starting...');
         expect(mockLogger).toHaveBeenNthCalledWith(2, 'Finished. The message', SUCCESS_STATUS);
     });
-
-    it('create stage that skips execution', () => {
-        throw new Error();
-    });
 });
