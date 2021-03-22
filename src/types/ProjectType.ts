@@ -3,7 +3,8 @@ enum ProjectType {
     MavenLibrary = 'MavenLibrary',
     NpmApplication = 'NpmApplication',
     MavenApplication = 'MavenApplication',
-    DockerDeployment = 'DockerDeployment'
+    DockerApplication = 'DockerApplication',
+    DockerImage = 'DockerImage'
 }
 
 export default ProjectType;
