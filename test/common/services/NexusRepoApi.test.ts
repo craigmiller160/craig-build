@@ -102,4 +102,12 @@ describe('NexusRepoApi', () => {
         expect(result).toEqualRight(output);
         expect(fs.readFileSync(output, 'utf8')).toEqual('Hello World');
     });
+
+    it('searchForDockerPreReleases', async () => {
+        throw new Error();
+    });
+
+    it('searchForDockerReleases', async () => {
+        throw new Error();
+    });
 });
