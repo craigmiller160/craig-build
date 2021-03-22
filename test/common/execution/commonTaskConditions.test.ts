@@ -6,7 +6,7 @@ import {
     executeIfLibrary,
     executeIfMavenProject,
     executeIfNotDeployOnlyBuild,
-    executeIfNotDocker,
+    executeIfNotDocker, executeIfNotDockerPreRelease,
     executeIfNpmProject,
     executeIfPreRelease,
     executeIfRelease,
@@ -192,15 +192,35 @@ describe('commonTaskConditions', () => {
 
     describe('executeIfNotDockerPreRelease', () => {
         it('is docker pre-release', () => {
-            throw new Error();
+            const projectInfo: ProjectInfo = {
+                ...baseProjectInfo,
+                projectType: ProjectType.DockerImage,
+                isPreRelease: true
+            };
+            expect(executeIfNotDockerPreRelease(projectInfo))
+                .toEqual({
+                    message: 'Is a docker pre-release project',
+                    defaultResult: projectInfo
+                });
         });
 
         it('is npm pre-release', () => {
-            throw new Error();
+            const projectInfo: ProjectInfo = {
+                ...baseProjectInfo,
+                isPreRelease: true
+            };
+
+            expect(executeIfNotDockerPreRelease(projectInfo))
+                .toBeUndefined();
         });
 
         it('is docker release', () => {
-            throw new Error();
+            const projectInfo: ProjectInfo = {
+                ...baseProjectInfo,
+                projectType: ProjectType.DockerImage
+            };
+            expect(executeIfNotDockerPreRelease(projectInfo))
+                .toBeUndefined();
         });
     });
 });
