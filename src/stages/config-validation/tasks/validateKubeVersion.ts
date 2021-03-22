@@ -37,4 +37,4 @@ const validateKubeVersion: TaskFunction<ProjectInfo> = (context: TaskContext<Pro
         TE.fromEither
     );
 
-export default createTask(stageName, TASK_NAME, validateKubeVersion, executeIfApplication);
+export default createTask(stageName, TASK_NAME, validateKubeVersion, [executeIfApplication]);

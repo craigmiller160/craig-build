@@ -86,4 +86,17 @@ describe('kubeDeploy task', () => {
             }
         );
     });
+
+    describe('skip execution', () => {
+        it('is library', async () => {
+            const newProjectInfo: ProjectInfo = {
+                ...projectInfo,
+                projectType: ProjectType.NpmLibrary
+            };
+            const result = await kubeDeploy(newProjectInfo)();
+            expect(result).toEqualRight(newProjectInfo);
+
+            expect(runCommandMock).not.toHaveBeenCalled();
+        });
+    });
 });

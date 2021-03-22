@@ -92,4 +92,4 @@ const downloadArtifact: TaskFunction<ProjectInfo> = (context: TaskContext<Projec
     );
 };
 
-export default createTask(stageName, TASK_NAME, downloadArtifact, executeIfApplication);
+export default createTask(stageName, TASK_NAME, downloadArtifact, [executeIfApplication]);

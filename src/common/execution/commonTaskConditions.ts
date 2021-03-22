@@ -1,7 +1,6 @@
 import { TaskShouldExecuteFunction } from './task';
 import ProjectInfo from '../../types/ProjectInfo';
-import { isApplication } from '../../utils/projectTypeUtils';
-import ProjectType from '../../types/ProjectType';
+import {isApplication, isLibrary, isMaven, isNpm} from '../../utils/projectTypeUtils';
 import { DEPLOY_ONLY_BUILD } from '../../execution/executionConstants';
 
 export const executeIfRelease: TaskShouldExecuteFunction<ProjectInfo> = (input: ProjectInfo) => {
@@ -15,34 +14,38 @@ export const executeIfRelease: TaskShouldExecuteFunction<ProjectInfo> = (input: 
     };
 };
 
-export const executeIfNpmPreRelease: TaskShouldExecuteFunction<ProjectInfo> = (input: ProjectInfo) => {
-    if (input.projectType !== ProjectType.NpmLibrary && input.projectType !== ProjectType.NpmApplication) {
-        return {
-            message: 'Project is not Npm project',
-            defaultResult: input
-        };
+export const executeIfPreRelease: TaskShouldExecuteFunction<ProjectInfo> = (input: ProjectInfo) => {
+    if (input.isPreRelease) {
+        return undefined;
     }
 
-    if (!input.isPreRelease) {
-        return {
-            message: 'Npm project is not pre-release version',
-            defaultResult: input
-        };
-    }
-
-    return undefined;
+    return {
+        message: 'Project is not pre-release version',
+        defaultResult: input
+    };
 };
 
 export const executeIfNpmProject: TaskShouldExecuteFunction<ProjectInfo> = (input: ProjectInfo) => {
-    if (input.projectType !== ProjectType.NpmLibrary && input.projectType !== ProjectType.NpmApplication) {
-        return {
-            message: 'Project is not Npm project',
-            defaultResult: input
-        };
+    if (isNpm(input.projectType)) {
+        return undefined;
     }
 
-    return undefined;
-}
+    return {
+        message: 'Project is not Npm project',
+        defaultResult: input
+    };
+};
+
+export const executeIfMavenProject: TaskShouldExecuteFunction<ProjectInfo> = (input: ProjectInfo) => {
+    if (isMaven(input.projectType)) {
+        return undefined;
+    }
+
+    return {
+        message: 'Project is not Maven project',
+        defaultResult: input
+    };
+};
 
 export const executeIfApplication: TaskShouldExecuteFunction<ProjectInfo> = (input: ProjectInfo) => {
     if (isApplication(input.projectType)) {
@@ -55,31 +58,35 @@ export const executeIfApplication: TaskShouldExecuteFunction<ProjectInfo> = (inp
     };
 };
 
+export const executeIfLibrary: TaskShouldExecuteFunction<ProjectInfo> = (input: ProjectInfo) => {
+    if (isLibrary(input.projectType)) {
+        return undefined;
+    }
+
+    return {
+        message: 'Project is not library',
+        defaultResult: input
+    };
+};
+
+export const executeIfDeployOnlyBuild: TaskShouldExecuteFunction<ProjectInfo> = (input: ProjectInfo) => {
+    if (process.env.BUILD_NAME === DEPLOY_ONLY_BUILD) {
+        return undefined;
+    }
+
+    return {
+        message: 'Not deploy-only build',
+        defaultResult: input
+    };
+};
+
 export const executeIfNotDeployOnlyBuild: TaskShouldExecuteFunction<ProjectInfo> = (input: ProjectInfo) => {
     if (process.env.BUILD_NAME !== DEPLOY_ONLY_BUILD) {
         return undefined;
     }
 
     return {
-        message: 'Not running for deploy only build',
+        message: 'Is deploy-only build',
         defaultResult: input
     };
-};
-
-export const executeIfReleaseAndNotDeployOnlyBuild: TaskShouldExecuteFunction<ProjectInfo> = (input: ProjectInfo) => {
-    if (input.isPreRelease) {
-        return {
-            message: 'Project is not release',
-            defaultResult: input
-        };
-    }
-
-    if (process.env.BUILD_NAME === DEPLOY_ONLY_BUILD) {
-        return {
-            message: 'Not running for deploy only build',
-            defaultResult: input
-        };
-    }
-
-    return undefined;
 };

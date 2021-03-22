@@ -5,7 +5,6 @@ import { executeIfNpmProject } from '../../../common/execution/commonTaskConditi
 import runCommand from '../../../utils/runCommand';
 import { pipe } from 'fp-ts/pipeable';
 import * as TE from 'fp-ts/TaskEither';
-import * as E from 'fp-ts/Either';
 import stageName from '../stageName';
 import simpleGit from 'simple-git';
 import handleUnknownError from '../../../utils/handleUnknownError';
@@ -34,4 +33,4 @@ const publish: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectInfo>) =
     );
 };
 
-export default createTask(stageName, TASK_NAME, publish, executeIfNpmProject);
+export default createTask(stageName, TASK_NAME, publish, [executeIfNpmProject]);

@@ -45,4 +45,4 @@ const getKubeProjectInfo: TaskFunction<ProjectInfo> = (context: TaskContext<Proj
         TE.fromEither
     );
 
-export default createTask(stageName, TASK_NAME, getKubeProjectInfo, executeIfApplication);
+export default createTask(stageName, TASK_NAME, getKubeProjectInfo, [executeIfApplication]);

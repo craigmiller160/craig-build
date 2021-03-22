@@ -220,4 +220,20 @@ describe('downloadArtifact task', () => {
         expect(searchForMavenSnapshotsMock).not.toHaveBeenCalled();
         expect(searchForMavenReleasesMock).not.toHaveBeenCalled();
     });
+
+    describe('skip execution', () => {
+        it('is library', async () => {
+            const projectInfo: ProjectInfo = {
+                projectType: ProjectType.NpmLibrary,
+                name: 'my-project',
+                version: '1.0.0-beta',
+                isPreRelease: true,
+                dependencies: []
+            };
+
+            const result = await downloadArtifact(projectInfo)();
+            expect(result).toEqualRight(projectInfo);
+            expect(downloadArtifactApi).not.toHaveBeenCalled();
+        });
+    });
 });

@@ -56,4 +56,4 @@ const kubeDeploy: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectInfo>
     );
 };
 
-export default createTask(stageName, TASK_NAME, kubeDeploy, executeIfApplication);
+export default createTask(stageName, TASK_NAME, kubeDeploy, [executeIfApplication]);

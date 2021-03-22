@@ -65,4 +65,19 @@ describe('validateKubeVersion task', () => {
             stageName
         ));
     });
+
+    describe('skip execution', () => {
+        it('is not application', async () => {
+            const projectInfo: ProjectInfo = {
+                projectType: ProjectType.NpmLibrary,
+                name: 'my-project',
+                version: '1.0.0-beta',
+                isPreRelease: true,
+                dependencies: [],
+                kubernetesDockerImage: 'localhost:30000/my-project:1.0.0-beta'
+            };
+            const result = await validateKubeVersion(projectInfo)();
+            expect(result).toEqualRight(projectInfo);
+        });
+    });
 });
