@@ -130,7 +130,7 @@ describe('getBaseProjectInfo task', () => {
         expect(result).toEqual({
             projectType: ProjectType.DockerImage,
             name: 'nginx-base',
-            version: '1.0.0-beta',
+            version: 'latest',
             isPreRelease: true,
             dependencies: []
         });
@@ -154,7 +154,7 @@ describe('getBaseProjectInfo task', () => {
         expect(result).toEqual({
             projectType: ProjectType.DockerApplication,
             name: 'nginx-base',
-            version: '1.0.0-beta',
+            version: 'latest',
             isPreRelease: true,
             dependencies: []
         });
