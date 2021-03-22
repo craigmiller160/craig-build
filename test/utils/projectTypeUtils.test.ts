@@ -1,4 +1,4 @@
-import { isApplication, isLibrary, isMaven, isNpm } from '../../src/utils/projectTypeUtils';
+import { isApplication, isDocker, isLibrary, isMaven, isNpm } from '../../src/utils/projectTypeUtils';
 import ProjectType from '../../src/types/ProjectType';
 
 describe('projectTypeUtils', () => {
@@ -11,6 +11,10 @@ describe('projectTypeUtils', () => {
             .toEqual(false);
         expect(isApplication(ProjectType.NpmLibrary))
             .toEqual(false);
+        expect(isApplication(ProjectType.DockerApplication))
+            .toEqual(true);
+        expect(isApplication(ProjectType.DockerImage))
+            .toEqual(false);
     });
 
     it('isLibrary', () => {
@@ -22,6 +26,10 @@ describe('projectTypeUtils', () => {
             .toEqual(true);
         expect(isLibrary(ProjectType.NpmLibrary))
             .toEqual(true);
+        expect(isLibrary(ProjectType.DockerApplication))
+            .toEqual(false);
+        expect(isLibrary(ProjectType.DockerImage))
+            .toEqual(false);
     });
 
     it('isMaven', () => {
@@ -33,6 +41,10 @@ describe('projectTypeUtils', () => {
             .toEqual(true);
         expect(isMaven(ProjectType.NpmLibrary))
             .toEqual(false);
+        expect(isMaven(ProjectType.DockerApplication))
+            .toEqual(false);
+        expect(isMaven(ProjectType.DockerImage))
+            .toEqual(false);
     });
 
     it('isNpm', () => {
@@ -43,6 +55,25 @@ describe('projectTypeUtils', () => {
         expect(isNpm(ProjectType.MavenLibrary))
             .toEqual(false);
         expect(isNpm(ProjectType.NpmLibrary))
+            .toEqual(true);
+        expect(isNpm(ProjectType.DockerApplication))
+            .toEqual(false);
+        expect(isNpm(ProjectType.DockerImage))
+            .toEqual(false);
+    });
+
+    it('isDocker', () => {
+        expect(isDocker(ProjectType.MavenApplication))
+            .toEqual(false);
+        expect(isDocker(ProjectType.NpmApplication))
+            .toEqual(false);
+        expect(isDocker(ProjectType.MavenLibrary))
+            .toEqual(false);
+        expect(isDocker(ProjectType.NpmLibrary))
+            .toEqual(false);
+        expect(isDocker(ProjectType.DockerApplication))
+            .toEqual(true);
+        expect(isDocker(ProjectType.DockerImage))
             .toEqual(true);
     });
 });
