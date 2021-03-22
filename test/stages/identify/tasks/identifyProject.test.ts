@@ -33,7 +33,11 @@ describe('identifyProject task', () => {
         expect(result).toEqualRight(ProjectType.MavenLibrary);
     });
 
-    it('is DockerDeployment', async () => {
+    it('is DockerImage', async () => {
+        throw new Error();
+    });
+
+    it('is DockerApplication', async () => {
         throw new Error();
     });
 
