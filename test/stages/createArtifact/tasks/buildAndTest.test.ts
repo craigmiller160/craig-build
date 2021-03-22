@@ -1,7 +1,7 @@
 import runCommand from '../../../../src/utils/runCommand';
 import ProjectInfo from '../../../../src/types/ProjectInfo';
 import ProjectType from '../../../../src/types/ProjectType';
-import buildAndTest, { MAVEN_BUILD_CMD, NPM_BUILD_CMD } from '../../../../src/stages/createArtifact/tasks/buildAndTest';
+import buildAndTest, {MAVEN_BUILD_CMD, NPM_BUILD_CMD} from '../../../../src/stages/createArtifact/tasks/buildAndTest';
 import '@relmify/jest-fp-ts';
 import * as TE from 'fp-ts/TaskEither';
 
@@ -37,6 +37,16 @@ describe('buildAndTest task', () => {
 
         expect(runCommandMock).toHaveBeenCalledWith(MAVEN_BUILD_CMD, {
             logOutput: true
+        });
+    });
+
+    describe('skip execution', () => {
+        it('is docker project', async () => {
+            const projectInfo = createProjectInfo(ProjectType.DockerApplication);
+            const result = await buildAndTest(projectInfo)();
+            expect(result).toEqualRight(projectInfo);
+
+            expect(runCommandMock).not.toHaveBeenCalled();
         });
     });
 });
