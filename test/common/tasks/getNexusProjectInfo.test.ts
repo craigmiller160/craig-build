@@ -2,7 +2,8 @@ import {
     searchForMavenReleases,
     searchForMavenSnapshots,
     searchForNpmBetas,
-    searchForNpmReleases
+    searchForNpmReleases,
+    searchForDockerReleases
 } from '../../../src/common/services/NexusRepoApi';
 import ProjectType from '../../../src/types/ProjectType';
 import ProjectInfo from '../../../src/types/ProjectInfo';
@@ -17,13 +18,15 @@ jest.mock('../../../src/common/services/NexusRepoApi', () => ({
     searchForNpmBetas: jest.fn(),
     searchForNpmReleases: jest.fn(),
     searchForMavenReleases: jest.fn(),
-    searchForMavenSnapshots: jest.fn()
+    searchForMavenSnapshots: jest.fn(),
+    searchForDockerReleases: jest.fn()
 }));
 
 const searchForNpmBetasMock = searchForNpmBetas as Mock;
 const searchForNpmReleasesMock = searchForNpmReleases as Mock;
 const searchForMavenSnapshotsMock = searchForMavenSnapshots as Mock;
 const searchForMavenReleasesMock = searchForMavenReleases as Mock;
+const searchForDockerReleasesMock = searchForDockerReleases as Mock;
 
 const createProjectInfo = (projectType: ProjectType): ProjectInfo => ({
     projectType,
@@ -70,6 +73,11 @@ const mockNpmVersionNotExists = () => {
     searchForNpmReleasesMock.mockImplementation(() => TE.right(nexusEmptyResult));
     searchForNpmBetasMock.mockImplementation(() => TE.right(nexusEmptyResult));
 };
+
+const mockDockerVersionExists = () =>
+    searchForDockerReleasesMock.mockImplementation(() => TE.right(createNexusResult('Docker-Release')));
+const mockDockerVersionNotExists = () =>
+    searchForDockerReleasesMock.mockImplementation(() => TE.right(nexusEmptyResult));
 
 describe('getNexusProjectInfo task', () => {
     beforeEach(() => {
@@ -129,10 +137,28 @@ describe('getNexusProjectInfo task', () => {
     });
 
     it('get Docker Nexus Project Info', async () => {
-        throw new Error();
+        mockDockerVersionExists();
+        const projectInfo = createProjectInfo(ProjectType.DockerApplication);
+        const result = await getNexusProjectInfo(stageName)(projectInfo)();
+        expect(result).toEqualRight({
+            ...projectInfo,
+            latestNexusVersions: {
+                latestPreReleaseVersion: undefined,
+                latestReleaseVersion: 'Docker-Release'
+            }
+        });
     });
 
     it('Docker does not exist in Nexus', async () => {
-        throw new Error();
+        mockDockerVersionNotExists();
+        const projectInfo = createProjectInfo(ProjectType.DockerApplication);
+        const result = await getNexusProjectInfo(stageName)(projectInfo)();
+        expect(result).toEqualRight({
+            ...projectInfo,
+            latestNexusVersions: {
+                latestPreReleaseVersion: undefined,
+                latestReleaseVersion: undefined
+            }
+        });
     });
 });
