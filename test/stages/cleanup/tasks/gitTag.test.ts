@@ -25,4 +25,14 @@ describe('gitTag task', () => {
         expect(runCommandMock).toHaveBeenNthCalledWith(1, 'git tag v1.0.0');
         expect(runCommandMock).toHaveBeenNthCalledWith(2, 'git push --tags');
     });
+
+    describe('skip execution', () => {
+        it('is not release', () => {
+            throw new Error();
+        });
+
+        it('is deploy-only build', () => {
+            throw new Error();
+        });
+    });
 });
