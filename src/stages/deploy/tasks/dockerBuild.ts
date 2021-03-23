@@ -9,6 +9,7 @@ import shellEnv from 'shell-env';
 import EnvironmentVariables from '../../../types/EnvironmentVariables';
 import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
+import * as O from 'fp-ts/Option';
 import stageName from '../stageName';
 import {isApplication, isDocker} from "../../../utils/projectTypeUtils";
 
@@ -27,11 +28,10 @@ const createDockerRemoveMatch = (name: string, version: string) =>
 const createDockerFindMatch = (name: string, version: string) =>
     `sudo docker image ls | grep ${name} | grep ${version} | cat`;
 
-const removeExistingDockerImages = (context: TaskContext<ProjectInfo>): E.Either<Error, string> => {
-    const tag = context.input.kubernetesDockerImage!!;
-    const endIndex = tag.lastIndexOf(':');
-    const name = tag.substring(0, endIndex);
-    const version = tag.substring(endIndex + 1);
+const removeExistingDockerImages = (context: TaskContext<ProjectInfo>, dockerImage: string): E.Either<Error, string> => {
+    const endIndex = dockerImage.lastIndexOf(':');
+    const name = dockerImage.substring(0, endIndex);
+    const version = dockerImage.substring(endIndex + 1);
 
     return pipe(
         runCommand(createDockerFindMatch(name, version)),
@@ -46,6 +46,21 @@ const removeExistingDockerImages = (context: TaskContext<ProjectInfo>): E.Either
     );
 };
 
+const getDockerImage = (projectInfo: ProjectInfo): O.Option<string> =>
+    pipe(
+        projectInfo.kubernetesDockerImage,
+        O.fromNullable,
+        O.fold(
+            () => {
+                if (isDocker(projectInfo.projectType)) {
+                    return O.some(`${projectInfo.name}:${projectInfo.version}`);
+                }
+                return O.none;
+            },
+            (dockerImage) => O.some(dockerImage)
+        )
+    );
+
 const dockerBuild: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectInfo>) => {
     const deployDir = path.resolve(getCwd(), 'deploy');
     const {
@@ -53,19 +68,37 @@ const dockerBuild: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectInfo
         NEXUS_DOCKER_PASSWORD
     } = shellEnv.sync<EnvironmentVariables>();
 
-    if (!context.input.kubernetesDockerImage) {
-        return TE.left(context.createBuildError('Missing Kubernetes Docker Image'));
-    }
-
     if (!NEXUS_DOCKER_USER || !NEXUS_DOCKER_PASSWORD) {
         return TE.left(context.createBuildError('Missing Docker credential environment variables'));
     }
 
     return pipe(
-        runCommand(createDockerLogin(NEXUS_DOCKER_USER, NEXUS_DOCKER_PASSWORD), { logOutput: true }),
-        E.chain(() => removeExistingDockerImages(context)),
-        E.chain(() => runCommand(createDockerBuild(context.input.kubernetesDockerImage!!), { cwd: deployDir, logOutput: true })),
-        E.chain(() => runCommand(createDockerPush(context.input.kubernetesDockerImage!!), { cwd: deployDir, logOutput: true })),
+        getDockerImage(context.input),
+        E.fromOption(() => context.createBuildError('Missing Kubernetes Docker Image')),
+        E.chain((dockerImage) =>
+            pipe(
+                runCommand(createDockerLogin(NEXUS_DOCKER_USER, NEXUS_DOCKER_PASSWORD), { logOutput: true }),
+                E.map(() => dockerImage)
+            )
+        ),
+        E.chain((dockerImage: string) =>
+            pipe(
+                removeExistingDockerImages(context, dockerImage),
+                E.map(() => dockerImage)
+            )
+        ),
+        E.chain((dockerImage: string) =>
+            pipe(
+                runCommand(createDockerBuild(dockerImage), { cwd: deployDir, logOutput: true }),
+                E.map(() => dockerImage)
+            )
+        ),
+        E.chain((dockerImage: string) =>
+            pipe(
+                runCommand(createDockerPush(dockerImage), { cwd: deployDir, logOutput: true }),
+                E.map(() => dockerImage)
+            )
+        ),
         TE.fromEither,
         TE.map(() => ({
             message: 'Docker build complete',
