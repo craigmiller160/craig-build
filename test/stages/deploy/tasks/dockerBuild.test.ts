@@ -30,7 +30,10 @@ describe('dockerBuild task', () => {
     describe('validations',  () => {
         it('has no docker image', async () => {
             getCwdMock.mockImplementation(() => '');
-            syncMock.mockImplementationOnce(() => ({}));
+            syncMock.mockImplementationOnce(() => ({
+                NEXUS_DOCKER_USER: 'user',
+                NEXUS_DOCKER_PASSWORD: 'password'
+            }));
             const result = await dockerBuild({
                 ...baseProjectInfo,
                 kubernetesDockerImage: undefined
