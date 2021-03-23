@@ -18,7 +18,7 @@ const baseProjectInfo: ProjectInfo = {
     isPreRelease: false,
     name: 'my-project',
     version: '1.0.0',
-    kubernetesDockerImage: 'my-project:1.0.0',
+    kubernetesDockerImage: 'craigmiller160.ddns.net:30004/my-project:1.0.0',
     dependencies: []
 };
 
@@ -86,11 +86,11 @@ describe('dockerBuild task', () => {
         );
         expect(runCommandMock).toHaveBeenNthCalledWith(
             2,
-            'sudo docker image ls | grep my-project | grep 1.0.0 | cat'
+            'sudo docker image ls | grep craigmiller160.ddns.net:30004/my-project | grep 1.0.0 | cat'
         );
         expect(runCommandMock).toHaveBeenNthCalledWith(
             3,
-            'sudo docker build --network=host -t my-project:1.0.0 .',
+            'sudo docker build --network=host -t craigmiller160.ddns.net:30004/my-project:1.0.0 .',
             {
                 cwd: '/deploy',
                 logOutput: true
@@ -98,7 +98,7 @@ describe('dockerBuild task', () => {
         );
         expect(runCommandMock).toHaveBeenNthCalledWith(
             4,
-            'sudo docker push my-project:1.0.0',
+            'sudo docker push craigmiller160.ddns.net:30004/my-project:1.0.0',
             {
                 cwd: '/deploy',
                 logOutput: true
@@ -127,11 +127,11 @@ describe('dockerBuild task', () => {
         );
         expect(runCommandMock).toHaveBeenNthCalledWith(
             2,
-            'sudo docker image ls | grep my-project | grep 1.0.0 | cat'
+            'sudo docker image ls | grep craigmiller160.ddns.net:30004/my-project | grep 1.0.0 | cat'
         );
         expect(runCommandMock).toHaveBeenNthCalledWith(
             3,
-            'sudo docker build --network=host -t my-project:1.0.0 .',
+            'sudo docker build --network=host -t craigmiller160.ddns.net:30004/my-project:1.0.0 .',
             {
                 cwd: '/deploy',
                 logOutput: true
@@ -139,7 +139,7 @@ describe('dockerBuild task', () => {
         );
         expect(runCommandMock).toHaveBeenNthCalledWith(
             4,
-            'sudo docker push my-project:1.0.0',
+            'sudo docker push craigmiller160.ddns.net:30004/my-project:1.0.0',
             {
                 cwd: '/deploy',
                 logOutput: true
@@ -174,18 +174,18 @@ describe('dockerBuild task', () => {
         );
         expect(runCommandMock).toHaveBeenNthCalledWith(
             2,
-            'sudo docker image ls | grep my-project | grep 1.0.0 | cat'
+            'sudo docker image ls | grep craigmiller160.ddns.net:30004/my-project | grep 1.0.0 | cat'
         );
         expect(runCommandMock).toHaveBeenNthCalledWith(
             3,
-            'sudo docker image ls | grep my-project | grep 1.0.0 | awk \'{ print $3 }\' | xargs docker image rm',
+            'sudo docker image ls | grep craigmiller160.ddns.net:30004/my-project | grep 1.0.0 | awk \'{ print $3 }\' | xargs docker image rm',
             {
                 logOutput: true
             }
         );
         expect(runCommandMock).toHaveBeenNthCalledWith(
             4,
-            'sudo docker build --network=host -t my-project:1.0.0 .',
+            'sudo docker build --network=host -t craigmiller160.ddns.net:30004/my-project:1.0.0 .',
             {
                 cwd: '/deploy',
                 logOutput: true
@@ -193,7 +193,7 @@ describe('dockerBuild task', () => {
         );
         expect(runCommandMock).toHaveBeenNthCalledWith(
             5,
-            'sudo docker push my-project:1.0.0',
+            'sudo docker push craigmiller160.ddns.net:30004/my-project:1.0.0',
             {
                 cwd: '/deploy',
                 logOutput: true

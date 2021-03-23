@@ -53,7 +53,7 @@ const getDockerImage = (projectInfo: ProjectInfo): O.Option<string> =>
         O.fold(
             () => {
                 if (isDocker(projectInfo.projectType)) {
-                    return O.some(`${projectInfo.name}:${projectInfo.version}`);
+                    return O.some(`${DOCKER_REPO}/${projectInfo.name}:${projectInfo.version}`);
                 }
                 return O.none;
             },
