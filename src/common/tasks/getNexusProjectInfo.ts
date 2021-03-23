@@ -1,21 +1,22 @@
 import ProjectInfo from '../../types/ProjectInfo';
 import * as TE from 'fp-ts/TaskEither';
 import ProjectType from '../../types/ProjectType';
-import { pipe } from 'fp-ts/pipeable';
+import {pipe} from 'fp-ts/pipeable';
 import {
+    searchForDockerReleases,
     searchForMavenReleases,
     searchForMavenSnapshots,
     searchForNpmBetas,
     searchForNpmReleases
 } from '../services/NexusRepoApi';
 import NexusSearchResult from '../../types/NexusSearchResult';
-import createTask, { TaskFunction } from '../execution/task';
-import { TaskContext } from '../execution/context';
+import createTask, {TaskFunction} from '../execution/task';
+import {TaskContext} from '../execution/context';
 
 const TASK_NAME = 'Get Nexus Project Info';
 
-const updateNexusProjectInfo = (releaseResult: NexusSearchResult, preReleaseResult: NexusSearchResult, projectInfo: ProjectInfo): ProjectInfo => {
-    const preReleaseVersion = preReleaseResult.items.length > 0 ? preReleaseResult.items[0].version : undefined;
+const updateNexusProjectInfo = (projectInfo: ProjectInfo, releaseResult: NexusSearchResult, preReleaseResult?: NexusSearchResult): ProjectInfo => {
+    const preReleaseVersion = (preReleaseResult?.items.length ?? 0) > 0 ? preReleaseResult?.items[0].version : undefined;
     const releaseVersion = releaseResult.items.length > 0 ? releaseResult.items[0].version : undefined;
     return {
         ...projectInfo,
@@ -26,6 +27,13 @@ const updateNexusProjectInfo = (releaseResult: NexusSearchResult, preReleaseResu
     };
 };
 
+const lookupDockerNexusVersions = (projectInfo: ProjectInfo): TE.TaskEither<Error, ProjectInfo> =>
+    pipe(
+        searchForDockerReleases(projectInfo.name),
+        TE.map((releaseResult) =>
+            updateNexusProjectInfo(projectInfo, releaseResult)
+        )
+    );
 
 const lookupMavenNexusVersions = (projectInfo: ProjectInfo): TE.TaskEither<Error, ProjectInfo> =>
     pipe(
@@ -38,7 +46,7 @@ const lookupMavenNexusVersions = (projectInfo: ProjectInfo): TE.TaskEither<Error
             ]))
         )),
         TE.map(([releaseResult, snapshotResult]) =>
-            updateNexusProjectInfo(releaseResult, snapshotResult, projectInfo)
+            updateNexusProjectInfo(projectInfo, releaseResult, snapshotResult)
         )
     );
 
@@ -53,7 +61,7 @@ const lookupNpmNexusVersions = (projectInfo: ProjectInfo): TE.TaskEither<Error, 
             ]))
         )),
         TE.map(([releaseResult, betaResult]) =>
-            updateNexusProjectInfo(releaseResult, betaResult, projectInfo)
+            updateNexusProjectInfo(projectInfo, releaseResult, betaResult)
         )
     );
 
@@ -65,6 +73,9 @@ const findNexusVersionInfo = (context: TaskContext<ProjectInfo>): TE.TaskEither<
         case ProjectType.NpmApplication:
         case ProjectType.NpmLibrary:
             return lookupNpmNexusVersions(context.input);
+        case ProjectType.DockerApplication:
+        case ProjectType.DockerImage:
+            return lookupDockerNexusVersions(context.input);
         default:
             return TE.left(context.createBuildError(`Invalid ProjectType for finding version info: ${context.input.projectType}`));
     }

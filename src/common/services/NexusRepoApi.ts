@@ -97,6 +97,23 @@ export const searchForNpmReleases = (name: string, version?: string) =>
         extractResponseData
     );
 
+export const searchForDockerReleases = (name: string) =>
+    pipe(
+        TE.tryCatch(
+            () => {
+                const query = qs.stringify({
+                    repository: 'docker-private',
+                    name,
+                    sort,
+                    direction
+                });
+                return restApiInstance.get<NexusSearchResult>(`/search?${query}`);
+            },
+            handleUnknownError
+        ),
+        extractResponseData
+    );
+
 export const downloadArtifact = (url: string, targetPath: string): TE.TaskEither<Error, string> =>
     pipe(
         TE.tryCatch(

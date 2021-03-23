@@ -1,6 +1,6 @@
 import { TaskShouldExecuteFunction } from './task';
 import ProjectInfo from '../../types/ProjectInfo';
-import {isApplication, isLibrary, isMaven, isNpm} from '../../utils/projectTypeUtils';
+import {isApplication, isDocker, isLibrary, isMaven, isNpm} from '../../utils/projectTypeUtils';
 import { DEPLOY_ONLY_BUILD } from '../../execution/executionConstants';
 
 export const executeIfRelease: TaskShouldExecuteFunction<ProjectInfo> = (input: ProjectInfo) => {
@@ -87,6 +87,28 @@ export const executeIfNotDeployOnlyBuild: TaskShouldExecuteFunction<ProjectInfo>
 
     return {
         message: 'Is deploy-only build',
+        defaultResult: input
+    };
+};
+
+export const executeIfNotDocker: TaskShouldExecuteFunction<ProjectInfo> = (input: ProjectInfo) => {
+    if (!isDocker(input.projectType)) {
+        return undefined;
+    }
+
+    return {
+        message: 'Is docker project',
+        defaultResult: input
+    };
+};
+
+export const executeIfNotDockerPreRelease: TaskShouldExecuteFunction<ProjectInfo> = (input: ProjectInfo) => {
+    if (!isDocker(input.projectType) || !input.isPreRelease) {
+        return undefined;
+    }
+
+    return {
+        message: 'Is a docker pre-release project',
         defaultResult: input
     };
 };

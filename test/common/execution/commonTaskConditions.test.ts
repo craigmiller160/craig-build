@@ -1,10 +1,12 @@
 import ProjectInfo from '../../../src/types/ProjectInfo';
 import ProjectType from '../../../src/types/ProjectType';
 import {
-    executeIfApplication, executeIfDeployOnlyBuild,
+    executeIfApplication,
+    executeIfDeployOnlyBuild,
     executeIfLibrary,
     executeIfMavenProject,
     executeIfNotDeployOnlyBuild,
+    executeIfNotDocker, executeIfNotDockerPreRelease,
     executeIfNpmProject,
     executeIfPreRelease,
     executeIfRelease,
@@ -166,6 +168,59 @@ describe('commonTaskConditions', () => {
                     message: 'Not deploy-only build',
                     defaultResult: baseProjectInfo
                 });
+        });
+    });
+
+    describe('executeIfNotDocker', () => {
+        it('is docker', () => {
+            const projectInfo: ProjectInfo = {
+                ...baseProjectInfo,
+                projectType: ProjectType.DockerApplication
+            };
+            expect(executeIfNotDocker(projectInfo))
+                .toEqual({
+                    message: 'Is docker project',
+                    defaultResult: projectInfo
+                });
+        });
+
+        it('is not docker', () => {
+            expect(executeIfNotDocker(baseProjectInfo))
+                .toBeUndefined();
+        });
+    });
+
+    describe('executeIfNotDockerPreRelease', () => {
+        it('is docker pre-release', () => {
+            const projectInfo: ProjectInfo = {
+                ...baseProjectInfo,
+                projectType: ProjectType.DockerImage,
+                isPreRelease: true
+            };
+            expect(executeIfNotDockerPreRelease(projectInfo))
+                .toEqual({
+                    message: 'Is a docker pre-release project',
+                    defaultResult: projectInfo
+                });
+        });
+
+        it('is npm pre-release', () => {
+            const projectInfo: ProjectInfo = {
+                ...baseProjectInfo,
+                isPreRelease: true
+            };
+
+            expect(executeIfNotDockerPreRelease(projectInfo))
+                .toBeUndefined();
+        });
+
+        it('is docker release', () => {
+            const projectInfo: ProjectInfo = {
+                ...baseProjectInfo,
+                projectType: ProjectType.DockerImage
+            };
+            expect(executeIfNotDockerPreRelease(projectInfo))
+                .toBeUndefined();
         });
     });
 });

@@ -123,4 +123,52 @@ describe('getBaseProjectInfo task', () => {
             ]
         });
     });
+
+    it('get DockerImage ProjectInfo for beta', async () => {
+        getCwdMock.mockImplementation(() => path.resolve(process.cwd(), 'test', '__working-dirs__', 'dockerBetaImage'));
+        const result = await getBaseProjectInfo(ProjectType.DockerImage)();
+        expect(result).toEqualRight({
+            projectType: ProjectType.DockerImage,
+            name: 'nginx-base',
+            version: 'latest',
+            isPreRelease: true,
+            dependencies: []
+        });
+    });
+
+    it('get DockerImage ProjectInfo for release', async () => {
+        getCwdMock.mockImplementation(() => path.resolve(process.cwd(), 'test', '__working-dirs__', 'dockerReleaseImage'));
+        const result = await getBaseProjectInfo(ProjectType.DockerImage)();
+        expect(result).toEqualRight({
+            projectType: ProjectType.DockerImage,
+            name: 'nginx-base',
+            version: '1.0.0',
+            isPreRelease: false,
+            dependencies: []
+        });
+    });
+
+    it('get DockerApplication ProjectInfo for beta', async () => {
+        getCwdMock.mockImplementation(() => path.resolve(process.cwd(), 'test', '__working-dirs__', 'dockerBetaApplication'));
+        const result = await getBaseProjectInfo(ProjectType.DockerApplication)();
+        expect(result).toEqualRight({
+            projectType: ProjectType.DockerApplication,
+            name: 'nginx-base',
+            version: 'latest',
+            isPreRelease: true,
+            dependencies: []
+        });
+    });
+
+    it('get DockerApplication ProjectInfo for release', async () => {
+        getCwdMock.mockImplementation(() => path.resolve(process.cwd(), 'test', '__working-dirs__', 'dockerReleaseApplication'));
+        const result = await getBaseProjectInfo(ProjectType.DockerApplication)();
+        expect(result).toEqualRight({
+            projectType: ProjectType.DockerApplication,
+            name: 'nginx-base',
+            version: '1.0.0',
+            isPreRelease: false,
+            dependencies: []
+        });
+    });
 });

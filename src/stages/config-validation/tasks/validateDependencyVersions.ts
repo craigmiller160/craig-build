@@ -1,13 +1,13 @@
-import ProjectInfo, { Dependency } from '../../../types/ProjectInfo';
+import ProjectInfo, {Dependency} from '../../../types/ProjectInfo';
 import * as E from 'fp-ts/Either';
-import { isLeft } from 'fp-ts/Either';
+import {isLeft} from 'fp-ts/Either';
 import * as A from 'fp-ts/Array';
 import * as TE from 'fp-ts/TaskEither';
 import ProjectType from '../../../types/ProjectType';
-import { pipe } from 'fp-ts/pipeable';
-import createTask, { TaskFunction, TaskShouldExecuteFunction } from '../../../common/execution/task';
-import { TaskContext } from '../../../common/execution/context';
-import { executeIfRelease } from '../../../common/execution/commonTaskConditions';
+import {pipe} from 'fp-ts/pipeable';
+import createTask, {TaskFunction} from '../../../common/execution/task';
+import {TaskContext} from '../../../common/execution/context';
+import {executeIfRelease} from '../../../common/execution/commonTaskConditions';
 import stageName from '../stageName';
 
 export const TASK_NAME = 'Validate Dependency Versions';
@@ -47,6 +47,9 @@ const doVersionValidation = (context: TaskContext<ProjectInfo>): E.Either<Error,
         case ProjectType.NpmApplication:
         case ProjectType.NpmLibrary:
             return validateDependencies(NPM_CRAIG_DEP_PREFIX, NPM_PRE_RELEASE_FLAG, context);
+        case ProjectType.DockerApplication:
+        case ProjectType.DockerImage:
+            return E.right(context.input);
         default:
             return E.left(context.createBuildError('Cannot find or load project info'))
     }

@@ -4,7 +4,7 @@ import validateNexusVersion, { TASK_NAME } from '../../../src/common/tasks/valid
 import '@relmify/jest-fp-ts';
 import BuildError from '../../../src/error/BuildError';
 import stageName from '../../../src/stages/config-validation/stageName';
-import {DEPLOY_ONLY_BUILD} from "../../../src/execution/executionConstants";
+import { DEPLOY_ONLY_BUILD } from "../../../src/execution/executionConstants";
 
 describe('validateNexusVersion task', () => {
     it('is release, higher than all releases & pre-releases', async () => {
@@ -173,20 +173,34 @@ describe('validateNexusVersion task', () => {
         expect(result).toEqualRight(projectInfo);
     });
 
-    it('skips execution for deploy only build', async () => {
-        process.env.BUILD_NAME = DEPLOY_ONLY_BUILD;
-        const projectInfo: ProjectInfo = {
-            projectType: ProjectType.NpmLibrary,
-            isPreRelease: true,
-            name: 'my-project',
-            version: '1.1.0-beta',
-            dependencies: [],
-            latestNexusVersions: {
-                latestPreReleaseVersion: '1.0.0-beta.1',
-                latestReleaseVersion: '1.2.0'
-            }
-        };
-        const result = await validateNexusVersion(stageName)(projectInfo)();
-        expect(result).toEqualRight(projectInfo);
+    describe('skips execution', () => {
+        it('deploy only build', async () => {
+            process.env.BUILD_NAME = DEPLOY_ONLY_BUILD;
+            const projectInfo: ProjectInfo = {
+                projectType: ProjectType.NpmLibrary,
+                isPreRelease: true,
+                name: 'my-project',
+                version: '1.1.0-beta',
+                dependencies: [],
+                latestNexusVersions: {
+                    latestPreReleaseVersion: '1.0.0-beta.1',
+                    latestReleaseVersion: '1.2.0'
+                }
+            };
+            const result = await validateNexusVersion(stageName)(projectInfo)();
+            expect(result).toEqualRight(projectInfo);
+        });
+
+        it('is docker pre-release', async () => {
+            const projectInfo: ProjectInfo = {
+                projectType: ProjectType.DockerImage,
+                isPreRelease: true,
+                name: 'my-project',
+                version: 'latest',
+                dependencies: []
+            };
+            const result = await validateNexusVersion(stageName)(projectInfo)();
+            expect(result).toEqualRight(projectInfo);
+        });
     });
 });

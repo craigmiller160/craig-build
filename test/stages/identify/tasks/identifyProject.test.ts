@@ -33,6 +33,18 @@ describe('identifyProject task', () => {
         expect(result).toEqualRight(ProjectType.MavenLibrary);
     });
 
+    it('is DockerImage', async () => {
+        getCwdMock.mockImplementation(() => path.resolve(process.cwd(), 'test', '__working-dirs__', 'dockerReleaseImage'));
+        const result = await identifyProject(undefined)();
+        expect(result).toEqualRight(ProjectType.DockerImage);
+    });
+
+    it('is DockerApplication', async () => {
+        getCwdMock.mockImplementation(() => path.resolve(process.cwd(), 'test', '__working-dirs__', 'dockerReleaseApplication'));
+        const result = await identifyProject(undefined)();
+        expect(result).toEqualRight(ProjectType.DockerApplication);
+    });
+
     it('is unknown project', async () => {
         getCwdMock.mockImplementation(() => path.resolve(process.cwd(), 'test', '__working-dirs__'));
         const result = await identifyProject(undefined)();

@@ -1,6 +1,6 @@
 import {
     downloadArtifact,
-    restApiInstance,
+    restApiInstance, searchForDockerReleases,
     searchForMavenReleases,
     searchForMavenSnapshots, searchForNpmBetas, searchForNpmReleases
 } from '../../../src/common/services/NexusRepoApi';
@@ -101,5 +101,12 @@ describe('NexusRepoApi', () => {
         const result = await downloadArtifact(url, output)();
         expect(result).toEqualRight(output);
         expect(fs.readFileSync(output, 'utf8')).toEqual('Hello World');
+    });
+
+    it('searchForDockerReleases', async () => {
+        mockRestApi.onGet('/search?repository=docker-private&name=My%20Name&sort=version&direction=desc')
+            .reply(200, expectedResult);
+        const actualResult = await searchForDockerReleases('My Name')();
+        expect(actualResult).toEqualRight(expectedResult);
     });
 });

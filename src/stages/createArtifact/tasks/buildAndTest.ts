@@ -6,6 +6,7 @@ import * as TE from 'fp-ts/TaskEither';
 import ProjectType from '../../../types/ProjectType';
 import runCommand from '../../../utils/runCommand';
 import stageName from '../stageName';
+import {executeIfNotDocker} from "../../../common/execution/commonTaskConditions";
 
 export const TASK_NAME = 'Build & Test';
 
@@ -50,4 +51,4 @@ const buildAndTest: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectInf
         }))
     );
 
-export default createTask(stageName, TASK_NAME, buildAndTest);
+export default createTask(stageName, TASK_NAME, buildAndTest, [executeIfNotDocker]);
