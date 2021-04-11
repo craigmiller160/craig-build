@@ -87,6 +87,10 @@ describe('kubeDeploy task', () => {
         );
     });
 
+    it('deploys with multiple configmaps', () => {
+        throw new Error();
+    });
+
     describe('skip execution', () => {
         it('is library', async () => {
             const newProjectInfo: ProjectInfo = {
