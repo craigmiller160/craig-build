@@ -26,8 +26,21 @@ describe('getKubeProjectInfo task', () => {
         });
     });
 
-    it('finds kubernetes info in multi-container project', () => {
-        throw new Error();
+    it('finds kubernetes info in multi-container project', async () => {
+        getCwdMock.mockImplementation(() => path.resolve(process.cwd(), 'test', '__working-dirs__', 'mavenReleaseApplicationMultiContainer'));
+        const projectInfo: ProjectInfo = {
+            projectType: ProjectType.MavenApplication,
+            name: 'email-service',
+            version: '1.2.0',
+            dependencies: [],
+            isPreRelease: false
+        };
+        const result = await getKubeProjectInfo(projectInfo)();
+        expect(result).toEqualRight({
+            ...projectInfo,
+            kubernetesDeploymentName: 'email-service',
+            kubernetesDockerImage: 'craigmiller160.ddns.net:30004/email-service:1.2.0'
+        });
     });
 
     describe('skip execution', () => {
