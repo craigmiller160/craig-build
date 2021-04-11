@@ -13,6 +13,7 @@ import * as E from 'fp-ts/Either';
 
 const configmapPath = path.resolve(process.cwd(), 'test', '__working-dirs__', 'npmReleaseApplication');
 const noConfigmapPath = path.resolve(process.cwd(), 'test', '__working-dirs__', 'mavenReleaseApplication');
+const multiConfigmapPath = path.resolve(process.cwd(), 'test', '__working-dirs__', 'dockerReleaseApplicationMultiConfigmap');
 
 const getCwdMock = getCwd as jest.Mock;
 const runCommandMock = runCommand as jest.Mock;
@@ -87,8 +88,46 @@ describe('kubeDeploy task', () => {
         );
     });
 
-    it('deploys with multiple configmaps', () => {
-        throw new Error();
+    it('deploys with multiple configmaps', async () => {
+        getCwdMock.mockImplementation(() => multiConfigmapPath);
+        runCommandMock.mockImplementation(() => E.right(''));
+
+        const result = await kubeDeploy(projectInfo)();
+        expect(result).toEqualRight(projectInfo);
+
+        expect(runCommandMock).toHaveBeenCalledTimes(4);
+        expect(runCommandMock).toHaveBeenNthCalledWith(
+            1,
+            'kubectl apply -f one.configmap.yml',
+            {
+                cwd: path.resolve(configmapPath, 'deploy'),
+                logOutput: true
+            }
+        );
+        expect(runCommandMock).toHaveBeenNthCalledWith(
+            2,
+            'kubectl apply -f two.configmap.yml',
+            {
+                cwd: path.resolve(configmapPath, 'deploy'),
+                logOutput: true
+            }
+        );
+        expect(runCommandMock).toHaveBeenNthCalledWith(
+            3,
+            APPLY_DEPLOYMENT,
+            {
+                cwd: path.resolve(noConfigmapPath, 'deploy'),
+                logOutput: true
+            }
+        );
+        expect(runCommandMock).toHaveBeenNthCalledWith(
+            4,
+            `${RESTART_APP_BASE} my-project`,
+            {
+                cwd: path.resolve(noConfigmapPath, 'deploy'),
+                logOutput: true
+            }
+        );
     });
 
     describe('skip execution', () => {
