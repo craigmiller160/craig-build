@@ -26,6 +26,10 @@ describe('getKubeProjectInfo task', () => {
         });
     });
 
+    it('finds kubernetes info in multi-container project', () => {
+        throw new Error();
+    });
+
     describe('skip execution', () => {
         it('is library', async () => {
             const projectInfo: ProjectInfo = {
