@@ -19,13 +19,21 @@ export const createApplyConfigmap = (fileName: string) => `kubectl apply -f ${fi
 
 const applyConfigmap = (context: TaskContext<ProjectInfo>): E.Either<Error, string> => {
     const deployDir = path.resolve(getCwd(), 'deploy');
-    const configmapPath = path.resolve(deployDir, 'configmap.yml');
-    if (fs.existsSync(configmapPath)) {
-        return runCommand(createApplyConfigmap('configmap.yml'), { cwd: deployDir, logOutput: true })
+    const configmapFileNames = (fs.readdirSync(deployDir) || [] )
+        .filter((fileName) => fileName.endsWith('configmap.yml'));
+    if (configmapFileNames.length === 0) {
+        context.logger('No configmap in project');
+        return E.right('');
     }
 
-    context.logger('No configmap in project');
-    return E.right('');
+    return configmapFileNames
+        .reduce<E.Either<Error,string>>((result, fileName) => {
+            if (E.isLeft(result)) {
+                return result;
+            }
+
+            return runCommand(createApplyConfigmap(fileName), { cwd: deployDir, logOutput: true })
+        }, E.right(''));
 };
 
 const applyDeployment = (): E.Either<Error, string> => {
