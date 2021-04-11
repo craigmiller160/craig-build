@@ -99,7 +99,7 @@ describe('kubeDeploy task', () => {
             1,
             'kubectl apply -f one.configmap.yml',
             {
-                cwd: path.resolve(configmapPath, 'deploy'),
+                cwd: path.resolve(multiConfigmapPath, 'deploy'),
                 logOutput: true
             }
         );
@@ -107,7 +107,7 @@ describe('kubeDeploy task', () => {
             2,
             'kubectl apply -f two.configmap.yml',
             {
-                cwd: path.resolve(configmapPath, 'deploy'),
+                cwd: path.resolve(multiConfigmapPath, 'deploy'),
                 logOutput: true
             }
         );
@@ -115,7 +115,7 @@ describe('kubeDeploy task', () => {
             3,
             APPLY_DEPLOYMENT,
             {
-                cwd: path.resolve(noConfigmapPath, 'deploy'),
+                cwd: path.resolve(multiConfigmapPath, 'deploy'),
                 logOutput: true
             }
         );
@@ -123,7 +123,7 @@ describe('kubeDeploy task', () => {
             4,
             `${RESTART_APP_BASE} my-project`,
             {
-                cwd: path.resolve(noConfigmapPath, 'deploy'),
+                cwd: path.resolve(multiConfigmapPath, 'deploy'),
                 logOutput: true
             }
         );
