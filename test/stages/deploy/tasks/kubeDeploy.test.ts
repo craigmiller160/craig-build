@@ -3,8 +3,7 @@ import getCwd from '../../../../src/utils/getCwd';
 import ProjectInfo from '../../../../src/types/ProjectInfo';
 import ProjectType from '../../../../src/types/ProjectType';
 import kubeDeploy, {
-    APPLY_CONFIGMAP,
-    APPLY_DEPLOYMENT,
+    APPLY_DEPLOYMENT, createApplyConfigmap,
     RESTART_APP_BASE
 } from '../../../../src/stages/deploy/tasks/kubeDeploy';
 import '@relmify/jest-fp-ts';
@@ -38,7 +37,7 @@ describe('kubeDeploy task', () => {
         expect(runCommandMock).toHaveBeenCalledTimes(3);
         expect(runCommandMock).toHaveBeenNthCalledWith(
             1,
-            APPLY_CONFIGMAP,
+            createApplyConfigmap('configmap.yml'),
             {
                 cwd: path.resolve(configmapPath, 'deploy'),
                 logOutput: true

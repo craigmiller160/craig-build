@@ -13,15 +13,15 @@ import stageName from '../stageName';
 
 export const TASK_NAME = 'Kubernetes Deployment';
 
-export const APPLY_CONFIGMAP = 'kubectl apply -f configmap.yml';
 export const APPLY_DEPLOYMENT = 'kubectl apply -f deployment.yml';
 export const RESTART_APP_BASE = 'kubectl rollout restart deployment';
+export const createApplyConfigmap = (fileName: string) => `kubectl apply -f ${fileName}`;
 
 const applyConfigmap = (context: TaskContext<ProjectInfo>): E.Either<Error, string> => {
     const deployDir = path.resolve(getCwd(), 'deploy');
     const configmapPath = path.resolve(deployDir, 'configmap.yml');
     if (fs.existsSync(configmapPath)) {
-        return runCommand(APPLY_CONFIGMAP, { cwd: deployDir, logOutput: true })
+        return runCommand(createApplyConfigmap('configmap.yml'), { cwd: deployDir, logOutput: true })
     }
 
     context.logger('No configmap in project');
