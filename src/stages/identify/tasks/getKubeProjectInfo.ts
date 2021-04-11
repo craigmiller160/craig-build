@@ -10,10 +10,8 @@ import KubeDeployment from '../../../types/KubeDeployment';
 import handleUnknownError from '../../../utils/handleUnknownError';
 import createTask, {
     TaskFunction,
-    TaskShouldExecuteFunction
 } from '../../../common/execution/task';
 import { TaskContext } from '../../../common/execution/context';
-import { isApplication } from '../../../utils/projectTypeUtils';
 import { executeIfApplication } from '../../../common/execution/commonTaskConditions';
 import stageName from '../stageName';
 
@@ -26,11 +24,17 @@ const findKubeProjectInfo = (projectInfo: ProjectInfo): E.Either<Error, ProjectI
             const kubeContent = fs.readFileSync(kubeDeploymentPath, 'utf8');
             const kubeDeploymentContent = kubeContent.split('---')[0];
             const kubeDeployment = yaml.parse(kubeDeploymentContent) as KubeDeployment;
-            return {
-                ...projectInfo,
-                kubernetesDeploymentName: kubeDeployment.metadata.name,
-                kubernetesDockerImage: kubeDeployment.spec.template.spec.containers[0].image
-            };
+
+            const craigAppContainerIndex = kubeDeployment.spec.template.spec.containers
+                .findIndex((container) => container.image.includes('craigmiller160'));
+            if (craigAppContainerIndex >= 0) {
+                return {
+                    ...projectInfo,
+                    kubernetesDeploymentName: kubeDeployment.metadata.name,
+                    kubernetesDockerImage: kubeDeployment.spec.template.spec.containers[craigAppContainerIndex].image
+                };
+            }
+            return projectInfo;
         },
         handleUnknownError
     );
