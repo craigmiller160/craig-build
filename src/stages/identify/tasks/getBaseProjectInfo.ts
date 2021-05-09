@@ -101,8 +101,8 @@ const getProjectNpm = (projectType: ProjectType): ProjectInfo => {
         name: packageJson.name.replace('@craigmiller160/', ''),
         version: packageJson.version,
         dependencies: [
-            ...mapNpmDependencies(packageJson.dependencies),
-            ...mapNpmDependencies(packageJson.devDependencies)
+            ...(packageJson.dependencies ? mapNpmDependencies(packageJson.dependencies) : []),
+            ...(packageJson.devDependencies ? mapNpmDependencies(packageJson.devDependencies) : [])
         ],
         isPreRelease: packageJson.version.includes('beta')
     };

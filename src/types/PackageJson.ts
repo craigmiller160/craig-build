@@ -5,6 +5,6 @@ export interface Dependencies {
 export default interface PackageJson {
   name: string;
   version: string;
-  dependencies: Dependencies;
-  devDependencies: Dependencies;
+  dependencies?: Dependencies;
+  devDependencies?: Dependencies;
 }
