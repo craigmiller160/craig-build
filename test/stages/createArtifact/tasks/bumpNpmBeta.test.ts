@@ -1,7 +1,9 @@
 import ProjectInfo from '../../../../src/types/ProjectInfo';
 import ProjectType from '../../../../src/types/ProjectType';
-import bumpNpmBeta from '../../../../src/stages/createArtifact/tasks/bumpNpmBeta';
+import bumpNpmBeta, { TASK_NAME } from '../../../../src/stages/createArtifact/tasks/bumpNpmBeta';
 import '@relmify/jest-fp-ts';
+import BuildError from '../../../../src/error/BuildError';
+import stageName from '../../../../src/stages/createArtifact/stageName';
 
 const baseProjectInfo: ProjectInfo = {
     projectType: ProjectType.NpmApplication,
@@ -49,6 +51,23 @@ describe('bumpNpmBeta task', () => {
         };
         const result = await bumpNpmBeta(projectInfo)();
         expect(result).toEqualRight(expected);
+    });
+
+    it('bumps npm beta when local beta base version is lower than nexus beta base version', async () => {
+        const projectInfo: ProjectInfo = {
+            ...baseProjectInfo,
+            version: '1.0.0-beta',
+            latestNexusVersions: {
+                latestPreReleaseVersion: '1.1.0-beta.1'
+            }
+        };
+
+        const result = await bumpNpmBeta(projectInfo)()
+        expect(result).toEqualLeft(new BuildError(
+            'Nexus beta version cannot be higher than project version. Project: 1.0.0-beta Nexus: 1.1.0-beta.1',
+            stageName,
+            TASK_NAME
+        ));
     });
 
     describe('skip execution', () => {

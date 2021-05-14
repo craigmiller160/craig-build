@@ -3,6 +3,7 @@ import createTask, { TaskFunction } from '../../../common/execution/task';
 import { TaskContext } from '../../../common/execution/context';
 import * as TE from 'fp-ts/TaskEither';
 import * as O from 'fp-ts/Option';
+import * as E from 'fp-ts/Either';
 import { executeIfNpmProject, executeIfPreRelease } from '../../../common/execution/commonTaskConditions';
 import stageName from '../stageName';
 import { pipe } from 'fp-ts/pipeable';
@@ -25,11 +26,14 @@ const bumpVersion = (version: string) => {
     return `${versionWithoutBetaNum}.${newBetaNumber}`;
 };
 
-const whichVersionToBump = (projectVersion: string, nexusVersion: string): string => {
-    if (semver.compare(trimVersion(projectVersion), trimVersion(nexusVersion)) === 1) {
-        return projectVersion;
+const whichVersionToBump = (context: TaskContext<ProjectInfo>, nexusVersion: string): E.Either<Error,string> => {
+    const comparison = semver.compare(trimVersion(context.input.version), trimVersion(nexusVersion));
+    if (comparison === 1) {
+        return E.right(context.input.version);
+    } else if (comparison === -1) {
+        return E.left(context.createBuildError(`Nexus beta version cannot be higher than project version. Project: ${context.input.version} Nexus: ${nexusVersion}`));
     }
-    return nexusVersion;
+    return E.right(nexusVersion);
 };
 
 const bumpNpmBeta: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectInfo>) => {
@@ -41,17 +45,20 @@ const bumpNpmBeta: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectInfo
             (version) => version
         )
     );
-    const versionToBump = whichVersionToBump(context.input.version, nexusVersion);
-    const newVersion = bumpVersion(versionToBump);
-    const newProjectInfo: ProjectInfo = {
-        ...context.input,
-        version: newVersion
-    };
 
-    return TE.right({
-        message: `Bumped Npm project beta version: ${newVersion}`,
-        value: newProjectInfo
-    });
+    return pipe(
+        whichVersionToBump(context, nexusVersion),
+        E.map(bumpVersion),
+        E.map((newVersion): ProjectInfo => ({
+            ...context.input,
+            version: newVersion
+        })),
+        TE.fromEither,
+        TE.map((newProjectInfo: ProjectInfo) => ({
+            message: `Bumped Npm project beta version: ${newProjectInfo.version}`,
+            value: newProjectInfo
+        }))
+    );
 };
 
 export default createTask(stageName, TASK_NAME, bumpNpmBeta, [
