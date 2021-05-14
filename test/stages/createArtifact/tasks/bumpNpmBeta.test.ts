@@ -34,6 +34,23 @@ describe('bumpNpmBeta task', () => {
         });
     });
 
+    it('bumps npm beta when local beta higher than nexus beta', async () => {
+        const projectInfo: ProjectInfo = {
+            ...baseProjectInfo,
+            version: '1.1.0-beta',
+            latestNexusVersions: {
+                latestPreReleaseVersion: '1.0.0-beta.1'
+            }
+        };
+
+        const expected: ProjectInfo = {
+            ...projectInfo,
+            version: '1.1.0-beta.1'
+        };
+        const result = await bumpNpmBeta(projectInfo)();
+        expect(result).toEqualRight(expected);
+    });
+
     describe('skip execution', () => {
         it('is maven project', async () => {
             const projectInfo: ProjectInfo = {
