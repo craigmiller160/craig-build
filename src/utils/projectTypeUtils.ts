@@ -9,6 +9,7 @@ export const isLibrary = (projectType: ProjectType) =>
   ProjectType.MavenLibrary === projectType ||
     ProjectType.NpmLibrary === projectType;
 
+// TODO check uses of this method to see if they apply to gradle too
 export const isMaven = (projectType: ProjectType) =>
   ProjectType.MavenLibrary === projectType ||
     ProjectType.MavenApplication === projectType;
