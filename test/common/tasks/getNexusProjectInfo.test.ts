@@ -97,6 +97,10 @@ describe('getNexusProjectInfo task', () => {
         });
     });
 
+    it('get GradleKt Project Info', async () => {
+        throw new Error();
+    });
+
     it('get NPM Nexus Project Info', async () => {
         mockNpmVersionExists();
         const projectInfo = createProjectInfo(ProjectType.NpmApplication);

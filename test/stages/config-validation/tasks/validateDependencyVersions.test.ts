@@ -46,6 +46,10 @@ describe('validateDependencyVersions task', () => {
         expect(result).toEqualLeft(new BuildError(expectedMessage, TASK_NAME, stageName));
     });
 
+    it('validates GradleKt for release, with snapshot dependency', () => {
+        throw new Error();
+    });
+
     it('validates maven for release successfully', async () => {
         const projectInfo: ProjectInfo = {
             projectType: ProjectType.MavenLibrary,
@@ -69,6 +73,10 @@ describe('validateDependencyVersions task', () => {
         };
         const result = await validateDependencyVersions(projectInfo)();
         expect(result).toEqualRight(projectInfo);
+    });
+
+    it('validates GradleKt for release successfully', () => {
+        throw new Error();
     });
 
     it('validates npm for release, with beta dependency', async () => {
