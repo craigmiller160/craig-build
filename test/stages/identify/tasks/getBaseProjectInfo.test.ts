@@ -37,6 +37,10 @@ describe('getBaseProjectInfo task', () => {
         });
     });
 
+    it('get GradleKt ProjectInfo', () => {
+        throw new Error();
+    });
+
     it('get Maven ProjectInfo for snapshot', async () => {
         getCwdMock.mockImplementation(() => path.resolve(process.cwd(), 'test', '__working-dirs__', 'mavenSnapshotApplication'));
         const result = await getBaseProjectInfo(ProjectType.MavenApplication)();
@@ -64,6 +68,10 @@ describe('getBaseProjectInfo task', () => {
                 }
             ]
         });
+    });
+
+    it('get GradleKt ProjectInfo for snapshot', () => {
+        throw new Error();
     });
 
     it('get Npm ProjectInfo', async () => {

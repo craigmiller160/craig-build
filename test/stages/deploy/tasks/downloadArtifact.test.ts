@@ -171,6 +171,14 @@ describe('downloadArtifact task', () => {
         expect(searchForNpmReleasesMock).not.toHaveBeenCalled();
     });
 
+    it('downloads GradleKt release', () => {
+        throw new Error();
+    });
+
+    it('downloads GradleKt pre-release', () => {
+        throw new Error();
+    });
+
     it('downloads npm release', async () => {
         const projectInfo: ProjectInfo = {
             projectType: ProjectType.NpmApplication,

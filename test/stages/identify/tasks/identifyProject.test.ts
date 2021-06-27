@@ -52,4 +52,12 @@ describe('identifyProject task', () => {
            TASK_NAME
         ));
     });
+
+    it('is GradleKt library', () => {
+        throw new Error();
+    });
+
+    it('is GradleKt Application', () => {
+        throw new Error();
+    });
 });
