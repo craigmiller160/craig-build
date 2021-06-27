@@ -15,6 +15,7 @@ describe('projectTypeUtils', () => {
             .toEqual(true);
         expect(isApplication(ProjectType.DockerImage))
             .toEqual(false);
+        throw new Error('Need GradleKt');
     });
 
     it('isLibrary', () => {
@@ -30,6 +31,7 @@ describe('projectTypeUtils', () => {
             .toEqual(false);
         expect(isLibrary(ProjectType.DockerImage))
             .toEqual(false);
+        throw new Error('Need GradleKt');
     });
 
     it('isMaven', () => {
@@ -45,6 +47,7 @@ describe('projectTypeUtils', () => {
             .toEqual(false);
         expect(isMaven(ProjectType.DockerImage))
             .toEqual(false);
+        throw new Error('Need GradleKt');
     });
 
     it('isNpm', () => {
@@ -60,6 +63,7 @@ describe('projectTypeUtils', () => {
             .toEqual(false);
         expect(isNpm(ProjectType.DockerImage))
             .toEqual(false);
+        throw new Error('Need GradleKt');
     });
 
     it('isDocker', () => {
@@ -75,5 +79,14 @@ describe('projectTypeUtils', () => {
             .toEqual(true);
         expect(isDocker(ProjectType.DockerImage))
             .toEqual(true);
+        throw new Error('Need GradleKt');
+    });
+
+    it('isGradle', () => {
+        throw new Error();
+    });
+
+    it('isJvm', () => {
+        throw new Error();
     });
 });

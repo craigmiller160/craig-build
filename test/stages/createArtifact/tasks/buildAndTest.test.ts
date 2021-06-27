@@ -40,6 +40,10 @@ describe('buildAndTest task', () => {
         });
     });
 
+    it('runs GradleKt build', () => {
+        throw new Error();
+    });
+
     describe('skip execution', () => {
         it('is docker project', async () => {
             const projectInfo = createProjectInfo(ProjectType.DockerApplication);
