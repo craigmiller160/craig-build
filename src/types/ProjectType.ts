@@ -4,7 +4,9 @@ enum ProjectType {
   NpmApplication = 'NpmApplication',
   MavenApplication = 'MavenApplication',
   DockerApplication = 'DockerApplication',
-  DockerImage = 'DockerImage'
+  DockerImage = 'DockerImage',
+  GradleKtLibrary = 'GradleKtLibrary',
+  GradleKtApplication = 'GradleKtApplication'
 }
 
 export default ProjectType;
