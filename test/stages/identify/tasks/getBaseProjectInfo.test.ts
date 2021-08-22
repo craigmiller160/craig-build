@@ -14,6 +14,7 @@ describe('getBaseProjectInfo task', () => {
         expect(result).toEqualRight({
             projectType: ProjectType.MavenApplication,
             name: 'email-service',
+            group: 'io.craigmiller160',
             version: '1.2.0',
             isPreRelease: false,
             dependencies: [
@@ -43,6 +44,7 @@ describe('getBaseProjectInfo task', () => {
         expect(result).toEqualRight({
             projectType: ProjectType.MavenApplication,
             name: 'email-service',
+            group: 'io.craigmiller160',
             version: '1.2.0-SNAPSHOT',
             isPreRelease: true,
             dependencies: [
@@ -75,6 +77,7 @@ describe('getBaseProjectInfo task', () => {
         const result = await getBaseProjectInfo(ProjectType.NpmApplication)();
         expect(result).toEqualRight({
             projectType: ProjectType.NpmApplication,
+            group: 'craigmiller160',
             name: 'craig-build',
             version: '1.0.0',
             isPreRelease: false,
@@ -104,6 +107,7 @@ describe('getBaseProjectInfo task', () => {
         const result = await getBaseProjectInfo(ProjectType.NpmApplication)();
         expect(result).toEqualRight({
             projectType: ProjectType.NpmApplication,
+            group: 'craigmiller160',
             name: 'craig-build',
             version: '1.0.0-beta',
             isPreRelease: true,
@@ -133,6 +137,7 @@ describe('getBaseProjectInfo task', () => {
         const result = await getBaseProjectInfo(ProjectType.DockerImage)();
         expect(result).toEqualRight({
             projectType: ProjectType.DockerImage,
+            group: 'craigmiller160',
             name: 'nginx-base',
             version: 'latest',
             isPreRelease: true,
@@ -145,6 +150,7 @@ describe('getBaseProjectInfo task', () => {
         const result = await getBaseProjectInfo(ProjectType.DockerImage)();
         expect(result).toEqualRight({
             projectType: ProjectType.DockerImage,
+            group: 'craigmiller160',
             name: 'nginx-base',
             version: '1.0.0',
             isPreRelease: false,
@@ -157,6 +163,7 @@ describe('getBaseProjectInfo task', () => {
         const result = await getBaseProjectInfo(ProjectType.DockerApplication)();
         expect(result).toEqualRight({
             projectType: ProjectType.DockerApplication,
+            group: 'craigmiller160',
             name: 'nginx-base',
             version: 'latest',
             isPreRelease: true,
@@ -169,6 +176,7 @@ describe('getBaseProjectInfo task', () => {
         const result = await getBaseProjectInfo(ProjectType.DockerApplication)();
         expect(result).toEqualRight({
             projectType: ProjectType.DockerApplication,
+            group: 'craigmiller160',
             name: 'nginx-base',
             version: '1.0.0',
             isPreRelease: false,
