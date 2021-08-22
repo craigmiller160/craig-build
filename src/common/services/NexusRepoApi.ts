@@ -112,7 +112,6 @@ export const searchForDockerReleases = (name: string) =>
         extractResponseData
     );
 
-// TODO need to use the group when downloading the artifact
 export const downloadArtifact = (url: string, targetPath: string): TE.TaskEither<Error, string> =>
     pipe(
         TE.tryCatch(
