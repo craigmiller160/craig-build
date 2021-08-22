@@ -12,7 +12,7 @@ import getCwd from '../../../utils/getCwd';
 import {
     searchForMavenSnapshots,
     downloadArtifact as downloadArtifactApi,
-    NexusRepoSearchFn, searchForMavenReleases, searchForNpmBetas, searchForNpmReleases
+    searchForMavenReleases, searchForNpmBetas, searchForNpmReleases, NexusRepoGroupSearchFn
 } from '../../../common/services/NexusRepoApi';
 import ProjectType from '../../../types/ProjectType';
 
@@ -38,9 +38,9 @@ const getExtension = (projectType: ProjectType) => {
     throw new Error(`Unsupported ProjectType`);
 };
 
-const executeDownload = (context: TaskContext<ProjectInfo>, searchFn: NexusRepoSearchFn) =>
+const executeDownload = (context: TaskContext<ProjectInfo>, searchFn: NexusRepoGroupSearchFn) =>
     pipe(
-        searchFn(context.input.name, context.input.version),
+        searchFn(context.input.group, context.input.name, context.input.version),
         TE.chain((nexusSearchResult) => {
             if (nexusSearchResult.items.length > 0) {
                 return TE.right(nexusSearchResult.items[0].assets[0].downloadUrl);
@@ -69,8 +69,8 @@ const doDownloadArtifact = (context: TaskContext<ProjectInfo>): TE.TaskEither<Er
     }
 
     if (isNpm(context.input.projectType) && context.input.isPreRelease) {
-        return executeDownload(context, (name: string, version?: string) =>
-            searchForNpmBetas(name, version ? `${version}*` : undefined)
+        return executeDownload(context, (group: string, name: string, version?: string) =>
+            searchForNpmBetas(group, name, version ? `${version}*` : undefined)
         );
     }
 

@@ -56,6 +56,8 @@ const nexusEmptyResult: NexusSearchResult = {
     items: []
 };
 
+// TODO need to validate the arguments to these functions
+
 const mockMavenVersionExists = () => {
     searchForMavenReleasesMock.mockImplementation(() => TE.right(createNexusResult('Maven-Release')));
     searchForMavenSnapshotsMock.mockImplementation(() => TE.right(createNexusResult('Maven-Pre-Release')));

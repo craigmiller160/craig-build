@@ -37,9 +37,9 @@ const lookupDockerNexusVersions = (projectInfo: ProjectInfo): TE.TaskEither<Erro
 
 const lookupMavenNexusVersions = (projectInfo: ProjectInfo): TE.TaskEither<Error, ProjectInfo> =>
     pipe(
-        searchForMavenReleases(projectInfo.name),
+        searchForMavenReleases(projectInfo.group, projectInfo.name),
         TE.chain((releaseResult: NexusSearchResult) => pipe(
-            searchForMavenSnapshots(projectInfo.name),
+            searchForMavenSnapshots(projectInfo.group, projectInfo.name),
             TE.map((snapshotResult: NexusSearchResult) => ([
                 releaseResult,
                 snapshotResult
@@ -52,9 +52,9 @@ const lookupMavenNexusVersions = (projectInfo: ProjectInfo): TE.TaskEither<Error
 
 const lookupNpmNexusVersions = (projectInfo: ProjectInfo): TE.TaskEither<Error, ProjectInfo> =>
     pipe(
-        searchForNpmReleases(projectInfo.name),
+        searchForNpmReleases(projectInfo.group, projectInfo.name),
         TE.chain((releaseResult: NexusSearchResult) => pipe(
-            searchForNpmBetas(projectInfo.name),
+            searchForNpmBetas(projectInfo.group, projectInfo.name),
             TE.map((betaResult: NexusSearchResult) => ([
                 releaseResult,
                 betaResult
