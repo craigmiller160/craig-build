@@ -23,8 +23,6 @@ type KeyValueMap = {
     [key: string]: string;
 }
 
-// TODO docker projects don't get groups assigned to them when they are pushed...
-
 const mapNpmDependencies = (dependencies: NpmDependencies) =>
     Object.entries(dependencies)
         .map(([key, value]) => ({
