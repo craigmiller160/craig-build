@@ -12,6 +12,7 @@ export interface NexusVersions {
 
 export default interface ProjectInfo {
   projectType: ProjectType;
+  group: string;
   name: string;
   version: string;
   dependencies: Dependency[];
