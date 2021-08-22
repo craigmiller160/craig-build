@@ -51,15 +51,11 @@ describe('validateNexusVersion task', () => {
             dependencies: [],
             latestNexusVersions: {
                 latestReleaseVersion: '1.0.0',
-                latestPreReleaseVersion: '1.1.0-beta'
+                latestPreReleaseVersion: '1.1.0-beta.3'
             }
         };
         const result = await validateNexusVersion(stageName)(projectInfo)();
-        expect(result).toEqualLeft(new BuildError(
-            'Project version is not higher than versions in Nexus',
-            stageName,
-            TASK_NAME
-        ));
+        expect(result).toEqualRight(projectInfo);
     });
 
     it('is release, lower than releases, higher than pre-releases', async () => {
