@@ -66,6 +66,10 @@ describe('getBaseProjectInfo task', () => {
         });
     });
 
+    it('get Npm ProjectInfo - no group', async () => {
+        throw new Error();
+    });
+
     it('get Npm ProjectInfo', async () => {
         getCwdMock.mockImplementation(() => path.resolve(process.cwd(), 'test', '__working-dirs__', 'npmReleaseApplication'));
         const result = await getBaseProjectInfo(ProjectType.NpmApplication)();
@@ -170,5 +174,9 @@ describe('getBaseProjectInfo task', () => {
             isPreRelease: false,
             dependencies: []
         });
+    });
+
+    it('get DockerApplication ProjectInfo, no group', async () => {
+        throw new Error();
     });
 });

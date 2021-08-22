@@ -86,6 +86,7 @@ const getProjectMaven = (projectType: ProjectType): E.Either<Error, ProjectInfo>
             const version = parsedPomXml.project.version[0];
             return {
                 projectType,
+                group: parsedPomXml.project.groupId[0],
                 name: parsedPomXml.project.artifactId[0],
                 version,
                 dependencies: getMavenDependencies(parsedPomXml),
@@ -96,9 +97,13 @@ const getProjectMaven = (projectType: ProjectType): E.Either<Error, ProjectInfo>
 
 const getProjectNpm = (projectType: ProjectType): ProjectInfo => {
     const packageJson: PackageJson = require(path.resolve(getCwd(), 'package.json')) as PackageJson;
+    const nameParts = packageJson.name.split('/');
+    const group = nameParts.length == 2 ? nameParts[0] : '';
+    const name = nameParts.length == 2 ? nameParts[1] : nameParts[0];
     return {
         projectType,
-        name: packageJson.name.replace('@craigmiller160/', ''),
+        group,
+        name,
         version: packageJson.version,
         dependencies: [
             ...(packageJson.dependencies ? mapNpmDependencies(packageJson.dependencies) : []),
@@ -110,9 +115,13 @@ const getProjectNpm = (projectType: ProjectType): ProjectInfo => {
 
 const getProjectDocker = (projectType: ProjectType): ProjectInfo => {
     const dockerJson: DockerJson = require(path.resolve(getCwd(), 'docker.json')) as DockerJson;
+    const nameParts = dockerJson.name.split('/');
+    const group = nameParts.length == 2 ? nameParts[0] : '';
+    const name = nameParts.length == 2 ? nameParts[1] : nameParts[0];
     return {
         projectType,
-        name: dockerJson.name.replace('@craigmiller160/', ''),
+        group,
+        name,
         version: dockerJson.version,
         dependencies: [],
         isPreRelease: dockerJson.version === 'latest'
