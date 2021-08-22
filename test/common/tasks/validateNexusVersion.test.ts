@@ -41,6 +41,40 @@ describe('validateNexusVersion task', () => {
         expect(result).toEqualRight(projectInfo);
     });
 
+    it('is release, higher than all releases, equal to pre-release', async () => {
+        const projectInfo: ProjectInfo = {
+            projectType: ProjectType.NpmLibrary,
+            group: 'craigmiller160',
+            isPreRelease: false,
+            name: 'my-project',
+            version: '1.1.0',
+            dependencies: [],
+            latestNexusVersions: {
+                latestReleaseVersion: '1.0.0',
+                latestPreReleaseVersion: '1.1.0-beta.3'
+            }
+        };
+        const result = await validateNexusVersion(stageName)(projectInfo)();
+        expect(result).toEqualRight(projectInfo);
+    });
+
+    it('is release, equal to existing releases and pre-releases', async () => {
+        const projectInfo: ProjectInfo = {
+            projectType: ProjectType.NpmLibrary,
+            group: 'craigmiller160',
+            isPreRelease: false,
+            name: 'my-project',
+            version: '1.1.0',
+            dependencies: [],
+            latestNexusVersions: {
+                latestReleaseVersion: '1.1.0',
+                latestPreReleaseVersion: '1.1.0-beta.3'
+            }
+        };
+        const result = await validateNexusVersion(stageName)(projectInfo)();
+        expect(result).toEqualRight(projectInfo);
+    });
+
     it('is release, lower than releases, higher than pre-releases', async () => {
         const projectInfo: ProjectInfo = {
             projectType: ProjectType.NpmLibrary,

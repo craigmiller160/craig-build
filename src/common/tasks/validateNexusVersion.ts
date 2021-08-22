@@ -4,7 +4,7 @@ import * as A from 'fp-ts/Array';
 import createTask, { TaskFunction } from '../execution/task';
 import { TaskContext } from '../execution/context';
 import ProjectInfo, { NexusVersions } from '../../types/ProjectInfo';
-import { pipe } from 'fp-ts/pipeable';
+import { pipe } from 'fp-ts/function';
 import semver from 'semver';
 import {executeIfNotDeployOnlyBuild, executeIfNotDockerPreRelease} from '../execution/commonTaskConditions';
 
@@ -20,7 +20,7 @@ const compareReleaseVersion = (latestNexusVersions: NexusVersions, version: stri
             () => O.of('0.0.0'),
             (latestReleaseVersion) => O.of(latestReleaseVersion)
         ),
-        O.filter((latestReleaseVersion) => semver.compare(trimVersion(version), trimVersion(latestReleaseVersion)) === 1)
+        O.filter((latestReleaseVersion) => semver.compare(trimVersion(version), trimVersion(latestReleaseVersion)) >= 0)
     );
 
 const comparePreReleaseVersion = (latestNexusVersions: NexusVersions, version: string, isPreRelease: boolean): O.Option<string> =>
