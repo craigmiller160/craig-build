@@ -9,6 +9,7 @@ describe('validateKubeVersion task', () => {
     it('valid pre-release kubernetes version', async () => {
         const projectInfo: ProjectInfo = {
             projectType: ProjectType.NpmApplication,
+            group: 'craigmiller160',
             name: 'my-project',
             version: '1.0.0-beta',
             isPreRelease: true,

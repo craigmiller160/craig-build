@@ -4,11 +4,13 @@ import ProjectType from '../../../../src/types/ProjectType';
 import buildAndTest, {MAVEN_BUILD_CMD, NPM_BUILD_CMD} from '../../../../src/stages/createArtifact/tasks/buildAndTest';
 import '@relmify/jest-fp-ts';
 import * as TE from 'fp-ts/TaskEither';
+import {isMaven} from '../../../../src/utils/projectTypeUtils';
 
 const runCommandMock = runCommand as jest.Mock;
 
 const createProjectInfo = (projectType: ProjectType): ProjectInfo => ({
     projectType,
+    group: isMaven(projectType) ? 'io.craigmiller160' : 'craigmiller160',
     name: 'my-project',
     version: '1.0.0',
     dependencies: [],

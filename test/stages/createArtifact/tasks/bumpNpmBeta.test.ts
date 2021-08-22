@@ -7,6 +7,7 @@ import stageName from '../../../../src/stages/createArtifact/stageName';
 
 const baseProjectInfo: ProjectInfo = {
     projectType: ProjectType.NpmApplication,
+    group: 'craigmiller160',
     isPreRelease: true,
     name: 'my-project',
     version: '1.0.0-beta',

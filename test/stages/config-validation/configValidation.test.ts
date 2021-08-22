@@ -22,6 +22,7 @@ const validateNexusVersionMock = validateNexusVersion as jest.Mock;
 
 const projectInfo: ProjectInfo = {
     projectType: ProjectType.NpmLibrary,
+    group: 'craigmiller160',
     name: 'my-project',
     version: '1.0.0',
     dependencies: [],

@@ -97,6 +97,7 @@ describe('downloadArtifact task', () => {
     it('downloads maven pre-release', async () => {
         const projectInfo: ProjectInfo = {
             projectType: ProjectType.MavenApplication,
+            group: 'io.craigmiller160',
             name: 'my-project',
             version: '1.0.0-SNAPSHOT',
             isPreRelease: true,
@@ -122,6 +123,7 @@ describe('downloadArtifact task', () => {
     it('cannot find maven release', async () => {
         const projectInfo: ProjectInfo = {
             projectType: ProjectType.MavenApplication,
+            group: 'io.craigmiller160',
             name: 'my-project',
             version: '1.0.0',
             isPreRelease: false,
@@ -149,6 +151,7 @@ describe('downloadArtifact task', () => {
     it('downloads maven release', async () => {
         const projectInfo: ProjectInfo = {
             projectType: ProjectType.MavenApplication,
+            group: 'io.craigmiller160',
             name: 'my-project',
             version: '1.0.0',
             isPreRelease: false,
@@ -174,6 +177,7 @@ describe('downloadArtifact task', () => {
     it('downloads npm release', async () => {
         const projectInfo: ProjectInfo = {
             projectType: ProjectType.NpmApplication,
+            group: 'craigmiller160',
             name: 'my-project',
             version: '1.0.0',
             isPreRelease: false,
@@ -199,6 +203,7 @@ describe('downloadArtifact task', () => {
     it('downloads npm beta', async () => {
         const projectInfo: ProjectInfo = {
             projectType: ProjectType.NpmApplication,
+            group: 'craigmiller160',
             name: 'my-project',
             version: '1.0.0-beta',
             isPreRelease: true,
@@ -225,6 +230,7 @@ describe('downloadArtifact task', () => {
         it('is library', async () => {
             const projectInfo: ProjectInfo = {
                 projectType: ProjectType.NpmLibrary,
+                group: 'craigmiller160',
                 name: 'my-project',
                 version: '1.0.0-beta',
                 isPreRelease: true,
@@ -239,6 +245,7 @@ describe('downloadArtifact task', () => {
         it('is Docker', async () => {
             const projectInfo: ProjectInfo = {
                 projectType: ProjectType.DockerApplication,
+                group: 'craigmiller160',
                 name: 'my-project',
                 version: '1.0.0-beta',
                 isPreRelease: true,

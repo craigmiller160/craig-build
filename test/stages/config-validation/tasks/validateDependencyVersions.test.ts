@@ -23,6 +23,7 @@ describe('validateDependencyVersions task', () => {
     it('validates maven for release, with snapshot dependency', async () => {
         const projectInfo: ProjectInfo = {
             projectType: ProjectType.MavenLibrary,
+            group: 'io.craigmiller160',
             isPreRelease: false,
             name: 'my-project',
             version: '1.0.0',
@@ -49,6 +50,7 @@ describe('validateDependencyVersions task', () => {
     it('validates maven for release successfully', async () => {
         const projectInfo: ProjectInfo = {
             projectType: ProjectType.MavenLibrary,
+            group: 'io.craigmiller160',
             isPreRelease: false,
             name: 'my-project',
             version: '1.0.0',
@@ -74,6 +76,7 @@ describe('validateDependencyVersions task', () => {
     it('validates npm for release, with beta dependency', async () => {
         const projectInfo: ProjectInfo = {
             projectType: ProjectType.NpmLibrary,
+            group: 'craigmiller160',
             isPreRelease: false,
             name: 'my-project',
             version: '1.0.0',
@@ -100,6 +103,7 @@ describe('validateDependencyVersions task', () => {
     it('validates npm for release successfully', async () => {
         const projectInfo: ProjectInfo = {
             projectType: ProjectType.NpmLibrary,
+            group: 'craigmiller160',
             isPreRelease: false,
             name: 'my-project',
             version: '1.0.0',
@@ -126,6 +130,7 @@ describe('validateDependencyVersions task', () => {
     it('validates for docker release', async () => {
         const projectInfo: ProjectInfo = {
             projectType: ProjectType.DockerApplication,
+            group: 'craigmiller160',
             isPreRelease: false,
             name: 'my-project',
             version: '1.0.0',
@@ -153,6 +158,7 @@ describe('validateDependencyVersions task', () => {
             const projectInfo: ProjectInfo = {
                 projectType: ProjectType.MavenLibrary,
                 isPreRelease: true,
+                group: 'craigmiller160',
                 name: 'my-project',
                 version: '1.0.0-beta',
                 dependencies: [
