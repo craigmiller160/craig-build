@@ -19,6 +19,8 @@ export const restApiInstance = axios.create({
 export type NexusRepoSearchFn = (name: string, version?: string) => TE.TaskEither<Error, NexusSearchResult>;
 export type NexusRepoGroupSearchFn = (group: string, name: string, version?: string) => TE.TaskEither<Error, NexusSearchResult>;
 
+// TODO check the uses of these methods because they are being used wrong now
+
 export const searchForMavenSnapshots: NexusRepoGroupSearchFn = (groupId: string, artifactId: string, version?: string) =>
     pipe(
         TE.tryCatch(
