@@ -13,6 +13,7 @@ import * as TE from 'fp-ts/TaskEither';
 import '@relmify/jest-fp-ts';
 import Mock = jest.Mock;
 import stageName from '../../../src/stages/identify/stageName';
+import {isMaven} from '../../../src/utils/projectTypeUtils';
 
 jest.mock('../../../src/common/services/NexusRepoApi', () => ({
     searchForNpmBetas: jest.fn(),
@@ -30,6 +31,7 @@ const searchForDockerReleasesMock = searchForDockerReleases as Mock;
 
 const createProjectInfo = (projectType: ProjectType): ProjectInfo => ({
     projectType,
+    group: isMaven(projectType) ? 'io.craigmiller160' : 'craigmiller160',
     name: 'The Project',
     version: '1.1.0',
     isPreRelease: false,

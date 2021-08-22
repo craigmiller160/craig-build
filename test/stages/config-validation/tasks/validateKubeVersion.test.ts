@@ -23,6 +23,7 @@ describe('validateKubeVersion task', () => {
     it('invalid pre-release kubernetes version', async () => {
         const projectInfo: ProjectInfo = {
             projectType: ProjectType.NpmApplication,
+            group: 'craigmiller160',
             name: 'my-project',
             version: '1.0.0-beta',
             isPreRelease: true,
@@ -40,6 +41,7 @@ describe('validateKubeVersion task', () => {
     it('valid release kubernetes version', async () => {
         const projectInfo: ProjectInfo = {
             projectType: ProjectType.NpmApplication,
+            group: 'craigmiller160',
             name: 'my-project',
             version: '1.0.0',
             isPreRelease: false,
@@ -53,6 +55,7 @@ describe('validateKubeVersion task', () => {
     it('invalid release kubernetes version', async () => {
         const projectInfo: ProjectInfo = {
             projectType: ProjectType.NpmApplication,
+            group: 'craigmiller160',
             name: 'my-project',
             version: '1.0.0',
             isPreRelease: false,
@@ -71,6 +74,7 @@ describe('validateKubeVersion task', () => {
         it('is not application', async () => {
             const projectInfo: ProjectInfo = {
                 projectType: ProjectType.NpmLibrary,
+                group: 'craigmiller160',
                 name: 'my-project',
                 version: '1.0.0-beta',
                 isPreRelease: true,
