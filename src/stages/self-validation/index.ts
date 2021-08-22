@@ -11,6 +11,11 @@ const selfValidation: StageFunction<undefined> = (context: StageContext<undefine
     pipe(
         getSelfProjectInfo(undefined),
         TE.chain(getNexusProjectInfo(stageName)),
+        TE.map((projectInfo) => {
+            const projectInfoString = JSON.stringify(projectInfo, null, 2);
+            context.logger(`craig-build ProjectInfo: ${projectInfoString}`);
+            return projectInfo;
+        }),
         TE.chain(validateNexusVersion(stageName)),
         TE.map(() => ({
             message: 'Successfully validated build application',
