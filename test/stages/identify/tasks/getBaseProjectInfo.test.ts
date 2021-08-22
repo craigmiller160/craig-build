@@ -69,7 +69,33 @@ describe('getBaseProjectInfo task', () => {
     });
 
     it('get Npm ProjectInfo - no group', async () => {
-        throw new Error();
+        getCwdMock.mockImplementation(() => path.resolve(process.cwd(), 'test', '__working-dirs__', 'npmReleaseApplicationNoGroup'));
+        const result = await getBaseProjectInfo(ProjectType.NpmApplication)();
+        expect(result).toEqualRight({
+            projectType: ProjectType.NpmApplication,
+            group: '',
+            name: 'craig-build',
+            version: '1.0.0',
+            isPreRelease: false,
+            dependencies: [
+                {
+                    name: '@craigmiller160/react-web-config',
+                    version: '^1.0.0'
+                },
+                {
+                    name: '@material-ui/core',
+                    version: '^1.0.0-beta'
+                },
+                {
+                    name: '@craigmiller160/foo-bar',
+                    version: '^1.0.0'
+                },
+                {
+                    name: '@craigmiller160/abc-def',
+                    version: '^1.0.0'
+                }
+            ]
+        });
     });
 
     it('get Npm ProjectInfo', async () => {
@@ -185,6 +211,15 @@ describe('getBaseProjectInfo task', () => {
     });
 
     it('get DockerApplication ProjectInfo, no group', async () => {
-        throw new Error();
+        getCwdMock.mockImplementation(() => path.resolve(process.cwd(), 'test', '__working-dirs__', 'dockerReleaseApplicationNoGroup'));
+        const result = await getBaseProjectInfo(ProjectType.DockerApplication)();
+        expect(result).toEqualRight({
+            projectType: ProjectType.DockerApplication,
+            group: '',
+            name: 'nginx-base',
+            version: '1.0.0',
+            isPreRelease: false,
+            dependencies: []
+        });
     });
 });
