@@ -8,6 +8,7 @@ import {DEPLOY_ONLY_BUILD} from "../../../../src/execution/executionConstants";
 
 const projectInfo: ProjectInfo = {
     projectType: ProjectType.NpmApplication,
+    group: 'craigmiller160',
     isPreRelease: false,
     name: 'my-project',
     version: '1.0.0',

@@ -10,6 +10,7 @@ describe('validateNexusVersion task', () => {
     it('is release, higher than all releases & pre-releases', async () => {
         const projectInfo: ProjectInfo = {
             projectType: ProjectType.NpmLibrary,
+            group: 'craigmiller160',
             isPreRelease: false,
             name: 'my-project',
             version: '1.1.0',
@@ -26,6 +27,7 @@ describe('validateNexusVersion task', () => {
     it('is release, higher than all releases, not pre-releases', async () => {
         const projectInfo: ProjectInfo = {
             projectType: ProjectType.NpmLibrary,
+            group: 'craigmiller160',
             isPreRelease: false,
             name: 'my-project',
             version: '1.1.0',
@@ -42,6 +44,7 @@ describe('validateNexusVersion task', () => {
     it('is release, lower than releases, higher than pre-releases', async () => {
         const projectInfo: ProjectInfo = {
             projectType: ProjectType.NpmLibrary,
+            group: 'craigmiller160',
             isPreRelease: false,
             name: 'my-project',
             version: '1.1.0',
@@ -62,6 +65,7 @@ describe('validateNexusVersion task', () => {
     it('is pre-release, higher than all releases & pre-releases', async () => {
         const projectInfo: ProjectInfo = {
             projectType: ProjectType.NpmLibrary,
+            group: 'craigmiller160',
             isPreRelease: true,
             name: 'my-project',
             version: '1.1.0-beta',
@@ -78,6 +82,7 @@ describe('validateNexusVersion task', () => {
     it('is pre-release, higher than all releases and equal to pre-release', async () => {
         const projectInfo: ProjectInfo = {
             projectType: ProjectType.NpmLibrary,
+            group: 'craigmiller160',
             isPreRelease: true,
             name: 'my-project',
             version: '1.1.0-beta',
@@ -94,6 +99,7 @@ describe('validateNexusVersion task', () => {
     it('is pre-release, higher than all releases, not pre-releases', async () => {
         const projectInfo: ProjectInfo = {
             projectType: ProjectType.NpmLibrary,
+            group: 'craigmiller160',
             isPreRelease: true,
             name: 'my-project',
             version: '1.1.0-beta',
@@ -114,6 +120,7 @@ describe('validateNexusVersion task', () => {
     it('is pre-release, lower than releases, higher than pre-releases', async () => {
         const projectInfo: ProjectInfo = {
             projectType: ProjectType.NpmLibrary,
+            group: 'craigmiller160',
             isPreRelease: true,
             name: 'my-project',
             version: '1.1.0-beta',
@@ -134,6 +141,7 @@ describe('validateNexusVersion task', () => {
     it('is release, no nexus versions', async () => {
         const projectInfo: ProjectInfo = {
             projectType: ProjectType.NpmLibrary,
+            group: 'craigmiller160',
             isPreRelease: false,
             name: 'my-project',
             version: '1.1.0',
@@ -146,6 +154,7 @@ describe('validateNexusVersion task', () => {
     it('is release, no release version, higher than pre-release', async () => {
         const projectInfo: ProjectInfo = {
             projectType: ProjectType.NpmLibrary,
+            group: 'craigmiller160',
             isPreRelease: false,
             name: 'my-project',
             version: '1.1.0',
@@ -161,6 +170,7 @@ describe('validateNexusVersion task', () => {
     it('is pre-release, has release version, no pre-release', async () => {
         const projectInfo: ProjectInfo = {
             projectType: ProjectType.NpmLibrary,
+            group: 'craigmiller160',
             isPreRelease: true,
             name: 'my-project',
             version: '1.1.0-beta',
@@ -178,6 +188,7 @@ describe('validateNexusVersion task', () => {
             process.env.BUILD_NAME = DEPLOY_ONLY_BUILD;
             const projectInfo: ProjectInfo = {
                 projectType: ProjectType.NpmLibrary,
+                group: 'craigmiller160',
                 isPreRelease: true,
                 name: 'my-project',
                 version: '1.1.0-beta',
@@ -194,6 +205,7 @@ describe('validateNexusVersion task', () => {
         it('is docker pre-release', async () => {
             const projectInfo: ProjectInfo = {
                 projectType: ProjectType.DockerImage,
+                group: 'craigmiller160',
                 isPreRelease: true,
                 name: 'my-project',
                 version: 'latest',

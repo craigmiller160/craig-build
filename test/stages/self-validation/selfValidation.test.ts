@@ -18,6 +18,7 @@ const validateNexusVersionMock = validateNexusVersion as jest.Mock;
 
 const projectInfo: ProjectInfo = {
     projectType: ProjectType.NpmApplication,
+    group: 'craigmiller160',
     name: 'email-service',
     version: '1.2.0',
     dependencies: [],

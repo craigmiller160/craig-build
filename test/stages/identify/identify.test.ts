@@ -33,6 +33,7 @@ describe('identify stage', () => {
         const projectType = ProjectType.MavenApplication;
         const projectInfo: ProjectInfo = {
             projectType,
+            group: 'io.craigmiller160',
             name: 'email-service',
             version: '1.2.0',
             dependencies: [],
@@ -69,6 +70,7 @@ describe('identify stage', () => {
         const projectType = ProjectType.MavenLibrary;
         const projectInfo: ProjectInfo = {
             projectType,
+            group: 'io.craigmiller160',
             name: 'email-service',
             version: '1.2.0',
             dependencies: [],

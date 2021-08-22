@@ -13,6 +13,7 @@ import * as TE from 'fp-ts/TaskEither';
 import '@relmify/jest-fp-ts';
 import Mock = jest.Mock;
 import stageName from '../../../src/stages/identify/stageName';
+import {isMaven} from '../../../src/utils/projectTypeUtils';
 
 jest.mock('../../../src/common/services/NexusRepoApi', () => ({
     searchForNpmBetas: jest.fn(),
@@ -30,6 +31,7 @@ const searchForDockerReleasesMock = searchForDockerReleases as Mock;
 
 const createProjectInfo = (projectType: ProjectType): ProjectInfo => ({
     projectType,
+    group: isMaven(projectType) ? 'io.craigmiller160' : 'craigmiller160',
     name: 'The Project',
     version: '1.1.0',
     isPreRelease: false,
@@ -95,6 +97,10 @@ describe('getNexusProjectInfo task', () => {
                 latestReleaseVersion: 'Maven-Release'
             }
         });
+        expect(searchForMavenReleasesMock).toHaveBeenCalledWith('io.craigmiller160', 'The Project');
+        expect(searchForMavenSnapshotsMock).toHaveBeenCalledWith('io.craigmiller160', 'The Project');
+        expect(searchForNpmReleasesMock).not.toHaveBeenCalled();
+        expect(searchForNpmBetasMock).not.toHaveBeenCalled();
     });
 
     it('get NPM Nexus Project Info', async () => {
@@ -108,6 +114,10 @@ describe('getNexusProjectInfo task', () => {
                 latestReleaseVersion: 'Npm-Release'
             }
         });
+        expect(searchForNpmReleasesMock).toHaveBeenCalledWith('craigmiller160', 'The Project');
+        expect(searchForNpmBetasMock).toHaveBeenCalledWith('craigmiller160', 'The Project');
+        expect(searchForMavenReleasesMock).not.toHaveBeenCalled();
+        expect(searchForMavenSnapshotsMock).not.toHaveBeenCalled();
     });
 
     it('NPM project does not exist in Nexus', async () => {
@@ -121,6 +131,10 @@ describe('getNexusProjectInfo task', () => {
                 latestReleaseVersion: undefined
             }
         });
+        expect(searchForNpmReleasesMock).toHaveBeenCalledWith('craigmiller160', 'The Project');
+        expect(searchForNpmBetasMock).toHaveBeenCalledWith('craigmiller160', 'The Project');
+        expect(searchForMavenReleasesMock).not.toHaveBeenCalled();
+        expect(searchForMavenSnapshotsMock).not.toHaveBeenCalled();
     });
 
     it('Maven project does not exist in Nexus', async () => {
@@ -134,6 +148,10 @@ describe('getNexusProjectInfo task', () => {
                 latestReleaseVersion: undefined
             }
         });
+        expect(searchForMavenReleasesMock).toHaveBeenCalledWith('io.craigmiller160', 'The Project');
+        expect(searchForMavenSnapshotsMock).toHaveBeenCalledWith('io.craigmiller160', 'The Project');
+        expect(searchForNpmReleasesMock).not.toHaveBeenCalled();
+        expect(searchForNpmBetasMock).not.toHaveBeenCalled();
     });
 
     it('get Docker Nexus Project Info', async () => {

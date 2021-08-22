@@ -30,6 +30,7 @@ const buildLoggerMock = buildLogger as jest.Mock;
 
 const projectInfo: ProjectInfo = {
     projectType: ProjectType.NpmApplication,
+    group: 'craigmiller160',
     name: 'my-project',
     version: '1.0.0',
     dependencies: [],

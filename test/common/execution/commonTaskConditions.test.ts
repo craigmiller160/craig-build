@@ -15,6 +15,7 @@ import {DEPLOY_ONLY_BUILD} from '../../../src/execution/executionConstants';
 
 const baseProjectInfo: ProjectInfo = {
     projectType: ProjectType.NpmLibrary,
+    group: 'craigmiller160',
     name: 'my-project',
     version: '1.0.0',
     dependencies: [],

@@ -12,7 +12,8 @@ describe('getSelfProjectInfo task', () => {
         const result = await getSelfProjectInfo(undefined)();
         expect(result).toEqualRight({
             projectType: ProjectType.NpmApplication,
-            name: '@craigmiller160/craig-build',
+            group: 'craigmiller160',
+            name: 'craig-build',
             version: packageJson.version,
             dependencies: [],
             isPreRelease: packageJson.version.includes('beta')

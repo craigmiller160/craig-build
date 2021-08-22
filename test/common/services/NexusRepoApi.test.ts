@@ -36,56 +36,56 @@ describe('NexusRepoApi', () => {
     it('searchForMavenSnapshots', async () => {
         mockRestApi.onGet('/search?repository=maven-snapshots&maven.groupId=io.craigmiller160&maven.artifactId=My%20Name&sort=version&direction=desc')
             .reply(200, expectedResult);
-        const actualResult = await searchForMavenSnapshots('My Name')();
+        const actualResult = await searchForMavenSnapshots('io.craigmiller160', 'My Name')();
         expect(actualResult).toEqualRight(expectedResult);
     });
 
     it('searchForMavenSnapshots with version', async () => {
         mockRestApi.onGet('/search?repository=maven-snapshots&maven.groupId=io.craigmiller160&maven.artifactId=My%20Name&sort=version&direction=desc&maven.baseVersion=1')
             .reply(200, expectedResult);
-        const actualResult = await searchForMavenSnapshots('My Name', '1')();
+        const actualResult = await searchForMavenSnapshots('io.craigmiller160', 'My Name', '1')();
         expect(actualResult).toEqualRight(expectedResult);
     });
 
     it('searchForMavenReleases', async () => {
         mockRestApi.onGet('/search?repository=maven-releases&maven.groupId=io.craigmiller160&maven.artifactId=My%20Name&sort=version&direction=desc')
             .reply(200, expectedResult);
-        const actualResult = await searchForMavenReleases('My Name')();
+        const actualResult = await searchForMavenReleases('io.craigmiller160', 'My Name')();
         expect(actualResult).toEqualRight(expectedResult);
     });
 
     it('searchForMavenReleases with version', async () => {
         mockRestApi.onGet('/search?repository=maven-releases&maven.groupId=io.craigmiller160&maven.artifactId=My%20Name&sort=version&direction=desc&version=1')
             .reply(200, expectedResult);
-        const actualResult = await searchForMavenReleases('My Name', '1')();
+        const actualResult = await searchForMavenReleases('io.craigmiller160', 'My Name', '1')();
         expect(actualResult).toEqualRight(expectedResult);
     });
 
     it('searchForNpmBetas', async () => {
         mockRestApi.onGet('/search?format=npm&group=craigmiller160&name=My%20Name&sort=version&direction=desc&prerelease=true')
             .reply(200, expectedResult);
-        const actualResult = await searchForNpmBetas('My Name')();
+        const actualResult = await searchForNpmBetas('craigmiller160', 'My Name')();
         expect(actualResult).toEqualRight(expectedResult);
     });
 
     it('searchForNpmBetas with version', async () => {
         mockRestApi.onGet('/search?format=npm&group=craigmiller160&name=My%20Name&sort=version&direction=desc&prerelease=true&version=1%2A')
             .reply(200, expectedResult);
-        const actualResult = await searchForNpmBetas('My Name', '1*')();
+        const actualResult = await searchForNpmBetas('craigmiller160', 'My Name', '1*')();
         expect(actualResult).toEqualRight(expectedResult);
     });
 
     it('searchForNpmReleases', async () => {
         mockRestApi.onGet('/search?format=npm&group=craigmiller160&name=My%20Name&sort=version&direction=desc&prerelease=false')
             .reply(200, expectedResult);
-        const actualResult = await searchForNpmReleases('My Name')();
+        const actualResult = await searchForNpmReleases('craigmiller160', 'My Name')();
         expect(actualResult).toEqualRight(expectedResult);
     });
 
     it('searchForNpmReleases with version', async () => {
         mockRestApi.onGet('/search?format=npm&group=craigmiller160&name=My%20Name&sort=version&direction=desc&prerelease=false&version=1')
             .reply(200, expectedResult);
-        const actualResult = await searchForNpmReleases('My Name', '1')();
+        const actualResult = await searchForNpmReleases('craigmiller160', 'My Name', '1')();
         expect(actualResult).toEqualRight(expectedResult);
     });
 

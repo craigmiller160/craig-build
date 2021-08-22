@@ -13,6 +13,7 @@ describe('getKubeProjectInfo task', () => {
         getCwdMock.mockImplementation(() => path.resolve(process.cwd(), 'test', '__working-dirs__', 'mavenReleaseApplication'));
         const projectInfo: ProjectInfo = {
             projectType: ProjectType.MavenApplication,
+            group: 'io.craigmiller160',
             name: 'email-service',
             version: '1.2.0',
             dependencies: [],
@@ -30,6 +31,7 @@ describe('getKubeProjectInfo task', () => {
         getCwdMock.mockImplementation(() => path.resolve(process.cwd(), 'test', '__working-dirs__', 'mavenReleaseApplicationMultiContainer'));
         const projectInfo: ProjectInfo = {
             projectType: ProjectType.MavenApplication,
+            group: 'io.craigmiller160',
             name: 'email-service',
             version: '1.2.0',
             dependencies: [],
@@ -47,6 +49,7 @@ describe('getKubeProjectInfo task', () => {
         it('is library', async () => {
             const projectInfo: ProjectInfo = {
                 projectType: ProjectType.MavenLibrary,
+                group: 'io.craigmiller160',
                 name: 'email-service',
                 version: '1.2.0',
                 dependencies: [],

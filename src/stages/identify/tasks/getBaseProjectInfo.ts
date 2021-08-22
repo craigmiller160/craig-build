@@ -15,6 +15,7 @@ import createTask, {TaskFunction} from '../../../common/execution/task';
 import {TaskContext} from '../../../common/execution/context';
 import stageName from '../stageName';
 import DockerJson from "../../../types/DockerJson";
+import {separateGroupAndName} from '../../../utils/separateGroupAndName';
 
 const TASK_NAME = 'Get Base Project Info';
 
@@ -86,6 +87,7 @@ const getProjectMaven = (projectType: ProjectType): E.Either<Error, ProjectInfo>
             const version = parsedPomXml.project.version[0];
             return {
                 projectType,
+                group: parsedPomXml.project.groupId[0],
                 name: parsedPomXml.project.artifactId[0],
                 version,
                 dependencies: getMavenDependencies(parsedPomXml),
@@ -96,9 +98,11 @@ const getProjectMaven = (projectType: ProjectType): E.Either<Error, ProjectInfo>
 
 const getProjectNpm = (projectType: ProjectType): ProjectInfo => {
     const packageJson: PackageJson = require(path.resolve(getCwd(), 'package.json')) as PackageJson;
+    const [group, name] = separateGroupAndName(packageJson.name);
     return {
         projectType,
-        name: packageJson.name.replace('@craigmiller160/', ''),
+        group,
+        name,
         version: packageJson.version,
         dependencies: [
             ...(packageJson.dependencies ? mapNpmDependencies(packageJson.dependencies) : []),
@@ -110,9 +114,11 @@ const getProjectNpm = (projectType: ProjectType): ProjectInfo => {
 
 const getProjectDocker = (projectType: ProjectType): ProjectInfo => {
     const dockerJson: DockerJson = require(path.resolve(getCwd(), 'docker.json')) as DockerJson;
+    const [group, name] = separateGroupAndName(dockerJson.name);
     return {
         projectType,
-        name: dockerJson.name.replace('@craigmiller160/', ''),
+        group,
+        name,
         version: dockerJson.version,
         dependencies: [],
         isPreRelease: dockerJson.version === 'latest'

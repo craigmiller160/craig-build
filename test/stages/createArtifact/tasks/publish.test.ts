@@ -20,6 +20,7 @@ describe('publish task', () => {
     it('publishes NPM package', async () => {
         const projectInfo: ProjectInfo = {
             projectType: ProjectType.NpmApplication,
+            group: 'craigmiller160',
             isPreRelease: false,
             name: 'my-project',
             version: '1.0.0',
@@ -44,6 +45,7 @@ describe('publish task', () => {
         it('is maven project', async () => {
             const projectInfo: ProjectInfo = {
                 projectType: ProjectType.MavenApplication,
+                group: 'io.craigmiller160',
                 isPreRelease: false,
                 name: 'my-project',
                 version: '1.0.0',

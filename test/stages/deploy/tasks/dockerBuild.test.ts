@@ -16,6 +16,7 @@ jest.mock('shell-env', () => ({
 const baseProjectInfo: ProjectInfo = {
     projectType: ProjectType.MavenApplication,
     isPreRelease: false,
+    group: 'io.craigmiller160',
     name: 'my-project',
     version: '1.0.0',
     kubernetesDockerImage: 'craigmiller160.ddns.net:30004/my-project:1.0.0',

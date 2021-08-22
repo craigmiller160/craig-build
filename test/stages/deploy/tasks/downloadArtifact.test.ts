@@ -97,6 +97,7 @@ describe('downloadArtifact task', () => {
     it('downloads maven pre-release', async () => {
         const projectInfo: ProjectInfo = {
             projectType: ProjectType.MavenApplication,
+            group: 'io.craigmiller160',
             name: 'my-project',
             version: '1.0.0-SNAPSHOT',
             isPreRelease: true,
@@ -113,7 +114,7 @@ describe('downloadArtifact task', () => {
         const targetPath = path.resolve(mavenPreReleaseBuildDir, 'my-project-1.0.0-SNAPSHOT.jar');
 
         expect(downloadArtifactApi).toHaveBeenCalledWith(downloadUrl, targetPath);
-        expect(searchForMavenSnapshotsMock).toHaveBeenCalledWith('my-project', '1.0.0-SNAPSHOT');
+        expect(searchForMavenSnapshotsMock).toHaveBeenCalledWith('io.craigmiller160', 'my-project', '1.0.0-SNAPSHOT');
         expect(searchForMavenReleasesMock).not.toHaveBeenCalled();
         expect(searchForNpmBetasMock).not.toHaveBeenCalled();
         expect(searchForNpmReleasesMock).not.toHaveBeenCalled();
@@ -122,6 +123,7 @@ describe('downloadArtifact task', () => {
     it('cannot find maven release', async () => {
         const projectInfo: ProjectInfo = {
             projectType: ProjectType.MavenApplication,
+            group: 'io.craigmiller160',
             name: 'my-project',
             version: '1.0.0',
             isPreRelease: false,
@@ -139,7 +141,7 @@ describe('downloadArtifact task', () => {
             TASK_NAME
         ));
 
-        expect(searchForMavenReleasesMock).toHaveBeenCalledWith('my-project', '1.0.0');
+        expect(searchForMavenReleasesMock).toHaveBeenCalledWith('io.craigmiller160', 'my-project', '1.0.0');
         expect(downloadArtifactApi).not.toHaveBeenCalled();
         expect(searchForMavenSnapshotsMock).not.toHaveBeenCalled();
         expect(searchForNpmBetasMock).not.toHaveBeenCalled();
@@ -149,6 +151,7 @@ describe('downloadArtifact task', () => {
     it('downloads maven release', async () => {
         const projectInfo: ProjectInfo = {
             projectType: ProjectType.MavenApplication,
+            group: 'io.craigmiller160',
             name: 'my-project',
             version: '1.0.0',
             isPreRelease: false,
@@ -165,7 +168,7 @@ describe('downloadArtifact task', () => {
         const targetPath = path.resolve(mavenReleaseBuildDir, 'my-project-1.0.0.jar');
 
         expect(downloadArtifactApi).toHaveBeenCalledWith(downloadUrl, targetPath);
-        expect(searchForMavenReleasesMock).toHaveBeenCalledWith('my-project', '1.0.0');
+        expect(searchForMavenReleasesMock).toHaveBeenCalledWith('io.craigmiller160', 'my-project', '1.0.0');
         expect(searchForMavenSnapshotsMock).not.toHaveBeenCalled();
         expect(searchForNpmBetasMock).not.toHaveBeenCalled();
         expect(searchForNpmReleasesMock).not.toHaveBeenCalled();
@@ -174,6 +177,7 @@ describe('downloadArtifact task', () => {
     it('downloads npm release', async () => {
         const projectInfo: ProjectInfo = {
             projectType: ProjectType.NpmApplication,
+            group: 'craigmiller160',
             name: 'my-project',
             version: '1.0.0',
             isPreRelease: false,
@@ -190,7 +194,7 @@ describe('downloadArtifact task', () => {
         const targetPath = path.resolve(npmReleaseBuildDir, 'my-project-1.0.0.tgz');
 
         expect(downloadArtifactApi).toHaveBeenCalledWith(downloadUrl, targetPath);
-        expect(searchForNpmReleasesMock).toHaveBeenCalledWith('my-project', '1.0.0');
+        expect(searchForNpmReleasesMock).toHaveBeenCalledWith('craigmiller160', 'my-project', '1.0.0');
         expect(searchForNpmBetasMock).not.toHaveBeenCalled();
         expect(searchForMavenSnapshotsMock).not.toHaveBeenCalled();
         expect(searchForMavenReleasesMock).not.toHaveBeenCalled();
@@ -199,6 +203,7 @@ describe('downloadArtifact task', () => {
     it('downloads npm beta', async () => {
         const projectInfo: ProjectInfo = {
             projectType: ProjectType.NpmApplication,
+            group: 'craigmiller160',
             name: 'my-project',
             version: '1.0.0-beta',
             isPreRelease: true,
@@ -215,7 +220,7 @@ describe('downloadArtifact task', () => {
         const targetPath = path.resolve(npmPreReleaseBuildDir, 'my-project-1.0.0-beta.tgz');
 
         expect(downloadArtifactApi).toHaveBeenCalledWith(downloadUrl, targetPath);
-        expect(searchForNpmBetasMock).toHaveBeenCalledWith('my-project', '1.0.0-beta*');
+        expect(searchForNpmBetasMock).toHaveBeenCalledWith('craigmiller160', 'my-project', '1.0.0-beta*');
         expect(searchForNpmReleasesMock).not.toHaveBeenCalled();
         expect(searchForMavenSnapshotsMock).not.toHaveBeenCalled();
         expect(searchForMavenReleasesMock).not.toHaveBeenCalled();
@@ -225,6 +230,7 @@ describe('downloadArtifact task', () => {
         it('is library', async () => {
             const projectInfo: ProjectInfo = {
                 projectType: ProjectType.NpmLibrary,
+                group: 'craigmiller160',
                 name: 'my-project',
                 version: '1.0.0-beta',
                 isPreRelease: true,
@@ -239,6 +245,7 @@ describe('downloadArtifact task', () => {
         it('is Docker', async () => {
             const projectInfo: ProjectInfo = {
                 projectType: ProjectType.DockerApplication,
+                group: 'craigmiller160',
                 name: 'my-project',
                 version: '1.0.0-beta',
                 isPreRelease: true,

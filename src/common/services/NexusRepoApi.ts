@@ -8,8 +8,6 @@ import { extractResponseData } from './apiUtils';
 import fs from 'fs';
 import streamPromisify from '../../utils/streamPromisify';
 
-const mavenGroupId = 'io.craigmiller160';
-const npmGroup = 'craigmiller160';
 const sort = 'version';
 const direction = 'desc';
 
@@ -17,15 +15,15 @@ export const restApiInstance = axios.create({
     baseURL: 'https://craigmiller160.ddns.net:30003/service/rest/v1'
 });
 
-export type NexusRepoSearchFn = (name: string, version?: string) => TE.TaskEither<Error, NexusSearchResult>;
+export type NexusRepoGroupSearchFn = (group: string, name: string, version?: string) => TE.TaskEither<Error, NexusSearchResult>;
 
-export const searchForMavenSnapshots: NexusRepoSearchFn = (artifactId: string, version?: string) =>
+export const searchForMavenSnapshots: NexusRepoGroupSearchFn = (groupId: string, artifactId: string, version?: string) =>
     pipe(
         TE.tryCatch(
             () => {
                 const query = qs.stringify({
                     repository: 'maven-snapshots',
-                    'maven.groupId': mavenGroupId,
+                    'maven.groupId': groupId,
                     'maven.artifactId': artifactId,
                     sort,
                     direction,
@@ -38,13 +36,13 @@ export const searchForMavenSnapshots: NexusRepoSearchFn = (artifactId: string, v
         extractResponseData
     );
 
-export const searchForMavenReleases: NexusRepoSearchFn = (artifactId: string, version?: string) =>
+export const searchForMavenReleases: NexusRepoGroupSearchFn = (groupId: string, artifactId: string, version?: string) =>
     pipe(
         TE.tryCatch(
             () => {
                 const query = qs.stringify({
                     repository: 'maven-releases',
-                    'maven.groupId': mavenGroupId,
+                    'maven.groupId': groupId,
                     'maven.artifactId': artifactId,
                     sort,
                     direction,
@@ -57,13 +55,13 @@ export const searchForMavenReleases: NexusRepoSearchFn = (artifactId: string, ve
         extractResponseData
     );
 
-export const searchForNpmBetas: NexusRepoSearchFn = (name: string, version?: string) =>
+export const searchForNpmBetas: NexusRepoGroupSearchFn = (group: string, name: string, version?: string) =>
     pipe(
         TE.tryCatch(
             () => {
                 const query = qs.stringify({
                     format: 'npm',
-                    group: npmGroup,
+                    group,
                     name,
                     sort,
                     direction,
@@ -77,13 +75,13 @@ export const searchForNpmBetas: NexusRepoSearchFn = (name: string, version?: str
         extractResponseData
     );
 
-export const searchForNpmReleases = (name: string, version?: string) =>
+export const searchForNpmReleases: NexusRepoGroupSearchFn = (group: string, name: string, version?: string) =>
     pipe(
         TE.tryCatch(
             () => {
                 const query = qs.stringify({
                     format: 'npm',
-                    group: npmGroup,
+                    group,
                     name,
                     sort,
                     direction,

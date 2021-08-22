@@ -10,6 +10,7 @@ import stageName from '../../../../src/stages/config-validation/stageName';
 const runCommandMock = runCommand as jest.Mock;
 const projectInfo: ProjectInfo = {
     projectType: ProjectType.MavenApplication,
+    group: 'io.craigmiller160',
     name: 'my-project',
     version: '1.0.0',
     dependencies: [],
