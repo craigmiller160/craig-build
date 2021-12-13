@@ -2,7 +2,7 @@ import * as E from 'fp-ts/Either';
 import * as O from 'fp-ts/Option';
 import * as TE from 'fp-ts/TaskEither';
 import ProjectInfo from '../../../types/ProjectInfo';
-import { pipe } from 'fp-ts/pipeable';
+import { pipe } from 'fp-ts/function';
 import createTask, { TaskFunction, TaskShouldExecuteFunction } from '../../../common/execution/task';
 import { TaskContext } from '../../../common/execution/context';
 import { executeIfApplication } from '../../../common/execution/commonTaskConditions';

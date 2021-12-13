@@ -1,5 +1,5 @@
 import * as TE from 'fp-ts/TaskEither';
-import { pipe } from 'fp-ts/pipeable';
+import { pipe } from 'fp-ts/function';
 import ProjectInfo from '../types/ProjectInfo';
 import { buildLogger, ERROR_STATUS, SUCCESS_STATUS } from '../common/logger';
 import getCwd from '../utils/getCwd';

@@ -1,7 +1,7 @@
 import createStage, { StageFunction } from '../../common/execution/stage';
 import ProjectInfo from '../../types/ProjectInfo';
 import { StageContext } from '../../common/execution/context';
-import { pipe } from 'fp-ts/pipeable';
+import { pipe } from 'fp-ts/function';
 import gitTag from './tasks/gitTag';
 import * as TE from 'fp-ts/TaskEither';
 import stageName from './stageName';

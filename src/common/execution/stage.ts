@@ -2,7 +2,7 @@ import { StageContext } from './context';
 import { createBuildError } from '../../error/BuildError';
 import { createStageLogger, SUCCESS_STATUS } from '../logger';
 import * as TE from 'fp-ts/TaskEither';
-import { pipe } from 'fp-ts/pipeable';
+import { pipe } from 'fp-ts/function';
 import { Result } from './result';
 
 export type StageFunction<Input,ResultValue = Input> = (context: StageContext<Input>) => TE.TaskEither<Error, Result<ResultValue>>;

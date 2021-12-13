@@ -2,7 +2,7 @@ import createTask, { TaskFunction } from '../../../common/execution/task';
 import ProjectInfo from '../../../types/ProjectInfo';
 import { TaskContext } from '../../../common/execution/context';
 import { executeIfApplication } from '../../../common/execution/commonTaskConditions';
-import { pipe } from 'fp-ts/pipeable';
+import { pipe } from 'fp-ts/function';
 import path from 'path';
 import getCwd from '../../../utils/getCwd';
 import * as E from 'fp-ts/Either';

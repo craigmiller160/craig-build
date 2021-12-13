@@ -2,7 +2,7 @@ import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
 import createTask, { TaskFunction } from '../../../common/execution/task';
 import stageName from '../stageName';
-import { pipe } from 'fp-ts/pipeable';
+import { pipe } from 'fp-ts/function';
 import runCommand from '../../../utils/runCommand';
 import { TaskContext } from '../../../common/execution/context';
 

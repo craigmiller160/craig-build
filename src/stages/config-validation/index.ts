@@ -1,6 +1,6 @@
 import * as TE from 'fp-ts/TaskEither';
 import ProjectInfo from '../../types/ProjectInfo';
-import { pipe } from 'fp-ts/pipeable';
+import { pipe } from 'fp-ts/function';
 import validateDependencyVersions from './tasks/validateDependencyVersions';
 import validateKubeVersion from './tasks/validateKubeVersion';
 import validateGitTag from './tasks/validateGitTag';

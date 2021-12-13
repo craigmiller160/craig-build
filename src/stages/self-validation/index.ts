@@ -2,7 +2,7 @@ import * as TE from 'fp-ts/TaskEither';
 import createStage, { StageFunction } from '../../common/execution/stage';
 import { StageContext } from '../../common/execution/context';
 import getSelfProjectInfo from './tasks/getSelfProjectInfo';
-import { pipe } from 'fp-ts/pipeable';
+import { pipe } from 'fp-ts/function';
 import getNexusProjectInfo from '../../common/tasks/getNexusProjectInfo';
 import validateNexusVersion from '../../common/tasks/validateNexusVersion';
 import stageName from './stageName';

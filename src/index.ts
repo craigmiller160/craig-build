@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { pipe } from 'fp-ts/pipeable';
+import { pipe } from 'fp-ts/function';
 import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
 import { program } from 'commander';

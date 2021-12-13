@@ -1,6 +1,6 @@
 import axios from 'axios';
 import * as TE from 'fp-ts/TaskEither'
-import { pipe } from 'fp-ts/pipeable';
+import { pipe } from 'fp-ts/function';
 import handleUnknownError from '../../utils/handleUnknownError';
 import NexusSearchResult from '../../types/NexusSearchResult';
 import qs from 'qs';

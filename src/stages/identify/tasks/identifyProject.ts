@@ -4,7 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import getCwd from '../../../utils/getCwd';
 import ProjectType from '../../../types/ProjectType';
-import {pipe} from 'fp-ts/pipeable';
+import {pipe} from 'fp-ts/function';
 import createTask, {TaskFunction} from '../../../common/execution/task';
 import {TaskContext} from '../../../common/execution/context';
 import stageName from '../stageName';

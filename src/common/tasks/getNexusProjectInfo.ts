@@ -1,7 +1,7 @@
 import ProjectInfo from '../../types/ProjectInfo';
 import * as TE from 'fp-ts/TaskEither';
 import ProjectType from '../../types/ProjectType';
-import {pipe} from 'fp-ts/pipeable';
+import {pipe} from 'fp-ts/function';
 import {
     searchForDockerReleases,
     searchForMavenReleases,

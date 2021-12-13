@@ -1,7 +1,7 @@
 import createStage, { StageFunction } from '../../common/execution/stage';
 import ProjectInfo from '../../types/ProjectInfo';
 import { StageContext } from '../../common/execution/context';
-import { pipe } from 'fp-ts/pipeable';
+import { pipe } from 'fp-ts/function';
 import dockerBuild from './tasks/dockerBuild';
 import * as TE from 'fp-ts/TaskEither';
 import kubeDeploy from './tasks/kubeDeploy';

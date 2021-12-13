@@ -1,7 +1,7 @@
 import createTask, {TaskFunction, TaskShouldExecuteFunction} from '../../../common/execution/task';
 import ProjectInfo from '../../../types/ProjectInfo';
 import {TaskContext} from '../../../common/execution/context';
-import {pipe} from 'fp-ts/pipeable';
+import {pipe} from 'fp-ts/function';
 import path from 'path';
 import getCwd from '../../../utils/getCwd';
 import runCommand from '../../../utils/runCommand';

@@ -5,7 +5,7 @@ import * as A from 'fp-ts/Array';
 import { Result } from './result';
 import { createBuildError } from '../../error/BuildError';
 import { createTaskLogger, SUCCESS_STATUS } from '../logger';
-import { pipe } from 'fp-ts/pipeable';
+import { pipe } from 'fp-ts/function';
 
 export interface TaskSkipExecutionResult<ResultValue> {
     message: string;

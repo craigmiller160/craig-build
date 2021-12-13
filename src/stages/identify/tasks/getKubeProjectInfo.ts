@@ -1,7 +1,7 @@
 import ProjectInfo from '../../../types/ProjectInfo';
 import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
-import { pipe } from 'fp-ts/pipeable';
+import { pipe } from 'fp-ts/function';
 import path from 'path';
 import getCwd from '../../../utils/getCwd';
 import yaml from 'yaml';

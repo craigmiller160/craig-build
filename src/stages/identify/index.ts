@@ -1,7 +1,7 @@
 import identifyProject from './tasks/identifyProject';
 import getBaseProjectInfo from './tasks/getBaseProjectInfo';
 import * as TE from 'fp-ts/TaskEither';
-import { pipe } from 'fp-ts/pipeable';
+import { pipe } from 'fp-ts/function';
 import ProjectInfo from '../../types/ProjectInfo';
 import getKubeProjectInfo from './tasks/getKubeProjectInfo';
 import getNexusProjectInfo from '../../common/tasks/getNexusProjectInfo';

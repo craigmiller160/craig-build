@@ -3,7 +3,7 @@ import ProjectInfo from '../../../types/ProjectInfo';
 import { TaskContext } from '../../../common/execution/context';
 import { executeIfNpmProject } from '../../../common/execution/commonTaskConditions';
 import runCommand from '../../../utils/runCommand';
-import { pipe } from 'fp-ts/pipeable';
+import { pipe } from 'fp-ts/function';
 import * as TE from 'fp-ts/TaskEither';
 import stageName from '../stageName';
 import simpleGit from 'simple-git';

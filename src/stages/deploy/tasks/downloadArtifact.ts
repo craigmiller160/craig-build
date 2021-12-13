@@ -7,7 +7,7 @@ import { TaskContext } from '../../../common/execution/context';
 import stageName from '../stageName';
 import {executeIfApplication, executeIfNotDocker} from '../../../common/execution/commonTaskConditions';
 import { isMaven, isNpm } from '../../../utils/projectTypeUtils';
-import { pipe } from 'fp-ts/pipeable';
+import { pipe } from 'fp-ts/function';
 import getCwd from '../../../utils/getCwd';
 import {
     searchForMavenSnapshots,

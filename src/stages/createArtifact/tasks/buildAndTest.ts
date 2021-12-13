@@ -1,7 +1,7 @@
 import createTask, { TaskFunction } from '../../../common/execution/task';
 import ProjectInfo from '../../../types/ProjectInfo';
 import { TaskContext } from '../../../common/execution/context';
-import { pipe } from 'fp-ts/pipeable';
+import { pipe } from 'fp-ts/function';
 import * as TE from 'fp-ts/TaskEither';
 import ProjectType from '../../../types/ProjectType';
 import runCommand from '../../../utils/runCommand';

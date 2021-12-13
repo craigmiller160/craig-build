@@ -3,7 +3,7 @@ import * as A from 'fp-ts/Array';
 import * as TE from 'fp-ts/TaskEither';
 import ProjectInfo from '../../../types/ProjectInfo';
 import runCommand from '../../../utils/runCommand';
-import { pipe } from 'fp-ts/pipeable';
+import { pipe } from 'fp-ts/function';
 import createTask, { TaskFunction } from '../../../common/execution/task';
 import { TaskContext } from '../../../common/execution/context';
 import { executeIfRelease } from '../../../common/execution/commonTaskConditions';

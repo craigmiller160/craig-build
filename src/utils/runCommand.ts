@@ -1,7 +1,7 @@
 import spawn from 'cross-spawn';
 import * as E from 'fp-ts/Either';
 import * as O from 'fp-ts/Option';
-import { pipe } from 'fp-ts/pipeable';
+import { pipe } from 'fp-ts/function';
 import getCwd from './getCwd';
 import { LOG_PREFIX } from '../common/logger';
 
