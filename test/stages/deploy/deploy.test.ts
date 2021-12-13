@@ -6,7 +6,7 @@ import ProjectInfo from '../../../src/types/ProjectInfo';
 import ProjectType from '../../../src/types/ProjectType';
 import * as TE from 'fp-ts/TaskEither';
 import deploy from '../../../src/stages/deploy';
-import bumpDockerBeta from '../../../src/stages/deploy/tasks/bumpDockerBeta';
+import bumpDockerBeta from '../../../src/stages/deploy/tasks/bumpDockerPreReleaseVersion';
 
 jest.mock('../../../src/stages/deploy/tasks/kubeDeploy', () => jest.fn());
 jest.mock('../../../src/stages/deploy/tasks/dockerBuild', () => jest.fn());
