@@ -24,7 +24,7 @@ const createDockerBuild = (tag: string) =>
 const createDockerPush = (tag: string) =>
     `sudo docker push ${tag}`;
 const createDockerRemoveMatch = (name: string, version: string) =>
-    `sudo docker image ls | grep ${name} | grep ${version} | awk '{ print $3 }' | xargs sudo docker image rm`
+    `sudo docker image ls | grep ${name} | grep ${version} | awk '{ print $3 }' | xargs sudo docker image rm -f`
 const createDockerFindMatch = (name: string, version: string) =>
     `sudo docker image ls | grep ${name} | grep ${version} | cat`;
 
