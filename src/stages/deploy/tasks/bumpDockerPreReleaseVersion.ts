@@ -65,7 +65,7 @@ const bumpDockerPreReleaseVersion: TaskFunction<ProjectInfo> = (context: TaskCon
     pipe(
         handleBumpDockerPreReleaseVersion(context),
         TE.map((projectInfo) => ({
-            message: 'Bumped Docker beta version successfully',
+            message: `Bumped Docker pre-release version successfully: ${projectInfo.dockerPreReleaseVersion}`,
             value: projectInfo
         }))
     );
