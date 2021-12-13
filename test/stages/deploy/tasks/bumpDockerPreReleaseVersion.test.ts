@@ -1,15 +1,23 @@
 export {};
 
-describe('bumpDockerBeta', () => {
-    it('bumps docker beta for NPM', () => {
+describe('bumpDockerPreReleaseVersion', () => {
+    it('bumps docker pre-release version for NPM', () => {
         throw new Error();
     });
 
-    it('bumps docker beta for Maven', () => {
+    it('cannot find existing pre-release version for NPM', () => {
         throw new Error();
     });
 
-    it('bumps docker beta for Docker', () => {
+    it('bumps docker pre-release version for Maven', () => {
+        throw new Error();
+    });
+
+    it('cannot find existing pre-release version for Maven', () => {
+        throw new Error();
+    });
+
+    it('bumps docker pre-release version for Docker', () => {
         throw new Error();
     });
 

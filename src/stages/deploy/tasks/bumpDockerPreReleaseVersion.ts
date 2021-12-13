@@ -7,13 +7,25 @@ import {isApplication, isDocker} from '../../../utils/projectTypeUtils';
 import ProjectType from '../../../types/ProjectType';
 import * as TE from 'fp-ts/TaskEither';
 import {pipe} from 'fp-ts/function';
+import {searchForNpmBetas} from '../../../common/services/NexusRepoApi';
 
 export const TASK_NAME = 'Bump Docker Pre-Release Version';
 
-const findNpmDockerPreReleaseVersion = (projectInfo: ProjectInfo): TE.TaskEither<Error, ProjectInfo> => {
-    // TODO finish this
-    throw new Error();
-};
+const findNpmDockerPreReleaseVersion = (context: TaskContext<ProjectInfo>): TE.TaskEither<Error, ProjectInfo> =>
+    pipe(
+        searchForNpmBetas(context.input.group, context.input.name),
+        TE.chain((results) => {
+            if (results.items.length >= 1) {
+                return TE.right(results.items[0].version);
+            }
+
+            return TE.left(context.createBuildError('Cannot find pre-release NPM artifact to determine pre-release Docker version'));
+        }),
+        TE.map((version): ProjectInfo => ({
+            ...context.input,
+            dockerPreReleaseVersion: version
+        }))
+    );
 
 const findMavenDockerPreReleaseVersion = (projectInfo: ProjectInfo): TE.TaskEither<Error, ProjectInfo> => {
     // TODO finish this
@@ -28,7 +40,7 @@ const findDockerOnlyPreReleaseVersion = (projectInfo: ProjectInfo): TE.TaskEithe
 const handleBumpDockerPreReleaseVersion = (context: TaskContext<ProjectInfo>): TE.TaskEither<Error, ProjectInfo> => {
     switch (context.input.projectType) {
         case ProjectType.NpmApplication:
-            return findNpmDockerPreReleaseVersion(context.input);
+            return findNpmDockerPreReleaseVersion(context);
         case ProjectType.MavenApplication:
             return findMavenDockerPreReleaseVersion(context.input);
         case ProjectType.DockerApplication:
