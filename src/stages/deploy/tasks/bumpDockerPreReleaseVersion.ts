@@ -43,7 +43,7 @@ const findMavenDockerPreReleaseVersion = (context: TaskContext<ProjectInfo>): TE
         }))
     );
 
-const findDockerOnlyPreReleaseVersion = (projectInfo: ProjectInfo): TE.TaskEither<Error, ProjectInfo> => {
+const findDockerOnlyPreReleaseVersion = (context: TaskContext<ProjectInfo>): TE.TaskEither<Error, ProjectInfo> => {
     // TODO finish this
     throw new Error();
 };
@@ -53,9 +53,9 @@ const handleBumpDockerPreReleaseVersion = (context: TaskContext<ProjectInfo>): T
         case ProjectType.NpmApplication:
             return findNpmDockerPreReleaseVersion(context);
         case ProjectType.MavenApplication:
-            return findMavenDockerPreReleaseVersion(context.input);
+            return findMavenDockerPreReleaseVersion(context);
         case ProjectType.DockerApplication:
-            return findDockerOnlyPreReleaseVersion(context.input);
+            return findDockerOnlyPreReleaseVersion(context);
         default:
             return TE.left(context.createBuildError(`Invalid ProjectType for bumping Docker beta: ${context.input.projectType}`));
     }
