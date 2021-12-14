@@ -11,21 +11,10 @@ import {searchForMavenSnapshots, searchForNpmBetas} from '../../../common/servic
 
 export const TASK_NAME = 'Bump Docker Pre-Release Version';
 
-const findNpmDockerPreReleaseVersion = (context: TaskContext<ProjectInfo>): TE.TaskEither<Error, ProjectInfo> =>
-    pipe(
-        searchForNpmBetas(context.input.group, context.input.name),
-        TE.chain((results) => {
-            if (results.items.length >= 1) {
-                return TE.right(results.items[0].version);
-            }
-
-            return TE.left(context.createBuildError('Cannot find pre-release NPM artifact to determine pre-release Docker version'));
-        }),
-        TE.map((version): ProjectInfo => ({
-            ...context.input,
-            dockerPreReleaseVersion: version
-        }))
-    );
+const findNpmDockerPreReleaseVersion = (context: TaskContext<ProjectInfo>): TE.TaskEither<Error, ProjectInfo> => TE.right({
+    ...context.input,
+    dockerPreReleaseVersion: context.input.version
+});
 
 const findMavenDockerPreReleaseVersion = (context: TaskContext<ProjectInfo>): TE.TaskEither<Error, ProjectInfo> =>
     pipe(
