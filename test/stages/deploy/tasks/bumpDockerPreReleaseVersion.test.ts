@@ -53,7 +53,7 @@ describe('bumpDockerPreReleaseVersion', () => {
             ...baseProjectInfo,
             projectType: ProjectType.MavenApplication
         };
-        const result = await bumpDockerPreReleaseVersion(projectInfo);
+        const result = await bumpDockerPreReleaseVersion(projectInfo)();
         expect(result).toEqualRight({
             ...projectInfo,
             dockerPreReleaseVersion: '1.0.0-20211214.215625-13'
