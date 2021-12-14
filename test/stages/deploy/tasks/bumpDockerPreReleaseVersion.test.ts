@@ -2,9 +2,11 @@ import {searchForMavenSnapshots} from '../../../../src/common/services/NexusRepo
 import ProjectInfo from '../../../../src/types/ProjectInfo';
 import ProjectType from '../../../../src/types/ProjectType';
 import * as TE from 'fp-ts/TaskEither';
-import bumpDockerPreReleaseVersion from '../../../../src/stages/deploy/tasks/bumpDockerPreReleaseVersion';
+import bumpDockerPreReleaseVersion, {TASK_NAME} from '../../../../src/stages/deploy/tasks/bumpDockerPreReleaseVersion';
 import NexusSearchResult from '../../../../src/types/NexusSearchResult';
 import '@relmify/jest-fp-ts';
+import BuildError from '../../../../src/error/BuildError';
+import stageName from '../../../../src/stages/deploy/stageName';
 
 jest.mock('../../../../src/common/services/NexusRepoApi', () => ({
     searchForMavenSnapshots: jest.fn()
@@ -62,7 +64,16 @@ describe('bumpDockerPreReleaseVersion', () => {
     });
 
     it('cannot find existing pre-release version for Maven', async () => {
-        throw new Error();
+        const response: NexusSearchResult = {
+            items: []
+        };
+        searchForMavenSnapshotsMock.mockImplementation(() => TE.right(response));
+        const projectInfo: ProjectInfo = {
+            ...baseProjectInfo,
+            projectType: ProjectType.MavenApplication
+        };
+        const result = await bumpDockerPreReleaseVersion(projectInfo)();
+        expect(result).toEqualLeft(new BuildError('Cannot find pre-release Maven artifact to determine pre-release Docker version', stageName, TASK_NAME));
     });
 
     it('bumps docker pre-release version for Docker', async () => {
