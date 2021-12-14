@@ -1,6 +1,18 @@
-export {};
+import { searchForNpmBetas, searchForMavenSnapshots } from '../../../../src/common/services/NexusRepoApi';
+
+jest.mock('../../../../src/common/services/NexusRepoApi', () => ({
+    searchForNpmBetas: jest.fn(),
+    searchForMavenSnapshots: jest.fn()
+}));
+
+const searchForNpmBetasMock = searchForNpmBetas as jest.Mock;
+const searchForMavenSnapshotsMock = searchForMavenSnapshots as jest.Mock;
 
 describe('bumpDockerPreReleaseVersion', () => {
+    beforeEach(() => {
+        jest.resetAllMocks();
+    });
+
     it('bumps docker pre-release version for NPM', () => {
         throw new Error();
     });
