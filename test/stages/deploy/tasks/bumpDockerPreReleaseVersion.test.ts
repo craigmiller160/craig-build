@@ -1,4 +1,4 @@
-import {searchForMavenSnapshots, searchForNpmBetas} from '../../../../src/common/services/NexusRepoApi';
+import {searchForMavenSnapshots} from '../../../../src/common/services/NexusRepoApi';
 import ProjectInfo from '../../../../src/types/ProjectInfo';
 import ProjectType from '../../../../src/types/ProjectType';
 import * as TE from 'fp-ts/TaskEither';
@@ -7,11 +7,9 @@ import NexusSearchResult from '../../../../src/types/NexusSearchResult';
 import '@relmify/jest-fp-ts';
 
 jest.mock('../../../../src/common/services/NexusRepoApi', () => ({
-    searchForNpmBetas: jest.fn(),
     searchForMavenSnapshots: jest.fn()
 }));
 
-const searchForNpmBetasMock = searchForNpmBetas as jest.Mock;
 const searchForMavenSnapshotsMock = searchForMavenSnapshots as jest.Mock;
 
 const baseProjectInfo: ProjectInfo = {
@@ -37,7 +35,30 @@ describe('bumpDockerPreReleaseVersion', () => {
     });
 
     it('bumps docker pre-release version for Maven', async () => {
-        throw new Error();
+        const response: NexusSearchResult = {
+            items: [
+                {
+                    id: '',
+                    repository: '',
+                    group: 'craigmiller160',
+                    name: 'my-project',
+                    assets: [],
+                    format: 'maven2',
+                    version: '1.0.0-20211214.215625-13'
+                }
+            ]
+        };
+        searchForMavenSnapshotsMock.mockImplementation(() => TE.right(response));
+        const projectInfo: ProjectInfo = {
+            ...baseProjectInfo,
+            projectType: ProjectType.MavenApplication
+        };
+        const result = await bumpDockerPreReleaseVersion(projectInfo);
+        expect(result).toEqualRight({
+            ...projectInfo,
+            dockerPreReleaseVersion: '1.0.0-20211214.215625-13'
+        });
+        expect(searchForMavenSnapshotsMock).toHaveBeenCalledWith(projectInfo.group, projectInfo.name);
     });
 
     it('cannot find existing pre-release version for Maven', async () => {
