@@ -36,10 +36,6 @@ describe('bumpDockerPreReleaseVersion', () => {
         });
     });
 
-    it('cannot find existing pre-release version for NPM', async () => {
-        throw new Error();
-    });
-
     it('bumps docker pre-release version for Maven', async () => {
         throw new Error();
     });
