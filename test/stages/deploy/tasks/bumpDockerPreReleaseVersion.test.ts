@@ -82,23 +82,31 @@ describe('bumpDockerPreReleaseVersion', () => {
 
     describe('skip execution', () => {
         it('is not docker, application, or pre-release', async () => {
-            throw new Error();
-        });
-
-        it('is pre-release docker', async () => {
-            throw new Error();
+            const projectInfo: ProjectInfo = {
+                ...baseProjectInfo,
+                projectType: ProjectType.MavenLibrary
+            };
+            const result = await bumpDockerPreReleaseVersion(projectInfo)();
+            expect(result).toEqualRight(projectInfo);
         });
 
         it('is release docker', async () => {
-            throw new Error();
-        });
-
-        it('is pre-release non-docker application', async () => {
-            throw new Error();
+            const projectInfo: ProjectInfo = {
+                ...baseProjectInfo,
+                projectType: ProjectType.DockerApplication,
+                isPreRelease: false
+            };
+            const result = await bumpDockerPreReleaseVersion(projectInfo)();
+            expect(result).toEqualRight(projectInfo);
         });
 
         it('is release non-docker application', async () => {
-            throw new Error();
+            const projectInfo: ProjectInfo = {
+                ...baseProjectInfo,
+                isPreRelease: false
+            };
+            const result = await bumpDockerPreReleaseVersion(projectInfo)();
+            expect(result).toEqualRight(projectInfo);
         });
     });
 });
