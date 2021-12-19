@@ -121,7 +121,7 @@ const getProjectDocker = (projectType: ProjectType): ProjectInfo => {
         name,
         version: dockerJson.version,
         dependencies: [],
-        isPreRelease: dockerJson.version === 'latest'
+        isPreRelease: dockerJson.version === 'latest' || dockerJson.version.includes('beta')
     };
 };
 

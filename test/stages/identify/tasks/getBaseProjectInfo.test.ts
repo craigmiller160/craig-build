@@ -171,6 +171,10 @@ describe('getBaseProjectInfo task', () => {
         });
     });
 
+    it('get DockerImage ProjectInfo for beta with version that says "beta"', () => {
+        throw new Error();
+    });
+
     it('get DockerImage ProjectInfo for release', async () => {
         getCwdMock.mockImplementation(() => path.resolve(process.cwd(), 'test', '__working-dirs__', 'dockerReleaseImage'));
         const result = await getBaseProjectInfo(ProjectType.DockerImage)();
@@ -195,6 +199,10 @@ describe('getBaseProjectInfo task', () => {
             isPreRelease: true,
             dependencies: []
         });
+    });
+
+    it('get DockerApplication ProjectInfo for beta with version that says "beta"', () => {
+        throw new Error();
     });
 
     it('get DockerApplication ProjectInfo for release', async () => {
