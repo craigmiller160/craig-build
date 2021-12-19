@@ -100,7 +100,7 @@ const getProjectMaven = (
 
 const getProjectNpm = (projectType: ProjectType): ProjectInfo => {
 	const packageJson: PackageJson = JSON.parse(
-		path.resolve(getCwd(), 'package.json')
+		fs.readFileSync(path.resolve(getCwd(), 'package.json'), 'utf8')
 	) as PackageJson;
 	const [group, name] = separateGroupAndName(packageJson.name);
 	return {
@@ -122,7 +122,7 @@ const getProjectNpm = (projectType: ProjectType): ProjectInfo => {
 
 const getProjectDocker = (projectType: ProjectType): ProjectInfo => {
 	const dockerJson: DockerJson = JSON.parse(
-		path.resolve(getCwd(), 'docker.json')
+		fs.readFileSync(path.resolve(getCwd(), 'docker.json'), 'utf8')
 	) as DockerJson;
 	const [group, name] = separateGroupAndName(dockerJson.name);
 	return {
