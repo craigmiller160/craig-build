@@ -8,15 +8,17 @@ import bumpNpmBeta from './tasks/bumpNpmBeta';
 import publish from './tasks/publish';
 import stageName from './stageName';
 
-const createArtifact: StageFunction<ProjectInfo> = (context: StageContext<ProjectInfo>) =>
-    pipe(
-        buildAndTest(context.input),
-        TE.chain(bumpNpmBeta),
-        TE.chain(publish),
-        TE.map((projectInfo) => ({
-            message: 'Artifact created successfully',
-            value: projectInfo
-        }))
-    );
+const createArtifact: StageFunction<ProjectInfo> = (
+	context: StageContext<ProjectInfo>
+) =>
+	pipe(
+		buildAndTest(context.input),
+		TE.chain(bumpNpmBeta),
+		TE.chain(publish),
+		TE.map((projectInfo) => ({
+			message: 'Artifact created successfully',
+			value: projectInfo
+		}))
+	);
 
 export default createStage(stageName, createArtifact);

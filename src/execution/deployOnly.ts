@@ -11,31 +11,31 @@ import { isBuildError } from '../error/BuildError';
 import { DEPLOY_ONLY_BUILD } from './executionConstants';
 
 const deployOnly = (): TE.TaskEither<Error, ProjectInfo> => {
-  buildLogger(`Deploying only ${getCwd()}`);
-  process.env.BUILD_NAME = DEPLOY_ONLY_BUILD;
+	buildLogger(`Deploying only ${getCwd()}`);
+	process.env.BUILD_NAME = DEPLOY_ONLY_BUILD;
 
-  return pipe(
-    selfValidation(undefined),
-    TE.chain(identify),
-    TE.chain(configValidation),
-    TE.chain(deploy),
-    TE.map((projectInfo) => {
-      buildLogger('Deploy only finished successfully', SUCCESS_STATUS);
-      return projectInfo;
-    }),
-    TE.mapLeft((error) => {
-      if (isBuildError(error)) {
-        const message = `Deploy only failed on Stage ${error.stageName} and Task ${error.taskName}: ${error.message}`;
-        buildLogger(message, ERROR_STATUS);
-        console.error(error);
-      } else {
-        const message = `Deploy Only Error: ${error.message}`;
-        buildLogger(message, ERROR_STATUS);
-        console.error(error);
-      }
-      return error;
-    })
-  );
+	return pipe(
+		selfValidation(undefined),
+		TE.chain(identify),
+		TE.chain(configValidation),
+		TE.chain(deploy),
+		TE.map((projectInfo) => {
+			buildLogger('Deploy only finished successfully', SUCCESS_STATUS);
+			return projectInfo;
+		}),
+		TE.mapLeft((error) => {
+			if (isBuildError(error)) {
+				const message = `Deploy only failed on Stage ${error.stageName} and Task ${error.taskName}: ${error.message}`;
+				buildLogger(message, ERROR_STATUS);
+				console.error(error); // eslint-disable-line no-console
+			} else {
+				const message = `Deploy Only Error: ${error.message}`;
+				buildLogger(message, ERROR_STATUS);
+				console.error(error); // eslint-disable-line no-console
+			}
+			return error;
+		})
+	);
 };
 
 export default deployOnly;

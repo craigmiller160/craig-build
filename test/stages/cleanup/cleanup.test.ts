@@ -8,27 +8,27 @@ import cleanup from '../../../src/stages/cleanup';
 jest.mock('../../../src/stages/cleanup/tasks/gitTag', () => jest.fn());
 
 const projectInfo: ProjectInfo = {
-    projectType: ProjectType.NpmApplication,
-    group: 'craigmiller160',
-    name: 'my-project',
-    version: '1.0.0',
-    dependencies: [],
-    isPreRelease: false
+	projectType: ProjectType.NpmApplication,
+	group: 'craigmiller160',
+	name: 'my-project',
+	version: '1.0.0',
+	dependencies: [],
+	isPreRelease: false
 };
 
 const gitTagMock = gitTag as jest.Mock;
 
 describe('cleanup stage', () => {
-    beforeEach(() => {
-        jest.resetAllMocks();
-    });
+	beforeEach(() => {
+		jest.resetAllMocks();
+	});
 
-    it('completes successfully', async () => {
-        gitTagMock.mockImplementation(() => TE.right(projectInfo));
+	it('completes successfully', async () => {
+		gitTagMock.mockImplementation(() => TE.right(projectInfo));
 
-        const result = await cleanup(projectInfo)();
-        expect(result).toEqualRight(projectInfo);
+		const result = await cleanup(projectInfo)();
+		expect(result).toEqualRight(projectInfo);
 
-        expect(gitTagMock).toHaveBeenCalledWith(projectInfo);
-    });
+		expect(gitTagMock).toHaveBeenCalledWith(projectInfo);
+	});
 });

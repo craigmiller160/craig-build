@@ -19,11 +19,11 @@ jest.mock('../../src/stages/deploy', () => jest.fn());
 jest.mock('../../src/stages/cleanup', () => jest.fn());
 jest.mock('../../src/stages/self-validation', () => jest.fn());
 jest.mock('../../src/common/logger', () => {
-    const logger = jest.requireActual('../../src/common/logger');
-    return {
-        ...logger,
-        buildLogger: jest.fn()
-    }
+	const logger = jest.requireActual('../../src/common/logger');
+	return {
+		...logger,
+		buildLogger: jest.fn()
+	};
 });
 
 const selfValidationMock = selfValidation as jest.Mock;
@@ -32,86 +32,106 @@ const configValidationMock = configValidation as jest.Mock;
 const createArtifactMock = createArtifact as jest.Mock;
 const deployMock = deploy as jest.Mock;
 const cleanupMock = cleanup as jest.Mock;
-const buildLoggerMock = buildLogger as jest.Mock;
 
 const projectInfo: ProjectInfo = {
-    projectType: ProjectType.NpmApplication,
-    group: 'craigmiller160',
-    name: 'my-project',
-    version: '1.0.0',
-    dependencies: [],
-    isPreRelease: false
+	projectType: ProjectType.NpmApplication,
+	group: 'craigmiller160',
+	name: 'my-project',
+	version: '1.0.0',
+	dependencies: [],
+	isPreRelease: false
 };
 
 describe('buildAndDeploy', () => {
-    beforeEach(() => {
-        jest.resetAllMocks();
-    });
+	beforeEach(() => {
+		jest.resetAllMocks();
+	});
 
-    it('runs successfully', async () => {
-        selfValidationMock.mockImplementation(() => TE.right(undefined));
-        identifyMock.mockImplementation(() => TE.right(projectInfo));
-        configValidationMock.mockImplementation(() => TE.right(projectInfo));
-        createArtifactMock.mockImplementation(() => TE.right(projectInfo));
-        deployMock.mockImplementation(() => TE.right(projectInfo));
-        cleanupMock.mockImplementation(() => TE.right(projectInfo));
+	it('runs successfully', async () => {
+		selfValidationMock.mockImplementation(() => TE.right(undefined));
+		identifyMock.mockImplementation(() => TE.right(projectInfo));
+		configValidationMock.mockImplementation(() => TE.right(projectInfo));
+		createArtifactMock.mockImplementation(() => TE.right(projectInfo));
+		deployMock.mockImplementation(() => TE.right(projectInfo));
+		cleanupMock.mockImplementation(() => TE.right(projectInfo));
 
-        const result = await buildAndDeploy()();
-        expect(result).toEqualRight(projectInfo);
+		const result = await buildAndDeploy()();
+		expect(result).toEqualRight(projectInfo);
 
-        expect(buildLogger).toHaveBeenCalledTimes(2);
-        expect(buildLogger).toHaveBeenNthCalledWith(1, 'Building and deploying undefined');
-        expect(buildLogger).toHaveBeenNthCalledWith(2, 'Build and deploy finished successfully', 'success');
+		expect(buildLogger).toHaveBeenCalledTimes(2);
+		expect(buildLogger).toHaveBeenNthCalledWith(
+			1,
+			'Building and deploying undefined'
+		);
+		expect(buildLogger).toHaveBeenNthCalledWith(
+			2,
+			'Build and deploy finished successfully',
+			'success'
+		);
 
-        expect(selfValidationMock).toHaveBeenCalledWith(undefined);
-        expect(identifyMock).toHaveBeenCalledWith(undefined);
-        expect(configValidationMock).toHaveBeenCalledWith(projectInfo);
-        expect(createArtifactMock).toHaveBeenCalledWith(projectInfo);
-        expect(deployMock).toHaveBeenCalledWith(projectInfo);
-        expect(cleanupMock).toHaveBeenCalledWith(projectInfo);
-    });
+		expect(selfValidationMock).toHaveBeenCalledWith(undefined);
+		expect(identifyMock).toHaveBeenCalledWith(undefined);
+		expect(configValidationMock).toHaveBeenCalledWith(projectInfo);
+		expect(createArtifactMock).toHaveBeenCalledWith(projectInfo);
+		expect(deployMock).toHaveBeenCalledWith(projectInfo);
+		expect(cleanupMock).toHaveBeenCalledWith(projectInfo);
+	});
 
-    it('logs build error', async () => {
-        const buildError = new BuildError('Error', 'TheStage', 'TheTask');
-        selfValidationMock.mockImplementation(() => TE.right(undefined));
-        identifyMock.mockImplementation(() => TE.right(projectInfo));
-        configValidationMock.mockImplementation(() => TE.right(projectInfo));
-        createArtifactMock.mockImplementation(() => TE.left(buildError));
+	it('logs build error', async () => {
+		const buildError = new BuildError('Error', 'TheStage', 'TheTask');
+		selfValidationMock.mockImplementation(() => TE.right(undefined));
+		identifyMock.mockImplementation(() => TE.right(projectInfo));
+		configValidationMock.mockImplementation(() => TE.right(projectInfo));
+		createArtifactMock.mockImplementation(() => TE.left(buildError));
 
-        const result = await buildAndDeploy()();
-        expect(result).toEqualLeft(buildError);
+		const result = await buildAndDeploy()();
+		expect(result).toEqualLeft(buildError);
 
-        expect(buildLogger).toHaveBeenCalledTimes(2);
-        expect(buildLogger).toHaveBeenNthCalledWith(1, 'Building and deploying undefined');
-        expect(buildLogger).toHaveBeenNthCalledWith(2, 'Build and deploy failed on Stage TheStage and Task TheTask: Error', 'error');
+		expect(buildLogger).toHaveBeenCalledTimes(2);
+		expect(buildLogger).toHaveBeenNthCalledWith(
+			1,
+			'Building and deploying undefined'
+		);
+		expect(buildLogger).toHaveBeenNthCalledWith(
+			2,
+			'Build and deploy failed on Stage TheStage and Task TheTask: Error',
+			'error'
+		);
 
-        expect(selfValidationMock).toHaveBeenCalledWith(undefined);
-        expect(identifyMock).toHaveBeenCalledWith(undefined);
-        expect(configValidationMock).toHaveBeenCalledWith(projectInfo);
-        expect(createArtifactMock).toHaveBeenCalledWith(projectInfo);
-        expect(deployMock).not.toHaveBeenCalled();
-        expect(cleanupMock).not.toHaveBeenCalled();
-    });
+		expect(selfValidationMock).toHaveBeenCalledWith(undefined);
+		expect(identifyMock).toHaveBeenCalledWith(undefined);
+		expect(configValidationMock).toHaveBeenCalledWith(projectInfo);
+		expect(createArtifactMock).toHaveBeenCalledWith(projectInfo);
+		expect(deployMock).not.toHaveBeenCalled();
+		expect(cleanupMock).not.toHaveBeenCalled();
+	});
 
-    it('logs other error', async () => {
-        const error = new Error('Error');
-        selfValidationMock.mockImplementation(() => TE.right(undefined));
-        identifyMock.mockImplementation(() => TE.right(projectInfo));
-        configValidationMock.mockImplementation(() => TE.right(projectInfo));
-        createArtifactMock.mockImplementation(() => TE.left(error));
+	it('logs other error', async () => {
+		const error = new Error('Error');
+		selfValidationMock.mockImplementation(() => TE.right(undefined));
+		identifyMock.mockImplementation(() => TE.right(projectInfo));
+		configValidationMock.mockImplementation(() => TE.right(projectInfo));
+		createArtifactMock.mockImplementation(() => TE.left(error));
 
-        const result = await buildAndDeploy()();
-        expect(result).toEqualLeft(error);
+		const result = await buildAndDeploy()();
+		expect(result).toEqualLeft(error);
 
-        expect(buildLogger).toHaveBeenCalledTimes(2);
-        expect(buildLogger).toHaveBeenNthCalledWith(1, 'Building and deploying undefined');
-        expect(buildLogger).toHaveBeenNthCalledWith(2, 'Build and Deploy Error: Error', 'error');
+		expect(buildLogger).toHaveBeenCalledTimes(2);
+		expect(buildLogger).toHaveBeenNthCalledWith(
+			1,
+			'Building and deploying undefined'
+		);
+		expect(buildLogger).toHaveBeenNthCalledWith(
+			2,
+			'Build and Deploy Error: Error',
+			'error'
+		);
 
-        expect(selfValidationMock).toHaveBeenCalledWith(undefined);
-        expect(identifyMock).toHaveBeenCalledWith(undefined);
-        expect(configValidationMock).toHaveBeenCalledWith(projectInfo);
-        expect(createArtifactMock).toHaveBeenCalledWith(projectInfo);
-        expect(deployMock).not.toHaveBeenCalled();
-        expect(cleanupMock).not.toHaveBeenCalled();
-    });
+		expect(selfValidationMock).toHaveBeenCalledWith(undefined);
+		expect(identifyMock).toHaveBeenCalledWith(undefined);
+		expect(configValidationMock).toHaveBeenCalledWith(projectInfo);
+		expect(createArtifactMock).toHaveBeenCalledWith(projectInfo);
+		expect(deployMock).not.toHaveBeenCalled();
+		expect(cleanupMock).not.toHaveBeenCalled();
+	});
 });

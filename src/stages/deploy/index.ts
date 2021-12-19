@@ -10,20 +10,22 @@ import downloadArtifact from './tasks/downloadArtifact';
 import wait from '../../utils/wait';
 import bumpDockerPreReleaseVersion from './tasks/bumpDockerPreReleaseVersion';
 
-const deploy: StageFunction<ProjectInfo> = (context: StageContext<ProjectInfo>) => {
-    context.logger('Waiting for Neuxs to update before deployment.');
-    return pipe(
-        wait(3000),
-        TE.fromTask,
-        TE.chain(() => bumpDockerPreReleaseVersion(context.input)),
-        TE.chain(downloadArtifact),
-        TE.chain(dockerBuild),
-        TE.chain(kubeDeploy),
-        TE.map((projectInfo) => ({
-            message: 'Deployment complete',
-            value: projectInfo
-        }))
-    );
-}
+const deploy: StageFunction<ProjectInfo> = (
+	context: StageContext<ProjectInfo>
+) => {
+	context.logger('Waiting for Neuxs to update before deployment.');
+	return pipe(
+		wait(3000),
+		TE.fromTask,
+		TE.chain(() => bumpDockerPreReleaseVersion(context.input)),
+		TE.chain(downloadArtifact),
+		TE.chain(dockerBuild),
+		TE.chain(kubeDeploy),
+		TE.map((projectInfo) => ({
+			message: 'Deployment complete',
+			value: projectInfo
+		}))
+	);
+};
 
 export default createStage(stageName, deploy);

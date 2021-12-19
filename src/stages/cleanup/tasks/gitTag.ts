@@ -1,7 +1,10 @@
 import createTask, { TaskFunction } from '../../../common/execution/task';
 import ProjectInfo from '../../../types/ProjectInfo';
 import { TaskContext } from '../../../common/execution/context';
-import { executeIfRelease, executeIfNotDeployOnlyBuild } from '../../../common/execution/commonTaskConditions';
+import {
+	executeIfRelease,
+	executeIfNotDeployOnlyBuild
+} from '../../../common/execution/commonTaskConditions';
 import { pipe } from 'fp-ts/function';
 import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
@@ -10,23 +13,22 @@ import stageName from '../stageName';
 
 export const TASK_NAME = 'Git Tag';
 
-const createGitTag = (version: string) =>
-    `git tag v${version}`;
+const createGitTag = (version: string) => `git tag v${version}`;
 
 const PUSH_TAG = 'git push --tags';
 
 const gitTag: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectInfo>) =>
-    pipe(
-        runCommand(createGitTag(context.input.version)),
-        E.chain(() => runCommand(PUSH_TAG)),
-        TE.fromEither,
-        TE.map(() => ({
-            message: `Created Git version tag`,
-            value: context.input
-        }))
-    );
+	pipe(
+		runCommand(createGitTag(context.input.version)),
+		E.chain(() => runCommand(PUSH_TAG)),
+		TE.fromEither,
+		TE.map(() => ({
+			message: `Created Git version tag`,
+			value: context.input
+		}))
+	);
 
 export default createTask(stageName, TASK_NAME, gitTag, [
-    executeIfRelease,
-    executeIfNotDeployOnlyBuild
+	executeIfRelease,
+	executeIfNotDeployOnlyBuild
 ]);

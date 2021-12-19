@@ -13,33 +13,37 @@ import selfValidation from '../stages/self-validation';
 import { BUILD_AND_DEPLOY_BUILD } from './executionConstants';
 
 const buildAndDeploy = (): TE.TaskEither<Error, ProjectInfo> => {
-  buildLogger(`Building and deploying ${getCwd()}`);
-  process.env.BUILD_NAME = BUILD_AND_DEPLOY_BUILD;
+	buildLogger(`Building and deploying ${getCwd()}`);
+	process.env.BUILD_NAME = BUILD_AND_DEPLOY_BUILD;
 
-  return pipe(
-    selfValidation(undefined),
-    TE.chain(identify),
-    TE.chain(configValidation),
-    TE.chain(createArtifact),
-    TE.chain(deploy),
-    TE.chain(cleanup),
-    TE.map((projectInfo) => {
-      buildLogger('Build and deploy finished successfully', SUCCESS_STATUS);
-      return projectInfo;
-    }),
-    TE.mapLeft((error) => {
-      if (isBuildError(error)) {
-        const message = `Build and deploy failed on Stage ${error.stageName} and Task ${error.taskName}: ` +
-            `${error.message}`;
-        buildLogger(message, ERROR_STATUS);
-      } else {
-        const message = `Build and Deploy Error: ${error.message}`;
-        buildLogger(message, ERROR_STATUS);
-        console.error(error);
-      }
-      return error;
-    })
-  );
+	return pipe(
+		selfValidation(undefined),
+		TE.chain(identify),
+		TE.chain(configValidation),
+		TE.chain(createArtifact),
+		TE.chain(deploy),
+		TE.chain(cleanup),
+		TE.map((projectInfo) => {
+			buildLogger(
+				'Build and deploy finished successfully',
+				SUCCESS_STATUS
+			);
+			return projectInfo;
+		}),
+		TE.mapLeft((error) => {
+			if (isBuildError(error)) {
+				const message =
+					`Build and deploy failed on Stage ${error.stageName} and Task ${error.taskName}: ` +
+					`${error.message}`;
+				buildLogger(message, ERROR_STATUS);
+			} else {
+				const message = `Build and Deploy Error: ${error.message}`;
+				buildLogger(message, ERROR_STATUS);
+				console.error(error); // eslint-disable-line no-console
+			}
+			return error;
+		})
+	);
 };
 
 export default buildAndDeploy;
