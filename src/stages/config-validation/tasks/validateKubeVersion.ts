@@ -20,7 +20,7 @@ const validateKubeVersion: TaskFunction<ProjectInfo> = (context: TaskContext<Pro
         }),
         O.filter((version: string) => {
             if (context.input.isPreRelease) {
-                return KUBE_PRE_RELEASE_VERSION === version;
+                return KUBE_PRE_RELEASE_VERSION === version || context.input.version === version;
             }
 
             return context.input.version === version;

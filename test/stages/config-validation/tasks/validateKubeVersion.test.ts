@@ -20,7 +20,7 @@ describe('validateKubeVersion task', () => {
         expect(result).toEqualRight(projectInfo);
     });
 
-    it('invalid pre-release kubernetes version', async () => {
+    it('valid pre-release kubernetes version that says "beta"', async () => {
         const projectInfo: ProjectInfo = {
             projectType: ProjectType.NpmApplication,
             group: 'craigmiller160',
@@ -31,7 +31,21 @@ describe('validateKubeVersion task', () => {
             kubernetesDockerImage: 'localhost:30000/my-project:1.0.0-beta'
         };
         const result = await validateKubeVersion(projectInfo)();
-        const message = 'Invalid Kubernetes Version. Project Version: 1.0.0-beta Kubernetes Image: localhost:30000/my-project:1.0.0-beta';
+        expect(result).toEqualRight(projectInfo);
+    });
+
+    it('invalid pre-release kubernetes version', async () => {
+        const projectInfo: ProjectInfo = {
+            projectType: ProjectType.NpmApplication,
+            group: 'craigmiller160',
+            name: 'my-project',
+            version: '1.0.0-beta',
+            isPreRelease: true,
+            dependencies: [],
+            kubernetesDockerImage: 'localhost:30000/my-project:1.0.0'
+        };
+        const result = await validateKubeVersion(projectInfo)();
+        const message = 'Invalid Kubernetes Version. Project Version: 1.0.0-beta Kubernetes Image: localhost:30000/my-project:1.0.0';
         expect(result).toEqualLeft(new BuildError(message,
             TASK_NAME,
             stageName
