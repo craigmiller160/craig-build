@@ -12,7 +12,7 @@
     "build"
   ],
   "scripts": {
-    "lint": "eslint -c eslint.config.js src/**/*.ts --fix",
+    "lint": "eslint . --fix --max-warnings=0",
     "forceBuild": "tsc",
     "test": "jest",
     "build": "yarn lint && jest && tsc"
