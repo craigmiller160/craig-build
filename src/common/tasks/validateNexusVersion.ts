@@ -1,6 +1,5 @@
 import * as TE from 'fp-ts/TaskEither';
 import * as O from 'fp-ts/Option';
-import * as A from 'fp-ts/Array';
 import createTask, { TaskFunction } from '../execution/task';
 import { TaskContext } from '../execution/context';
 import ProjectInfo, { NexusVersions } from '../../types/ProjectInfo';

@@ -1,6 +1,5 @@
 import ProjectInfo from '../../../types/ProjectInfo';
 import createTask, { TaskFunction } from '../../../common/execution/task';
-import { TaskContext } from '../../../common/execution/context';
 import path from 'path';
 import fs from 'fs';
 import PackageJson from '../../../types/PackageJson';
@@ -11,9 +10,7 @@ import { separateGroupAndName } from '../../../utils/separateGroupAndName';
 
 export const TASK_NAME = 'Get Self Project Info';
 
-const getSelfProjectInfo: TaskFunction<undefined, ProjectInfo> = (
-	context: TaskContext<undefined>
-) => {
+const getSelfProjectInfo: TaskFunction<undefined, ProjectInfo> = () => {
 	const packageJson: PackageJson = JSON.parse(
 		fs.readFileSync(
 			path.resolve(__dirname, '..', '..', '..', '..', 'package.json'),

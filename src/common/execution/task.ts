@@ -22,9 +22,6 @@ export type BuildTask<Input, ResultValue = Input> = (
 	input: Input
 ) => TE.TaskEither<Error, ResultValue>;
 
-const defaultShouldExecute: TaskShouldExecuteFunction<any> = (input: any) =>
-	undefined;
-
 const createTask =
 	<Input, ResultValue = Input>(
 		stageName: string,

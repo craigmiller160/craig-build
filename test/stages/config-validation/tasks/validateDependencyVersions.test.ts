@@ -131,8 +131,6 @@ describe('validateDependencyVersions task', () => {
 			]
 		};
 		const result = await validateDependencyVersions(projectInfo)();
-		const expectedMessage =
-			'beta dependencies not allowed in release build: io.craigmiller160/dep-1:1.0.0-SNAPSHOT ';
 		expect(result).toEqualRight(projectInfo);
 	});
 

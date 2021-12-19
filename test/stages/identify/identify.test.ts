@@ -82,14 +82,6 @@ describe('identify stage', () => {
 
 	it('completes with error', async () => {
 		const projectType = ProjectType.MavenLibrary;
-		const projectInfo: ProjectInfo = {
-			projectType,
-			group: 'io.craigmiller160',
-			name: 'email-service',
-			version: '1.2.0',
-			dependencies: [],
-			isPreRelease: false
-		};
 		checkForUncommittedChangesMock.mockImplementation(() =>
 			TE.right(undefined)
 		);

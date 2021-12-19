@@ -65,7 +65,7 @@ const findExistingBetaVersion = (
 
 const bumpBetaNumber = (betaNumber: string): string => {
 	const [versionNumber, betaPart] = betaNumber.split('-');
-	const [beta, number] = betaPart.split('.');
+	const [, number] = betaPart.split('.');
 	return `${versionNumber}-beta.${parseInt(number ?? '0') + 1}`;
 };
 

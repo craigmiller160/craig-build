@@ -39,7 +39,7 @@ const buildAndDeploy = (): TE.TaskEither<Error, ProjectInfo> => {
 			} else {
 				const message = `Build and Deploy Error: ${error.message}`;
 				buildLogger(message, ERROR_STATUS);
-				console.error(error);
+				console.error(error); // eslint-disable-line no-console
 			}
 			return error;
 		})

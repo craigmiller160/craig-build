@@ -80,7 +80,7 @@ const executeDownload = (
 			context.logger(`Target File: ${targetFilePath}`);
 			return downloadArtifactApi(downloadUrl, targetFilePath);
 		}),
-		TE.map((result) => context.input)
+		TE.map(() => context.input)
 	);
 
 const doDownloadArtifact = (

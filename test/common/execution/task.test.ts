@@ -1,5 +1,4 @@
 import { createTaskLogger, SUCCESS_STATUS } from '../../../src/common/logger';
-import { createBuildError } from '../../../src/error/BuildError';
 import createTask, {
 	TaskFunction,
 	TaskShouldExecuteFunction
@@ -18,7 +17,6 @@ jest.mock('../../../src/error/BuildError', () => ({
 }));
 
 const createTaskLoggerMock = createTaskLogger as jest.Mock;
-const createBuildErrorMock = createBuildError as jest.Mock;
 const mockLogger = jest.fn();
 const stageName = 'StageName';
 const taskName = 'TaskName';

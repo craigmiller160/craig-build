@@ -18,13 +18,11 @@ const validateGitTag: TaskFunction<ProjectInfo> = (
 		runCommand('git tag'),
 		E.chain((output: string) =>
 			pipe(
-				A.array.filter(
-					output.split('\n'),
-					(tag) => tag.trim() === `v${context.input.version}`
-				),
-				A.reduce(
+				output.split('\n'),
+				A.filter((tag) => tag.trim() === `v${context.input.version}`),
+				A.reduce<string, E.Either<Error, string>>(
 					E.right('Git tags validated'),
-					(acc, value: string) => {
+					(acc) => {
 						if (E.isLeft(acc)) {
 							return acc;
 						}

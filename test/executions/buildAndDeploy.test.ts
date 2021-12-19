@@ -32,7 +32,6 @@ const configValidationMock = configValidation as jest.Mock;
 const createArtifactMock = createArtifact as jest.Mock;
 const deployMock = deploy as jest.Mock;
 const cleanupMock = cleanup as jest.Mock;
-const buildLoggerMock = buildLogger as jest.Mock;
 
 const projectInfo: ProjectInfo = {
 	projectType: ProjectType.NpmApplication,

@@ -6,13 +6,10 @@ import ProjectInfo from '../../types/ProjectInfo';
 import getKubeProjectInfo from './tasks/getKubeProjectInfo';
 import getNexusProjectInfo from '../../common/tasks/getNexusProjectInfo';
 import createStage, { StageFunction } from '../../common/execution/stage';
-import { StageContext } from '../../common/execution/context';
 import stageName from './stageName';
 import checkForUncommittedChanges from './tasks/checkForUncommittedChanges';
 
-const identify: StageFunction<undefined, ProjectInfo> = (
-	context: StageContext<undefined>
-) =>
+const identify: StageFunction<undefined, ProjectInfo> = () =>
 	pipe(
 		checkForUncommittedChanges(undefined),
 		TE.chain(identifyProject),

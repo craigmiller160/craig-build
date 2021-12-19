@@ -26,7 +26,6 @@ const selfValidationMock = selfValidation as jest.Mock;
 const identifyMock = identify as jest.Mock;
 const configValidationMock = configValidation as jest.Mock;
 const deployMock = deploy as jest.Mock;
-const buildLoggerMock = buildLogger as jest.Mock;
 
 const projectInfo: ProjectInfo = {
 	projectType: ProjectType.NpmApplication,

@@ -63,10 +63,8 @@ const restartApp = (projectInfo: ProjectInfo): E.Either<Error, string> => {
 
 const kubeDeploy: TaskFunction<ProjectInfo> = (
 	context: TaskContext<ProjectInfo>
-) => {
-	const deployDir = path.resolve(getCwd(), 'deploy');
-
-	return pipe(
+) =>
+	pipe(
 		applyConfigmap(context),
 		E.chain(applyDeployment),
 		E.chain(() => restartApp(context.input)),
@@ -76,7 +74,6 @@ const kubeDeploy: TaskFunction<ProjectInfo> = (
 			value: context.input
 		}))
 	);
-};
 
 export default createTask(stageName, TASK_NAME, kubeDeploy, [
 	executeIfApplication

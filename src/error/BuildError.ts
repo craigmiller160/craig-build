@@ -11,7 +11,7 @@ class BuildError extends CustomError {
 }
 
 export const isBuildError = (error: Error): error is BuildError =>
-	!!(error as any).stageName;
+	!!(error as BuildError).stageName;
 
 export const createBuildError =
 	(stageName: string, taskName?: string) => (message: string) =>

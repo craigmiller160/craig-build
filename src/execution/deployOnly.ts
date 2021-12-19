@@ -27,11 +27,11 @@ const deployOnly = (): TE.TaskEither<Error, ProjectInfo> => {
 			if (isBuildError(error)) {
 				const message = `Deploy only failed on Stage ${error.stageName} and Task ${error.taskName}: ${error.message}`;
 				buildLogger(message, ERROR_STATUS);
-				console.error(error);
+				console.error(error); // eslint-disable-line no-console
 			} else {
 				const message = `Deploy Only Error: ${error.message}`;
 				buildLogger(message, ERROR_STATUS);
-				console.error(error);
+				console.error(error); // eslint-disable-line no-console
 			}
 			return error;
 		})

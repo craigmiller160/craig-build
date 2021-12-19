@@ -99,10 +99,9 @@ const getProjectMaven = (
 	);
 
 const getProjectNpm = (projectType: ProjectType): ProjectInfo => {
-	const packageJson: PackageJson = require(path.resolve(
-		getCwd(),
-		'package.json'
-	)) as PackageJson;
+	const packageJson: PackageJson = JSON.parse(
+		path.resolve(getCwd(), 'package.json')
+	) as PackageJson;
 	const [group, name] = separateGroupAndName(packageJson.name);
 	return {
 		projectType,
@@ -122,10 +121,9 @@ const getProjectNpm = (projectType: ProjectType): ProjectInfo => {
 };
 
 const getProjectDocker = (projectType: ProjectType): ProjectInfo => {
-	const dockerJson: DockerJson = require(path.resolve(
-		getCwd(),
-		'docker.json'
-	)) as DockerJson;
+	const dockerJson: DockerJson = JSON.parse(
+		path.resolve(getCwd(), 'docker.json')
+	) as DockerJson;
 	const [group, name] = separateGroupAndName(dockerJson.name);
 	return {
 		projectType,
