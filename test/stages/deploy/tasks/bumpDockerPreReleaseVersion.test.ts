@@ -79,7 +79,30 @@ describe('bumpDockerPreReleaseVersion', () => {
     });
 
     it('bumps docker pre-release version for Docker with beta in Nexus', async () => {
-        throw new Error();
+        const response: NexusSearchResult = {
+            items: [
+                {
+                    id: '',
+                    repository: '',
+                    group: 'craigmiller160',
+                    name: 'my-project',
+                    assets: [],
+                    format: 'docker',
+                    version: '1.0.0-beta.2'
+                }
+            ]
+        };
+        searchForDockerReleasesMock.mockImplementation(() => TE.right(response));
+        const projectInfo: ProjectInfo = {
+            ...baseProjectInfo,
+            projectType: ProjectType.DockerApplication,
+            version: '1.0.0-beta'
+        };
+        const result = await bumpDockerPreReleaseVersion(projectInfo)();
+        expect(result).toEqualRight({
+            ...projectInfo,
+            dockerPreReleaseVersion: '1.0.0-beta.3'
+        });
     });
 
     it('bumps docker pre-release version for Docker without beta in Nexus', async () => {
@@ -101,7 +124,30 @@ describe('bumpDockerPreReleaseVersion', () => {
     });
 
     it('bumps docker pre-release version for Docker with betas in Nexus but no match', async () => {
-        throw new Error();
+        const response: NexusSearchResult = {
+            items: [
+                {
+                    id: '',
+                    repository: '',
+                    group: 'craigmiller160',
+                    name: 'my-project',
+                    assets: [],
+                    format: 'docker',
+                    version: '1.1.0-beta.2'
+                }
+            ]
+        };
+        searchForDockerReleasesMock.mockImplementation(() => TE.right(response));
+        const projectInfo: ProjectInfo = {
+            ...baseProjectInfo,
+            projectType: ProjectType.DockerApplication,
+            version: '1.0.0-beta'
+        };
+        const result = await bumpDockerPreReleaseVersion(projectInfo)();
+        expect(result).toEqualRight({
+            ...projectInfo,
+            dockerPreReleaseVersion: '1.0.0-beta.1'
+        });
     });
 
     describe('skip execution', () => {
