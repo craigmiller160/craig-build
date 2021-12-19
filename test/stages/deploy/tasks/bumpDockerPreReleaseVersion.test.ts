@@ -1,4 +1,4 @@
-import {searchForMavenSnapshots} from '../../../../src/common/services/NexusRepoApi';
+import {searchForDockerReleases, searchForMavenSnapshots} from '../../../../src/common/services/NexusRepoApi';
 import ProjectInfo from '../../../../src/types/ProjectInfo';
 import ProjectType from '../../../../src/types/ProjectType';
 import * as TE from 'fp-ts/TaskEither';
@@ -9,10 +9,12 @@ import BuildError from '../../../../src/error/BuildError';
 import stageName from '../../../../src/stages/deploy/stageName';
 
 jest.mock('../../../../src/common/services/NexusRepoApi', () => ({
-    searchForMavenSnapshots: jest.fn()
+    searchForMavenSnapshots: jest.fn(),
+    searchForDockerReleases: jest.fn()
 }));
 
 const searchForMavenSnapshotsMock = searchForMavenSnapshots as jest.Mock;
+const searchForDockerReleasesMock = searchForDockerReleases as jest.Mock;
 
 const baseProjectInfo: ProjectInfo = {
     projectType: ProjectType.NpmApplication,
@@ -81,6 +83,24 @@ describe('bumpDockerPreReleaseVersion', () => {
     });
 
     it('bumps docker pre-release version for Docker without beta in Nexus', async () => {
+        const response: NexusSearchResult = {
+            items: []
+        };
+        searchForDockerReleasesMock.mockImplementation(() => TE.right(response));
+
+        const projectInfo: ProjectInfo = {
+            ...baseProjectInfo,
+            projectType: ProjectType.DockerApplication,
+            version: '1.0.0-beta'
+        };
+        const result = await bumpDockerPreReleaseVersion(projectInfo)();
+        expect(result).toEqualRight({
+            ...projectInfo,
+            dockerPreReleaseVersion: '1.0.0-beta.1'
+        });
+    });
+
+    it('bumps docker pre-release version for Docker with betas in Nexus but no match', async () => {
         throw new Error();
     });
 
