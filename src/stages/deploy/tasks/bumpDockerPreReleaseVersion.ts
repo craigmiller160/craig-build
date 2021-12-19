@@ -7,7 +7,14 @@ import {isApplication, isDocker} from '../../../utils/projectTypeUtils';
 import ProjectType from '../../../types/ProjectType';
 import * as TE from 'fp-ts/TaskEither';
 import {pipe} from 'fp-ts/function';
-import {searchForMavenSnapshots, searchForNpmBetas} from '../../../common/services/NexusRepoApi';
+import {
+    searchForDockerReleases,
+    searchForMavenSnapshots,
+    searchForNpmBetas
+} from '../../../common/services/NexusRepoApi';
+import NexusSearchResult from '../../../types/NexusSearchResult';
+import * as A from 'fp-ts/Array';
+import * as O from 'fp-ts/Option';
 
 export const TASK_NAME = 'Bump Docker Pre-Release Version';
 
@@ -32,10 +39,30 @@ const findMavenDockerPreReleaseVersion = (context: TaskContext<ProjectInfo>): TE
         }))
     );
 
-const findDockerOnlyPreReleaseVersion = (context: TaskContext<ProjectInfo>): TE.TaskEither<Error, ProjectInfo> => {
-    // TODO finish this
-    throw new Error();
+const findExistingBetaVersion = (nexusResult: NexusSearchResult, version: string): string =>
+    pipe(
+        nexusResult.items,
+        A.findFirst((nexusItem) => nexusItem.version.startsWith(version)),
+        O.map((nexusItem) => nexusItem.version),
+        O.getOrElse(() => version)
+    );
+
+const bumpBetaNumber = (betaNumber: string): string => {
+    const [versionNumber, betaPart] = betaNumber.split('-');
+    const [beta, number] = betaPart.split('.');
+    return `${versionNumber}-beta.${parseInt((number ?? '0')) + 1}`;
 };
+
+const findDockerOnlyPreReleaseVersion = (context: TaskContext<ProjectInfo>): TE.TaskEither<Error, ProjectInfo> =>
+    pipe(
+        searchForDockerReleases(context.input.name),
+        TE.map((nexusResult) => findExistingBetaVersion(nexusResult, context.input.version)),
+        TE.map(bumpBetaNumber),
+        TE.map((betaNumber) => ({
+            ...context.input,
+            dockerPreReleaseVersion: betaNumber
+        }))
+    );
 
 const handleBumpDockerPreReleaseVersion = (context: TaskContext<ProjectInfo>): TE.TaskEither<Error, ProjectInfo> => {
     switch (context.input.projectType) {
