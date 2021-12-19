@@ -9,8 +9,7 @@ import * as TE from 'fp-ts/TaskEither';
 import {pipe} from 'fp-ts/function';
 import {
     searchForDockerReleases,
-    searchForMavenSnapshots,
-    searchForNpmBetas
+    searchForMavenSnapshots
 } from '../../../common/services/NexusRepoApi';
 import NexusSearchResult from '../../../types/NexusSearchResult';
 import * as A from 'fp-ts/Array';

@@ -76,7 +76,11 @@ describe('bumpDockerPreReleaseVersion', () => {
         expect(result).toEqualLeft(new BuildError('Cannot find pre-release Maven artifact to determine pre-release Docker version', stageName, TASK_NAME));
     });
 
-    it('bumps docker pre-release version for Docker', async () => {
+    it('bumps docker pre-release version for Docker with beta in Nexus', async () => {
+        throw new Error();
+    });
+
+    it('bumps docker pre-release version for Docker without beta in Nexus', async () => {
         throw new Error();
     });
 
