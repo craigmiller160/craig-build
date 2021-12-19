@@ -171,8 +171,17 @@ describe('getBaseProjectInfo task', () => {
         });
     });
 
-    it('get DockerImage ProjectInfo for beta with version that says "beta"', () => {
-        throw new Error();
+    it('get DockerImage ProjectInfo for beta with version that says "beta"', async () => {
+        getCwdMock.mockImplementation(() => path.resolve(process.cwd(), 'test', '__working-dirs__', 'dockerBetaImage2'));
+        const result = await getBaseProjectInfo(ProjectType.DockerImage)();
+        expect(result).toEqualRight({
+            projectType: ProjectType.DockerImage,
+            group: 'craigmiller160',
+            name: 'nginx-base',
+            version: '1.0.0-beta',
+            isPreRelease: true,
+            dependencies: []
+        });
     });
 
     it('get DockerImage ProjectInfo for release', async () => {
@@ -201,8 +210,17 @@ describe('getBaseProjectInfo task', () => {
         });
     });
 
-    it('get DockerApplication ProjectInfo for beta with version that says "beta"', () => {
-        throw new Error();
+    it('get DockerApplication ProjectInfo for beta with version that says "beta"', async () => {
+        getCwdMock.mockImplementation(() => path.resolve(process.cwd(), 'test', '__working-dirs__', 'dockerBetaApplication2'));
+        const result = await getBaseProjectInfo(ProjectType.DockerApplication)();
+        expect(result).toEqualRight({
+            projectType: ProjectType.DockerApplication,
+            group: 'craigmiller160',
+            name: 'nginx-base',
+            version: '1.0.0-beta',
+            isPreRelease: true,
+            dependencies: []
+        });
     });
 
     it('get DockerApplication ProjectInfo for release', async () => {
