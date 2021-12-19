@@ -3,7 +3,7 @@ import * as O from 'fp-ts/Option';
 import * as TE from 'fp-ts/TaskEither';
 import ProjectInfo from '../../../types/ProjectInfo';
 import { pipe } from 'fp-ts/function';
-import createTask, { TaskFunction, TaskShouldExecuteFunction } from '../../../common/execution/task';
+import createTask, { TaskFunction } from '../../../common/execution/task';
 import { TaskContext } from '../../../common/execution/context';
 import { executeIfApplication } from '../../../common/execution/commonTaskConditions';
 import stageName from '../stageName';
@@ -20,7 +20,7 @@ const validateKubeVersion: TaskFunction<ProjectInfo> = (context: TaskContext<Pro
         }),
         O.filter((version: string) => {
             if (context.input.isPreRelease) {
-                return KUBE_PRE_RELEASE_VERSION === version;
+                return KUBE_PRE_RELEASE_VERSION === version || context.input.version === version;
             }
 
             return context.input.version === version;
