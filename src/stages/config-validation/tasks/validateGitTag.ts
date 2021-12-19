@@ -11,26 +11,40 @@ import stageName from '../stageName';
 
 export const TASK_NAME = 'Validate Git Tags';
 
-const validateGitTag: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectInfo>) =>
-    pipe(
-        runCommand('git tag'),
-        E.chain((output: string) =>
-            pipe(
-                A.array.filter(output.split('\n'), (tag) => tag.trim() === `v${context.input.version}`),
-                A.reduce(E.right('Git tags validated'), (acc, value: string) => {
-                    if (E.isLeft(acc)) {
-                        return acc;
-                    }
+const validateGitTag: TaskFunction<ProjectInfo> = (
+	context: TaskContext<ProjectInfo>
+) =>
+	pipe(
+		runCommand('git tag'),
+		E.chain((output: string) =>
+			pipe(
+				A.array.filter(
+					output.split('\n'),
+					(tag) => tag.trim() === `v${context.input.version}`
+				),
+				A.reduce(
+					E.right('Git tags validated'),
+					(acc, value: string) => {
+						if (E.isLeft(acc)) {
+							return acc;
+						}
 
-                    return E.left(context.createBuildError('Project version git tag already exists'));
-                })
-            )
-        ),
-        E.map((message) => ({
-            message,
-            value: context.input
-        })),
-        TE.fromEither
-    );
+						return E.left(
+							context.createBuildError(
+								'Project version git tag already exists'
+							)
+						);
+					}
+				)
+			)
+		),
+		E.map((message) => ({
+			message,
+			value: context.input
+		})),
+		TE.fromEither
+	);
 
-export default createTask(stageName, TASK_NAME, validateGitTag, [executeIfRelease]);
+export default createTask(stageName, TASK_NAME, validateGitTag, [
+	executeIfRelease
+]);

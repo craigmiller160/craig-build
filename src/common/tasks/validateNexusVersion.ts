@@ -6,67 +6,99 @@ import { TaskContext } from '../execution/context';
 import ProjectInfo, { NexusVersions } from '../../types/ProjectInfo';
 import { pipe } from 'fp-ts/function';
 import semver from 'semver';
-import {executeIfNotDeployOnlyBuild, executeIfNotDockerPreRelease} from '../execution/commonTaskConditions';
+import {
+	executeIfNotDeployOnlyBuild,
+	executeIfNotDockerPreRelease
+} from '../execution/commonTaskConditions';
 
 export const TASK_NAME = 'Validate Nexus Versions';
 
-const trimVersion = (version: string) =>
-    version.split('-')[0];
+const trimVersion = (version: string) => version.split('-')[0];
 
-const compareReleaseVersion = (latestNexusVersions: NexusVersions, version: string): O.Option<string> =>
-    pipe(
-        O.fromNullable(latestNexusVersions.latestReleaseVersion),
-        O.fold(
-            () => O.of('0.0.0'),
-            (latestReleaseVersion) => O.of(latestReleaseVersion)
-        ),
-        O.filter((latestReleaseVersion) => semver.compare(trimVersion(version), trimVersion(latestReleaseVersion)) >= 0)
-    );
+const compareReleaseVersion = (
+	latestNexusVersions: NexusVersions,
+	version: string
+): O.Option<string> =>
+	pipe(
+		O.fromNullable(latestNexusVersions.latestReleaseVersion),
+		O.fold(
+			() => O.of('0.0.0'),
+			(latestReleaseVersion) => O.of(latestReleaseVersion)
+		),
+		O.filter(
+			(latestReleaseVersion) =>
+				semver.compare(
+					trimVersion(version),
+					trimVersion(latestReleaseVersion)
+				) >= 0
+		)
+	);
 
-const comparePreReleaseVersion = (latestNexusVersions: NexusVersions, version: string, isPreRelease: boolean): O.Option<string> =>
-    pipe(
-        O.fromNullable(latestNexusVersions.latestPreReleaseVersion),
-        O.fold(
-            () => O.of('0.0.0'),
-            (latestReleaseVersion) => O.of(latestReleaseVersion)
-        ),
-        O.filter((latestPreReleaseVersion) => {
-            if (isPreRelease) {
-                return semver.compare(trimVersion(version), trimVersion(latestPreReleaseVersion)) >= 0;
-            }
-            return true;
-        })
-    );
+const comparePreReleaseVersion = (
+	latestNexusVersions: NexusVersions,
+	version: string,
+	isPreRelease: boolean
+): O.Option<string> =>
+	pipe(
+		O.fromNullable(latestNexusVersions.latestPreReleaseVersion),
+		O.fold(
+			() => O.of('0.0.0'),
+			(latestReleaseVersion) => O.of(latestReleaseVersion)
+		),
+		O.filter((latestPreReleaseVersion) => {
+			if (isPreRelease) {
+				return (
+					semver.compare(
+						trimVersion(version),
+						trimVersion(latestPreReleaseVersion)
+					) >= 0
+				);
+			}
+			return true;
+		})
+	);
 
-const compareNexusVersions = (latestNexusVersions: NexusVersions, version: string, isPreRelease: boolean): O.Option<string> =>
-    pipe(
-        compareReleaseVersion(latestNexusVersions, version),
-        O.chain(() => comparePreReleaseVersion(latestNexusVersions,version, isPreRelease))
-    );
+const compareNexusVersions = (
+	latestNexusVersions: NexusVersions,
+	version: string,
+	isPreRelease: boolean
+): O.Option<string> =>
+	pipe(
+		compareReleaseVersion(latestNexusVersions, version),
+		O.chain(() =>
+			comparePreReleaseVersion(latestNexusVersions, version, isPreRelease)
+		)
+	);
 
-const validateNexusVersion: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectInfo>) => {
-    const {
-        version,
-        isPreRelease,
-        latestNexusVersions
-    } = context.input;
-    return pipe(
-        O.fromNullable(latestNexusVersions),
-        O.fold(
-            () => O.of(version),
-            (latestNexusVersionsVal) => compareNexusVersions(latestNexusVersionsVal, version, isPreRelease)
-        ),
-        TE.fromOption(() =>
-            context.createBuildError('Project version is not higher than versions in Nexus')
-        ),
-        TE.map(() => ({
-            message: 'Successfully validated Nexus versions',
-            value: context.input
-        }))
-    );
+const validateNexusVersion: TaskFunction<ProjectInfo> = (
+	context: TaskContext<ProjectInfo>
+) => {
+	const { version, isPreRelease, latestNexusVersions } = context.input;
+	return pipe(
+		O.fromNullable(latestNexusVersions),
+		O.fold(
+			() => O.of(version),
+			(latestNexusVersionsVal) =>
+				compareNexusVersions(
+					latestNexusVersionsVal,
+					version,
+					isPreRelease
+				)
+		),
+		TE.fromOption(() =>
+			context.createBuildError(
+				'Project version is not higher than versions in Nexus'
+			)
+		),
+		TE.map(() => ({
+			message: 'Successfully validated Nexus versions',
+			value: context.input
+		}))
+	);
 };
 
-export default (stageName: string) => createTask(stageName, TASK_NAME, validateNexusVersion, [
-    executeIfNotDeployOnlyBuild,
-    executeIfNotDockerPreRelease
-]);
+export default (stageName: string) =>
+	createTask(stageName, TASK_NAME, validateNexusVersion, [
+		executeIfNotDeployOnlyBuild,
+		executeIfNotDockerPreRelease
+	]);

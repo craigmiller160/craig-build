@@ -11,30 +11,39 @@ import stageName from '../stageName';
 export const TASK_NAME = 'Validate Kubernetes Version';
 const KUBE_PRE_RELEASE_VERSION = 'latest';
 
-const validateKubeVersion: TaskFunction<ProjectInfo> = (context: TaskContext<ProjectInfo>) =>
-    pipe(
-        O.fromNullable(context.input.kubernetesDockerImage),
-        O.map((image: string) => {
-            const parts = image.split(':');
-            return parts[parts.length - 1];
-        }),
-        O.filter((version: string) => {
-            if (context.input.isPreRelease) {
-                return KUBE_PRE_RELEASE_VERSION === version || context.input.version === version;
-            }
+const validateKubeVersion: TaskFunction<ProjectInfo> = (
+	context: TaskContext<ProjectInfo>
+) =>
+	pipe(
+		O.fromNullable(context.input.kubernetesDockerImage),
+		O.map((image: string) => {
+			const parts = image.split(':');
+			return parts[parts.length - 1];
+		}),
+		O.filter((version: string) => {
+			if (context.input.isPreRelease) {
+				return (
+					KUBE_PRE_RELEASE_VERSION === version ||
+					context.input.version === version
+				);
+			}
 
-            return context.input.version === version;
-        }),
-        E.fromOption(() => {
-            const version = context.input.version;
-            const kubeImage = context.input.kubernetesDockerImage;
-            return context.createBuildError(`Invalid Kubernetes Version. Project Version: ${version} Kubernetes Image: ${kubeImage}`);
-        }),
-        E.map(() => ({
-            message: 'Successfully validated Kubernetes version',
-            value: context.input
-        })),
-        TE.fromEither
-    );
+			return context.input.version === version;
+		}),
+		E.fromOption(() => {
+			const version = context.input.version;
+			const kubeImage = context.input.kubernetesDockerImage;
+			return context.createBuildError(
+				`Invalid Kubernetes Version. Project Version: ${version} Kubernetes Image: ${kubeImage}`
+			);
+		}),
+		E.map(() => ({
+			message: 'Successfully validated Kubernetes version',
+			value: context.input
+		})),
+		TE.fromEither
+	);
 
-export default createTask(stageName, TASK_NAME, validateKubeVersion, [executeIfApplication]);
+export default createTask(stageName, TASK_NAME, validateKubeVersion, [
+	executeIfApplication
+]);

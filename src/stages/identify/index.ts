@@ -10,20 +10,22 @@ import { StageContext } from '../../common/execution/context';
 import stageName from './stageName';
 import checkForUncommittedChanges from './tasks/checkForUncommittedChanges';
 
-const identify: StageFunction<undefined, ProjectInfo> = (context: StageContext<undefined>) =>
-    pipe(
-        checkForUncommittedChanges(undefined),
-        TE.chain(identifyProject),
-        TE.chain(getBaseProjectInfo),
-        TE.chain(getKubeProjectInfo),
-        TE.chain(getNexusProjectInfo(stageName)),
-        TE.map((projectInfo) => {
-            const projectInfoString = JSON.stringify(projectInfo, null, 2);
-            return {
-                message: `Project information successfully identified: ${projectInfoString}`,
-                value: projectInfo
-            };
-        })
-    );
+const identify: StageFunction<undefined, ProjectInfo> = (
+	context: StageContext<undefined>
+) =>
+	pipe(
+		checkForUncommittedChanges(undefined),
+		TE.chain(identifyProject),
+		TE.chain(getBaseProjectInfo),
+		TE.chain(getKubeProjectInfo),
+		TE.chain(getNexusProjectInfo(stageName)),
+		TE.map((projectInfo) => {
+			const projectInfoString = JSON.stringify(projectInfo, null, 2);
+			return {
+				message: `Project information successfully identified: ${projectInfoString}`,
+				value: projectInfo
+			};
+		})
+	);
 
 export default createStage(stageName, identify);

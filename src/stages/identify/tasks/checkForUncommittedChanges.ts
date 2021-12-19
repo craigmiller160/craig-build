@@ -9,20 +9,26 @@ import { TaskContext } from '../../../common/execution/context';
 export const TASK_NAME = 'Check For Uncommitted Changes';
 const GIT_COMMAND = 'git status --porcelain';
 
-const checkForUncommittedChanges: TaskFunction<undefined> = (context: TaskContext<undefined>) =>
-    pipe(
-        runCommand(GIT_COMMAND),
-        E.chain((result: string) => {
-            if (result.length > 0) {
-                return E.left(context.createBuildError('Please commit or revert all changes before running build.'));
-            }
-            return E.right('');
-        }),
-        TE.fromEither,
-        TE.map(() => ({
-            message: 'No uncommitted changes found',
-            value: undefined
-        }))
-    );
+const checkForUncommittedChanges: TaskFunction<undefined> = (
+	context: TaskContext<undefined>
+) =>
+	pipe(
+		runCommand(GIT_COMMAND),
+		E.chain((result: string) => {
+			if (result.length > 0) {
+				return E.left(
+					context.createBuildError(
+						'Please commit or revert all changes before running build.'
+					)
+				);
+			}
+			return E.right('');
+		}),
+		TE.fromEither,
+		TE.map(() => ({
+			message: 'No uncommitted changes found',
+			value: undefined
+		}))
+	);
 
 export default createTask(stageName, TASK_NAME, checkForUncommittedChanges);
