@@ -10,10 +10,15 @@ import * as TE from 'fp-ts/TaskEither';
 import fs from 'fs';
 import runCommand from '../../../utils/runCommand';
 import stageName from '../stageName';
+import * as Tu from 'fp-ts/Tuple';
+import handleUnknownError from '../../../utils/handleUnknownError';
+
+const BASE_DEPLOYMENT_FILE = 'deployment.yml';
+const TEMP_DEPLOYMENT_FILE = 'deployment.temp.yml';
 
 export const TASK_NAME = 'Kubernetes Deployment';
 
-export const APPLY_DEPLOYMENT = 'kubectl apply -f deployment.yml';
+export const APPLY_DEPLOYMENT = 'kubectl apply -f deployment.temp.yml';
 export const RESTART_APP_BASE = 'kubectl rollout restart deployment';
 export const createApplyConfigmap = (fileName: string) =>
 	`kubectl apply -f ${fileName}`;
@@ -61,13 +66,32 @@ const restartApp = (projectInfo: ProjectInfo): E.Either<Error, string> => {
 	);
 };
 
+const clearTempDeploymentFile = (): E.Either<Error, void> =>
+	E.tryCatch(
+		() => fs.rmSync(path.resolve(getCwd(), 'deploy', TEMP_DEPLOYMENT_FILE)),
+		handleUnknownError
+	);
+
+const createTempDeploymentFile = (): E.Either<Error, void> =>
+	E.tryCatch(
+		() =>
+			fs.copyFileSync(
+				path.resolve(getCwd(), 'deploy', BASE_DEPLOYMENT_FILE),
+				path.resolve(getCwd(), 'deploy', TEMP_DEPLOYMENT_FILE)
+			),
+		handleUnknownError
+	);
+
 const kubeDeploy: TaskFunction<ProjectInfo> = (
 	context: TaskContext<ProjectInfo>
 ) =>
 	pipe(
-		applyConfigmap(context),
+		clearTempDeploymentFile(),
+		E.chain(createTempDeploymentFile),
+		E.chain(() => applyConfigmap(context)),
 		E.chain(applyDeployment),
 		E.chain(() => restartApp(context.input)),
+		E.chain(clearTempDeploymentFile),
 		TE.fromEither,
 		TE.map(() => ({
 			message: 'Kubernetes deployment complete',
