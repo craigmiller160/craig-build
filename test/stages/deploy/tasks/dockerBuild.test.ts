@@ -91,8 +91,7 @@ describe('dockerBuild task', () => {
 
 		const projectInfo: ProjectInfo = {
 			...baseProjectInfo,
-			projectType: ProjectType.DockerImage,
-			kubernetesDockerImage: undefined
+			projectType: ProjectType.DockerImage
 		};
 		const result = await dockerBuild(projectInfo)();
 		expect(result).toEqualRight(projectInfo);
