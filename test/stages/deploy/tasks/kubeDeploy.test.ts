@@ -5,11 +5,14 @@ import ProjectType from '../../../../src/types/ProjectType';
 import kubeDeploy, {
 	APPLY_DEPLOYMENT,
 	createApplyConfigmap,
-	RESTART_APP_BASE
+	RESTART_APP_BASE,
+	TEMP_DEPLOYMENT_FILE
 } from '../../../../src/stages/deploy/tasks/kubeDeploy';
 import '@relmify/jest-fp-ts';
 import runCommand from '../../../../src/utils/runCommand';
 import * as E from 'fp-ts/Either';
+import { nanoid } from 'nanoid';
+import fs from 'fs';
 
 const configmapPath = path.resolve(
 	process.cwd(),
@@ -78,15 +81,23 @@ describe('kubeDeploy task', () => {
 				logOutput: true
 			}
 		);
+		expect(
+			fs.existsSync(
+				path.resolve(configmapPath, 'deploy', TEMP_DEPLOYMENT_FILE)
+			)
+		).toEqual(true);
 	});
 
 	it('deploys for pre-release without configmap', async () => {
 		getCwdMock.mockImplementation(() => noConfigmapPreReleasePath);
 		runCommandMock.mockImplementation(() => E.right(''));
 
+		const id = nanoid();
+
 		const newProjectInfo = {
 			...projectInfo,
-			isPreRelease: true
+			isPreRelease: true,
+			dockerPreReleaseVersion: `1.0.0-beta.${id}`
 		};
 
 		const result = await kubeDeploy(newProjectInfo)();
@@ -105,6 +116,12 @@ describe('kubeDeploy task', () => {
 				logOutput: true
 			}
 		);
+		const deploymentPath = path.resolve(
+			configmapPath,
+			'deploy',
+			TEMP_DEPLOYMENT_FILE
+		);
+		expect(fs.existsSync(deploymentPath)).toEqual(true);
 		throw new Error('Finish tweaking test');
 	});
 
@@ -128,6 +145,11 @@ describe('kubeDeploy task', () => {
 				logOutput: true
 			}
 		);
+		expect(
+			fs.existsSync(
+				path.resolve(configmapPath, 'deploy', TEMP_DEPLOYMENT_FILE)
+			)
+		).toEqual(true);
 	});
 
 	it('deploys with multiple configmaps', async () => {
@@ -166,6 +188,11 @@ describe('kubeDeploy task', () => {
 				logOutput: true
 			}
 		);
+		expect(
+			fs.existsSync(
+				path.resolve(configmapPath, 'deploy', TEMP_DEPLOYMENT_FILE)
+			)
+		).toEqual(true);
 	});
 
 	describe('skip execution', () => {

@@ -13,8 +13,8 @@ import stageName from '../stageName';
 import * as Tu from 'fp-ts/Tuple';
 import handleUnknownError from '../../../utils/handleUnknownError';
 
-const BASE_DEPLOYMENT_FILE = 'deployment.yml';
-const TEMP_DEPLOYMENT_FILE = 'deployment.temp.yml';
+export const BASE_DEPLOYMENT_FILE = 'deployment.yml';
+export const TEMP_DEPLOYMENT_FILE = 'deployment.temp.yml';
 
 export const TASK_NAME = 'Kubernetes Deployment';
 
