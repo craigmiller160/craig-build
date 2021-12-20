@@ -94,14 +94,14 @@ describe('kubeDeploy task', () => {
 
 		expect(runCommandMock).toHaveBeenCalledTimes(2);
 		expect(runCommandMock).toHaveBeenNthCalledWith(1, APPLY_DEPLOYMENT, {
-			cwd: path.resolve(noConfigmapPath, 'deploy'),
+			cwd: path.resolve(noConfigmapPreReleasePath, 'deploy'),
 			logOutput: true
 		});
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			2,
 			`${RESTART_APP_BASE} my-project`,
 			{
-				cwd: path.resolve(noConfigmapPath, 'deploy'),
+				cwd: path.resolve(noConfigmapPreReleasePath, 'deploy'),
 				logOutput: true
 			}
 		);

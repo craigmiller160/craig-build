@@ -67,10 +67,12 @@ const restartApp = (projectInfo: ProjectInfo): E.Either<Error, string> => {
 };
 
 const clearTempDeploymentFile = (): E.Either<Error, void> =>
-	E.tryCatch(
-		() => fs.rmSync(path.resolve(getCwd(), 'deploy', TEMP_DEPLOYMENT_FILE)),
-		handleUnknownError
-	);
+	E.tryCatch(() => {
+		const tempPath = path.resolve(getCwd(), 'deploy', TEMP_DEPLOYMENT_FILE);
+		if (fs.existsSync(tempPath)) {
+			fs.rmSync(tempPath);
+		}
+	}, handleUnknownError);
 
 const createTempDeploymentFile = (): E.Either<Error, void> =>
 	E.tryCatch(
