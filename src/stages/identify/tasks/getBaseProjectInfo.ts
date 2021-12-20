@@ -19,7 +19,7 @@ import stageName from '../stageName';
 import DockerJson from '../../../types/DockerJson';
 import { separateGroupAndName } from '../../../utils/separateGroupAndName';
 
-const TASK_NAME = 'Get Base Project Info';
+export const TASK_NAME = 'Get Base Project Info';
 
 type KeyValueMap = {
 	[key: string]: string;
@@ -120,22 +120,42 @@ const getProjectNpm = (projectType: ProjectType): ProjectInfo => {
 	};
 };
 
-const getProjectDocker = (projectType: ProjectType): ProjectInfo => {
-	const dockerJson: DockerJson = JSON.parse(
-		fs.readFileSync(path.resolve(getCwd(), 'docker.json'), 'utf8')
-	) as DockerJson;
-	const [group, name] = separateGroupAndName(dockerJson.name);
-	return {
-		projectType,
-		group,
-		name,
-		version: dockerJson.version,
-		dependencies: [],
-		isPreRelease:
-			dockerJson.version === 'latest' ||
-			dockerJson.version.includes('beta')
-	};
-};
+const getProjectDocker = (
+	context: TaskContext<ProjectType>
+): E.Either<Error, ProjectInfo> =>
+	pipe(
+		E.tryCatch(
+			() =>
+				JSON.parse(
+					fs.readFileSync(
+						path.resolve(getCwd(), 'docker.json'),
+						'utf8'
+					)
+				) as DockerJson,
+			handleUnknownError
+		),
+		E.chain((dockerJson) => {
+			if (dockerJson.version === 'latest') {
+				return E.left(
+					context.createBuildError(
+						'Cannot have docker version set to "latest"'
+					)
+				);
+			}
+			return E.right(dockerJson);
+		}),
+		E.map((dockerJson) => {
+			const [group, name] = separateGroupAndName(dockerJson.name);
+			return {
+				projectType: context.input,
+				group,
+				name,
+				version: dockerJson.version,
+				dependencies: [],
+				isPreRelease: dockerJson.version.includes('beta')
+			};
+		})
+	);
 
 const findProjectInfo = (
 	context: TaskContext<ProjectType>
@@ -149,7 +169,7 @@ const findProjectInfo = (
 			return getProjectMaven(context.input);
 		case ProjectType.DockerApplication:
 		case ProjectType.DockerImage:
-			return E.right(getProjectDocker(context.input));
+			return getProjectDocker(context);
 		default:
 			return E.left(
 				context.createBuildError('Cannot find or load project info')
