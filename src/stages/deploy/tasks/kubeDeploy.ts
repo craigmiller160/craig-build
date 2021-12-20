@@ -10,10 +10,22 @@ import * as TE from 'fp-ts/TaskEither';
 import fs from 'fs';
 import runCommand from '../../../utils/runCommand';
 import stageName from '../stageName';
+import handleUnknownError from '../../../utils/handleUnknownError';
+
+export const BASE_DEPLOYMENT_FILE = 'deployment.yml';
+export const TEMP_DEPLOYMENT_FILE = 'deployment.temp.yml';
+
+export const DEPLOYMENT_IMAGE_REGEX =
+	/(?<startWhitespace>\s*)image:\s?craigmiller160.ddns.net:30004\/.*:(?<versionNumber>.*)/;
+
+export interface DeploymentImageRegexGroups {
+	startWhitespace: string;
+	versionNumber: string;
+}
 
 export const TASK_NAME = 'Kubernetes Deployment';
 
-export const APPLY_DEPLOYMENT = 'kubectl apply -f deployment.yml';
+export const APPLY_DEPLOYMENT = 'kubectl apply -f deployment.temp.yml';
 export const RESTART_APP_BASE = 'kubectl rollout restart deployment';
 export const createApplyConfigmap = (fileName: string) =>
 	`kubectl apply -f ${fileName}`;
@@ -61,11 +73,77 @@ const restartApp = (projectInfo: ProjectInfo): E.Either<Error, string> => {
 	);
 };
 
+const clearTempDeploymentFile = (): E.Either<Error, void> =>
+	E.tryCatch(() => {
+		const tempPath = path.resolve(getCwd(), 'deploy', TEMP_DEPLOYMENT_FILE);
+		if (fs.existsSync(tempPath)) {
+			fs.rmSync(tempPath);
+		}
+	}, handleUnknownError);
+
+const createTempDeploymentFile = (): E.Either<Error, void> =>
+	E.tryCatch(
+		() =>
+			fs.copyFileSync(
+				path.resolve(getCwd(), 'deploy', BASE_DEPLOYMENT_FILE),
+				path.resolve(getCwd(), 'deploy', TEMP_DEPLOYMENT_FILE)
+			),
+		handleUnknownError
+	);
+
+const modifyTempDeployment = (
+	context: TaskContext<ProjectInfo>
+): E.Either<Error, null> => {
+	if (context.input.isPreRelease) {
+		const tempFilePath = path.resolve(
+			getCwd(),
+			'deploy',
+			TEMP_DEPLOYMENT_FILE
+		);
+
+		return pipe(
+			E.tryCatch(
+				() => fs.readFileSync(tempFilePath, 'utf8'),
+				handleUnknownError
+			),
+			E.chain((tempDeploymentContent) => {
+				if (!DEPLOYMENT_IMAGE_REGEX.test(tempDeploymentContent)) {
+					return E.left(
+						context.createBuildError(
+							'Deployment file does not have valid image section'
+						)
+					);
+				}
+				return E.right(tempDeploymentContent);
+			}),
+			E.chain((tempDeploymentContent) =>
+				E.tryCatch(() => {
+					const groups = DEPLOYMENT_IMAGE_REGEX.exec(
+						tempDeploymentContent
+					)?.groups as unknown as DeploymentImageRegexGroups;
+
+					const newContent = tempDeploymentContent.replace(
+						/\s*image:\s?craigmiller160.ddns.net:30004\/.*:.*/,
+						`${groups.startWhitespace}image: craigmiller160.ddns.net:30004/${context.input.name}:${context.input.dockerPreReleaseVersion}`
+					);
+
+					fs.writeFileSync(tempFilePath, newContent);
+					return null;
+				}, handleUnknownError)
+			)
+		);
+	}
+	return E.right(null);
+};
+
 const kubeDeploy: TaskFunction<ProjectInfo> = (
 	context: TaskContext<ProjectInfo>
 ) =>
 	pipe(
-		applyConfigmap(context),
+		clearTempDeploymentFile(),
+		E.chain(createTempDeploymentFile),
+		E.map(() => modifyTempDeployment(context)),
+		E.chain(() => applyConfigmap(context)),
 		E.chain(applyDeployment),
 		E.chain(() => restartApp(context.input)),
 		TE.fromEither,

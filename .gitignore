@@ -7,3 +7,4 @@ yalc.lock
 yarn-error.log
 /build
 /test/__working-dirs__/*/deploy/build
+deployment.temp.yml
