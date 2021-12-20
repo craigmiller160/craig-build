@@ -93,7 +93,6 @@ const kubeDeploy: TaskFunction<ProjectInfo> = (
 		E.chain(() => applyConfigmap(context)),
 		E.chain(applyDeployment),
 		E.chain(() => restartApp(context.input)),
-		E.chain(clearTempDeploymentFile),
 		TE.fromEither,
 		TE.map(() => ({
 			message: 'Kubernetes deployment complete',
