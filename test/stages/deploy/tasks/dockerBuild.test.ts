@@ -167,6 +167,10 @@ describe('dockerBuild task', () => {
 		);
 	});
 
+	it('builds and pushes docker pre-release image, with no existing matches', async () => {
+		throw new Error();
+	});
+
 	it('builds and pushes docker image, with existing match', async () => {
 		getCwdMock.mockImplementation(() => '/');
 		syncMock.mockImplementationOnce(() => ({
