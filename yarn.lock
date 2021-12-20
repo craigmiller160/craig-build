@@ -3417,11 +3417,6 @@ path-type@^4.0.0:
   resolved "https://craigmiller160.ddns.net:30003/repository/npm-group/path-type/-/path-type-4.0.0.tgz#84ed01c0a7ba380afe09d90a8c180dcd9d03043b"
   integrity sha512-gDKb8aZMDeD/tZWs9P6+q0J9Mwkdl6xMV8TjnGP3qJVJ06bdMgkbBlLU8IdfOsIsFz2BW1rNVT3XuNEl8zPAvw==
 
-pattern-matching-ts@^2.0.0:
-  version "2.0.0"
-  resolved "https://craigmiller160.ddns.net:30003/repository/npm-group/pattern-matching-ts/-/pattern-matching-ts-2.0.0.tgz#f67c51c19cd54bae79ed578e4cd0708e1e0cc419"
-  integrity sha512-XfNA/wZ1A92Ps+jzlmFKXviAI6YQt98GwZoHVAsDEMOKYo+g5aSjvMQ3lnvYQskIYdBj30r7S4rAx/VzuxsRhA==
-
 performance-now@^2.1.0:
   version "2.1.0"
   resolved "https://craigmiller160.ddns.net:30003/repository/npm-group/performance-now/-/performance-now-2.1.0.tgz"
