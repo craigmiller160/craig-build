@@ -4,6 +4,9 @@ import getCwd from '../../../../src/utils/getCwd';
 import ProjectType from '../../../../src/types/ProjectType';
 import Mock = jest.Mock;
 import '@relmify/jest-fp-ts';
+import BuildError from '../../../../src/error/BuildError';
+import stageName from '../../../../src/stages/identify/stageName';
+import { TASK_NAME } from '../../../../src/stages/identify/tasks/getBaseProjectInfo';
 
 const getCwdMock: Mock = getCwd as Mock;
 
@@ -193,7 +196,7 @@ describe('getBaseProjectInfo task', () => {
 		});
 	});
 
-	it('get DockerImage ProjectInfo for beta', async () => {
+	it('rejects DockerImage ProjectInfo for beta with "latest"', async () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(
 				process.cwd(),
@@ -203,14 +206,13 @@ describe('getBaseProjectInfo task', () => {
 			)
 		);
 		const result = await getBaseProjectInfo(ProjectType.DockerImage)();
-		expect(result).toEqualRight({
-			projectType: ProjectType.DockerImage,
-			group: 'craigmiller160',
-			name: 'nginx-base',
-			version: 'latest',
-			isPreRelease: true,
-			dependencies: []
-		});
+		expect(result).toEqualLeft(
+			new BuildError(
+				'Cannot have docker version set to "latest"',
+				stageName,
+				TASK_NAME
+			)
+		);
 	});
 
 	it('get DockerImage ProjectInfo for beta with version that says "beta"', async () => {
@@ -265,14 +267,13 @@ describe('getBaseProjectInfo task', () => {
 		const result = await getBaseProjectInfo(
 			ProjectType.DockerApplication
 		)();
-		expect(result).toEqualRight({
-			projectType: ProjectType.DockerApplication,
-			group: 'craigmiller160',
-			name: 'nginx-base',
-			version: 'latest',
-			isPreRelease: true,
-			dependencies: []
-		});
+		expect(result).toEqualLeft(
+			new BuildError(
+				'Cannot have docker version set to "latest"',
+				stageName,
+				TASK_NAME
+			)
+		);
 	});
 
 	it('get DockerApplication ProjectInfo for beta with version that says "beta"', async () => {
