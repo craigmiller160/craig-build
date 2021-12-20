@@ -23,6 +23,12 @@ const noConfigmapPath = path.resolve(
 	'__working-dirs__',
 	'mavenReleaseApplication'
 );
+const noConfigmapPreReleasePath = path.resolve(
+	process.cwd(),
+	'test',
+	'__working-dirs__',
+	'dockerBetaApplication2'
+);
 const multiConfigmapPath = path.resolve(
 	process.cwd(),
 	'test',
@@ -74,8 +80,27 @@ describe('kubeDeploy task', () => {
 		);
 	});
 
-	it('deploys for pre-release without configmap', () => {
-		throw new Error();
+	it('deploys for pre-release without configmap', async () => {
+		getCwdMock.mockImplementation(() => noConfigmapPath);
+		runCommandMock.mockImplementation(() => E.right(''));
+
+		const result = await kubeDeploy(projectInfo)();
+		expect(result).toEqualRight(projectInfo);
+
+		expect(runCommandMock).toHaveBeenCalledTimes(2);
+		expect(runCommandMock).toHaveBeenNthCalledWith(1, APPLY_DEPLOYMENT, {
+			cwd: path.resolve(noConfigmapPath, 'deploy'),
+			logOutput: true
+		});
+		expect(runCommandMock).toHaveBeenNthCalledWith(
+			2,
+			`${RESTART_APP_BASE} my-project`,
+			{
+				cwd: path.resolve(noConfigmapPath, 'deploy'),
+				logOutput: true
+			}
+		);
+		throw new Error('Finish tweaking test');
 	});
 
 	it('deploys without configmap', async () => {
