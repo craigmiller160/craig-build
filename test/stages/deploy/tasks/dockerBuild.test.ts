@@ -42,11 +42,7 @@ describe('dockerBuild task', () => {
 				kubernetesDockerImage: undefined
 			})();
 			expect(result).toEqualLeft(
-				new BuildError(
-					'Missing Docker Image',
-					stageName,
-					TASK_NAME
-				)
+				new BuildError('Missing Docker Image', stageName, TASK_NAME)
 			);
 		});
 
@@ -61,11 +57,7 @@ describe('dockerBuild task', () => {
 				isPreRelease: true
 			})();
 			expect(result).toEqualLeft(
-				new BuildError(
-					'Missing Docker Image',
-					stageName,
-					TASK_NAME
-				)
+				new BuildError('Missing Docker Image', stageName, TASK_NAME)
 			);
 		});
 
