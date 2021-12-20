@@ -43,7 +43,26 @@ describe('dockerBuild task', () => {
 			})();
 			expect(result).toEqualLeft(
 				new BuildError(
-					'Missing Kubernetes Docker Image',
+					'Missing Docker Image',
+					stageName,
+					TASK_NAME
+				)
+			);
+		});
+
+		it('pre-release that has no docker image', async () => {
+			getCwdMock.mockImplementation(() => '');
+			syncMock.mockImplementationOnce(() => ({
+				NEXUS_DOCKER_USER: 'user',
+				NEXUS_DOCKER_PASSWORD: 'password'
+			}));
+			const result = await dockerBuild({
+				...baseProjectInfo,
+				isPreRelease: true
+			})();
+			expect(result).toEqualLeft(
+				new BuildError(
+					'Missing Docker Image',
 					stageName,
 					TASK_NAME
 				)

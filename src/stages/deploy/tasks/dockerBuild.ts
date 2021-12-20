@@ -15,7 +15,6 @@ import * as TE from 'fp-ts/TaskEither';
 import * as O from 'fp-ts/Option';
 import stageName from '../stageName';
 import { isApplication, isDocker } from '../../../utils/projectTypeUtils';
-import * as M from 'pattern-matching-ts/match';
 
 export const TASK_NAME = 'Docker Build';
 
