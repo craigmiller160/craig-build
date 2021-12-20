@@ -15,11 +15,12 @@ import handleUnknownError from '../../../utils/handleUnknownError';
 export const BASE_DEPLOYMENT_FILE = 'deployment.yml';
 export const TEMP_DEPLOYMENT_FILE = 'deployment.temp.yml';
 
-const DEPLOYMENT_IMAGE_REGEX =
-	/(?<startWhitespace>\s*)image:\s?craigmiller160.ddns.net:30004\/.*:.*/;
+export const DEPLOYMENT_IMAGE_REGEX =
+	/(?<startWhitespace>\s*)image:\s?craigmiller160.ddns.net:30004\/.*:(?<versionNumber>.*)/;
 
-interface DeploymentImageRegexGroups {
+export interface DeploymentImageRegexGroups {
 	startWhitespace: string;
+	versionNumber: string;
 }
 
 export const TASK_NAME = 'Kubernetes Deployment';
@@ -127,7 +128,7 @@ const modifyTempDeployment = (
 					);
 
 					fs.writeFileSync(tempFilePath, newContent);
-					return null
+					return null;
 				}, handleUnknownError)
 			)
 		);

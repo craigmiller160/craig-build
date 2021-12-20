@@ -5,6 +5,8 @@ import ProjectType from '../../../../src/types/ProjectType';
 import kubeDeploy, {
 	APPLY_DEPLOYMENT,
 	createApplyConfigmap,
+	DEPLOYMENT_IMAGE_REGEX,
+	DeploymentImageRegexGroups,
 	RESTART_APP_BASE,
 	TEMP_DEPLOYMENT_FILE
 } from '../../../../src/stages/deploy/tasks/kubeDeploy';
@@ -117,12 +119,18 @@ describe('kubeDeploy task', () => {
 			}
 		);
 		const deploymentPath = path.resolve(
-			configmapPath,
+			noConfigmapPreReleasePath,
 			'deploy',
 			TEMP_DEPLOYMENT_FILE
 		);
 		expect(fs.existsSync(deploymentPath)).toEqual(true);
-		throw new Error('Finish tweaking test');
+		const deploymentContent = fs.readFileSync(deploymentPath, 'utf8');
+		expect(DEPLOYMENT_IMAGE_REGEX.test(deploymentContent)).toEqual(true);
+		const groups = DEPLOYMENT_IMAGE_REGEX.exec(deploymentContent)
+			?.groups as unknown as DeploymentImageRegexGroups;
+		expect(groups.versionNumber).toEqual(
+			newProjectInfo.dockerPreReleaseVersion
+		);
 	});
 
 	it('deploys without configmap', async () => {
@@ -147,7 +155,7 @@ describe('kubeDeploy task', () => {
 		);
 		expect(
 			fs.existsSync(
-				path.resolve(configmapPath, 'deploy', TEMP_DEPLOYMENT_FILE)
+				path.resolve(noConfigmapPath, 'deploy', TEMP_DEPLOYMENT_FILE)
 			)
 		).toEqual(true);
 	});
@@ -190,7 +198,7 @@ describe('kubeDeploy task', () => {
 		);
 		expect(
 			fs.existsSync(
-				path.resolve(configmapPath, 'deploy', TEMP_DEPLOYMENT_FILE)
+				path.resolve(multiConfigmapPath, 'deploy', TEMP_DEPLOYMENT_FILE)
 			)
 		).toEqual(true);
 	});
