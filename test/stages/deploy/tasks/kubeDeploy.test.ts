@@ -74,6 +74,10 @@ describe('kubeDeploy task', () => {
 		);
 	});
 
+	it('deploys for pre-release without configmap', () => {
+		throw new Error();
+	});
+
 	it('deploys without configmap', async () => {
 		getCwdMock.mockImplementation(() => noConfigmapPath);
 		runCommandMock.mockImplementation(() => E.right(''));
