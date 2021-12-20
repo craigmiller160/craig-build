@@ -54,10 +54,16 @@ const removeExistingDockerImages = (
 	);
 };
 
-const getDockerImage = (projectInfo: ProjectInfo): O.Option<string> => {};
+const getDockerImage = (projectInfo: ProjectInfo): O.Option<string> => {
+	if (projectInfo.isPreRelease) {
+		return pipe(
+			projectInfo.dockerPreReleaseVersion,
+			O.fromNullable,
+			O.map((version) => `${DOCKER_REPO}/${projectInfo.name}:${version}`)
+		);
+	}
 
-const getDockerImage2 = (projectInfo: ProjectInfo): O.Option<string> =>
-	pipe(
+	return pipe(
 		projectInfo.kubernetesDockerImage,
 		O.fromNullable,
 		O.fold(
@@ -72,6 +78,7 @@ const getDockerImage2 = (projectInfo: ProjectInfo): O.Option<string> =>
 			(dockerImage) => O.some(dockerImage)
 		)
 	);
+};
 
 const dockerBuild: TaskFunction<ProjectInfo> = (
 	context: TaskContext<ProjectInfo>
