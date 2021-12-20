@@ -267,14 +267,13 @@ describe('getBaseProjectInfo task', () => {
 		const result = await getBaseProjectInfo(
 			ProjectType.DockerApplication
 		)();
-		expect(result).toEqualRight({
-			projectType: ProjectType.DockerApplication,
-			group: 'craigmiller160',
-			name: 'nginx-base',
-			version: 'latest',
-			isPreRelease: true,
-			dependencies: []
-		});
+		expect(result).toEqualLeft(
+			new BuildError(
+				'Cannot have docker version set to "latest"',
+				stageName,
+				TASK_NAME
+			)
+		);
 	});
 
 	it('get DockerApplication ProjectInfo for beta with version that says "beta"', async () => {
