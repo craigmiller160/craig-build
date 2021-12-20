@@ -15,6 +15,7 @@ import * as TE from 'fp-ts/TaskEither';
 import * as O from 'fp-ts/Option';
 import stageName from '../stageName';
 import { isApplication, isDocker } from '../../../utils/projectTypeUtils';
+import * as M from 'pattern-matching-ts/match';
 
 export const TASK_NAME = 'Docker Build';
 
@@ -53,7 +54,9 @@ const removeExistingDockerImages = (
 	);
 };
 
-const getDockerImage = (projectInfo: ProjectInfo): O.Option<string> =>
+const getDockerImage = (projectInfo: ProjectInfo): O.Option<string> => {};
+
+const getDockerImage2 = (projectInfo: ProjectInfo): O.Option<string> =>
 	pipe(
 		projectInfo.kubernetesDockerImage,
 		O.fromNullable,
@@ -87,9 +90,7 @@ const dockerBuild: TaskFunction<ProjectInfo> = (
 
 	return pipe(
 		getDockerImage(context.input),
-		E.fromOption(() =>
-			context.createBuildError('Missing Kubernetes Docker Image')
-		),
+		E.fromOption(() => context.createBuildError('Missing Docker Image')),
 		E.chain((dockerImage) =>
 			pipe(
 				runCommand(
