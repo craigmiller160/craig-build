@@ -81,11 +81,16 @@ describe('kubeDeploy task', () => {
 	});
 
 	it('deploys for pre-release without configmap', async () => {
-		getCwdMock.mockImplementation(() => noConfigmapPath);
+		getCwdMock.mockImplementation(() => noConfigmapPreReleasePath);
 		runCommandMock.mockImplementation(() => E.right(''));
 
-		const result = await kubeDeploy(projectInfo)();
-		expect(result).toEqualRight(projectInfo);
+		const newProjectInfo = {
+			...projectInfo,
+			isPreRelease: true
+		};
+
+		const result = await kubeDeploy(newProjectInfo)();
+		expect(result).toEqualRight(newProjectInfo);
 
 		expect(runCommandMock).toHaveBeenCalledTimes(2);
 		expect(runCommandMock).toHaveBeenNthCalledWith(1, APPLY_DEPLOYMENT, {
