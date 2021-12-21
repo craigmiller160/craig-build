@@ -1,6 +1,6 @@
-export const unknownToError = (theUnknown: unknown): Error => {
-	if (theUnknown instanceof Error) {
-		return theUnknown as Error;
-	}
-	return new Error(`Unknown Error: ${theUnknown}`);
-};
+import { instanceOf, match } from 'ts-pattern';
+
+export const unknownToError = (theUnknown: unknown): Error =>
+	match<unknown, Error>(theUnknown)
+		.with(instanceOf(Error), (_) => _ as Error)
+		.otherwise((_) => new Error(`Unknown Error: ${_}`));
