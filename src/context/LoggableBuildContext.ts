@@ -8,7 +8,7 @@ export interface LoggableBuildContext {
 	commandInfo: CommandInfo | null;
 }
 
-export const toLoggable = (context: BuildContext) => ({
+export const toLoggable = (context: BuildContext): LoggableBuildContext => ({
 	options: context.options,
 	commandInfo: getOrNull(context.commandInfo)
 });
