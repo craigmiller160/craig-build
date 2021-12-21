@@ -1,4 +1,7 @@
-import { createStageLogger, SUCCESS_STATUS } from '../../../old-src/common/logger';
+import {
+	createStageLogger,
+	SUCCESS_STATUS
+} from '../../../old-src/common/logger';
 import { createBuildError } from '../../../old-src/error/BuildError';
 import createStage, {
 	StageFunction
