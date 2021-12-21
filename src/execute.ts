@@ -5,6 +5,8 @@ import * as A from 'fp-ts/Array';
 import { pipe } from 'fp-ts/function';
 import { logger } from './logger';
 import { STAGES } from './stages';
+import * as EU from './functions/EitherUtils';
+import { stringifyJson } from './functions/Json';
 
 const executeStage = (
 	contextTE: TE.TaskEither<Error, BuildContext>,
@@ -17,7 +19,11 @@ const executeStage = (
 			return pipe(
 				stage(context),
 				TE.map((_) => {
-					logger.info(`Completed stage: ${stage.name}`);
+					logger.info(
+						`Completed stage: ${stage.name} ${EU.getOrThrow(
+							stringifyJson(_)
+						)}`
+					);
 					return _;
 				}),
 				TE.mapLeft((_) => {
