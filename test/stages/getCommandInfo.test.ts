@@ -17,6 +17,7 @@ describe('getCommandInfo', () => {
 		});
 		const result = await getCommandInfo.execute(buildContext)();
 		expect(result).toEqualRight({
+			...buildContext,
 			options,
 			commandInfo: O.some({
 				type: CommandType.FULL_BUILD
@@ -34,6 +35,7 @@ describe('getCommandInfo', () => {
 		});
 		const result = await getCommandInfo.execute(buildContext)();
 		expect(result).toEqualRight({
+			...buildContext,
 			options,
 			commandInfo: O.some({
 				type: CommandType.DOCKER_ONLY
@@ -51,6 +53,7 @@ describe('getCommandInfo', () => {
 		});
 		const result = await getCommandInfo.execute(buildContext)();
 		expect(result).toEqualRight({
+			...buildContext,
 			options,
 			commandInfo: O.some({
 				type: CommandType.KUBERNETES_ONLY

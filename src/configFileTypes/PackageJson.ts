@@ -2,7 +2,7 @@ export interface Dependencies {
 	[key: string]: string;
 }
 
-export default interface PackageJson {
+export interface PackageJson {
 	name: string;
 	version: string;
 	dependencies?: Dependencies;

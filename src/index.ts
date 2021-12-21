@@ -6,7 +6,7 @@ import { parseJson } from './functions/Json';
 import path from 'path';
 import { readFile } from './functions/readFile';
 import * as E from 'fp-ts/Either';
-import PackageJson from './configFileTypes/PackageJson';
+import { PackageJson } from './configFileTypes/PackageJson';
 import * as EU from './functions/EitherUtils';
 import { setupBuildContext } from './setup';
 import { execute } from './execute';

@@ -9,6 +9,7 @@ describe('setup', () => {
 		};
 		const buildContext = setupBuildContext(options);
 		expect(buildContext).toEqual({
+			...buildContext,
 			options,
 			commandInfo: O.none
 		});
