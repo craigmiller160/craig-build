@@ -9,7 +9,22 @@ import semver from 'semver';
 import { semverTrimVersion } from '../utils/semverUtils';
 import { NexusSearchResult } from '../services/NexusSearchResult';
 
-[].find((item) => semver.compare(item, '') >= 0);
+const compareVersions = (
+	nexusItemVersion: string,
+	currentVersion: string
+): boolean =>
+	semver.compare(
+		semverTrimVersion(nexusItemVersion),
+		semverTrimVersion(currentVersion)
+	) >= 0;
+
+const noMatchingReleaseVersion = (
+	result: NexusSearchResult,
+	currentVersion: string
+): boolean =>
+	result.items.find((item) =>
+		compareVersions(item.version, currentVersion)
+	) === undefined;
 
 const handleReleaseVersionValidation = (
 	buildToolInfo: BuildToolInfo
@@ -17,14 +32,7 @@ const handleReleaseVersionValidation = (
 	pipe(
 		searchForNpmReleases(buildToolInfo.group, buildToolInfo.name),
 		TE.filterOrElse(
-			(result: NexusSearchResult) =>
-				result.items.find(
-					(item) =>
-						semver.compare(
-							semverTrimVersion(item.version),
-							semverTrimVersion(buildToolInfo.version)
-						) >= 0
-				) === undefined,
+			(result) => noMatchingReleaseVersion(result, buildToolInfo.version),
 			() =>
 				new Error(
 					`${buildToolInfo.name} has a newer release than ${buildToolInfo.version}. Please upgrade this tool.`
