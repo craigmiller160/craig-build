@@ -5,6 +5,11 @@ import { pipe } from 'fp-ts/function';
 import { BuildToolInfo } from '../context/BuildToolInfo';
 import * as TE from 'fp-ts/TaskEither';
 import { searchForNpmReleases } from '../services/NexusRepoApi';
+import semver from 'semver';
+import { semverTrimVersion } from '../utils/semverUtils';
+import { NexusSearchResult } from '../services/NexusSearchResult';
+
+[].find((item) => semver.compare(item, '') >= 0);
 
 const handleReleaseVersionValidation = (
 	buildToolInfo: BuildToolInfo
@@ -12,11 +17,14 @@ const handleReleaseVersionValidation = (
 	pipe(
 		searchForNpmReleases(buildToolInfo.group, buildToolInfo.name),
 		TE.filterOrElse(
-			// TODO comparison won't work
-			(result) =>
-				result.items.find(
-					(item) => item.version > buildToolInfo.version
-				) === undefined,
+			(result: NexusSearchResult) =>
+				result.items.filter(
+					(item) =>
+						semver.compare(
+							semverTrimVersion(item.version),
+							semverTrimVersion(buildToolInfo.version)
+						) >= 0
+				).length === 0,
 			() =>
 				new Error(
 					`${buildToolInfo.name} has a newer release than ${buildToolInfo.version}. Please upgrade this tool.`
