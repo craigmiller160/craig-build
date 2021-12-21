@@ -1,11 +1,10 @@
 import { BuildContext } from './context/BuildContext';
 import * as TE from 'fp-ts/TaskEither';
 import { Stage } from './stages/Stage';
-import { getCommandInfo } from './stages/getCommandInfo';
 import * as A from 'fp-ts/Array';
 import { pipe } from 'fp-ts/function';
-import {logger} from './logger';
-import {STAGES} from './stages';
+import { logger } from './logger';
+import { STAGES } from './stages';
 
 const executeStage = (
 	contextTE: TE.TaskEither<Error, BuildContext>,

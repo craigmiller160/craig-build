@@ -1,4 +1,4 @@
-import {Stage} from './Stage';
-import {getCommandInfo} from './getCommandInfo';
+import { Stage } from './Stage';
+import { getCommandInfo } from './getCommandInfo';
 
 export const STAGES: Stage[] = [getCommandInfo];

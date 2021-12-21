@@ -11,7 +11,7 @@ import * as EU from './functions/EitherUtils';
 import { setupBuildContext } from './setup';
 import { execute } from './execute';
 import * as TE from 'fp-ts/TaskEither';
-import {logger} from './logger';
+import { logger } from './logger';
 
 const packageJson: PackageJson = pipe(
 	readFile(path.resolve(__dirname, '..', 'package.json')),

@@ -3,5 +3,5 @@ import * as TE from 'fp-ts/TaskEither';
 
 export type Stage = {
 	name: string;
-	(context: BuildContext): TE.TaskEither<Error,BuildContext>;
+	(context: BuildContext): TE.TaskEither<Error, BuildContext>;
 };
