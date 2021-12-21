@@ -7,5 +7,5 @@ export type StageFunction = (
 
 export interface Stage {
 	readonly name: string;
-	execute: StageFunction;
+	readonly execute: StageFunction;
 }
