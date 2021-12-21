@@ -6,5 +6,5 @@ node_modules
 yalc.lock
 yarn-error.log
 /build
-/test/__working-dirs__/*/deploy/build
+/old-test/__working-dirs__/*/deploy/build
 deployment.temp.yml
