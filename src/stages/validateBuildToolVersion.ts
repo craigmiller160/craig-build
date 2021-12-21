@@ -2,16 +2,28 @@ import { Stage, StageFunction } from './Stage';
 import { BuildContext } from '../context/BuildContext';
 import { match, when } from 'ts-pattern';
 import { pipe } from 'fp-ts/function';
-import * as O from 'fp-ts/Option';
 import { BuildToolInfo } from '../context/BuildToolInfo';
 import * as TE from 'fp-ts/TaskEither';
+import { searchForNpmReleases } from '../services/NexusRepoApi';
 
 const handleReleaseVersionValidation = (
 	buildToolInfo: BuildToolInfo
-): TE.TaskEither<Error, BuildToolInfo> => {
-	// TODO finish this
-	throw new Error();
-};
+): TE.TaskEither<Error, BuildToolInfo> =>
+	pipe(
+		searchForNpmReleases(buildToolInfo.group, buildToolInfo.name),
+		TE.filterOrElse(
+			// TODO comparison won't work
+			(result) =>
+				result.items.find(
+					(item) => item.version > buildToolInfo.version
+				) === undefined,
+			() =>
+				new Error(
+					`${buildToolInfo.name} has a newer release than ${buildToolInfo.version}. Please upgrade this tool.`
+				)
+		),
+		TE.map(() => buildToolInfo)
+	);
 
 const handlePreReleaseVersionValidation = (
 	buildToolInfo: BuildToolInfo
