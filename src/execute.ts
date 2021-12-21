@@ -21,7 +21,7 @@ const executeStage = (
 				TE.map((_) => {
 					logger.info(
 						`Completed stage: ${stage.name} ${EU.getOrThrow(
-							stringifyJson(_)
+							stringifyJson(_, 2)
 						)}`
 					);
 					return _;
