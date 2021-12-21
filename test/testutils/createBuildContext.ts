@@ -11,10 +11,15 @@ const defaultCommandInfo: CommandInfo = {
 	type: CommandType.FULL_BUILD
 };
 
+const defaultBuildContext: BuildContext = {
+	options: defaultOptions,
+	commandInfo: O.some(defaultCommandInfo)
+};
+
 export const createBuildContext = ({
 	options = defaultOptions,
 	commandInfo = O.some(defaultCommandInfo)
-}: BuildContext): BuildContext => ({
+}: BuildContext = defaultBuildContext): BuildContext => ({
 	options,
 	commandInfo
 });
