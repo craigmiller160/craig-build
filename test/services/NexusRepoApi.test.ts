@@ -6,9 +6,9 @@ import {
 	searchForMavenSnapshots,
 	searchForNpmBetas,
 	searchForNpmReleases
-} from '../../../old-src/common/services/NexusRepoApi';
+} from '../../src/services/NexusRepoApi';
 import MockAdapter from 'axios-mock-adapter';
-import NexusSearchResult from '../../../old-src/types/NexusSearchResult';
+import { NexusSearchResult } from '../../src/services/NexusSearchResult';
 import '@relmify/jest-fp-ts';
 import fs from 'fs';
 import tmp from 'tmp';

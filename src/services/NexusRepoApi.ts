@@ -1,12 +1,12 @@
 import axios from 'axios';
 import * as TE from 'fp-ts/TaskEither';
 import { pipe } from 'fp-ts/function';
-import handleUnknownError from '../../utils/handleUnknownError';
-import NexusSearchResult from '../../types/NexusSearchResult';
+import { NexusSearchResult } from './NexusSearchResult';
 import qs from 'qs';
 import { extractResponseData } from './apiUtils';
 import fs from 'fs';
-import streamPromisify from '../../utils/streamPromisify';
+import { unknownToError } from '../functions/unknownToError';
+import { streamTask } from '../utils/streamTask';
 
 const sort = 'version';
 const direction = 'desc';
@@ -37,7 +37,7 @@ export const searchForMavenSnapshots: NexusRepoGroupSearchFn = (
 				'maven.baseVersion': version
 			});
 			return restApiInstance.get<NexusSearchResult>(`/search?${query}`);
-		}, handleUnknownError),
+		}, unknownToError),
 		extractResponseData
 	);
 
@@ -57,7 +57,7 @@ export const searchForMavenReleases: NexusRepoGroupSearchFn = (
 				version
 			});
 			return restApiInstance.get<NexusSearchResult>(`/search?${query}`);
-		}, handleUnknownError),
+		}, unknownToError),
 		extractResponseData
 	);
 
@@ -78,7 +78,7 @@ export const searchForNpmBetas: NexusRepoGroupSearchFn = (
 				version
 			});
 			return restApiInstance.get<NexusSearchResult>(`/search?${query}`);
-		}, handleUnknownError),
+		}, unknownToError),
 		extractResponseData
 	);
 
@@ -99,7 +99,7 @@ export const searchForNpmReleases: NexusRepoGroupSearchFn = (
 				version
 			});
 			return restApiInstance.get<NexusSearchResult>(`/search?${query}`);
-		}, handleUnknownError),
+		}, unknownToError),
 		extractResponseData
 	);
 
@@ -113,7 +113,7 @@ export const searchForDockerReleases = (name: string) =>
 				direction
 			});
 			return restApiInstance.get<NexusSearchResult>(`/search?${query}`);
-		}, handleUnknownError),
+		}, unknownToError),
 		extractResponseData
 	);
 
@@ -127,16 +127,10 @@ export const downloadArtifact = (
 				axios.get(url, {
 					responseType: 'stream'
 				}),
-			handleUnknownError
+			unknownToError
 		),
 		TE.chain((res) =>
-			TE.tryCatch(
-				() =>
-					streamPromisify(
-						res.data.pipe(fs.createWriteStream(targetPath))
-					),
-				handleUnknownError
-			)
+			streamTask(res.data.pipe(fs.createWriteStream(targetPath)))
 		),
 		TE.map(() => targetPath)
 	);
