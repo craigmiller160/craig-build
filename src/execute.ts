@@ -4,6 +4,7 @@ import { Stage } from './stages/Stage';
 import { getCommandInfo } from './stages/getCommandInfo';
 import * as A from 'fp-ts/Array';
 import { pipe } from 'fp-ts/function';
+import {logger} from './logger';
 
 const stages: Stage[] = [getCommandInfo];
 
@@ -13,10 +14,21 @@ const executeStage = (
 ): TE.TaskEither<Error, BuildContext> =>
 	pipe(
 		contextTE,
-		// TODO pre-logging
-		TE.chain((context) => stage(context))
-		// TODO post-logging
-		// TODO log error
+		TE.chain((context) => {
+			logger.info(`Starting stage: ${stage.name}`);
+			return pipe(
+				stage(context),
+				TE.map((_) => {
+					logger.info(`Completed stage: ${stage.name}`);
+					return _;
+				}),
+				TE.mapLeft((_) => {
+					logger.error(`Error in stage: ${stage.name}`);
+					logger.error(_);
+					return _;
+				})
+			);
+		})
 	);
 
 export const execute = (

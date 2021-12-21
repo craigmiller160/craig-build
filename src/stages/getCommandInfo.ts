@@ -20,3 +20,5 @@ export const getCommandInfo: Stage = (context) =>
 		...context,
 		commandInfo: O.some(constructCommandInfo(context.options))
 	});
+
+getCommandInfo.name = 'Get Command Info';

@@ -11,6 +11,7 @@ import * as EU from './functions/EitherUtils';
 import { setupBuildContext } from './setup';
 import { execute } from './execute';
 import * as TE from 'fp-ts/TaskEither';
+import {logger} from './logger';
 
 const packageJson: PackageJson = pipe(
 	readFile(path.resolve(__dirname, '..', 'package.json')),
@@ -29,7 +30,13 @@ pipe(
 	setupBuildContext(program.opts()),
 	execute,
 	TE.fold(
-		() => process.exit(1),
-		() => process.exit(0)
+		() => {
+			logger.error('Build failed');
+			process.exit(1);
+		},
+		() => {
+			logger.info('Build completed');
+			process.exit(0);
+		}
 	)
-);
+)();
