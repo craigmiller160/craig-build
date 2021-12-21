@@ -15,7 +15,7 @@ describe('getCommandInfo', () => {
 			options,
 			commandInfo: O.none
 		});
-		const result = await getCommandInfo(buildContext)();
+		const result = await getCommandInfo.execute(buildContext)();
 		expect(result).toEqualRight({
 			options,
 			commandInfo: O.some({
@@ -32,7 +32,7 @@ describe('getCommandInfo', () => {
 			options,
 			commandInfo: O.none
 		});
-		const result = await getCommandInfo(buildContext)();
+		const result = await getCommandInfo.execute(buildContext)();
 		expect(result).toEqualRight({
 			options,
 			commandInfo: O.some({
@@ -49,7 +49,7 @@ describe('getCommandInfo', () => {
 			options,
 			commandInfo: O.none
 		});
-		const result = await getCommandInfo(buildContext)();
+		const result = await getCommandInfo.execute(buildContext)();
 		expect(result).toEqualRight({
 			options,
 			commandInfo: O.some({
