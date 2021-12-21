@@ -1,7 +1,11 @@
 export {};
 
 describe('getBuildToolInfo', () => {
-	it('test', () => {
+	it('gets pre-release info', () => {
+		throw new Error();
+	});
+
+	it('get release info', () => {
 		throw new Error();
 	});
 });
