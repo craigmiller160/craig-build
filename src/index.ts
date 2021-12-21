@@ -7,7 +7,7 @@ import path from 'path';
 import { readFile } from './functions/readFile';
 import * as E from 'fp-ts/Either';
 import PackageJson from './configFileTypes/PackageJson';
-import { getOrThrow } from './functions/getOrThrow';
+import * as EU from './functions/EitherUtils';
 import { setupBuildContext } from './setup';
 import { execute } from './execute';
 import * as TE from 'fp-ts/TaskEither';
@@ -15,7 +15,7 @@ import * as TE from 'fp-ts/TaskEither';
 const packageJson: PackageJson = pipe(
 	readFile(path.resolve(__dirname, '..', 'package.json')),
 	E.chain((_) => parseJson<PackageJson>(_)),
-	getOrThrow
+	EU.getOrThrow
 );
 
 program
