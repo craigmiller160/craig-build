@@ -1,4 +1,4 @@
-import {Stage, StageFunction} from './Stage';
+import { Stage, StageFunction } from './Stage';
 import { match } from 'ts-pattern';
 import { OptionValues } from 'commander';
 import { CommandInfo } from '../context/CommandInfo';
