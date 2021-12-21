@@ -7,8 +7,17 @@ import path from 'path';
 import { readFile } from './functions/readFile';
 import * as E from 'fp-ts/Either';
 import PackageJson from './configFileTypes/PackageJson';
+import { getOrThrow } from './functions/getOrThrow';
 
-pipe(
+const packageJson: PackageJson = pipe(
 	readFile(path.resolve(__dirname, '..', 'package.json')),
-	E.chain((_) => parseJson<PackageJson>(_))
+	E.chain((_) => parseJson<PackageJson>(_)),
+	getOrThrow
 );
+
+program
+	.version(packageJson.version)
+	.option('-b, --full-build', 'Fully build and deploy the project')
+	.option('-d, --docker-only', 'Build and deploy only the Docker image')
+	.option('-k, --kubernetes-only', 'Deploy to Kubernetes only')
+	.parse(process.argv);
