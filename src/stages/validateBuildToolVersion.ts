@@ -8,6 +8,7 @@ import { searchForNpmReleases } from '../services/NexusRepoApi';
 import semver from 'semver';
 import { semverTrimVersion } from '../utils/semverUtils';
 import { NexusSearchResult } from '../services/NexusSearchResult';
+import { extractBuildToolInfo } from '../context/contextExtraction';
 
 const compareVersions = (
 	nexusItemVersion: string,
@@ -57,13 +58,8 @@ const checkBuildToolInfo = (
 
 const execute: StageFunction = (context: BuildContext) =>
 	pipe(
-		context.buildToolInfo,
-		TE.fromOption(
-			() =>
-				new Error(
-					'Cannot validate build tool version when BuildToolInfo is not present'
-				)
-		),
+		extractBuildToolInfo(context),
+		TE.fromEither,
 		TE.chain(checkBuildToolInfo),
 		TE.map(() => context)
 	);
