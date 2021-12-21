@@ -1,6 +1,6 @@
 import { Stage, StageFunction } from './Stage';
 import { BuildContext } from '../context/BuildContext';
-import { match, when } from 'ts-pattern';
+import { match } from 'ts-pattern';
 import { pipe } from 'fp-ts/function';
 import { BuildToolInfo } from '../context/BuildToolInfo';
 import * as TE from 'fp-ts/TaskEither';
@@ -18,13 +18,13 @@ const handleReleaseVersionValidation = (
 		searchForNpmReleases(buildToolInfo.group, buildToolInfo.name),
 		TE.filterOrElse(
 			(result: NexusSearchResult) =>
-				result.items.filter(
+				result.items.find(
 					(item) =>
 						semver.compare(
 							semverTrimVersion(item.version),
 							semverTrimVersion(buildToolInfo.version)
 						) >= 0
-				).length === 0,
+				) === undefined,
 			() =>
 				new Error(
 					`${buildToolInfo.name} has a newer release than ${buildToolInfo.version}. Please upgrade this tool.`
