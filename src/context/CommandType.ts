@@ -1,0 +1,5 @@
+export enum CommandType {
+	FULL_BUILD = 'FULL_BUILD',
+	DOCKER_ONLY = 'DOCKER_ONLY',
+	KUBERNETES_ONLY = 'KUBERNETES_ONLY'
+}

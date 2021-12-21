@@ -1,4 +1,7 @@
-import { createTaskLogger, SUCCESS_STATUS } from '../../../old-src/common/logger';
+import {
+	createTaskLogger,
+	SUCCESS_STATUS
+} from '../../../old-src/common/logger';
 import createTask, {
 	TaskFunction,
 	TaskShouldExecuteFunction
