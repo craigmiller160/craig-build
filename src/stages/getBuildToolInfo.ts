@@ -1,5 +1,5 @@
 import { Stage, StageFunction } from './Stage';
-import PackageJson from '../configFileTypes/PackageJson';
+import { PackageJson } from '../configFileTypes/PackageJson';
 import { pipe } from 'fp-ts/function';
 import { readFile } from '../functions/readFile';
 import path from 'path';
