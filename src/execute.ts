@@ -7,6 +7,7 @@ import { logger } from './logger';
 import { STAGES } from './stages';
 import * as EU from './functions/EitherUtils';
 import { stringifyJson } from './functions/Json';
+import { toLoggable } from './context/LoggableBuildContext';
 
 const executeStage = (
 	contextTE: TE.TaskEither<Error, BuildContext>,
@@ -21,7 +22,7 @@ const executeStage = (
 				TE.map((_) => {
 					logger.info(
 						`Completed stage: ${stage.name} ${EU.getOrThrow(
-							stringifyJson(_, 2)
+							stringifyJson(toLoggable(_), 2)
 						)}`
 					);
 					return _;
