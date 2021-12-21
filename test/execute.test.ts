@@ -6,24 +6,22 @@ import * as TE from 'fp-ts/TaskEither';
 import { StageFunction } from '../src/stages/Stage';
 import '@relmify/jest-fp-ts';
 
-jest.mock('../src/stages', () => {
-	return {
-		STAGES: [
-			{
-				name: 'Stage1',
-				execute: jest.fn()
-			},
-			{
-				name: 'Stage2',
-				execute: jest.fn()
-			},
-			{
-				name: 'Stage3',
-				execute: jest.fn()
-			}
-		]
-	};
-});
+jest.mock('../src/stages', () => ({
+	STAGES: [
+		{
+			name: 'Stage1',
+			execute: jest.fn()
+		},
+		{
+			name: 'Stage2',
+			execute: jest.fn()
+		},
+		{
+			name: 'Stage3',
+			execute: jest.fn()
+		}
+	]
+}));
 
 const buildContext: BuildContext = createBuildContext();
 
