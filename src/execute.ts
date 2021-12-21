@@ -5,8 +5,7 @@ import { getCommandInfo } from './stages/getCommandInfo';
 import * as A from 'fp-ts/Array';
 import { pipe } from 'fp-ts/function';
 import {logger} from './logger';
-
-const stages: Stage[] = [getCommandInfo];
+import {STAGES} from './stages';
 
 const executeStage = (
 	contextTE: TE.TaskEither<Error, BuildContext>,
@@ -35,7 +34,7 @@ export const execute = (
 	context: BuildContext
 ): TE.TaskEither<Error, BuildContext> =>
 	pipe(
-		stages,
+		STAGES,
 		A.reduce(
 			TE.right<Error, BuildContext>(context),
 			(ctxTE, stage: Stage) => executeStage(ctxTE, stage)
