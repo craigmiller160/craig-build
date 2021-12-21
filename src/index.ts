@@ -9,7 +9,9 @@ import * as E from 'fp-ts/Either';
 import PackageJson from './configFileTypes/PackageJson';
 import { getOrThrow } from './functions/getOrThrow';
 import { setupBuildContext } from './setup';
-import {execute} from './execute';
+import { execute } from './execute';
+import * as TE from 'fp-ts/TaskEither';
+
 const packageJson: PackageJson = pipe(
 	readFile(path.resolve(__dirname, '..', 'package.json')),
 	E.chain((_) => parseJson<PackageJson>(_)),
@@ -23,5 +25,11 @@ program
 	.option('-k, --kubernetes-only', 'Deploy to Kubernetes only')
 	.parse(process.argv);
 
-const buildContext = setupBuildContext(program.opts());
-execute(buildContext); // TODO handle outcome of this
+pipe(
+	setupBuildContext(program.opts()),
+	execute,
+	TE.fold(
+		() => process.exit(1),
+		() => process.exit(0)
+	)
+);
