@@ -1,5 +1,8 @@
 import { CommandInfo } from './CommandInfo';
+import * as O from 'fp-ts/Option';
+import { OptionValues } from 'commander';
 
 export interface BuildContext {
-	commandInfo: CommandInfo;
+	options: OptionValues;
+	commandInfo: O.Option<CommandInfo>;
 }
