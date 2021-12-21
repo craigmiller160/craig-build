@@ -4,16 +4,17 @@ import { BuildContext } from '../../src/context/BuildContext';
 import * as O from 'fp-ts/Option';
 import { getCommandInfo } from '../../src/stages/getCommandInfo';
 import '@relmify/jest-fp-ts';
+import { createBuildContext } from '../testutils/createBuildContext';
 
 describe('getCommandInfo', () => {
 	it('FULL_BUILD', async () => {
 		const options: OptionValues = {
 			fullBuild: true
 		};
-		const buildContext: BuildContext = {
+		const buildContext: BuildContext = createBuildContext({
 			options,
 			commandInfo: O.none
-		};
+		});
 		const result = await getCommandInfo(buildContext)();
 		expect(result).toEqualRight({
 			options,
@@ -27,10 +28,10 @@ describe('getCommandInfo', () => {
 		const options: OptionValues = {
 			dockerOnly: true
 		};
-		const buildContext: BuildContext = {
+		const buildContext: BuildContext = createBuildContext({
 			options,
 			commandInfo: O.none
-		};
+		});
 		const result = await getCommandInfo(buildContext)();
 		expect(result).toEqualRight({
 			options,
@@ -44,10 +45,10 @@ describe('getCommandInfo', () => {
 		const options: OptionValues = {
 			kubernetesOnly: true
 		};
-		const buildContext: BuildContext = {
+		const buildContext: BuildContext = createBuildContext({
 			options,
 			commandInfo: O.none
-		};
+		});
 		const result = await getCommandInfo(buildContext)();
 		expect(result).toEqualRight({
 			options,
