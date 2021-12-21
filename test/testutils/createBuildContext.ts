@@ -27,7 +27,7 @@ export const createBuildContext = ({
 	options = defaultOptions,
 	commandInfo = O.some(defaultCommandInfo),
 	buildToolInfo = O.some(defaultBuildToolInfo)
-}: BuildContext = defaultBuildContext): BuildContext => ({
+}: Partial<BuildContext> = defaultBuildContext): BuildContext => ({
 	options,
 	commandInfo,
 	buildToolInfo
