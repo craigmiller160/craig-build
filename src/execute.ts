@@ -17,7 +17,7 @@ const executeStage = (
 		TE.chain((context) => {
 			logger.info(`Starting stage: ${stage.name}`);
 			return pipe(
-				stage(context),
+				stage.execute(context),
 				TE.map((_) => {
 					logger.info(
 						`Completed stage: ${stage.name} ${EU.getOrThrow(
