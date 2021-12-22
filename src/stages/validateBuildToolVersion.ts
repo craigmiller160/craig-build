@@ -10,6 +10,7 @@ import { semverTrimVersion } from '../utils/semverUtils';
 import { NexusSearchResult } from '../services/NexusSearchResult';
 import { extractBuildToolInfo } from '../context/contextExtraction';
 import { readUserInput } from '../utils/readUserInput';
+import { logger } from '../logger';
 
 const compareVersions = (
 	nexusItemVersion: string,
@@ -47,7 +48,12 @@ const handlePreReleaseUserResponse = (
 	userResponse: string
 ): TE.TaskEither<Error, string> =>
 	match(userResponse.toLowerCase())
-		.with('y', () => TE.right(userResponse))
+		.with('y', () => {
+			logger.debug(
+				'User accepted running craig-build pre-release execution.'
+			);
+			return TE.right(userResponse);
+		})
 		.otherwise(() =>
 			TE.left(
 				new Error('User aborted craig-build pre-release execution.')
@@ -59,7 +65,7 @@ const handlePreReleaseVersionValidation = (
 ): TE.TaskEither<Error, BuildToolInfo> =>
 	pipe(
 		readUserInput(
-			`craig-build is currently on pre-release version ${buildToolInfo.version}. Are you sure you want to run it? (y/n)`
+			`craig-build is currently on pre-release version ${buildToolInfo.version}. Are you sure you want to run it? (y/n): `
 		),
 		TE.fromTask,
 		TE.chain(handlePreReleaseUserResponse),
