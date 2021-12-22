@@ -73,9 +73,9 @@ describe('getProjectInfo', () => {
 		const expectedContext: BuildContext = {
 			...buildContext,
 			projectInfo: O.some({
-				group: 'craigmiller160',
-				name: 'lib',
-				version: '1.0.0',
+				group: 'io.craigmiller160',
+				name: 'email-service',
+				version: '1.2.0',
 				isPreRelease: false
 			})
 		};
@@ -94,8 +94,8 @@ describe('getProjectInfo', () => {
 		const expectedContext: BuildContext = {
 			...buildContext,
 			projectInfo: O.some({
-				group: 'craigmiller160',
-				name: 'lib',
+				group: 'io.craigmiller160',
+				name: 'email-service',
 				version: '1.0.0-SNAPSHOT',
 				isPreRelease: true
 			})

@@ -20,12 +20,20 @@ import { PomXml } from '../configFileTypes/PomXml';
 
 // TODO what do I do about dependencies?
 
-const readMavenProjectInfo = (): E.Either<Error, ProjectInfo> => {
+const readMavenProjectInfo = (): E.Either<Error, ProjectInfo> =>
 	pipe(
 		readFile(path.resolve(getCwd(), 'pom.xml')),
-		E.chain((_) => parseXml<PomXml>(_))
+		E.chain((_) => parseXml<PomXml>(_)),
+		E.map((pomXml): ProjectInfo => {
+			const version = pomXml.project.version[0];
+			return {
+				group: pomXml.project.groupId[0],
+				name: pomXml.project.artifactId[0],
+				version,
+				isPreRelease: version.includes('SNAPSHOT')
+			};
+		})
 	);
-};
 
 const readNpmProjectInfo = (): E.Either<Error, ProjectInfo> =>
 	pipe(
