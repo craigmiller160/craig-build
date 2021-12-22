@@ -5,13 +5,14 @@ import { CommandType } from '../../src/context/CommandType';
 import * as O from 'fp-ts/Option';
 import { BuildToolInfo } from '../../src/context/BuildToolInfo';
 
-const defaultOptions: OptionValues = {
+export const defaultOptions: OptionValues = {
 	fullBuild: true
 };
-const defaultCommandInfo: CommandInfo = {
+export const defaultCommandInfo: CommandInfo = {
 	type: CommandType.FULL_BUILD
 };
-const defaultBuildToolInfo: BuildToolInfo = {
+export const defaultBuildToolInfo: BuildToolInfo = {
+	group: 'craigmiller160',
 	name: 'craig-build',
 	version: '2.0.0',
 	isPreRelease: false
