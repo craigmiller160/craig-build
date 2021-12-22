@@ -13,7 +13,9 @@ const handleCommandResult = (message: string): E.Either<Error, string> =>
 			when<string>((_) => _.length === 0),
 			() => E.right('')
 		)
-		.otherwise(() => E.left(new Error('Cannot run with uncommitted changes')));
+		.otherwise(() =>
+			E.left(new Error('Cannot run with uncommitted changes'))
+		);
 
 const execute: StageFunction = (context) =>
 	pipe(
