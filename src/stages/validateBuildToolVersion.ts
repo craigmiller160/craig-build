@@ -10,7 +10,6 @@ import { semverTrimVersion } from '../utils/semverUtils';
 import { NexusSearchResult } from '../services/NexusSearchResult';
 import { extractBuildToolInfo } from '../context/contextExtraction';
 import { readUserInput } from '../utils/readUserInput';
-import * as T from 'fp-ts/Task';
 
 const compareVersions = (
 	nexusItemVersion: string,
