@@ -55,7 +55,28 @@ describe('validateBuildToolVersion', () => {
 	});
 
 	it('tool version is not highest release version', async () => {
-		throw new Error();
+		const buildContext = createBuildContext({
+			buildToolInfo: O.some({
+				group: 'craigmiller160',
+				name: 'craig-build',
+				version: '1.1.0',
+				isPreRelease: false
+			})
+		});
+		const nexusResult: NexusSearchResult = {
+			items: [createNexusItem('1.2.0')]
+		};
+		searchForNpmReleasesMock.mockImplementation(() =>
+			TE.right(nexusResult)
+		);
+
+		const result = await validateBuildToolVersion.execute(buildContext)();
+		expect(result).toEqualLeft(new Error('craig-build has a newer release than 1.1.0. Please upgrade this tool.'));
+
+		expect(searchForNpmReleasesMock).toHaveBeenCalledWith(
+			'craigmiller160',
+			'craig-build'
+		);
 	});
 
 	it('user allows tool with pre-release version to run', async () => {
