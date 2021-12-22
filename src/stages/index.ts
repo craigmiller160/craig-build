@@ -3,10 +3,12 @@ import { getCommandInfo } from './getCommandInfo';
 import { getBuildToolInfo } from './getBuildToolInfo';
 import { validateBuildToolVersion } from './validateBuildToolVersion';
 import { checkForUncommittedChanges } from './checkForUncommittedChanges';
+import { getProjectType } from './getProjectType';
 
 export const STAGES: Stage[] = [
 	getCommandInfo,
 	getBuildToolInfo,
 	validateBuildToolVersion,
-	checkForUncommittedChanges
+	checkForUncommittedChanges,
+	getProjectType
 ];

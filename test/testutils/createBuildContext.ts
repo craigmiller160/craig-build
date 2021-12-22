@@ -4,6 +4,8 @@ import { CommandInfo } from '../../src/context/CommandInfo';
 import { CommandType } from '../../src/context/CommandType';
 import * as O from 'fp-ts/Option';
 import { BuildToolInfo } from '../../src/context/BuildToolInfo';
+import { ProjectType } from '../../src/context/ProjectType';
+import { ProjectInfo } from '../../src/context/ProjectInfo';
 
 const defaultOptions: OptionValues = {
 	fullBuild: true
@@ -18,18 +20,33 @@ const defaultBuildToolInfo: BuildToolInfo = {
 	isPreRelease: false
 };
 
+const defaultProjectType: ProjectType = ProjectType.NpmLibrary;
+
+const defaultProjectInfo: ProjectInfo = {
+	group: 'craigmiller150',
+	name: 'my-project',
+	version: '1.0.0',
+	isPreRelease: false
+};
+
 const defaultBuildContext: BuildContext = {
 	options: defaultOptions,
 	commandInfo: O.some(defaultCommandInfo),
-	buildToolInfo: O.some(defaultBuildToolInfo)
+	buildToolInfo: O.some(defaultBuildToolInfo),
+	projectType: O.some(defaultProjectType),
+	projectInfo: O.some(defaultProjectInfo)
 };
 
 export const createBuildContext = ({
 	options = defaultOptions,
 	commandInfo = O.some(defaultCommandInfo),
-	buildToolInfo = O.some(defaultBuildToolInfo)
+	buildToolInfo = O.some(defaultBuildToolInfo),
+	projectType = O.some(defaultProjectType),
+	projectInfo = O.some(defaultProjectInfo)
 }: Partial<BuildContext> = defaultBuildContext): BuildContext => ({
 	options,
 	commandInfo,
-	buildToolInfo
+	buildToolInfo,
+	projectType,
+	projectInfo
 });
