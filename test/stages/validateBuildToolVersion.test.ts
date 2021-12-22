@@ -1,7 +1,4 @@
-import {
-	createBuildContext,
-	defaultBuildToolInfo
-} from '../testutils/createBuildContext';
+import { createBuildContext } from '../testutils/createBuildContext';
 import * as O from 'fp-ts/Option';
 import { validateBuildToolVersion } from '../../src/stages/validateBuildToolVersion';
 import { searchForNpmReleases } from '../../src/services/NexusRepoApi';
@@ -35,8 +32,10 @@ describe('validateBuildToolVersion', () => {
 	it('tool version is highest release version', async () => {
 		const buildContext = createBuildContext({
 			buildToolInfo: O.some({
-				...defaultBuildToolInfo,
-				version: '1.1.0'
+				group: 'craigmiller160',
+				name: 'craig-build',
+				version: '1.1.0',
+				isPreRelease: false
 			})
 		});
 		const nexusResult: NexusSearchResult = {
