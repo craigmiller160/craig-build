@@ -41,7 +41,7 @@ describe('getProjectType', () => {
 			projectType: O.some(ProjectType.MavenLibrary)
 		};
 		const result = await getProjectType.execute(buildContext)();
-		expect(result).toEqualRight(expectedContext);;
+		expect(result).toEqualRight(expectedContext);
 	});
 
 	it('is NpmApplication', async () => {

@@ -44,7 +44,11 @@ const checkProjectFilesForType = (): E.Either<Error, ProjectType> =>
 			() => E.right(ProjectType.MavenLibrary)
 		)
 		.with(
-			when<string>((_) => fileExists(_, DOCKER_PROJECT_FILE) && fileExists(_, DEPLOY_PATH)),
+			when<string>(
+				(_) =>
+					fileExists(_, DOCKER_PROJECT_FILE) &&
+					fileExists(_, DEPLOY_PATH)
+			),
 			() => E.right(ProjectType.DockerApplication)
 		)
 		.with(
