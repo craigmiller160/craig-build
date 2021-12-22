@@ -31,6 +31,26 @@ const checkProjectFilesForType = (): E.Either<Error, ProjectType> =>
 			when<string>((_) => fileExists(_, NPM_PROJECT_FILE)),
 			() => E.right(ProjectType.NpmLibrary)
 		)
+		.with(
+			when<string>(
+				(_) =>
+					fileExists(_, MVN_PROJECT_FILE) &&
+					fileExists(_, DEPLOY_PATH)
+			),
+			() => E.right(ProjectType.MavenApplication)
+		)
+		.with(
+			when<string>((_) => fileExists(_, MVN_PROJECT_FILE)),
+			() => E.right(ProjectType.MavenLibrary)
+		)
+		.with(
+			when<string>((_) => fileExists(_, DOCKER_PROJECT_FILE) && fileExists(_, DEPLOY_PATH)),
+			() => E.right(ProjectType.DockerApplication)
+		)
+		.with(
+			when<string>((_) => fileExists(_, DOCKER_PROJECT_FILE)),
+			() => E.right(ProjectType.DockerImage)
+		)
 		.otherwise(() => E.left(new Error('Unable to identify ProjectType')));
 
 const execute: StageFunction = (context) =>
