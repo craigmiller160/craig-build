@@ -89,14 +89,14 @@ describe('getProjectInfo', () => {
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
-			projectType: O.some(ProjectType.NpmLibrary)
+			projectType: O.some(ProjectType.MavenLibrary)
 		};
 		const expectedContext: BuildContext = {
 			...buildContext,
 			projectInfo: O.some({
 				group: 'io.craigmiller160',
 				name: 'email-service',
-				version: '1.0.0-SNAPSHOT',
+				version: '1.2.0-SNAPSHOT',
 				isPreRelease: true
 			})
 		};
