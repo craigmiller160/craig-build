@@ -13,14 +13,23 @@
 
 import { createLogger, transports, format } from 'winston';
 
-const myFormat = format.printf(
-	({ level, message, timestamp }) => `${timestamp} [${level}] - ${message}`
-);
+const myFormat = format.printf(({ level, message, timestamp, stack }) => {
+	return `[${timestamp}] [${level}] - ${stack ?? message}`;
+});
 
 export const logger = createLogger({
 	level: 'debug',
 	format: format.combine(
-		format.timestamp(),
+		format((info) => {
+			info.level = info.level.toUpperCase();
+			return info;
+		})(),
+		format.errors({
+			stack: true
+		}),
+		format.timestamp({
+			format: 'YYYY-MM-DD HH:mm:ss.SSS'
+		}),
 		format.colorize(),
 		format.prettyPrint(),
 		format.simple(),
