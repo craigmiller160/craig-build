@@ -7,7 +7,13 @@ import { ProjectInfo } from '../context/ProjectInfo';
 import { match, when } from 'ts-pattern';
 import * as TE from 'fp-ts/TaskEither';
 import * as O from 'fp-ts/Option';
-import {isDocker, isMaven, isNpm} from '../context/projectTypeUtils';
+import { isDocker, isMaven, isNpm } from '../context/projectTypeUtils';
+import { readFile } from '../functions/readFile';
+import path from 'path';
+import { getCwd } from '../command/getCwd';
+import { npmSeparateGroupAndName } from '../utils/npmSeparateGroupAndName';
+import { parseJson } from '../functions/Json';
+import { PackageJson } from '../configFileTypes/PackageJson';
 
 // TODO what do I do about dependencies?
 
@@ -15,9 +21,20 @@ const readMavenProjectInfo = (): E.Either<Error, ProjectInfo> => {
 	throw new Error();
 };
 
-const readNpmProjectInfo = (): E.Either<Error, ProjectInfo> => {
-	throw new Error();
-};
+const readNpmProjectInfo = (): E.Either<Error, ProjectInfo> =>
+	pipe(
+		readFile(path.resolve(getCwd(), 'package.json')),
+		E.chain((_) => parseJson<PackageJson>(_)),
+		E.map((packageJson): ProjectInfo => {
+			const [group, name] = npmSeparateGroupAndName(packageJson.name);
+			return {
+				group,
+				name,
+				version: packageJson.version,
+				isPreRelease: packageJson.version.includes('beta')
+			};
+		})
+	);
 
 const readDockerProjectInfo = (): E.Either<Error, ProjectInfo> => {
 	throw new Error();
