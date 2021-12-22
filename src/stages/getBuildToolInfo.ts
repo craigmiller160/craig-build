@@ -13,7 +13,7 @@ import * as TE from 'fp-ts/TaskEither';
 
 const execute: StageFunction = (context) =>
 	pipe(
-		readFile(path.resolve(__dirname, '..', 'package.json')),
+		readFile(path.resolve(__dirname, '..', '..', 'package.json')),
 		E.chain((_) => parseJson<PackageJson>(_)),
 		E.map((_) => {
 			const [group, name] = npmSeparateGroupAndName(_.name);

@@ -12,6 +12,7 @@ const defaultCommandInfo: CommandInfo = {
 	type: CommandType.FULL_BUILD
 };
 const defaultBuildToolInfo: BuildToolInfo = {
+	group: 'craigmiller160',
 	name: 'craig-build',
 	version: '2.0.0',
 	isPreRelease: false

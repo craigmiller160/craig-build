@@ -12,6 +12,7 @@ import { setupBuildContext } from './setup';
 import { execute } from './execute';
 import * as TE from 'fp-ts/TaskEither';
 import { logger } from './logger';
+import * as T from 'fp-ts/Task';
 
 const packageJson: PackageJson = pipe(
 	readFile(path.resolve(__dirname, '..', 'package.json')),
@@ -32,11 +33,11 @@ pipe(
 	TE.fold(
 		() => {
 			logger.error('Build failed');
-			process.exit(1);
+			return T.of(1);
 		},
 		() => {
 			logger.info('Build completed');
-			process.exit(0);
+			return T.of(0);
 		}
 	)
-)();
+)().then(process.exit);

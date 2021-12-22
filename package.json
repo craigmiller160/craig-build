@@ -1,6 +1,6 @@
 {
   "name": "@craigmiller160/craig-build",
-  "version": "2.0.0-beta",
+  "version": "2.0.0-beta.8",
   "author": "craigmiller160",
   "bin": {
     "craig-build": "build/index.js"
@@ -13,9 +13,9 @@
   ],
   "scripts": {
     "lint": "eslint . --fix --max-warnings=0",
-    "forceBuild": "tsc",
+    "forceBuild": "rm -rf ./build && tsc",
     "test": "jest",
-    "build": "yarn lint && jest && tsc"
+    "build": "yarn lint && yarn test && yarn forceBuild"
   },
   "devDependencies": {
     "@relmify/jest-fp-ts": "^1.1.1",
@@ -47,8 +47,6 @@
     "cross-spawn": "^7.0.3",
     "fp-ts": "^2.9.3",
     "nanoid": "^3.1.30",
-    "pino": "^7.6.0",
-    "pino-pretty": "^7.3.0",
     "qs": "^6.9.6",
     "semver": "^7.3.4",
     "shell-env": "^3.0.1",
@@ -56,6 +54,7 @@
     "sync-env": "^1.0.5",
     "ts-custom-error": "^3.2.0",
     "ts-pattern": "^3.3.4",
+    "winston": "^3.3.3",
     "xml2js": "^0.4.23",
     "yaml": "^1.10.0"
   }
