@@ -33,11 +33,11 @@ pipe(
 	TE.fold(
 		() => {
 			logger.error('Build failed');
-			return T.of('');
+			return T.of(1);
 		},
 		() => {
 			logger.info('Build completed');
-			return T.of('');
+			return T.of(0);
 		}
 	)
-)();
+)().then(process.exit);

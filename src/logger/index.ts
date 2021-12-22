@@ -13,7 +13,7 @@
 
 import { createLogger, transports, format } from 'winston';
 
-const myFormat = format.printf(({ level, message, timestamp, stack }) => {
+const myFormat = format.printf(({ level, message, timestamp, stack, ...rest }) => {
 	return `[${timestamp}] [${level}] - ${stack ?? message}`;
 });
 
@@ -32,7 +32,7 @@ export const logger = createLogger({
 		}),
 		format.colorize(),
 		format.prettyPrint(),
-		format.simple(),
+		// format.simple(),
 		myFormat
 	),
 	transports: [new transports.Console()]
