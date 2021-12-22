@@ -42,6 +42,8 @@ const handleReleaseVersionValidation = (
 		TE.map(() => buildToolInfo)
 	);
 
+// TODO sounds like the prompt library is a great option for this
+
 const handlePreReleaseVersionValidation = (
 	buildToolInfo: BuildToolInfo
 ): TE.TaskEither<Error, BuildToolInfo> => {
