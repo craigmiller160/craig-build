@@ -9,6 +9,8 @@ import semver from 'semver';
 import { semverTrimVersion } from '../utils/semverUtils';
 import { NexusSearchResult } from '../services/NexusSearchResult';
 import { extractBuildToolInfo } from '../context/contextExtraction';
+import { readUserInput } from '../utils/readUserInput';
+import * as T from 'fp-ts/Task';
 
 const compareVersions = (
 	nexusItemVersion: string,
@@ -44,10 +46,15 @@ const handleReleaseVersionValidation = (
 
 const handlePreReleaseVersionValidation = (
 	buildToolInfo: BuildToolInfo
-): TE.TaskEither<Error, BuildToolInfo> => {
-	// TODO finish this
-	throw new Error();
-};
+): TE.TaskEither<Error, BuildToolInfo> =>
+	pipe(
+		readUserInput(
+			`craig-build is currently on pre-release version ${buildToolInfo.version}. Are you sure you want to run it? (y/n)`
+		),
+		TE.fromTask,
+		TE.chain((response) => TE.right<Error, string>(response)),
+		TE.map(() => buildToolInfo)
+	);
 
 const checkBuildToolInfo = (
 	buildToolInfo: BuildToolInfo
