@@ -32,12 +32,12 @@ describe('getProjectInfo', () => {
 			...buildContext,
 			projectInfo: O.some({
 				group: 'craigmiller160',
-				name: 'lib',
+				name: 'craig-build',
 				version: '1.0.0',
 				isPreRelease: false
 			})
 		};
-		const result = await getProjectInfo.execute(buildContext);
+		const result = await getProjectInfo.execute(buildContext)();
 		expect(result).toEqualRight(expectedContext);
 	});
 
@@ -53,12 +53,12 @@ describe('getProjectInfo', () => {
 			...buildContext,
 			projectInfo: O.some({
 				group: 'craigmiller160',
-				name: 'lib',
+				name: 'craig-build',
 				version: '1.0.0-beta',
 				isPreRelease: true
 			})
 		};
-		const result = await getProjectInfo.execute(buildContext);
+		const result = await getProjectInfo.execute(buildContext)();
 		expect(result).toEqualRight(expectedContext);
 	});
 
@@ -79,7 +79,7 @@ describe('getProjectInfo', () => {
 				isPreRelease: false
 			})
 		};
-		const result = await getProjectInfo.execute(buildContext);
+		const result = await getProjectInfo.execute(buildContext)();
 		expect(result).toEqualRight(expectedContext);
 	});
 
@@ -100,7 +100,7 @@ describe('getProjectInfo', () => {
 				isPreRelease: true
 			})
 		};
-		const result = await getProjectInfo.execute(buildContext);
+		const result = await getProjectInfo.execute(buildContext)();
 		expect(result).toEqualRight(expectedContext);
 	});
 
@@ -121,7 +121,7 @@ describe('getProjectInfo', () => {
 				isPreRelease: false
 			})
 		};
-		const result = await getProjectInfo.execute(buildContext);
+		const result = await getProjectInfo.execute(buildContext)();
 		expect(result).toEqualRight(expectedContext);
 	});
 
@@ -142,7 +142,7 @@ describe('getProjectInfo', () => {
 				isPreRelease: true
 			})
 		};
-		const result = await getProjectInfo.execute(buildContext);
+		const result = await getProjectInfo.execute(buildContext)();
 		expect(result).toEqualRight(expectedContext);
 	});
 });
