@@ -42,22 +42,107 @@ describe('getProjectInfo', () => {
 	});
 
 	it('NPM pre-release project', async () => {
-		throw new Error();
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDirPath, 'npmBetaLibrary')
+		);
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: O.some(ProjectType.NpmLibrary)
+		};
+		const expectedContext: BuildContext = {
+			...buildContext,
+			projectInfo: O.some({
+				group: 'craigmiller160',
+				name: 'lib',
+				version: '1.0.0-beta',
+				isPreRelease: true
+			})
+		};
+		const result = await getProjectInfo.execute(buildContext);
+		expect(result).toEqualRight(expectedContext);
 	});
 
 	it('Maven release project', async () => {
-		throw new Error();
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDirPath, 'mavenReleaseLibrary')
+		);
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: O.some(ProjectType.MavenLibrary)
+		};
+		const expectedContext: BuildContext = {
+			...buildContext,
+			projectInfo: O.some({
+				group: 'craigmiller160',
+				name: 'lib',
+				version: '1.0.0',
+				isPreRelease: false
+			})
+		};
+		const result = await getProjectInfo.execute(buildContext);
+		expect(result).toEqualRight(expectedContext);
 	});
 
 	it('Maven pre-release project', async () => {
-		throw new Error();
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDirPath, 'mavenSnapshotLibrary')
+		);
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: O.some(ProjectType.NpmLibrary)
+		};
+		const expectedContext: BuildContext = {
+			...buildContext,
+			projectInfo: O.some({
+				group: 'craigmiller160',
+				name: 'lib',
+				version: '1.0.0-SNAPSHOT',
+				isPreRelease: true
+			})
+		};
+		const result = await getProjectInfo.execute(buildContext);
+		expect(result).toEqualRight(expectedContext);
 	});
 
 	it('Docker release project', async () => {
-		throw new Error();
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDirPath, 'dockerReleaseImage')
+		);
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: O.some(ProjectType.DockerImage)
+		};
+		const expectedContext: BuildContext = {
+			...buildContext,
+			projectInfo: O.some({
+				group: 'craigmiller160',
+				name: 'lib',
+				version: '1.0.0',
+				isPreRelease: false
+			})
+		};
+		const result = await getProjectInfo.execute(buildContext);
+		expect(result).toEqualRight(expectedContext);
 	});
 
 	it('Docker pre-release project', async () => {
-		throw new Error();
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDirPath, 'dockerBetaImage')
+		);
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: O.some(ProjectType.DockerImage)
+		};
+		const expectedContext: BuildContext = {
+			...buildContext,
+			projectInfo: O.some({
+				group: 'craigmiller160',
+				name: 'lib',
+				version: '1.0.0-beta',
+				isPreRelease: true
+			})
+		};
+		const result = await getProjectInfo.execute(buildContext);
+		expect(result).toEqualRight(expectedContext);
 	});
 });
