@@ -1,27 +1,93 @@
-export {};
+import { getCwdMock } from '../testutils/getCwdMock';
+import path from 'path';
+import { getProjectType } from '../../src/stages/getProjectType';
+import { createBuildContext } from '../testutils/createBuildContext';
+import { BuildContext } from '../../src/context/BuildContext';
+import ProjectType from '../../old-src/types/ProjectType';
+import * as O from 'fp-ts/Option';
+
+const baseWorkingDirPath = path.resolve(
+	process.cwd(),
+	'test',
+	'__working-dirs__'
+);
+
+const buildContext = createBuildContext();
 
 describe('getProjectType', () => {
-	it('is NpmLibrary', () => {
-		throw new Error();
+	beforeEach(() => {
+		jest.resetAllMocks();
 	});
 
-	it('is MavenLibrary', () => {
-		throw new Error();
+	it('is NpmLibrary', async () => {
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDirPath, 'npmReleaseLibrary')
+		);
+		const expectedContext: BuildContext = {
+			...buildContext,
+			projectType: O.some(ProjectType.NpmLibrary)
+		};
+		const result = await getProjectType.execute(buildContext)();
+		expect(result).toEqual(expectedContext);
 	});
 
-	it('is NpmApplication', () => {
-		throw new Error();
+	it('is MavenLibrary', async () => {
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDirPath, 'mavenReleaseLibrary')
+		);
+		const expectedContext: BuildContext = {
+			...buildContext,
+			projectType: O.some(ProjectType.MavenLibrary)
+		};
+		const result = await getProjectType.execute(buildContext)();
+		expect(result).toEqual(expectedContext);;
 	});
 
-	it('is MavenApplication', () => {
-		throw new Error();
+	it('is NpmApplication', async () => {
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDirPath, 'npmReleaseApplication')
+		);
+		const expectedContext: BuildContext = {
+			...buildContext,
+			projectType: O.some(ProjectType.NpmApplication)
+		};
+		const result = await getProjectType.execute(buildContext)();
+		expect(result).toEqual(expectedContext);
 	});
 
-	it('is DockerApplication', () => {
-		throw new Error();
+	it('is MavenApplication', async () => {
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDirPath, 'mavenReleaseApplication')
+		);
+		const expectedContext: BuildContext = {
+			...buildContext,
+			projectType: O.some(ProjectType.MavenApplication)
+		};
+		const result = await getProjectType.execute(buildContext)();
+		expect(result).toEqual(expectedContext);
 	});
 
-	it('is DockerImage', () => {
-		throw new Error();
+	it('is DockerApplication', async () => {
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDirPath, 'dockerReleaseApplication')
+		);
+		const expectedContext: BuildContext = {
+			...buildContext,
+			projectType: O.some(ProjectType.DockerApplication)
+		};
+		const result = await getProjectType.execute(buildContext)();
+		expect(result).toEqual(expectedContext);
+	});
+
+	it('is DockerImage', async () => {
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDirPath, 'dockerReleaseImage')
+		);
+		const expectedContext: BuildContext = {
+			...buildContext,
+			projectType: O.some(ProjectType.DockerImage)
+		};
+		const result = await getProjectType.execute(buildContext)();
+		expect(result).toEqual(expectedContext);
 	});
 });
