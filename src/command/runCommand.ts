@@ -34,15 +34,25 @@ const getCommandOptions = (options?: Partial<CommandOptions>): CommandOptions =>
 		)
 	);
 
-const handleSuccess = (result: SpawnSyncReturns<Buffer>) => {
+const handleSuccess = (
+	result: SpawnSyncReturns<Buffer>,
+	printOutput: boolean
+) => {
 	const output = result.stdout.toString();
-	console.log(output); // eslint-disable-line no-console
+	if (printOutput) {
+		console.log(output); // eslint-disable-line no-console
+	}
 	return E.right(output);
 };
 
-const handleFailure = (result: SpawnSyncReturns<Buffer>) => {
+const handleFailure = (
+	result: SpawnSyncReturns<Buffer>,
+	printOutput: boolean
+) => {
 	const output = result.stderr.toString();
-	console.log(output); // eslint-disable-line no-console
+	if (printOutput) {
+		console.log(output); // eslint-disable-line no-console
+	}
 	return E.left(new Error(output));
 };
 
@@ -69,11 +79,11 @@ export const runCommand = (
 	return match(status)
 		.with(
 			when<number>((_) => _ === 0),
-			() => handleSuccess(result)
+			() => handleSuccess(result, printOutput)
 		)
 		.with(
 			when<number>((_) => _ === -1),
 			handleNoStatus
 		)
-		.otherwise(() => handleFailure(result));
+		.otherwise(() => handleFailure(result, printOutput));
 };
