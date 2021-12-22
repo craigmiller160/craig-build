@@ -4,9 +4,10 @@ import { extractProjectType } from '../context/contextExtraction';
 import * as E from 'fp-ts/Either';
 import { ProjectType } from '../context/ProjectType';
 import { ProjectInfo } from '../context/ProjectInfo';
-import { match } from 'ts-pattern';
+import { match, when } from 'ts-pattern';
 import * as TE from 'fp-ts/TaskEither';
 import * as O from 'fp-ts/Option';
+import {isDocker, isMaven, isNpm} from '../context/projectTypeUtils';
 
 // TODO what do I do about dependencies?
 
@@ -26,7 +27,9 @@ const readProjectInfoByType = (
 	projectType: ProjectType
 ): E.Either<Error, ProjectInfo> =>
 	match(projectType)
-		.with(ProjectType.MavenLibrary, readMavenProjectInfo)
+		.with(when(isMaven), readMavenProjectInfo)
+		.with(when(isNpm), readNpmProjectInfo)
+		.with(when(isDocker), readDockerProjectInfo)
 		.otherwise(() =>
 			E.left(new Error(`Unsupported ProjectType: ${projectType}`))
 		);

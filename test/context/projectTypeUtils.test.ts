@@ -1,5 +1,5 @@
 import ProjectType from '../../old-src/types/ProjectType';
-import {isDocker, isMaven, isNpm} from '../../old-src/utils/projectTypeUtils';
+import { isDocker, isMaven, isNpm } from '../../old-src/utils/projectTypeUtils';
 
 const projectTypes = Object.values(ProjectType);
 
