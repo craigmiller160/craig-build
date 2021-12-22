@@ -15,7 +15,8 @@
     "lint": "eslint . --fix --max-warnings=0",
     "forceBuild": "rm -rf ./build && tsc",
     "test": "jest",
-    "build": "yarn lint && yarn test && yarn forceBuild"
+    "build": "yarn lint && yarn test && yarn forceBuild",
+    "validate": "yarn lint && yarn test"
   },
   "devDependencies": {
     "@relmify/jest-fp-ts": "^1.1.1",
