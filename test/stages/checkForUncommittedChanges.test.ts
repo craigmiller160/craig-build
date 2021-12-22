@@ -27,7 +27,9 @@ describe('checkForUncommittedChanges', () => {
 		runCommandMock.mockImplementation(() => E.right('abc'));
 
 		const result = await checkForUncommittedChanges.execute(buildContext)();
-		expect(result).toEqualLeft(new Error('Cannot run with uncommitted changes'));
+		expect(result).toEqualLeft(
+			new Error('Cannot run with uncommitted changes')
+		);
 
 		expect(runCommandMock).toHaveBeenCalledWith(GIT_COMMAND);
 	});
