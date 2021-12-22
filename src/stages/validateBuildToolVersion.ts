@@ -44,6 +44,17 @@ const handleReleaseVersionValidation = (
 		TE.map(() => buildToolInfo)
 	);
 
+const handlePreReleaseUserResponse = (
+	userResponse: string
+): TE.TaskEither<Error, string> =>
+	match(userResponse.toLowerCase())
+		.with('y', () => TE.right(userResponse))
+		.otherwise(() =>
+			TE.left(
+				new Error('User aborted craig-build pre-release execution.')
+			)
+		);
+
 const handlePreReleaseVersionValidation = (
 	buildToolInfo: BuildToolInfo
 ): TE.TaskEither<Error, BuildToolInfo> =>
@@ -52,7 +63,7 @@ const handlePreReleaseVersionValidation = (
 			`craig-build is currently on pre-release version ${buildToolInfo.version}. Are you sure you want to run it? (y/n)`
 		),
 		TE.fromTask,
-		TE.chain((response) => TE.right<Error, string>(response)),
+		TE.chain(handlePreReleaseUserResponse),
 		TE.map(() => buildToolInfo)
 	);
 
