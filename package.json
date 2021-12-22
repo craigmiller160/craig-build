@@ -1,6 +1,6 @@
 {
   "name": "@craigmiller160/craig-build",
-  "version": "2.0.0-beta.1",
+  "version": "2.0.0-beta.2",
   "author": "craigmiller160",
   "bin": {
     "craig-build": "build/index.js"
@@ -13,9 +13,9 @@
   ],
   "scripts": {
     "lint": "eslint . --fix --max-warnings=0",
-    "forceBuild": "tsc",
+    "forceBuild": "rm -rf ./build && tsc",
     "test": "jest",
-    "build": "yarn lint && jest && tsc"
+    "build": "yarn lint && yarn test && yarn forceBuild"
   },
   "devDependencies": {
     "@relmify/jest-fp-ts": "^1.1.1",
