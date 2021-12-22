@@ -5,7 +5,7 @@ import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
 import { match, when } from 'ts-pattern';
 
-const GIT_COMMAND = 'git status --porcelain';
+export const GIT_COMMAND = 'git status --porcelain';
 
 const handleCommandResult = (message: string): E.Either<Error, string> =>
 	match(message)
