@@ -15,11 +15,16 @@ import { npmSeparateGroupAndName } from '../utils/npmSeparateGroupAndName';
 import { parseJson } from '../functions/Json';
 import { PackageJson } from '../configFileTypes/PackageJson';
 import { DockerJson } from '../configFileTypes/DockerJson';
+import { parseXml } from '../functions/Xml';
+import { PomXml } from '../configFileTypes/PomXml';
 
 // TODO what do I do about dependencies?
 
 const readMavenProjectInfo = (): E.Either<Error, ProjectInfo> => {
-	throw new Error();
+	pipe(
+		readFile(path.resolve(getCwd(), 'pom.xml')),
+		E.chain((_) => parseXml<PomXml>(_))
+	);
 };
 
 const readNpmProjectInfo = (): E.Either<Error, ProjectInfo> =>
