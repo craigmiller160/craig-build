@@ -116,7 +116,7 @@ describe('getProjectInfo', () => {
 			...buildContext,
 			projectInfo: O.some({
 				group: 'craigmiller160',
-				name: 'lib',
+				name: 'nginx-base',
 				version: '1.0.0',
 				isPreRelease: false
 			})
@@ -137,7 +137,7 @@ describe('getProjectInfo', () => {
 			...buildContext,
 			projectInfo: O.some({
 				group: 'craigmiller160',
-				name: 'lib',
+				name: 'nginx-base',
 				version: '1.0.0-beta',
 				isPreRelease: true
 			})

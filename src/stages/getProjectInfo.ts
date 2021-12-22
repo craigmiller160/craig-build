@@ -14,6 +14,7 @@ import { getCwd } from '../command/getCwd';
 import { npmSeparateGroupAndName } from '../utils/npmSeparateGroupAndName';
 import { parseJson } from '../functions/Json';
 import { PackageJson } from '../configFileTypes/PackageJson';
+import { DockerJson } from '../configFileTypes/DockerJson';
 
 // TODO what do I do about dependencies?
 
@@ -36,9 +37,20 @@ const readNpmProjectInfo = (): E.Either<Error, ProjectInfo> =>
 		})
 	);
 
-const readDockerProjectInfo = (): E.Either<Error, ProjectInfo> => {
-	throw new Error();
-};
+const readDockerProjectInfo = (): E.Either<Error, ProjectInfo> =>
+	pipe(
+		readFile(path.resolve(getCwd(), 'docker.json')),
+		E.chain((_) => parseJson<DockerJson>(_)),
+		E.map((dockerJson): ProjectInfo => {
+			const [group, name] = npmSeparateGroupAndName(dockerJson.name);
+			return {
+				group,
+				name,
+				version: dockerJson.version,
+				isPreRelease: dockerJson.version.includes('beta')
+			};
+		})
+	);
 
 const readProjectInfoByType = (
 	projectType: ProjectType
