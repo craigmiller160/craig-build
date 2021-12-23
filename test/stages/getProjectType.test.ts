@@ -6,12 +6,7 @@ import { BuildContext } from '../../src/context/BuildContext';
 import ProjectType from '../../old-src/types/ProjectType';
 import * as O from 'fp-ts/Option';
 import '@relmify/jest-fp-ts';
-
-const baseWorkingDirPath = path.resolve(
-	process.cwd(),
-	'test',
-	'__working-dirs__'
-);
+import { baseWorkingDir } from '../testutils/baseWorkingDir';
 
 const buildContext = createBuildContext();
 
@@ -22,7 +17,7 @@ describe('getProjectType', () => {
 
 	it('is NpmLibrary', async () => {
 		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDirPath, 'npmReleaseLibrary')
+			path.resolve(baseWorkingDir, 'npmReleaseLibrary')
 		);
 		const expectedContext: BuildContext = {
 			...buildContext,
@@ -34,7 +29,7 @@ describe('getProjectType', () => {
 
 	it('is MavenLibrary', async () => {
 		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDirPath, 'mavenReleaseLibrary')
+			path.resolve(baseWorkingDir, 'mavenReleaseLibrary')
 		);
 		const expectedContext: BuildContext = {
 			...buildContext,
@@ -46,7 +41,7 @@ describe('getProjectType', () => {
 
 	it('is NpmApplication', async () => {
 		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDirPath, 'npmReleaseApplication')
+			path.resolve(baseWorkingDir, 'npmReleaseApplication')
 		);
 		const expectedContext: BuildContext = {
 			...buildContext,
@@ -58,7 +53,7 @@ describe('getProjectType', () => {
 
 	it('is MavenApplication', async () => {
 		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDirPath, 'mavenReleaseApplication')
+			path.resolve(baseWorkingDir, 'mavenReleaseApplication')
 		);
 		const expectedContext: BuildContext = {
 			...buildContext,
@@ -70,7 +65,7 @@ describe('getProjectType', () => {
 
 	it('is DockerApplication', async () => {
 		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDirPath, 'dockerReleaseApplication')
+			path.resolve(baseWorkingDir, 'dockerReleaseApplication')
 		);
 		const expectedContext: BuildContext = {
 			...buildContext,
@@ -82,7 +77,7 @@ describe('getProjectType', () => {
 
 	it('is DockerImage', async () => {
 		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDirPath, 'dockerReleaseImage')
+			path.resolve(baseWorkingDir, 'dockerReleaseImage')
 		);
 		const expectedContext: BuildContext = {
 			...buildContext,
