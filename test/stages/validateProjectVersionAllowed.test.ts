@@ -1,6 +1,25 @@
-export {};
+import {
+	searchForDockerReleases,
+	searchForMavenReleases,
+	searchForNpmReleases
+} from '../../src/services/NexusRepoApi';
+import '@relmify/jest-fp-ts';
+
+jest.mock('../../src/services/NexusRepoApi', () => ({
+	searchForDockerReleases: jest.fn(),
+	searchForMavenReleases: jest.fn(),
+	searchForNpmReleases: jest.fn()
+}));
+
+const searchForDockerReleasesMock = searchForDockerReleases as jest.Mock;
+const searchForMavenReleasesMock = searchForMavenReleases as jest.Mock;
+const searchForNpmReleasesMock = searchForNpmReleases as jest.Mock;
 
 describe('validateProjectVersionAllowed', () => {
+	beforeEach(() => {
+		jest.resetAllMocks();
+	});
+
 	it('allows npm pre-release version', () => {
 		throw new Error();
 	});
