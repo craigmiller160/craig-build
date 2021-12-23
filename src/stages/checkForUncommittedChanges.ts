@@ -1,4 +1,4 @@
-import { Stage, StageFunction } from './Stage';
+import { EarlyStage, EarlyStageFunction } from './Stage';
 import { runCommand } from '../command/runCommand';
 import { pipe } from 'fp-ts/function';
 import * as E from 'fp-ts/Either';
@@ -17,7 +17,7 @@ const handleCommandResult = (message: string): E.Either<Error, string> =>
 			E.left(new Error('Cannot run with uncommitted changes'))
 		);
 
-const execute: StageFunction = (context) =>
+const execute: EarlyStageFunction = (context) =>
 	pipe(
 		runCommand(GIT_COMMAND),
 		E.chain(handleCommandResult),
@@ -25,7 +25,7 @@ const execute: StageFunction = (context) =>
 		TE.map(() => context)
 	);
 
-export const checkForUncommittedChanges: Stage = {
+export const checkForUncommittedChanges: EarlyStage = {
 	name: 'Check For Uncommitted Changes',
 	execute
 };

@@ -1,4 +1,4 @@
-import { Stage, StageFunction } from './Stage';
+import { EarlyStage, EarlyStageFunction, Stage, StageFunction } from './Stage';
 import { BuildContext } from '../context/BuildContext';
 import { match } from 'ts-pattern';
 import { pipe } from 'fp-ts/function';
@@ -79,7 +79,7 @@ const checkBuildToolInfo = (
 		.with({ isPreRelease: true }, handlePreReleaseVersionValidation)
 		.otherwise(handleReleaseVersionValidation);
 
-const execute: StageFunction = (context: BuildContext) =>
+const execute: EarlyStageFunction = (context) =>
 	pipe(
 		extractBuildToolInfo(context),
 		TE.fromEither,
@@ -87,7 +87,7 @@ const execute: StageFunction = (context: BuildContext) =>
 		TE.map(() => context)
 	);
 
-export const validateBuildToolVersion: Stage = {
+export const validateBuildToolVersion: EarlyStage = {
 	name: 'Validate Build Tool Version',
 	execute
 };
