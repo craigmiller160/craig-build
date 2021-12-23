@@ -7,7 +7,6 @@ import * as E from 'fp-ts/Either';
 import { parseJson } from '../functions/Json';
 import { npmSeparateGroupAndName } from '../utils/npmSeparateGroupAndName';
 import { BuildToolInfo } from '../context/BuildToolInfo';
-import { BuildContext } from '../context/BuildContext';
 import * as O from 'fp-ts/Option';
 import * as TE from 'fp-ts/TaskEither';
 import { NPM_PROJECT_FILE } from '../configFileTypes/constants';

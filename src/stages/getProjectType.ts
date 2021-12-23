@@ -1,4 +1,4 @@
-import { EarlyStage, EarlyStageFunction, Stage, StageFunction } from './Stage';
+import { EarlyStage, EarlyStageFunction } from './Stage';
 import path from 'path';
 import { getCwd } from '../command/getCwd';
 import fs from 'fs';

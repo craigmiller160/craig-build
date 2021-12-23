@@ -1,4 +1,4 @@
-import { EarlyStage, EarlyStageFunction, Stage, StageFunction } from './Stage';
+import { EarlyStage, EarlyStageFunction } from './Stage';
 import { pipe } from 'fp-ts/function';
 import { extractProjectType } from '../context/contextExtraction';
 import * as E from 'fp-ts/Either';

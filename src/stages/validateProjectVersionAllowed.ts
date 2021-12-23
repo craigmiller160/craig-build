@@ -25,11 +25,6 @@ import {
 import { NexusSearchResult } from '../services/NexusSearchResult';
 import * as A from 'fp-ts/Array';
 
-interface ExtractedValues {
-	readonly projectType: ProjectType;
-	readonly projectInfo: ProjectInfo;
-}
-
 const isReleaseVersionUnique = (
 	nexusResult: NexusSearchResult,
 	version: string
@@ -40,41 +35,26 @@ const isReleaseVersionUnique = (
 	).length === 0;
 
 const validateReleaseVersion = (
-	values: ExtractedValues,
+	context: BuildContext,
 	searchFn: NexusRepoGroupSearchFn
-): TE.TaskEither<Error, ExtractedValues> =>
+): TE.TaskEither<Error, BuildContext> =>
 	pipe(
-		searchFn(values.projectInfo.group, values.projectInfo.name),
+		searchFn(context.projectInfo.group, context.projectInfo.name),
 		TE.filterOrElse(
 			(nexusResult) =>
-				isReleaseVersionUnique(nexusResult, values.projectInfo.version),
+				isReleaseVersionUnique(
+					nexusResult,
+					context.projectInfo.version
+				),
 			() => new Error('Project release version is not unique')
 		),
-		TE.map(() => values)
-	);
-
-const extractValues = (
-	context: BuildContext
-): E.Either<Error, ExtractedValues> =>
-	pipe(
-		extractProjectType(context),
-		E.chain((projectType) =>
-			pipe(
-				extractProjectInfo(context),
-				E.map(
-					(projectInfo): ExtractedValues => ({
-						projectType,
-						projectInfo
-					})
-				)
-			)
-		)
+		TE.map(() => context)
 	);
 
 const handleValidationByProject = (
-	values: ExtractedValues
-): TE.TaskEither<Error, ExtractedValues> =>
-	match(values)
+	context: BuildContext
+): TE.TaskEither<Error, BuildContext> =>
+	match(context)
 		.with(
 			{ projectType: when(isMaven), projectInfo: when(isRelease) },
 			(_) => validateReleaseVersion(_, searchForMavenReleases)
@@ -86,13 +66,11 @@ const handleValidationByProject = (
 			{ projectType: when(isDocker), projectInfo: when(isRelease) },
 			(_) => validateReleaseVersion(_, searchForDockerReleases)
 		)
-		.otherwise(() => TE.right(values));
+		.otherwise(() => TE.right(context));
 
 const execute: StageFunction = (context) =>
 	pipe(
-		extractValues(context),
-		TE.fromEither,
-		TE.chain(handleValidationByProject),
+		handleValidationByProject(context),
 		TE.map(() => context)
 	);
 

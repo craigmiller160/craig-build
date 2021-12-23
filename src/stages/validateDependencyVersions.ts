@@ -28,11 +28,6 @@ import { ProjectInfo } from '../context/ProjectInfo';
 
 const MAVEN_PROPERTY_REGEX = /\${.*}/;
 
-interface ExtractedValues {
-	readonly projectType: ProjectType;
-	readonly projectInfo: ProjectInfo;
-}
-
 type MavenProperties = { [key: string]: string };
 type PomAndProps = [PomXml, MavenProperties];
 type JsEntries = [string, string][];
@@ -88,8 +83,8 @@ const mavenHasSnapshotDependencies = ([
 	).length === 0;
 
 const validateMavenReleaseDependencies = (
-	values: ExtractedValues
-): E.Either<Error, ExtractedValues> =>
+	context: BuildContext
+): E.Either<Error, BuildContext> =>
 	pipe(
 		readFile(path.resolve(getCwd(), MAVEN_PROJECT_FILE)),
 		E.chain((_) => parseXml<PomXml>(_)),
@@ -99,7 +94,7 @@ const validateMavenReleaseDependencies = (
 			() =>
 				new Error('Cannot have SNAPSHOT dependencies in Maven release')
 		),
-		E.map(() => values)
+		E.map(() => context)
 	);
 
 const entries = (obj?: { [key: string]: string }): JsEntries =>
@@ -116,8 +111,8 @@ const npmHasBetaDependencies = (dependencyEntries: JsEntries): boolean =>
 	).length === 0;
 
 const validateNpmReleaseDependencies = (
-	values: ExtractedValues
-): E.Either<Error, ExtractedValues> =>
+	context: BuildContext
+): E.Either<Error, BuildContext> =>
 	pipe(
 		readFile(path.resolve(getCwd(), NPM_PROJECT_FILE)),
 		E.chain((_) => parseJson<PackageJson>(_)),
@@ -128,31 +123,13 @@ const validateNpmReleaseDependencies = (
 			npmHasBetaDependencies,
 			() => new Error('Cannot have beta dependencies in NPM release')
 		),
-		E.map(() => values)
-	);
-
-const extractValues = (
-	context: BuildContext
-): E.Either<Error, ExtractedValues> =>
-	pipe(
-		extractProjectType(context),
-		E.chain((projectType) =>
-			pipe(
-				extractProjectInfo(context),
-				E.map(
-					(projectInfo): ExtractedValues => ({
-						projectType,
-						projectInfo
-					})
-				)
-			)
-		)
+		E.map(() => context)
 	);
 
 const handleValidationByProject = (
-	values: ExtractedValues
-): E.Either<Error, ExtractedValues> =>
-	match(values)
+	context: BuildContext
+): E.Either<Error, BuildContext> =>
+	match(context)
 		.with(
 			{ projectType: when(isMaven), projectInfo: when(isRelease) },
 			validateMavenReleaseDependencies
@@ -163,16 +140,11 @@ const handleValidationByProject = (
 		)
 		.otherwise(() => {
 			logger.debug('Skipping stage');
-			return E.right(values);
+			return E.right(context);
 		});
 
 const execute: StageFunction = (context) =>
-	pipe(
-		extractValues(context),
-		E.chain(handleValidationByProject),
-		E.map(() => context),
-		TE.fromEither
-	);
+	pipe(handleValidationByProject(context), TE.fromEither);
 
 export const validateDependencyVersions: Stage = {
 	name: 'Validate Dependency Versions',

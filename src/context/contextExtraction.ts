@@ -7,6 +7,7 @@ import { IncompleteBuildContext } from './IncompleteBuildContext';
 
 // TODO consider deleting all of these if unnecessary
 
+// TODO this is used
 export const extractBuildToolInfo = (
 	context: IncompleteBuildContext
 ): E.Either<Error, BuildToolInfo> =>

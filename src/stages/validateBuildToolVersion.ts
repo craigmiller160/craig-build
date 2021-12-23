@@ -1,5 +1,4 @@
-import { EarlyStage, EarlyStageFunction, Stage, StageFunction } from './Stage';
-import { BuildContext } from '../context/BuildContext';
+import { EarlyStage, EarlyStageFunction } from './Stage';
 import { match } from 'ts-pattern';
 import { pipe } from 'fp-ts/function';
 import { BuildToolInfo } from '../context/BuildToolInfo';
