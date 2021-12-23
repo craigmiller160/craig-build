@@ -54,11 +54,19 @@ describe('validateDependencyVersions', () => {
 		expect(result).toEqualRight(buildContext);
 	});
 
-	it('validates release dependencies for maven project', async () => {
+	it('all release dependencies are valid for maven project', async () => {
 		throw new Error();
 	});
 
-	it('validates release dependencies for npm project', async () => {
+	it('all release dependencies are valid for npm project', async () => {
+		throw new Error();
+	});
+
+	it('invalid release dependencies for maven project', async () => {
+		throw new Error();
+	});
+
+	it('invalid release dependencies for npm project', async () => {
 		throw new Error();
 	});
 });
