@@ -16,15 +16,35 @@ import {
 	isNpm,
 	isRelease
 } from '../context/projectTypeUtils';
+import { searchForMavenReleases } from '../services/NexusRepoApi';
+import { NexusSearchResult } from '../services/NexusSearchResult';
 
 interface ExtractedValues {
 	readonly projectType: ProjectType;
 	readonly projectInfo: ProjectInfo;
 }
 
+const validateUniqueReleaseVersion = (
+	nexusResult: NexusSearchResult,
+	version: string
+) => {};
+
 const validateMavenReleaseVersion = (
 	values: ExtractedValues
 ): E.Either<Error, ExtractedValues> => {
+	pipe(
+		searchForMavenReleases(
+			values.projectInfo.group,
+			values.projectInfo.name
+		),
+		TE.map((nexusResult) =>
+			validateUniqueReleaseVersion(
+				nexusResult,
+				values.projectInfo.version
+			)
+		)
+	);
+
 	return E.right(values);
 };
 
