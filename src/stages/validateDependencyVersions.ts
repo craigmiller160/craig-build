@@ -33,6 +33,8 @@ interface ExtractedValues {
 }
 
 type MavenProperties = { [key: string]: string };
+type PomAndProps = [PomXml, MavenProperties];
+type JsEntries = [string, string][];
 
 const getMavenProperties = (pomXml: PomXml): MavenProperties =>
 	pipe(
@@ -53,8 +55,6 @@ const getMavenProperties = (pomXml: PomXml): MavenProperties =>
 		),
 		O.getOrElse(() => ({}))
 	);
-
-type PomAndProps = [PomXml, MavenProperties];
 
 const validateMavenReleaseDependencies = (
 	values: ExtractedValues
@@ -95,12 +95,18 @@ const validateMavenReleaseDependencies = (
 		E.map(() => values)
 	);
 
-const entries = (obj?: { [key: string]: string }): [string, string][] =>
+const entries = (obj?: { [key: string]: string }): JsEntries =>
 	pipe(
 		O.fromNullable(obj),
 		O.map(Object.entries),
-		O.getOrElse((): [string, string][] => [])
+		O.getOrElse((): JsEntries => [])
 	);
+
+const npmHasBetaDependencies = (dependencyEntries: JsEntries): boolean =>
+	pipe(
+		dependencyEntries,
+		A.filter(([, value]) => value.includes('beta'))
+	).length === 0;
 
 const validateNpmReleaseDependencies = (
 	values: ExtractedValues
@@ -112,11 +118,7 @@ const validateNpmReleaseDependencies = (
 			entries(_.dependencies).concat(entries(_.devDependencies))
 		),
 		E.filterOrElse(
-			(dependencyEntries) =>
-				pipe(
-					dependencyEntries,
-					A.filter(([, value]) => value.includes('beta'))
-				).length === 0,
+			npmHasBetaDependencies,
 			() => new Error('Cannot have beta dependencies in NPM release')
 		),
 		E.map(() => values)
