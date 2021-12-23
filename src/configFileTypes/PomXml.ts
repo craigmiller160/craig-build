@@ -1,14 +1,14 @@
-interface Dependency {
+export interface MavenDependency {
 	groupId: string[];
 	artifactId: string[];
 	version?: string[];
 }
 
-interface Dependencies {
-	dependency: Dependency[];
+export interface MavenDependencies {
+	dependency: MavenDependency[];
 }
 
-interface Properties {
+export interface MavenProperties {
 	[key: string]: string[];
 }
 
@@ -17,7 +17,7 @@ export interface PomXml {
 		groupId: string[];
 		artifactId: string[];
 		version: string[];
-		properties?: Properties[];
-		dependencies: Dependencies[];
+		properties?: MavenProperties[];
+		dependencies: MavenDependencies[];
 	};
 }

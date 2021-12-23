@@ -19,7 +19,7 @@ import {
 	NPM_PROJECT_FILE
 } from '../configFileTypes/constants';
 import { parseXml } from '../functions/Xml';
-import { PomXml } from '../configFileTypes/PomXml';
+import { MavenDependency, PomXml } from '../configFileTypes/PomXml';
 import * as A from 'fp-ts/Array';
 import * as O from 'fp-ts/Option';
 import { parseJson } from '../functions/Json';
@@ -56,6 +56,36 @@ const getMavenProperties = (pomXml: PomXml): MavenProperties =>
 		O.getOrElse(() => ({}))
 	);
 
+const mavenFormatDependencyVersion = (dependency: MavenDependency): string =>
+	pipe(
+		O.fromNullable(dependency.version),
+		O.chain(A.head),
+		O.getOrElse(() => '')
+	);
+
+const mavenReplaceVersionProperty = (
+	mvnProps: MavenProperties,
+	version: string
+): string =>
+	match(version)
+		.with(
+			when<string>((_) => MAVEN_PROPERTY_REGEX.test(_)),
+			(_) => mvnProps[_.replace(/^\${/, '').replace(/}$/, '')]
+		)
+		.otherwise(() => version);
+
+const mavenHasSnapshotDependencies = ([
+	pomXml,
+	mvnProps
+]: PomAndProps): boolean =>
+	pipe(
+		pomXml.project.dependencies[0].dependency,
+		A.map(mavenFormatDependencyVersion),
+		A.filter((version) =>
+			mavenReplaceVersionProperty(mvnProps, version).includes('SNAPSHOT')
+		)
+	).length === 0;
+
 const validateMavenReleaseDependencies = (
 	values: ExtractedValues
 ): E.Either<Error, ExtractedValues> =>
@@ -64,31 +94,7 @@ const validateMavenReleaseDependencies = (
 		E.chain((_) => parseXml<PomXml>(_)),
 		E.map((pomXml): PomAndProps => [pomXml, getMavenProperties(pomXml)]),
 		E.filterOrElse(
-			([pomXml, mvnProps]) => {
-				const theArray = pipe(
-					pomXml.project.dependencies[0].dependency,
-					A.map((dependency) =>
-						pipe(
-							O.fromNullable(dependency.version),
-							O.chain(A.head),
-							O.getOrElse(() => '')
-						)
-					),
-					A.filter((version) => {
-						const formattedVersion = match(version)
-							.with(
-								when<string>((_) =>
-									MAVEN_PROPERTY_REGEX.test(_)
-								),
-								(_) => mvnProps[_]
-							)
-							.otherwise(() => version);
-						return formattedVersion.includes('SNAPSHOT');
-					})
-				);
-				console.log(theArray);
-				return theArray.length === 0;
-			},
+			mavenHasSnapshotDependencies,
 			() =>
 				new Error('Cannot have SNAPSHOT dependencies in Maven release')
 		),
