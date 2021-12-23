@@ -48,7 +48,7 @@ const validateReleaseVersion = (
 		TE.filterOrElse(
 			(nexusResult) =>
 				isReleaseVersionUnique(nexusResult, values.projectInfo.version),
-			() => new Error('Maven release version is not unique')
+			() => new Error('Project release version is not unique')
 		),
 		TE.map(() => values)
 	);

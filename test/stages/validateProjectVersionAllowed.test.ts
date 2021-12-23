@@ -10,11 +10,9 @@ import ProjectType from '../../old-src/types/ProjectType';
 import * as O from 'fp-ts/Option';
 import { pipe } from 'fp-ts/function';
 import { validateProjectVersionAllowed } from '../../src/stages/validateProjectVersionAllowed';
-import {
-	NexusSearchResult,
-	NexusSearchResultItem
-} from '../../src/services/NexusSearchResult';
+import { NexusSearchResultItem } from '../../src/services/NexusSearchResult';
 import * as TE from 'fp-ts/TaskEither';
+import ProjectInfo from '../../old-src/types/ProjectInfo';
 
 jest.mock('../../src/services/NexusRepoApi', () => ({
 	searchForDockerReleases: jest.fn(),
@@ -34,7 +32,11 @@ const invalidItem: NexusSearchResultItem = {
 	format: '',
 	group: '',
 	name: '',
-	version: '10.0.0',
+	version: pipe(
+		baseBuildContext.projectInfo,
+		O.map((_) => _.version),
+		O.getOrElse(() => '')
+	),
 	assets: []
 };
 
@@ -192,7 +194,7 @@ describe('validateProjectVersionAllowed', () => {
 		const result = await validateProjectVersionAllowed.execute(
 			buildContext
 		)();
-		expect(result).toEqualLeft(new Error());
+		expect(result).toEqualLeft(new Error('Project release version is not unique'));
 	});
 
 	it('rejects maven release version with conflicts', async () => {
@@ -214,7 +216,7 @@ describe('validateProjectVersionAllowed', () => {
 		const result = await validateProjectVersionAllowed.execute(
 			buildContext
 		)();
-		expect(result).toEqualLeft(new Error());
+		expect(result).toEqualLeft(new Error('Project release version is not unique'));
 	});
 
 	it('rejects docker release version with conflicts', async () => {
@@ -236,6 +238,6 @@ describe('validateProjectVersionAllowed', () => {
 		const result = await validateProjectVersionAllowed.execute(
 			buildContext
 		)();
-		expect(result).toEqualLeft(new Error());
+		expect(result).toEqualLeft(new Error('Project release version is not unique'));
 	});
 });
