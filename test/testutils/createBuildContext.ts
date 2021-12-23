@@ -1,4 +1,3 @@
-import { OptionValues } from 'commander';
 import { BuildContext } from '../../src/context/BuildContext';
 import { CommandInfo } from '../../src/context/CommandInfo';
 import { CommandType } from '../../src/context/CommandType';
@@ -7,9 +6,6 @@ import { BuildToolInfo } from '../../src/context/BuildToolInfo';
 import { ProjectType } from '../../src/context/ProjectType';
 import { ProjectInfo } from '../../src/context/ProjectInfo';
 
-const defaultOptions: OptionValues = {
-	fullBuild: true
-};
 const defaultCommandInfo: CommandInfo = {
 	type: CommandType.FULL_BUILD
 };
@@ -30,7 +26,6 @@ const defaultProjectInfo: ProjectInfo = {
 };
 
 const defaultBuildContext: BuildContext = {
-	options: defaultOptions,
 	commandInfo: O.some(defaultCommandInfo),
 	buildToolInfo: O.some(defaultBuildToolInfo),
 	projectType: O.some(defaultProjectType),
@@ -38,13 +33,11 @@ const defaultBuildContext: BuildContext = {
 };
 
 export const createBuildContext = ({
-	options = defaultOptions,
 	commandInfo = O.some(defaultCommandInfo),
 	buildToolInfo = O.some(defaultBuildToolInfo),
 	projectType = O.some(defaultProjectType),
 	projectInfo = O.some(defaultProjectInfo)
 }: Partial<BuildContext> = defaultBuildContext): BuildContext => ({
-	options,
 	commandInfo,
 	buildToolInfo,
 	projectType,
