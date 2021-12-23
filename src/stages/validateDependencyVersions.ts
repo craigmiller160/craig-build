@@ -8,7 +8,7 @@ import {
 } from '../context/contextExtraction';
 import { pipe } from 'fp-ts/function';
 import { match, when } from 'ts-pattern';
-import { isMaven, isNpm } from '../context/projectTypeUtils';
+import { isMaven, isNpm, isRelease } from '../context/projectTypeUtils';
 import { logger } from '../logger';
 import * as TE from 'fp-ts/TaskEither';
 import { readFile } from '../functions/readFile';
@@ -24,12 +24,13 @@ import * as A from 'fp-ts/Array';
 import * as O from 'fp-ts/Option';
 import { parseJson } from '../functions/Json';
 import { PackageJson } from '../configFileTypes/PackageJson';
+import { ProjectInfo } from '../context/ProjectInfo';
 
 const MAVEN_PROPERTY_REGEX = /\${.*}/;
 
 interface ExtractedValues {
 	readonly projectType: ProjectType;
-	readonly isPreRelease: boolean;
+	readonly projectInfo: ProjectInfo;
 }
 
 type MavenProperties = { [key: string]: string };
@@ -141,7 +142,7 @@ const extractValues = (
 				E.map(
 					(projectInfo): ExtractedValues => ({
 						projectType,
-						isPreRelease: projectInfo.isPreRelease
+						projectInfo
 					})
 				)
 			)
@@ -153,11 +154,11 @@ const handleValidationByProject = (
 ): E.Either<Error, ExtractedValues> =>
 	match(values)
 		.with(
-			{ projectType: when(isMaven), isPreRelease: false },
+			{ projectType: when(isMaven), projectInfo: when(isRelease) },
 			validateMavenReleaseDependencies
 		)
 		.with(
-			{ projectType: when(isNpm), isPreRelease: false },
+			{ projectType: when(isNpm), projectInfo: when(isRelease) },
 			validateNpmReleaseDependencies
 		)
 		.otherwise(() => {

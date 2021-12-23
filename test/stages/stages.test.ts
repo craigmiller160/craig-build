@@ -6,6 +6,7 @@ import { getProjectType } from '../../src/stages/getProjectType';
 import { getProjectInfo } from '../../src/stages/getProjectInfo';
 import { checkForUncommittedChanges } from '../../src/stages/checkForUncommittedChanges';
 import { validateDependencyVersions } from '../../src/stages/validateDependencyVersions';
+import { validateProjectVersionAllowed } from '../../src/stages/validateProjectVersionAllowed';
 
 describe('stages', () => {
 	it('all stages are added in the correct order', () => {
@@ -17,7 +18,8 @@ describe('stages', () => {
 			checkForUncommittedChanges.name,
 			getProjectType.name,
 			getProjectInfo.name,
-			validateDependencyVersions.name
+			validateDependencyVersions.name,
+			validateProjectVersionAllowed.name
 		]);
 	});
 });
