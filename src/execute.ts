@@ -3,9 +3,6 @@ import * as TE from 'fp-ts/TaskEither';
 import {
 	BaseStage,
 	BaseStageFunction,
-	EarlyStage,
-	EarlyStageFunction,
-	Stage
 } from './stages/Stage';
 import * as A from 'fp-ts/Array';
 import { pipe } from 'fp-ts/function';
@@ -13,7 +10,6 @@ import { logger } from './logger';
 import { EARLY_STAGES, STAGES } from './stages';
 import * as EU from './functions/EitherUtils';
 import { stringifyJson } from './functions/Json';
-import { incompleteToLoggableContext } from './context/LoggableBuildContext';
 import { IncompleteBuildContext } from './context/IncompleteBuildContext';
 import { Context } from './context/Context';
 import { toLoggableContext } from './context/contextLogging';
