@@ -11,6 +11,7 @@ import * as E from 'fp-ts/Either';
 import * as O from 'fp-ts/Option';
 import { pipe } from 'fp-ts/function';
 import { validateProjectVersionAllowed } from '../../src/stages/validateProjectVersionAllowed';
+import NexusSearchResult from '../../old-src/types/NexusSearchResult';
 
 jest.mock('../../src/services/NexusRepoApi', () => ({
 	searchForDockerReleases: jest.fn(),
@@ -50,7 +51,9 @@ describe('validateProjectVersionAllowed', () => {
 	});
 
 	it('allows maven pre-release version', async () => {
-		searchForMavenReleasesMock.mockImplementation(() => E.left(new Error()));
+		searchForMavenReleasesMock.mockImplementation(() =>
+			E.left(new Error())
+		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
 			projectType: O.some(ProjectType.MavenApplication),
@@ -70,7 +73,9 @@ describe('validateProjectVersionAllowed', () => {
 	});
 
 	it('allows docker pre-release version', async () => {
-		searchForDockerReleasesMock.mockImplementation(() => E.left(new Error()));
+		searchForDockerReleasesMock.mockImplementation(() =>
+			E.left(new Error())
+		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
 			projectType: O.some(ProjectType.DockerApplication),
@@ -90,15 +95,69 @@ describe('validateProjectVersionAllowed', () => {
 	});
 
 	it('allows npm release version with no conflicts', async () => {
-		throw new Error();
+		searchForNpmReleasesMock.mockImplementation(
+			(): NexusSearchResult => ({ items: [] })
+		);
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: O.some(ProjectType.NpmApplication),
+			projectInfo: pipe(
+				baseBuildContext.projectInfo,
+				O.map((_) => ({
+					..._,
+					isPreRelease: false
+				}))
+			)
+		};
+
+		const result = await validateProjectVersionAllowed.execute(
+			buildContext
+		)();
+		expect(result).toEqualRight(buildContext);
 	});
 
 	it('allows maven release version with no conflicts', async () => {
-		throw new Error();
+		searchForMavenReleasesMock.mockImplementation(
+			(): NexusSearchResult => ({ items: [] })
+		);
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: O.some(ProjectType.MavenApplication),
+			projectInfo: pipe(
+				baseBuildContext.projectInfo,
+				O.map((_) => ({
+					..._,
+					isPreRelease: false
+				}))
+			)
+		};
+
+		const result = await validateProjectVersionAllowed.execute(
+			buildContext
+		)();
+		expect(result).toEqualRight(buildContext);
 	});
 
 	it('allows docker release version with no conflicts', async () => {
-		throw new Error();
+		searchForDockerReleasesMock.mockImplementation(
+			(): NexusSearchResult => ({ items: [] })
+		);
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: O.some(ProjectType.DockerApplication),
+			projectInfo: pipe(
+				baseBuildContext.projectInfo,
+				O.map((_) => ({
+					..._,
+					isPreRelease: false
+				}))
+			)
+		};
+
+		const result = await validateProjectVersionAllowed.execute(
+			buildContext
+		)();
+		expect(result).toEqualRight(buildContext);
 	});
 
 	it('rejects npm release version with conflict', async () => {
