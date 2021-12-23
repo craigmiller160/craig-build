@@ -54,6 +54,25 @@ describe('validateDependencyVersions', () => {
 		expect(result).toEqualRight(buildContext);
 	});
 
+	it('skips validation for docker project', async () => {
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDir, 'dockerReleaseApplication')
+		);
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: O.some(ProjectType.DockerApplication),
+			projectInfo: pipe(
+				baseBuildContext.projectInfo,
+				O.map((_) => ({
+					..._,
+					isPreRelease: false
+				}))
+			)
+		};
+		const result = await validateDependencyVersions.execute(buildContext)();
+		expect(result).toEqualRight(buildContext);
+	});
+
 	it('all release dependencies are valid for maven project', async () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(baseWorkingDir, 'mavenReleaseApplication')
