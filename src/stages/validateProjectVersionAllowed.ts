@@ -53,21 +53,6 @@ const validateReleaseVersion = (
 		TE.map(() => values)
 	);
 
-const validateMavenReleaseVersion = (
-	values: ExtractedValues
-): TE.TaskEither<Error, ExtractedValues> =>
-	validateReleaseVersion(values, searchForMavenReleases);
-
-const validateNpmReleaseVersion = (
-	values: ExtractedValues
-): TE.TaskEither<Error, ExtractedValues> =>
-	validateReleaseVersion(values, searchForNpmReleases);
-
-const validateDockerReleaseVersion = (
-	values: ExtractedValues
-): TE.TaskEither<Error, ExtractedValues> =>
-	validateReleaseVersion(values, searchForDockerReleases);
-
 const extractValues = (
 	context: BuildContext
 ): E.Either<Error, ExtractedValues> =>
@@ -92,15 +77,14 @@ const handleValidationByProject = (
 	match(values)
 		.with(
 			{ projectType: when(isMaven), projectInfo: when(isRelease) },
-			validateMavenReleaseVersion
+			(_) => validateReleaseVersion(_, searchForMavenReleases)
 		)
-		.with(
-			{ projectType: when(isNpm), projectInfo: when(isRelease) },
-			validateNpmReleaseVersion
+		.with({ projectType: when(isNpm), projectInfo: when(isRelease) }, (_) =>
+			validateReleaseVersion(_, searchForNpmReleases)
 		)
 		.with(
 			{ projectType: when(isDocker), projectInfo: when(isRelease) },
-			validateDockerReleaseVersion
+			(_) => validateReleaseVersion(_, searchForDockerReleases)
 		)
 		.otherwise(() => TE.right(values));
 
