@@ -5,6 +5,7 @@ import { CommandInfo } from '../context/CommandInfo';
 import { CommandType } from '../context/CommandType';
 import * as TE from 'fp-ts/TaskEither';
 import * as O from 'fp-ts/Option';
+import { program } from 'commander';
 
 const constructCommandInfo = (options: OptionValues): CommandInfo =>
 	match<OptionValues, CommandInfo>(options)
@@ -18,7 +19,7 @@ const constructCommandInfo = (options: OptionValues): CommandInfo =>
 const execute: StageFunction = (context) =>
 	TE.right({
 		...context,
-		commandInfo: O.some(constructCommandInfo(context.options))
+		commandInfo: O.some(constructCommandInfo(program.opts()))
 	});
 
 export const getCommandInfo: Stage = {

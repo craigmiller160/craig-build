@@ -28,7 +28,7 @@ program
 	.parse(process.argv);
 
 pipe(
-	setupBuildContext(program.opts()),
+	setupBuildContext(),
 	execute,
 	TE.fold(
 		() => {
