@@ -104,11 +104,11 @@ const handleValidationByProject = (
 ): E.Either<Error, ExtractedValues> =>
 	match(values)
 		.with(
-			{ projectType: when(isMaven), isPreRelease: true },
+			{ projectType: when(isMaven), isPreRelease: false },
 			validateMavenReleaseDependencies
 		)
 		.with(
-			{ projectType: when(isNpm), isPreRelease: true },
+			{ projectType: when(isNpm), isPreRelease: false },
 			validateNpmReleaseDependencies
 		)
 		.otherwise(() => {
