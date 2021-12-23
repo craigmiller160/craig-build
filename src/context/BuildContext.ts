@@ -9,7 +9,6 @@ import { pipe } from 'fp-ts/function';
 
 type Container2 = [CommandInfo, BuildToolInfo];
 type Container3 = [CommandInfo, BuildToolInfo, ProjectType];
-type Container4 = [CommandInfo, BuildToolInfo, ProjectType, ProjectInfo];
 
 export interface BuildContext {
 	commandInfo: CommandInfo;
@@ -47,27 +46,14 @@ export const fromIncompleteContext = (
 			pipe(
 				context.projectInfo,
 				O.map(
-					(projectInfo): Container4 => [
+					(projectInfo): BuildContext => ({
 						commandInfo,
 						buildToolInfo,
 						projectType,
 						projectInfo
-					]
+					})
 				)
 			)
-		),
-		O.map(
-			([
-				commandInfo,
-				buildToolInfo,
-				projectType,
-				projectInfo
-			]): BuildContext => ({
-				commandInfo,
-				buildToolInfo,
-				projectType,
-				projectInfo
-			})
 		),
 		E.fromOption(() => new Error('IncompleteBuildContext has not yet been completed'))
 	);
