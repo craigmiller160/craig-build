@@ -16,7 +16,12 @@ import {
 	isNpm,
 	isRelease
 } from '../context/projectTypeUtils';
-import { searchForMavenReleases } from '../services/NexusRepoApi';
+import {
+	NexusRepoGroupSearchFn,
+	searchForDockerReleases,
+	searchForMavenReleases,
+	searchForNpmReleases
+} from '../services/NexusRepoApi';
 import { NexusSearchResult } from '../services/NexusSearchResult';
 import * as A from 'fp-ts/Array';
 
@@ -34,14 +39,12 @@ const isReleaseVersionUnique = (
 		A.filter((_) => _.version === version)
 	).length === 0;
 
-const validateMavenReleaseVersion = (
-	values: ExtractedValues
+const validateReleaseVersion = (
+	values: ExtractedValues,
+	searchFn: NexusRepoGroupSearchFn
 ): TE.TaskEither<Error, ExtractedValues> =>
 	pipe(
-		searchForMavenReleases(
-			values.projectInfo.group,
-			values.projectInfo.name
-		),
+		searchFn(values.projectInfo.group, values.projectInfo.name),
 		TE.filterOrElse(
 			(nexusResult) =>
 				isReleaseVersionUnique(nexusResult, values.projectInfo.version),
@@ -50,17 +53,20 @@ const validateMavenReleaseVersion = (
 		TE.map(() => values)
 	);
 
+const validateMavenReleaseVersion = (
+	values: ExtractedValues
+): TE.TaskEither<Error, ExtractedValues> =>
+	validateReleaseVersion(values, searchForMavenReleases);
+
 const validateNpmReleaseVersion = (
 	values: ExtractedValues
-): TE.TaskEither<Error, ExtractedValues> => {
-	return TE.right(values);
-};
+): TE.TaskEither<Error, ExtractedValues> =>
+	validateReleaseVersion(values, searchForNpmReleases);
 
 const validateDockerReleaseVersion = (
 	values: ExtractedValues
-): TE.TaskEither<Error, ExtractedValues> => {
-	return TE.right(values);
-};
+): TE.TaskEither<Error, ExtractedValues> =>
+	validateReleaseVersion(values, searchForDockerReleases);
 
 const extractValues = (
 	context: BuildContext
