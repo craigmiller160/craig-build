@@ -17,7 +17,7 @@ import { toLoggable } from './context/LoggableIncompleteBuildContext';
 import { IncompleteBuildContext } from './context/IncompleteBuildContext';
 import { Context } from './context/Context';
 
-const executeStage = (
+const executeStage2 = (
 	contextTE: TE.TaskEither<Error, BuildContext>,
 	stage: Stage
 ): TE.TaskEither<Error, BuildContext> =>
@@ -44,6 +44,32 @@ const executeStage = (
 		})
 	);
 
+const executeStage = <
+	Ctx extends Context,
+	StageFn extends BaseStageFunction<Ctx>
+>(
+	contextTE: TE.TaskEither<Error, Ctx>,
+	stage: BaseStage<Ctx, StageFn>
+) =>
+	pipe(
+		contextTE,
+		TE.chain((context) => {
+			logger.info(`Starting stage: ${stage.name}`);
+			return pipe(
+				stage.execute(context),
+				TE.map((_) => {
+					// TODO log it
+					return _;
+				}),
+				TE.mapLeft((_) => {
+					logger.error(`Error in stage: ${stage.name}`);
+					logger.error(_);
+					return _;
+				})
+			);
+		})
+	);
+
 const executeAllStages = <
 	Ctx extends Context,
 	StageFn extends BaseStageFunction<Ctx>
@@ -53,9 +79,9 @@ const executeAllStages = <
 ): TE.TaskEither<Error, Ctx> =>
 	pipe(
 		stages,
-		A.reduce(TE.right<Error, Ctx>(context), (ctxTE, stage) => {
-			return ctxTE;
-		})
+		A.reduce(TE.right<Error, Ctx>(context), (ctxTE, stage) =>
+			executeStage(ctxTE, stage)
+		)
 	);
 
 const incompleteToCompleteContext = (
