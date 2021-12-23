@@ -40,9 +40,10 @@ const validateMavenReleaseDependencies = (
 			(pomXml) =>
 				pipe(
 					pomXml.project.dependencies[0].dependency,
-					A.map((_) =>
+					A.map((dependency) =>
 						pipe(
-							A.head(_.version),
+							O.fromNullable(dependency.version),
+							O.chain(A.head),
 							O.getOrElse(() => '')
 						)
 					),
