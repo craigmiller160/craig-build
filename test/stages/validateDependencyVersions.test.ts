@@ -127,7 +127,9 @@ describe('validateDependencyVersions', () => {
 			)
 		};
 		const result = await validateDependencyVersions.execute(buildContext)();
-		expect(result).toEqualLeft(new Error('Cannot have SNAPSHOT dependencies in Maven release'));
+		expect(result).toEqualLeft(
+			new Error('Cannot have SNAPSHOT dependencies in Maven release')
+		);
 	});
 
 	it('invalid release dependencies for npm project', async () => {
@@ -146,6 +148,8 @@ describe('validateDependencyVersions', () => {
 			)
 		};
 		const result = await validateDependencyVersions.execute(buildContext)();
-		expect(result).toEqualLeft(new Error('Cannot have beta dependencies in NPM release'));
+		expect(result).toEqualLeft(
+			new Error('Cannot have beta dependencies in NPM release')
+		);
 	});
 });
