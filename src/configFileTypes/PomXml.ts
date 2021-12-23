@@ -17,7 +17,7 @@ export interface PomXml {
 		groupId: string[];
 		artifactId: string[];
 		version: string[];
-		properties: Properties[];
+		properties?: Properties[];
 		dependencies: Dependencies[];
 	};
 }

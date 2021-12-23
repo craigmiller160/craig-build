@@ -25,10 +25,36 @@ import * as O from 'fp-ts/Option';
 import { parseJson } from '../functions/Json';
 import { PackageJson } from '../configFileTypes/PackageJson';
 
+const MAVEN_PROPERTY_REGEX = /\${.*}/;
+
 interface ExtractedValues {
 	readonly projectType: ProjectType;
 	readonly isPreRelease: boolean;
 }
+
+type MavenProperties = { [key: string]: string };
+
+const getMavenProperties = (pomXml: PomXml): MavenProperties =>
+	pipe(
+		O.fromNullable(pomXml.project.properties),
+		O.chain(A.head),
+		O.map((props) =>
+			Object.entries(props).reduce(
+				(mvnProps: MavenProperties, [key, value]) => {
+					mvnProps[key] = pipe(
+						value,
+						A.head,
+						O.getOrElse(() => '')
+					);
+					return mvnProps;
+				},
+				{}
+			)
+		),
+		O.getOrElse(() => ({}))
+	);
+
+type PomAndProps = [PomXml, MavenProperties];
 
 const validateMavenReleaseDependencies = (
 	values: ExtractedValues
@@ -36,9 +62,10 @@ const validateMavenReleaseDependencies = (
 	pipe(
 		readFile(path.resolve(getCwd(), MAVEN_PROJECT_FILE)),
 		E.chain((_) => parseXml<PomXml>(_)),
+		E.map((pomXml): PomAndProps => [pomXml, getMavenProperties(pomXml)]),
 		E.filterOrElse(
-			(pomXml) =>
-				pipe(
+			([pomXml, mvnProps]) => {
+				const theArray = pipe(
 					pomXml.project.dependencies[0].dependency,
 					A.map((dependency) =>
 						pipe(
@@ -47,8 +74,21 @@ const validateMavenReleaseDependencies = (
 							O.getOrElse(() => '')
 						)
 					),
-					A.filter((_) => _.includes('SNAPSHOT'))
-				).length === 0,
+					A.filter((version) => {
+						const formattedVersion = match(version)
+							.with(
+								when<string>((_) =>
+									MAVEN_PROPERTY_REGEX.test(_)
+								),
+								(_) => mvnProps[_]
+							)
+							.otherwise(() => version);
+						return formattedVersion.includes('SNAPSHOT');
+					})
+				);
+				console.log(theArray);
+				return theArray.length === 0;
+			},
 			() =>
 				new Error('Cannot have SNAPSHOT dependencies in Maven release')
 		),
