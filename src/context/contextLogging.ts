@@ -1,5 +1,5 @@
 import { Context } from './Context';
-import { LoggableBuildContext, toLoggable } from './LoggableBuildContext';
+import { LoggableBuildContext, incompleteToLoggableContext } from './LoggableBuildContext';
 import { BuildContext } from './BuildContext';
 import { match, when } from 'ts-pattern';
 import * as O from 'fp-ts/Option';
@@ -13,7 +13,7 @@ const isOption = (value: any): value is O.Option<any> =>
 export const toLoggableContext = (context: Context): LoggableBuildContext =>
 	match(context)
 		.with({ commandInfo: when(isOption) }, (_: IncompleteBuildContext) =>
-			toLoggable(_)
+			incompleteToLoggableContext(_)
 		)
 		.with(
 			{ commandInfo: when((_) => !isOption(_)) },

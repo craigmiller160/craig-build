@@ -13,7 +13,7 @@ export interface LoggableBuildContext extends Context {
 	projectInfo: ProjectInfo | null;
 }
 
-export const toLoggable = (
+export const incompleteToLoggableContext = (
 	context: IncompleteBuildContext
 ): LoggableBuildContext => ({
 	commandInfo: getOrNull(context.commandInfo),

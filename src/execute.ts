@@ -13,36 +13,10 @@ import { logger } from './logger';
 import { EARLY_STAGES, STAGES } from './stages';
 import * as EU from './functions/EitherUtils';
 import { stringifyJson } from './functions/Json';
-import { toLoggable } from './context/LoggableBuildContext';
+import { incompleteToLoggableContext } from './context/LoggableBuildContext';
 import { IncompleteBuildContext } from './context/IncompleteBuildContext';
 import { Context } from './context/Context';
-
-const executeStage2 = (
-	contextTE: TE.TaskEither<Error, BuildContext>,
-	stage: Stage
-): TE.TaskEither<Error, BuildContext> =>
-	pipe(
-		contextTE,
-		TE.chain((context) => {
-			logger.info(`Starting stage: ${stage.name}`);
-			return pipe(
-				stage.execute(context),
-				TE.map((_) => {
-					logger.info(
-						`Completed stage: ${stage.name} ${EU.getOrThrow(
-							stringifyJson(toLoggable(_), 2)
-						)}`
-					);
-					return _;
-				}),
-				TE.mapLeft((_) => {
-					logger.error(`Error in stage: ${stage.name}`);
-					logger.error(_);
-					return _;
-				})
-			);
-		})
-	);
+import { toLoggableContext } from './context/contextLogging';
 
 const executeStage = <
 	Ctx extends Context,
@@ -58,7 +32,11 @@ const executeStage = <
 			return pipe(
 				stage.execute(context),
 				TE.map((_) => {
-					// TODO log it
+					logger.info(
+						`Completed stage: ${stage.name} ${EU.getOrThrow(
+							stringifyJson(toLoggableContext(_), 2)
+						)}`
+					);
 					return _;
 				}),
 				TE.mapLeft((_) => {
