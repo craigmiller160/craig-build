@@ -4,6 +4,7 @@ import {
 	searchForNpmReleases
 } from '../../src/services/NexusRepoApi';
 import '@relmify/jest-fp-ts';
+import { createBuildContext } from '../testutils/createBuildContext';
 
 jest.mock('../../src/services/NexusRepoApi', () => ({
 	searchForDockerReleases: jest.fn(),
@@ -14,6 +15,8 @@ jest.mock('../../src/services/NexusRepoApi', () => ({
 const searchForDockerReleasesMock = searchForDockerReleases as jest.Mock;
 const searchForMavenReleasesMock = searchForMavenReleases as jest.Mock;
 const searchForNpmReleasesMock = searchForNpmReleases as jest.Mock;
+
+const buildContext = createBuildContext();
 
 describe('validateProjectVersionAllowed', () => {
 	beforeEach(() => {
