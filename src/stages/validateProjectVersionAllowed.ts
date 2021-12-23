@@ -10,12 +10,16 @@ import {
 } from '../context/contextExtraction';
 import * as TE from 'fp-ts/TaskEither';
 import { match, when } from 'ts-pattern';
-import { isDocker, isMaven, isNpm } from '../context/projectTypeUtils';
+import {
+	isDocker,
+	isMaven,
+	isNpm,
+	isRelease
+} from '../context/projectTypeUtils';
 
 interface ExtractedValues {
 	projectType: ProjectType;
 	projectInfo: ProjectInfo;
-	isPreRelease: boolean;
 }
 
 const validateMavenReleaseVersion = (
@@ -47,8 +51,7 @@ const extractValues = (
 				E.map(
 					(projectInfo): ExtractedValues => ({
 						projectType,
-						projectInfo,
-						isPreRelease: projectInfo.isPreRelease
+						projectInfo
 					})
 				)
 			)
@@ -60,15 +63,15 @@ const handleValidationByProject = (
 ): E.Either<Error, ExtractedValues> =>
 	match(values)
 		.with(
-			{ projectType: when(isMaven), isPreRelease: false },
+			{ projectType: when(isMaven), projectInfo: when(isRelease) },
 			validateMavenReleaseVersion
 		)
 		.with(
-			{ projectType: when(isNpm), isPreRelease: false },
+			{ projectType: when(isNpm), projectInfo: when(isRelease) },
 			validateNpmReleaseVersion
 		)
 		.with(
-			{ projectType: when(isDocker), isPreRelease: false },
+			{ projectType: when(isDocker), projectInfo: when(isRelease) },
 			validateDockerReleaseVersion
 		)
 		.otherwise(() => E.right(values));
