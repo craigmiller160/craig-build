@@ -6,7 +6,7 @@ import { ProjectInfo } from './ProjectInfo';
 import { IncompleteBuildContext } from './IncompleteBuildContext';
 import { Context } from './Context';
 
-export interface LoggableIncompleteBuildContext extends Context {
+export interface LoggableBuildContext extends Context {
 	commandInfo: CommandInfo | null;
 	buildToolInfo: BuildToolInfo | null;
 	projectType: ProjectType | null;
@@ -15,7 +15,7 @@ export interface LoggableIncompleteBuildContext extends Context {
 
 export const toLoggable = (
 	context: IncompleteBuildContext
-): LoggableIncompleteBuildContext => ({
+): LoggableBuildContext => ({
 	commandInfo: getOrNull(context.commandInfo),
 	buildToolInfo: getOrNull(context.buildToolInfo),
 	projectType: getOrNull(context.projectType),

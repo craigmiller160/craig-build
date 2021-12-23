@@ -13,7 +13,7 @@ import { logger } from './logger';
 import { EARLY_STAGES, STAGES } from './stages';
 import * as EU from './functions/EitherUtils';
 import { stringifyJson } from './functions/Json';
-import { toLoggable } from './context/LoggableIncompleteBuildContext';
+import { toLoggable } from './context/LoggableBuildContext';
 import { IncompleteBuildContext } from './context/IncompleteBuildContext';
 import { Context } from './context/Context';
 
