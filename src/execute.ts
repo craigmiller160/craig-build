@@ -1,6 +1,12 @@
-import { BuildContext } from './context/BuildContext';
+import { BuildContext, fromIncompleteContext } from './context/BuildContext';
 import * as TE from 'fp-ts/TaskEither';
-import { BaseStage, EarlyStage, Stage } from './stages/Stage';
+import {
+	BaseStage,
+	BaseStageFunction,
+	EarlyStage,
+	EarlyStageFunction,
+	Stage
+} from './stages/Stage';
 import * as A from 'fp-ts/Array';
 import { pipe } from 'fp-ts/function';
 import { logger } from './logger';
@@ -9,6 +15,7 @@ import * as EU from './functions/EitherUtils';
 import { stringifyJson } from './functions/Json';
 import { toLoggable } from './context/LoggableIncompleteBuildContext';
 import { IncompleteBuildContext } from './context/IncompleteBuildContext';
+import { Context } from './context/Context';
 
 const executeStage = (
 	contextTE: TE.TaskEither<Error, BuildContext>,
@@ -37,30 +44,30 @@ const executeStage = (
 		})
 	);
 
-const executeStages = (
-	stages: BaseStage<any, any>[]
-): TE.TaskEither<any, any> => pipe(stages, A.reduce());
-
-const executeEarlyStages = (
-	context: IncompleteBuildContext
-): TE.TaskEither<Error, IncompleteBuildContext> =>
+const executeAllStages = <
+	Ctx extends Context,
+	StageFn extends BaseStageFunction<Ctx>
+>(
+	context: Ctx,
+	stages: BaseStage<Ctx, StageFn>[]
+): TE.TaskEither<Error, Ctx> =>
 	pipe(
-		EARLY_STAGES,
-		A.reduce(
-			TE.right<Error, IncompleteBuildContext>(context),
-			(ctxTE, stage: EarlyStage) => {
-				return ctxTE;
-			}
-		)
+		stages,
+		A.reduce(TE.right<Error, Ctx>(context), (ctxTE, stage) => {
+			return ctxTE;
+		})
 	);
+
+const incompleteToCompleteContext = (
+	context: IncompleteBuildContext
+): TE.TaskEither<Error, BuildContext> =>
+	pipe(fromIncompleteContext(context), TE.fromEither);
 
 export const execute = (
 	context: IncompleteBuildContext
 ): TE.TaskEither<Error, BuildContext> =>
 	pipe(
-		STAGES,
-		A.reduce(
-			TE.right<Error, BuildContext>(context),
-			(ctxTE, stage: Stage) => executeStage(ctxTE, stage)
-		)
+		executeAllStages(context, EARLY_STAGES),
+		TE.chain(incompleteToCompleteContext),
+		TE.chain((_) => executeAllStages(_, STAGES))
 	);
