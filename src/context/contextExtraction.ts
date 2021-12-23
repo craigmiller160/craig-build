@@ -3,6 +3,7 @@ import * as E from 'fp-ts/Either';
 import { BuildToolInfo } from './BuildToolInfo';
 import { pipe } from 'fp-ts/function';
 import { ProjectType } from './ProjectType';
+import { ProjectInfo } from './ProjectInfo';
 
 export const extractBuildToolInfo = (
 	context: BuildContext
@@ -18,4 +19,12 @@ export const extractProjectType = (
 	pipe(
 		context.projectType,
 		E.fromOption(() => new Error('BuildContext is missing ProjectType'))
+	);
+
+export const extractProjectInfo = (
+	context: BuildContext
+): E.Either<Error, ProjectInfo> =>
+	pipe(
+		context.projectInfo,
+		E.fromOption(() => new Error('BuildContext is missing ProjectInfo'))
 	);
