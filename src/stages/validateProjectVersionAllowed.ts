@@ -18,46 +18,48 @@ import {
 } from '../context/projectTypeUtils';
 import { searchForMavenReleases } from '../services/NexusRepoApi';
 import { NexusSearchResult } from '../services/NexusSearchResult';
+import * as A from 'fp-ts/Array';
 
 interface ExtractedValues {
 	readonly projectType: ProjectType;
 	readonly projectInfo: ProjectInfo;
 }
 
-const validateUniqueReleaseVersion = (
+const isReleaseVersionUnique = (
 	nexusResult: NexusSearchResult,
 	version: string
-) => {};
+): boolean =>
+	pipe(
+		nexusResult.items,
+		A.filter((_) => _.version === version)
+	).length === 0;
 
 const validateMavenReleaseVersion = (
 	values: ExtractedValues
-): E.Either<Error, ExtractedValues> => {
+): TE.TaskEither<Error, ExtractedValues> =>
 	pipe(
 		searchForMavenReleases(
 			values.projectInfo.group,
 			values.projectInfo.name
 		),
-		TE.map((nexusResult) =>
-			validateUniqueReleaseVersion(
-				nexusResult,
-				values.projectInfo.version
-			)
-		)
+		TE.filterOrElse(
+			(nexusResult) =>
+				isReleaseVersionUnique(nexusResult, values.projectInfo.version),
+			() => new Error('Maven release version is not unique')
+		),
+		TE.map(() => values)
 	);
-
-	return E.right(values);
-};
 
 const validateNpmReleaseVersion = (
 	values: ExtractedValues
-): E.Either<Error, ExtractedValues> => {
-	return E.right(values);
+): TE.TaskEither<Error, ExtractedValues> => {
+	return TE.right(values);
 };
 
 const validateDockerReleaseVersion = (
 	values: ExtractedValues
-): E.Either<Error, ExtractedValues> => {
-	return E.right(values);
+): TE.TaskEither<Error, ExtractedValues> => {
+	return TE.right(values);
 };
 
 const extractValues = (
@@ -80,7 +82,7 @@ const extractValues = (
 
 const handleValidationByProject = (
 	values: ExtractedValues
-): E.Either<Error, ExtractedValues> =>
+): TE.TaskEither<Error, ExtractedValues> =>
 	match(values)
 		.with(
 			{ projectType: when(isMaven), projectInfo: when(isRelease) },
@@ -94,14 +96,14 @@ const handleValidationByProject = (
 			{ projectType: when(isDocker), projectInfo: when(isRelease) },
 			validateDockerReleaseVersion
 		)
-		.otherwise(() => E.right(values));
+		.otherwise(() => TE.right(values));
 
 const execute: StageFunction = (context) =>
 	pipe(
 		extractValues(context),
-		E.chain(handleValidationByProject),
-		E.map(() => context),
-		TE.fromEither
+		TE.fromEither,
+		TE.chain(handleValidationByProject),
+		TE.map(() => context)
 	);
 
 export const validateProjectVersionAllowed: Stage = {
