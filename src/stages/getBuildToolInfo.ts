@@ -10,10 +10,11 @@ import { BuildToolInfo } from '../context/BuildToolInfo';
 import { BuildContext } from '../context/BuildContext';
 import * as O from 'fp-ts/Option';
 import * as TE from 'fp-ts/TaskEither';
+import { NPM_PROJECT_FILE } from '../configFileTypes/constants';
 
 const execute: StageFunction = (context) =>
 	pipe(
-		readFile(path.resolve(__dirname, '..', '..', 'package.json')),
+		readFile(path.resolve(__dirname, '..', '..', NPM_PROJECT_FILE)),
 		E.chain((_) => parseJson<PackageJson>(_)),
 		E.map((_) => {
 			const [group, name] = npmSeparateGroupAndName(_.name);

@@ -13,9 +13,10 @@ import { execute } from './execute';
 import * as TE from 'fp-ts/TaskEither';
 import { logger } from './logger';
 import * as T from 'fp-ts/Task';
+import { NPM_PROJECT_FILE } from './configFileTypes/constants';
 
 const packageJson: PackageJson = pipe(
-	readFile(path.resolve(__dirname, '..', 'package.json')),
+	readFile(path.resolve(__dirname, '..', NPM_PROJECT_FILE)),
 	E.chain((_) => parseJson<PackageJson>(_)),
 	EU.getOrThrow
 );

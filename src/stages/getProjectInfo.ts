@@ -17,6 +17,7 @@ import { PackageJson } from '../configFileTypes/PackageJson';
 import { DockerJson } from '../configFileTypes/DockerJson';
 import { parseXml } from '../functions/Xml';
 import { PomXml } from '../configFileTypes/PomXml';
+import { DOCKER_PROJECT_FILE } from '../configFileTypes/constants';
 
 const readMavenProjectInfo = (): E.Either<Error, ProjectInfo> =>
 	pipe(
@@ -50,7 +51,7 @@ const readNpmProjectInfo = (): E.Either<Error, ProjectInfo> =>
 
 const readDockerProjectInfo = (): E.Either<Error, ProjectInfo> =>
 	pipe(
-		readFile(path.resolve(getCwd(), 'docker.json')),
+		readFile(path.resolve(getCwd(), DOCKER_PROJECT_FILE)),
 		E.chain((_) => parseJson<DockerJson>(_)),
 		E.map((dockerJson): ProjectInfo => {
 			const [group, name] = npmSeparateGroupAndName(dockerJson.name);
