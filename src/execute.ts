@@ -63,6 +63,7 @@ const incompleteToCompleteContext = (
 ): TE.TaskEither<Error, BuildContext> =>
 	pipe(fromIncompleteContext(context), TE.fromEither);
 
+// TODO fix tests
 export const execute = (
 	context: IncompleteBuildContext
 ): TE.TaskEither<Error, BuildContext> =>
