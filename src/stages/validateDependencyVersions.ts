@@ -1,11 +1,6 @@
 import { Stage, StageFunction } from './Stage';
 import * as E from 'fp-ts/Either';
-import { ProjectType } from '../context/ProjectType';
 import { BuildContext } from '../context/BuildContext';
-import {
-	extractProjectInfo,
-	extractProjectType
-} from '../context/contextExtraction';
 import { pipe } from 'fp-ts/function';
 import { match, when } from 'ts-pattern';
 import { isMaven, isNpm, isRelease } from '../context/projectTypeUtils';
@@ -24,7 +19,6 @@ import * as A from 'fp-ts/Array';
 import * as O from 'fp-ts/Option';
 import { parseJson } from '../functions/Json';
 import { PackageJson } from '../configFileTypes/PackageJson';
-import { ProjectInfo } from '../context/ProjectInfo';
 
 const MAVEN_PROPERTY_REGEX = /\${.*}/;
 

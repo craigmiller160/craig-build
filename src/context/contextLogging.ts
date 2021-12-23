@@ -1,5 +1,8 @@
 import { Context } from './Context';
-import { LoggableBuildContext, incompleteToLoggableContext } from './LoggableBuildContext';
+import {
+	LoggableBuildContext,
+	incompleteToLoggableContext
+} from './LoggableBuildContext';
 import { BuildContext } from './BuildContext';
 import { match, when } from 'ts-pattern';
 import * as O from 'fp-ts/Option';

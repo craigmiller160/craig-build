@@ -1,13 +1,6 @@
 import { Stage, StageFunction } from './Stage';
-import { ProjectType } from '../context/ProjectType';
-import { ProjectInfo } from '../context/ProjectInfo';
 import { BuildContext } from '../context/BuildContext';
-import * as E from 'fp-ts/Either';
 import { pipe } from 'fp-ts/function';
-import {
-	extractProjectInfo,
-	extractProjectType
-} from '../context/contextExtraction';
 import * as TE from 'fp-ts/TaskEither';
 import { match, when } from 'ts-pattern';
 import {

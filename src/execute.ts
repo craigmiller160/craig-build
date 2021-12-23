@@ -1,9 +1,6 @@
 import { BuildContext, fromIncompleteContext } from './context/BuildContext';
 import * as TE from 'fp-ts/TaskEither';
-import {
-	BaseStage,
-	BaseStageFunction,
-} from './stages/Stage';
+import { BaseStage, BaseStageFunction } from './stages/Stage';
 import * as A from 'fp-ts/Array';
 import { pipe } from 'fp-ts/function';
 import { logger } from './logger';

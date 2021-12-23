@@ -1,4 +1,4 @@
-import { EarlyStage, EarlyStageFunction, Stage, StageFunction } from './Stage';
+import { EarlyStage, EarlyStageFunction } from './Stage';
 import { PackageJson } from '../configFileTypes/PackageJson';
 import { pipe } from 'fp-ts/function';
 import { readFile } from '../functions/readFile';

@@ -5,7 +5,6 @@ import { ProjectType } from '../../src/context/ProjectType';
 import { BuildContext } from '../../src/context/BuildContext';
 import { LoggableBuildContext } from '../../src/context/LoggableBuildContext';
 import { toLoggableContext } from '../../src/context/contextLogging';
-import { inc } from 'semver';
 
 const incompleteContext: IncompleteBuildContext = {
 	commandInfo: O.some({

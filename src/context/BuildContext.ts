@@ -10,5 +10,3 @@ export interface BuildContext extends Context {
 	projectType: ProjectType;
 	projectInfo: ProjectInfo;
 }
-
-
