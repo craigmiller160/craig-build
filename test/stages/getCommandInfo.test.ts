@@ -12,7 +12,6 @@ describe('getCommandInfo', () => {
 			fullBuild: true
 		};
 		const buildContext: BuildContext = createBuildContext({
-			options,
 			commandInfo: O.none
 		});
 		const result = await getCommandInfo.execute(buildContext)();
@@ -30,7 +29,6 @@ describe('getCommandInfo', () => {
 			dockerOnly: true
 		};
 		const buildContext: BuildContext = createBuildContext({
-			options,
 			commandInfo: O.none
 		});
 		const result = await getCommandInfo.execute(buildContext)();
@@ -48,7 +46,6 @@ describe('getCommandInfo', () => {
 			kubernetesOnly: true
 		};
 		const buildContext: BuildContext = createBuildContext({
-			options,
 			commandInfo: O.none
 		});
 		const result = await getCommandInfo.execute(buildContext)();
