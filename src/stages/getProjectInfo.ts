@@ -17,12 +17,15 @@ import { PackageJson } from '../configFileTypes/PackageJson';
 import { DockerJson } from '../configFileTypes/DockerJson';
 import { parseXml } from '../functions/Xml';
 import { PomXml } from '../configFileTypes/PomXml';
-
-// TODO what do I do about dependencies?
+import {
+	DOCKER_PROJECT_FILE,
+	MAVEN_PROJECT_FILE,
+	NPM_PROJECT_FILE
+} from '../configFileTypes/constants';
 
 const readMavenProjectInfo = (): E.Either<Error, ProjectInfo> =>
 	pipe(
-		readFile(path.resolve(getCwd(), 'pom.xml')),
+		readFile(path.resolve(getCwd(), MAVEN_PROJECT_FILE)),
 		E.chain((_) => parseXml<PomXml>(_)),
 		E.map((pomXml): ProjectInfo => {
 			const version = pomXml.project.version[0];
@@ -37,7 +40,7 @@ const readMavenProjectInfo = (): E.Either<Error, ProjectInfo> =>
 
 const readNpmProjectInfo = (): E.Either<Error, ProjectInfo> =>
 	pipe(
-		readFile(path.resolve(getCwd(), 'package.json')),
+		readFile(path.resolve(getCwd(), NPM_PROJECT_FILE)),
 		E.chain((_) => parseJson<PackageJson>(_)),
 		E.map((packageJson): ProjectInfo => {
 			const [group, name] = npmSeparateGroupAndName(packageJson.name);
@@ -52,7 +55,7 @@ const readNpmProjectInfo = (): E.Either<Error, ProjectInfo> =>
 
 const readDockerProjectInfo = (): E.Either<Error, ProjectInfo> =>
 	pipe(
-		readFile(path.resolve(getCwd(), 'docker.json')),
+		readFile(path.resolve(getCwd(), DOCKER_PROJECT_FILE)),
 		E.chain((_) => parseJson<DockerJson>(_)),
 		E.map((dockerJson): ProjectInfo => {
 			const [group, name] = npmSeparateGroupAndName(dockerJson.name);

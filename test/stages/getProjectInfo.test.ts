@@ -6,12 +6,7 @@ import * as O from 'fp-ts/Option';
 import { ProjectType } from '../../src/context/ProjectType';
 import { getProjectInfo } from '../../src/stages/getProjectInfo';
 import '@relmify/jest-fp-ts';
-
-const baseWorkingDirPath = path.resolve(
-	process.cwd(),
-	'test',
-	'__working-dirs__'
-);
+import { baseWorkingDir } from '../testutils/baseWorkingDir';
 
 const baseBuildContext = createBuildContext();
 
@@ -22,7 +17,7 @@ describe('getProjectInfo', () => {
 
 	it('NPM release project', async () => {
 		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDirPath, 'npmReleaseLibrary')
+			path.resolve(baseWorkingDir, 'npmReleaseLibrary')
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -43,7 +38,7 @@ describe('getProjectInfo', () => {
 
 	it('NPM pre-release project', async () => {
 		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDirPath, 'npmBetaLibrary')
+			path.resolve(baseWorkingDir, 'npmBetaLibrary')
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -64,7 +59,7 @@ describe('getProjectInfo', () => {
 
 	it('Maven release project', async () => {
 		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDirPath, 'mavenReleaseLibrary')
+			path.resolve(baseWorkingDir, 'mavenReleaseLibrary')
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -85,7 +80,7 @@ describe('getProjectInfo', () => {
 
 	it('Maven pre-release project', async () => {
 		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDirPath, 'mavenSnapshotLibrary')
+			path.resolve(baseWorkingDir, 'mavenSnapshotLibrary')
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -106,7 +101,7 @@ describe('getProjectInfo', () => {
 
 	it('Docker release project', async () => {
 		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDirPath, 'dockerReleaseImage')
+			path.resolve(baseWorkingDir, 'dockerReleaseImage')
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -127,7 +122,7 @@ describe('getProjectInfo', () => {
 
 	it('Docker pre-release project', async () => {
 		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDirPath, 'dockerBetaImage')
+			path.resolve(baseWorkingDir, 'dockerBetaImage')
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,

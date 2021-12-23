@@ -5,6 +5,7 @@ import { validateBuildToolVersion } from '../../src/stages/validateBuildToolVers
 import { getProjectType } from '../../src/stages/getProjectType';
 import { getProjectInfo } from '../../src/stages/getProjectInfo';
 import { checkForUncommittedChanges } from '../../src/stages/checkForUncommittedChanges';
+import { validateDependencyVersions } from '../../src/stages/validateDependencyVersions';
 
 describe('stages', () => {
 	it('all stages are added in the correct order', () => {
@@ -15,7 +16,8 @@ describe('stages', () => {
 			validateBuildToolVersion.name,
 			checkForUncommittedChanges.name,
 			getProjectType.name,
-			getProjectInfo.name
+			getProjectInfo.name,
+			validateDependencyVersions.name
 		]);
 	});
 });

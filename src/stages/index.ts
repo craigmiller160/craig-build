@@ -5,6 +5,7 @@ import { validateBuildToolVersion } from './validateBuildToolVersion';
 import { checkForUncommittedChanges } from './checkForUncommittedChanges';
 import { getProjectType } from './getProjectType';
 import { getProjectInfo } from './getProjectInfo';
+import { validateDependencyVersions } from './validateDependencyVersions';
 
 export const STAGES: Stage[] = [
 	getCommandInfo,
@@ -12,5 +13,6 @@ export const STAGES: Stage[] = [
 	validateBuildToolVersion,
 	checkForUncommittedChanges,
 	getProjectType,
-	getProjectInfo
+	getProjectInfo,
+	validateDependencyVersions
 ];
