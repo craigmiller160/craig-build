@@ -1,12 +1,11 @@
 import { CommandInfo } from './CommandInfo';
-import * as O from 'fp-ts/Option';
 import { BuildToolInfo } from './BuildToolInfo';
 import { ProjectType } from './ProjectType';
 import { ProjectInfo } from './ProjectInfo';
 
 export interface BuildContext {
-	commandInfo: O.Option<CommandInfo>;
-	buildToolInfo: O.Option<BuildToolInfo>;
-	projectType: O.Option<ProjectType>;
-	projectInfo: O.Option<ProjectInfo>;
+	commandInfo: CommandInfo;
+	buildToolInfo: BuildToolInfo;
+	projectType: ProjectType;
+	projectInfo: ProjectInfo;
 }

@@ -7,7 +7,7 @@ import { logger } from './logger';
 import { STAGES } from './stages';
 import * as EU from './functions/EitherUtils';
 import { stringifyJson } from './functions/Json';
-import { toLoggable } from './context/LoggableBuildContext';
+import { toLoggable } from './context/LoggableIncompleteBuildContext';
 
 const executeStage = (
 	contextTE: TE.TaskEither<Error, BuildContext>,

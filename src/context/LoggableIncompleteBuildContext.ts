@@ -1,18 +1,20 @@
 import { CommandInfo } from './CommandInfo';
-import { BuildContext } from './BuildContext';
 import { getOrNull } from '../functions/OptionUtils';
 import { BuildToolInfo } from './BuildToolInfo';
 import { ProjectType } from './ProjectType';
 import { ProjectInfo } from './ProjectInfo';
+import { IncompleteBuildContext } from './IncompleteBuildContext';
 
-export interface LoggableBuildContext {
+export interface LoggableIncompleteBuildContext {
 	commandInfo: CommandInfo | null;
 	buildToolInfo: BuildToolInfo | null;
 	projectType: ProjectType | null;
 	projectInfo: ProjectInfo | null;
 }
 
-export const toLoggable = (context: BuildContext): LoggableBuildContext => ({
+export const toLoggable = (
+	context: IncompleteBuildContext
+): LoggableIncompleteBuildContext => ({
 	commandInfo: getOrNull(context.commandInfo),
 	buildToolInfo: getOrNull(context.buildToolInfo),
 	projectType: getOrNull(context.projectType),
