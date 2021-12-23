@@ -18,8 +18,8 @@ import {
 } from '../context/projectTypeUtils';
 
 interface ExtractedValues {
-	projectType: ProjectType;
-	projectInfo: ProjectInfo;
+	readonly projectType: ProjectType;
+	readonly projectInfo: ProjectInfo;
 }
 
 const validateMavenReleaseVersion = (
