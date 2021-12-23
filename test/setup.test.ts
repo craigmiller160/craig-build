@@ -1,5 +1,4 @@
 import { setupBuildContext } from '../src/setup';
-import { OptionValues } from 'commander';
 import * as O from 'fp-ts/Option';
 
 describe('setup', () => {
