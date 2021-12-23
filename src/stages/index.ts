@@ -1,4 +1,4 @@
-import { Stage } from './Stage';
+import { EarlyStage, Stage } from './Stage';
 import { getCommandInfo } from './getCommandInfo';
 import { getBuildToolInfo } from './getBuildToolInfo';
 import { validateBuildToolVersion } from './validateBuildToolVersion';
@@ -8,13 +8,16 @@ import { getProjectInfo } from './getProjectInfo';
 import { validateProjectVersionAllowed } from './validateProjectVersionAllowed';
 import { validateDependencyVersions } from './validateDependencyVersions';
 
-export const STAGES: Stage[] = [
+export const EARLY_STAGES: EarlyStage[] = [
 	getCommandInfo,
 	getBuildToolInfo,
 	validateBuildToolVersion,
 	checkForUncommittedChanges,
 	getProjectType,
-	getProjectInfo,
+	getProjectInfo
+];
+
+export const STAGES: Stage[] = [
 	validateDependencyVersions,
 	validateProjectVersionAllowed
 ];

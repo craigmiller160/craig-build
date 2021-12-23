@@ -1,4 +1,4 @@
-import { Stage, StageFunction } from './Stage';
+import {EarlyStage, EarlyStageFunction, Stage, StageFunction} from './Stage';
 import { match } from 'ts-pattern';
 import { OptionValues } from 'commander';
 import { CommandInfo } from '../context/CommandInfo';
@@ -16,13 +16,13 @@ const constructCommandInfo = (options: OptionValues): CommandInfo =>
 		}))
 		.run();
 
-const execute: StageFunction = (context) =>
+const execute: EarlyStageFunction = (context) =>
 	TE.right({
 		...context,
 		commandInfo: O.some(constructCommandInfo(program.opts()))
 	});
 
-export const getCommandInfo: Stage = {
+export const getCommandInfo: EarlyStage = {
 	name: 'Get Command Info',
 	execute
 };
