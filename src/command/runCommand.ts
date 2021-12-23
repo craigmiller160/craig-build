@@ -67,7 +67,7 @@ export const runCommand = (
 	const { printOutput, cwd } = getCommandOptions(options);
 
 	const result = spawn.sync('bash', ['-c', command], {
-		stdio: 'inherit',
+		stdio: 'pipe',
 		cwd
 	});
 
