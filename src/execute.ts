@@ -1,13 +1,14 @@
 import { BuildContext } from './context/BuildContext';
 import * as TE from 'fp-ts/TaskEither';
-import { Stage } from './stages/Stage';
+import { BaseStage, EarlyStage, Stage } from './stages/Stage';
 import * as A from 'fp-ts/Array';
 import { pipe } from 'fp-ts/function';
 import { logger } from './logger';
-import { STAGES } from './stages';
+import { EARLY_STAGES, STAGES } from './stages';
 import * as EU from './functions/EitherUtils';
 import { stringifyJson } from './functions/Json';
 import { toLoggable } from './context/LoggableIncompleteBuildContext';
+import { IncompleteBuildContext } from './context/IncompleteBuildContext';
 
 const executeStage = (
 	contextTE: TE.TaskEither<Error, BuildContext>,
@@ -36,8 +37,25 @@ const executeStage = (
 		})
 	);
 
+const executeStages = (
+	stages: BaseStage<any, any>[]
+): TE.TaskEither<any, any> => pipe(stages, A.reduce());
+
+const executeEarlyStages = (
+	context: IncompleteBuildContext
+): TE.TaskEither<Error, IncompleteBuildContext> =>
+	pipe(
+		EARLY_STAGES,
+		A.reduce(
+			TE.right<Error, IncompleteBuildContext>(context),
+			(ctxTE, stage: EarlyStage) => {
+				return ctxTE;
+			}
+		)
+	);
+
 export const execute = (
-	context: BuildContext
+	context: IncompleteBuildContext
 ): TE.TaskEither<Error, BuildContext> =>
 	pipe(
 		STAGES,

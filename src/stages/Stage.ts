@@ -1,12 +1,18 @@
 import { BuildContext } from '../context/BuildContext';
 import * as TE from 'fp-ts/TaskEither';
 import { IncompleteBuildContext } from '../context/IncompleteBuildContext';
+import { Context } from '../context/Context';
 
-export type BaseStageFunction<Ctx> = (context: Ctx) => TE.TaskEither<Error, Ctx>;
+export type BaseStageFunction<Ctx extends Context> = (
+	context: Ctx
+) => TE.TaskEither<Error, Ctx>;
 export type EarlyStageFunction = BaseStageFunction<IncompleteBuildContext>;
 export type StageFunction = BaseStageFunction<BuildContext>;
 
-export interface BaseStage<Ctx, StageFn extends BaseStageFunction<Ctx>> {
+export interface BaseStage<
+	Ctx extends Context,
+	StageFn extends BaseStageFunction<Ctx>
+> {
 	readonly name: string;
 	readonly execute: StageFn;
 }

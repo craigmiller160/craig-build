@@ -6,17 +6,19 @@ import { IncompleteBuildContext } from './IncompleteBuildContext';
 import * as E from 'fp-ts/Either';
 import * as O from 'fp-ts/Option';
 import { pipe } from 'fp-ts/function';
+import { Context } from './Context';
 
 type Container2 = [CommandInfo, BuildToolInfo];
 type Container3 = [CommandInfo, BuildToolInfo, ProjectType];
 
-export interface BuildContext {
+export interface BuildContext extends Context {
 	commandInfo: CommandInfo;
 	buildToolInfo: BuildToolInfo;
 	projectType: ProjectType;
 	projectInfo: ProjectInfo;
 }
 
+// TODO write tests for this
 export const fromIncompleteContext = (
 	context: IncompleteBuildContext
 ): E.Either<Error, BuildContext> =>
@@ -55,5 +57,7 @@ export const fromIncompleteContext = (
 				)
 			)
 		),
-		E.fromOption(() => new Error('IncompleteBuildContext has not yet been completed'))
+		E.fromOption(
+			() => new Error('IncompleteBuildContext has not yet been completed')
+		)
 	);

@@ -4,8 +4,9 @@ import { BuildToolInfo } from './BuildToolInfo';
 import { ProjectType } from './ProjectType';
 import { ProjectInfo } from './ProjectInfo';
 import { IncompleteBuildContext } from './IncompleteBuildContext';
+import { Context } from './Context';
 
-export interface LoggableIncompleteBuildContext {
+export interface LoggableIncompleteBuildContext extends Context {
 	commandInfo: CommandInfo | null;
 	buildToolInfo: BuildToolInfo | null;
 	projectType: ProjectType | null;
