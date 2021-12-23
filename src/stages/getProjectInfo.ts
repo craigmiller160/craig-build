@@ -18,8 +18,6 @@ import { DockerJson } from '../configFileTypes/DockerJson';
 import { parseXml } from '../functions/Xml';
 import { PomXml } from '../configFileTypes/PomXml';
 
-// TODO what do I do about dependencies?
-
 const readMavenProjectInfo = (): E.Either<Error, ProjectInfo> =>
 	pipe(
 		readFile(path.resolve(getCwd(), 'pom.xml')),
