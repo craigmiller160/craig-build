@@ -14,11 +14,16 @@ import * as TE from 'fp-ts/TaskEither';
 import { readFile } from '../functions/readFile';
 import { getCwd } from '../command/getCwd';
 import path from 'path';
-import { MAVEN_PROJECT_FILE } from '../configFileTypes/constants';
+import {
+	MAVEN_PROJECT_FILE,
+	NPM_PROJECT_FILE
+} from '../configFileTypes/constants';
 import { parseXml } from '../functions/Xml';
 import { PomXml } from '../configFileTypes/PomXml';
 import * as A from 'fp-ts/Array';
 import * as O from 'fp-ts/Option';
+import { parseJson } from '../functions/Json';
+import { PackageJson } from '../configFileTypes/PackageJson';
 
 interface ExtractedValues {
 	readonly projectType: ProjectType;
@@ -49,11 +54,24 @@ const validateMavenReleaseDependencies = (
 		E.map(() => values)
 	);
 
+const entries = (obj?: { [key: string]: string }): [string, string][] =>
+	pipe(
+		O.fromNullable(obj),
+		O.map(Object.entries),
+		O.getOrElse((): [string, string][] => [])
+	);
+
 const validateNpmReleaseDependencies = (
 	values: ExtractedValues
-): E.Either<Error, ExtractedValues> => {
-	throw new Error();
-};
+): E.Either<Error, ExtractedValues> =>
+	pipe(
+		readFile(path.resolve(getCwd(), NPM_PROJECT_FILE)),
+		E.chain((_) => parseJson<PackageJson>(_)),
+		E.map((_) =>
+			entries(_.dependencies).concat(entries(_.devDependencies))
+		),
+		E.map(() => values)
+	);
 
 const extractValues = (
 	context: BuildContext
