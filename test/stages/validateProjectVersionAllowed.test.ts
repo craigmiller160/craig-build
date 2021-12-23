@@ -7,7 +7,6 @@ import '@relmify/jest-fp-ts';
 import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
 import ProjectType from '../../old-src/types/ProjectType';
-import * as E from 'fp-ts/Either';
 import * as O from 'fp-ts/Option';
 import { pipe } from 'fp-ts/function';
 import { validateProjectVersionAllowed } from '../../src/stages/validateProjectVersionAllowed';
@@ -15,6 +14,7 @@ import {
 	NexusSearchResult,
 	NexusSearchResultItem
 } from '../../src/services/NexusSearchResult';
+import * as TE from 'fp-ts/TaskEither';
 
 jest.mock('../../src/services/NexusRepoApi', () => ({
 	searchForDockerReleases: jest.fn(),
@@ -44,7 +44,7 @@ describe('validateProjectVersionAllowed', () => {
 	});
 
 	it('allows npm pre-release version', async () => {
-		searchForNpmReleasesMock.mockImplementation(() => E.left(new Error()));
+		searchForNpmReleasesMock.mockImplementation(() => TE.left(new Error()));
 		const buildContext: BuildContext = {
 			...baseBuildContext,
 			projectType: O.some(ProjectType.NpmApplication),
@@ -65,7 +65,7 @@ describe('validateProjectVersionAllowed', () => {
 
 	it('allows maven pre-release version', async () => {
 		searchForMavenReleasesMock.mockImplementation(() =>
-			E.left(new Error())
+			TE.left(new Error())
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -87,7 +87,7 @@ describe('validateProjectVersionAllowed', () => {
 
 	it('allows docker pre-release version', async () => {
 		searchForDockerReleasesMock.mockImplementation(() =>
-			E.left(new Error())
+			TE.left(new Error())
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -108,8 +108,8 @@ describe('validateProjectVersionAllowed', () => {
 	});
 
 	it('allows npm release version with no conflicts', async () => {
-		searchForNpmReleasesMock.mockImplementation(
-			(): NexusSearchResult => ({ items: [] })
+		searchForNpmReleasesMock.mockImplementation(() =>
+			TE.right({ items: [] })
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -130,8 +130,8 @@ describe('validateProjectVersionAllowed', () => {
 	});
 
 	it('allows maven release version with no conflicts', async () => {
-		searchForMavenReleasesMock.mockImplementation(
-			(): NexusSearchResult => ({ items: [] })
+		searchForMavenReleasesMock.mockImplementation(() =>
+			TE.right({ items: [] })
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -152,8 +152,8 @@ describe('validateProjectVersionAllowed', () => {
 	});
 
 	it('allows docker release version with no conflicts', async () => {
-		searchForDockerReleasesMock.mockImplementation(
-			(): NexusSearchResult => ({ items: [] })
+		searchForDockerReleasesMock.mockImplementation(() =>
+			TE.right({ items: [] })
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -174,8 +174,8 @@ describe('validateProjectVersionAllowed', () => {
 	});
 
 	it('rejects npm release version with conflict', async () => {
-		searchForNpmReleasesMock.mockImplementation(
-			(): NexusSearchResult => ({ items: [invalidItem] })
+		searchForNpmReleasesMock.mockImplementation(() =>
+			TE.right({ items: [invalidItem] })
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -196,8 +196,8 @@ describe('validateProjectVersionAllowed', () => {
 	});
 
 	it('rejects maven release version with conflicts', async () => {
-		searchForMavenReleasesMock.mockImplementation(
-			(): NexusSearchResult => ({ items: [invalidItem] })
+		searchForMavenReleasesMock.mockImplementation(() =>
+			TE.right({ items: [invalidItem] })
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -218,8 +218,8 @@ describe('validateProjectVersionAllowed', () => {
 	});
 
 	it('rejects docker release version with conflicts', async () => {
-		searchForDockerReleasesMock.mockImplementation(
-			(): NexusSearchResult => ({ items: [invalidItem] })
+		searchForDockerReleasesMock.mockImplementation(() =>
+			TE.right({ items: [invalidItem] })
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
