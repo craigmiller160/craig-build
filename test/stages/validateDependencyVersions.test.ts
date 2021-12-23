@@ -55,18 +55,78 @@ describe('validateDependencyVersions', () => {
 	});
 
 	it('all release dependencies are valid for maven project', async () => {
-		throw new Error();
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDir, 'mavenReleaseApplication')
+		);
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: O.some(ProjectType.MavenApplication),
+			projectInfo: pipe(
+				baseBuildContext.projectInfo,
+				O.map((_) => ({
+					..._,
+					isPreRelease: false
+				}))
+			)
+		};
+		const result = await validateDependencyVersions.execute(buildContext)();
+		expect(result).toEqualRight(buildContext);
 	});
 
 	it('all release dependencies are valid for npm project', async () => {
-		throw new Error();
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDir, 'npmReleaseApplication')
+		);
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: O.some(ProjectType.NpmApplication),
+			projectInfo: pipe(
+				baseBuildContext.projectInfo,
+				O.map((_) => ({
+					..._,
+					isPreRelease: false
+				}))
+			)
+		};
+		const result = await validateDependencyVersions.execute(buildContext)();
+		expect(result).toEqualRight(buildContext);
 	});
 
 	it('invalid release dependencies for maven project', async () => {
-		throw new Error();
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDir, 'mavenReleaseApplicationBadDependency')
+		);
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: O.some(ProjectType.MavenApplication),
+			projectInfo: pipe(
+				baseBuildContext.projectInfo,
+				O.map((_) => ({
+					..._,
+					isPreRelease: false
+				}))
+			)
+		};
+		const result = await validateDependencyVersions.execute(buildContext)();
+		expect(result).toEqualLeft(new Error());
 	});
 
 	it('invalid release dependencies for npm project', async () => {
-		throw new Error();
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDir, 'npmReleaseApplicationBadDependency')
+		);
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: O.some(ProjectType.NpmApplication),
+			projectInfo: pipe(
+				baseBuildContext.projectInfo,
+				O.map((_) => ({
+					..._,
+					isPreRelease: false
+				}))
+			)
+		};
+		const result = await validateDependencyVersions.execute(buildContext)();
+		expect(result).toEqualLeft(new Error());
 	});
 });
