@@ -70,6 +70,14 @@ const validateNpmReleaseDependencies = (
 		E.map((_) =>
 			entries(_.dependencies).concat(entries(_.devDependencies))
 		),
+		E.filterOrElse(
+			(dependencyEntries) =>
+				pipe(
+					dependencyEntries,
+					A.filter(([, value]) => value.includes('beta'))
+				).length === 0,
+			() => new Error('Cannot have beta dependencies in NPM release')
+		),
 		E.map(() => values)
 	);
 
