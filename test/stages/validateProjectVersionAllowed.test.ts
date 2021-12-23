@@ -50,11 +50,43 @@ describe('validateProjectVersionAllowed', () => {
 	});
 
 	it('allows maven pre-release version', async () => {
-		throw new Error();
+		searchForMavenReleasesMock.mockImplementation(() => E.left(new Error()));
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: O.some(ProjectType.MavenApplication),
+			projectInfo: pipe(
+				baseBuildContext.projectInfo,
+				O.map((_) => ({
+					..._,
+					isPreRelease: true
+				}))
+			)
+		};
+
+		const result = await validateProjectVersionAllowed.execute(
+			buildContext
+		)();
+		expect(result).toEqualRight(buildContext);
 	});
 
 	it('allows docker pre-release version', async () => {
-		throw new Error();
+		searchForDockerReleasesMock.mockImplementation(() => E.left(new Error()));
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: O.some(ProjectType.DockerApplication),
+			projectInfo: pipe(
+				baseBuildContext.projectInfo,
+				O.map((_) => ({
+					..._,
+					isPreRelease: true
+				}))
+			)
+		};
+
+		const result = await validateProjectVersionAllowed.execute(
+			buildContext
+		)();
+		expect(result).toEqualRight(buildContext);
 	});
 
 	it('allows npm release version with no conflicts', async () => {
