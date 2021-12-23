@@ -1,7 +1,7 @@
 import { ProjectType } from '../../src/context/ProjectType';
 import { ProjectInfo } from '../../src/context/ProjectInfo';
 import { isDocker, isMaven, isNpm } from '../../old-src/utils/projectTypeUtils';
-import {isPreRelease, isRelease} from '../../src/context/projectTypeUtils';
+import { isPreRelease, isRelease } from '../../src/context/projectTypeUtils';
 
 const projectTypes = Object.values(ProjectType);
 
