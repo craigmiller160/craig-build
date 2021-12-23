@@ -3,7 +3,9 @@ import * as O from 'fp-ts/Option';
 import { CommandType } from '../../src/context/CommandType';
 import { ProjectType } from '../../src/context/ProjectType';
 import { BuildContext } from '../../src/context/BuildContext';
-import {LoggableBuildContext} from '../../src/context/LoggableBuildContext';
+import { LoggableBuildContext } from '../../src/context/LoggableBuildContext';
+import { toLoggableContext } from '../../src/context/contextLogging';
+import { inc } from 'semver';
 
 const incompleteContext: IncompleteBuildContext = {
 	commandInfo: O.some({
@@ -50,7 +52,7 @@ const loggableBuildContext: LoggableBuildContext = {
 		version: '',
 		isPreRelease: false
 	}
-}
+};
 
 const buildContext: BuildContext = {
 	commandInfo: {
@@ -73,10 +75,12 @@ const buildContext: BuildContext = {
 
 describe('contextLogging', () => {
 	it('toLoggableContext with IncompleteBuildContext', () => {
-		throw new Error();
+		const result = toLoggableContext(incompleteContext);
+		expect(result).toEqual(loggableIncompleteContext);
 	});
 
 	it('toLoggableContext with BuildContext', () => {
-		throw new Error();
+		const result = toLoggableContext(buildContext);
+		expect(result).toEqual(loggableBuildContext);
 	});
 });

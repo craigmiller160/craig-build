@@ -9,7 +9,6 @@ import { IncompleteBuildContext } from './IncompleteBuildContext';
 const isOption = (value: any): value is O.Option<any> =>
 	value._tag !== undefined;
 
-// TODO write tests
 export const toLoggableContext = (context: Context): LoggableBuildContext =>
 	match(context)
 		.with({ commandInfo: when(isOption) }, (_: IncompleteBuildContext) =>
