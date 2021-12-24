@@ -1,13 +1,13 @@
 import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
 import { ProjectType } from '../../src/context/ProjectType';
+import { runCommandMock } from '../testutils/runCommandMock';
 import {
 	buildArtifact,
 	MAVEN_BUILD_CMD,
 	NPM_BUILD_CMD
 } from '../../src/stages/buildArtifact';
 import '@relmify/jest-fp-ts';
-import { runCommandMock } from '../testutils/runCommandMock';
 import * as E from 'fp-ts/Either';
 
 const baseBuildContext = createBuildContext();
