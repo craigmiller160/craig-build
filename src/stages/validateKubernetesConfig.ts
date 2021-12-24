@@ -12,17 +12,33 @@ import { KUBERNETES_DEPLOY_FILE } from '../configFileTypes/constants';
 import { parseYaml } from '../functions/Yaml';
 import { KubeDeployment } from '../configFileTypes/KubeDeployment';
 
+const KUBE_IMAGE_REGEX =
+	/^(?<repoPrefix>.*:\d*)\/(?<imageName>.*):(?<imageVersion>.*)$/;
+
 interface KubeValues {
 	repoPrefix: string;
 	imageName: string;
 	imageVersion: string;
 }
 
+// TODO need test for regex failing
+
 const validateConfig = (
 	context: BuildContext,
 	kubeDeployment: KubeDeployment
 ): E.Either<Error, BuildContext> => {
-	throw new Error();
+	const kubeImage = kubeDeployment.spec.template.spec.containers[0].image;
+	match(kubeImage)
+		.with(
+			when<string>((_) => KUBE_IMAGE_REGEX.test(_)),
+			(_) =>
+				E.right(
+					KUBE_IMAGE_REGEX.exec(_)?.groups as unknown as KubeValues
+				)
+		)
+		.otherwise(() =>
+			E.left(new Error('Kubernetes image does not match pattern'))
+		);
 };
 
 const readAndValidateConfig = (
