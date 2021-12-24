@@ -57,7 +57,7 @@ describe('validateGitTag', () => {
 		};
 
 		const result = await validateGitTag.execute(buildContext)();
-		expect(result).toEqualLeft(new Error());
+		expect(result).toEqualLeft(new Error('Git tag for project release version already exists'));
 
 		expect(runCommandMock).toHaveBeenCalledWith('git tag');
 	});
