@@ -16,6 +16,7 @@ import {
 import { parseYaml } from '../functions/Yaml';
 import { KubeDeployment } from '../configFileTypes/KubeDeployment';
 import { stringifyJson } from '../functions/Json';
+import { getCwdMock } from '../../test/testutils/getCwdMock';
 
 const KUBE_IMAGE_REGEX =
 	/^(?<repoPrefix>.*:\d*)\/(?<imageName>.*):(?<imageVersion>.*)$/;
@@ -80,7 +81,7 @@ const readAndValidateConfig = (
 	context: BuildContext
 ): E.Either<Error, BuildContext> =>
 	pipe(
-		readFile(path.resolve(getCwd(), KUBERNETES_DEPLOY_FILE)),
+		readFile(path.join(getCwd(), KUBERNETES_DEPLOY_FILE)),
 		E.chain((_) => parseYaml<KubeDeployment>(_)),
 		E.chain((_) => validateConfig(context, _))
 	);
