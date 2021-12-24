@@ -1,4 +1,4 @@
-import { BuildContext, fromIncompleteContext } from './context/BuildContext';
+import { BuildContext } from './context/BuildContext';
 import * as TE from 'fp-ts/TaskEither';
 import { BaseStage, BaseStageFunction } from './stages/Stage';
 import * as A from 'fp-ts/Array';
@@ -10,6 +10,7 @@ import { stringifyJson } from './functions/Json';
 import { IncompleteBuildContext } from './context/IncompleteBuildContext';
 import { Context } from './context/Context';
 import { toLoggableContext } from './context/contextLogging';
+import { fromIncompleteContext } from './context/fromIncompleteContext';
 
 const executeStage = <
 	Ctx extends Context,
@@ -60,7 +61,6 @@ const incompleteToCompleteContext = (
 ): TE.TaskEither<Error, BuildContext> =>
 	pipe(fromIncompleteContext(context), TE.fromEither);
 
-// TODO fix tests
 export const execute = (
 	context: IncompleteBuildContext
 ): TE.TaskEither<Error, BuildContext> =>
