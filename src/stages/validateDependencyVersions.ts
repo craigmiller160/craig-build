@@ -3,7 +3,7 @@ import * as E from 'fp-ts/Either';
 import { BuildContext } from '../context/BuildContext';
 import { pipe } from 'fp-ts/function';
 import { match, when } from 'ts-pattern';
-import { isMaven, isNpm, isRelease } from '../context/projectTypeUtils';
+import { isMaven, isNpm } from '../context/projectTypeUtils';
 import { logger } from '../logger';
 import * as TE from 'fp-ts/TaskEither';
 import { readFile } from '../functions/readFile';
@@ -19,6 +19,7 @@ import * as A from 'fp-ts/Array';
 import * as O from 'fp-ts/Option';
 import { parseJson } from '../functions/Json';
 import { PackageJson } from '../configFileTypes/PackageJson';
+import {isRelease} from '../context/projectInfoUtils';
 
 const MAVEN_PROPERTY_REGEX = /\${.*}/;
 

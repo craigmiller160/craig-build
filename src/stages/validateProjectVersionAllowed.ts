@@ -6,8 +6,7 @@ import { match, when } from 'ts-pattern';
 import {
 	isDocker,
 	isMaven,
-	isNpm,
-	isRelease
+	isNpm
 } from '../context/projectTypeUtils';
 import {
 	NexusRepoGroupSearchFn,
@@ -18,6 +17,7 @@ import {
 import { NexusSearchResult } from '../services/NexusSearchResult';
 import * as A from 'fp-ts/Array';
 import { logger } from '../logger';
+import {isRelease} from '../context/projectInfoUtils';
 
 const isReleaseVersionUnique = (
 	nexusResult: NexusSearchResult,
