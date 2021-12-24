@@ -16,7 +16,7 @@ import { stringifyJson } from '../functions/Json';
 const KUBE_IMAGE_REGEX =
 	/^(?<repoPrefix>.*:\d*)\/(?<imageName>.*):(?<imageVersion>.*)$/;
 
-interface KubeValues {
+export interface KubeValues {
 	repoPrefix: string;
 	imageName: string;
 	imageVersion: string;
