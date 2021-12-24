@@ -20,7 +20,7 @@ const validateConfigByProject = (
 		.otherwise(E.right);
 
 const execute: StageFunction = (context) =>
-	pipe(validateConfig(context), TE.fromEither);
+	pipe(validateConfigByProject(context), TE.fromEither);
 
 export const validateKubernetesConfig: Stage = {
 	name: 'Validate Kubernetes Config',
