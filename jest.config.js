@@ -4,6 +4,7 @@ const path = require('path');
 module.exports = {
 	preset: 'ts-jest',
 	bail: false,
+	collectCoverage: true,
 	testEnvironment: 'node',
 	roots: [process.cwd()],
 	modulePaths: [path.resolve(process.cwd(), 'src')],
@@ -13,7 +14,7 @@ module.exports = {
 	transform: {
 		'^.+\\.tsx?$': 'ts-jest'
 	},
-	reporters: [
-		['jest-summarizing-reporter', { diffs: true }]
-	]
+	// reporters: [
+	// 	['jest-summarizing-reporter', { diffs: true }]
+	// ]
 };
