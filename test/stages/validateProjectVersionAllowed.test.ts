@@ -7,8 +7,6 @@ import '@relmify/jest-fp-ts';
 import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
 import ProjectType from '../../old-src/types/ProjectType';
-import * as O from 'fp-ts/Option';
-import { pipe } from 'fp-ts/function';
 import { validateProjectVersionAllowed } from '../../src/stages/validateProjectVersionAllowed';
 import { NexusSearchResultItem } from '../../src/services/NexusSearchResult';
 import * as TE from 'fp-ts/TaskEither';
