@@ -1,6 +1,6 @@
 import {
 	downloadArtifact,
-	restApiInstance,
+	restApiInstance, searchForDockerBetas,
 	searchForDockerReleases,
 	searchForMavenReleases,
 	searchForMavenSnapshots,
@@ -164,6 +164,16 @@ describe('NexusRepoApi', () => {
 			)
 			.reply(200, expectedResult);
 		const actualResult = await searchForDockerReleases('My Name')();
+		expect(actualResult).toEqualRight(expectedResult);
+	});
+
+	it('searchForDockerBetas', async () => {
+		mockRestApi
+			.onGet(
+				'/search?repository=docker-private&name=My%20Name&sort=version&direction=desc&version=%2Abeta%2A'
+			)
+			.reply(200, expectedResult);
+		const actualResult = await searchForDockerBetas('My Name')();
 		expect(actualResult).toEqualRight(expectedResult);
 	});
 });

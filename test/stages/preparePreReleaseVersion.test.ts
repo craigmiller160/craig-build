@@ -4,7 +4,7 @@ import '@relmify/jest-fp-ts';
 import { preparePreReleaseVersion } from '../../src/stages/preparePreReleaseVersion';
 import {
 	searchForNpmBetas,
-	searchForDockerReleases,
+	searchForDockerBetas,
 	searchForMavenSnapshots
 } from '../../src/services/NexusRepoApi';
 
@@ -16,7 +16,7 @@ jest.mock('../../src/services/NexusRepoApi', () => ({
 const baseBuildContext = createBuildContext();
 
 const searchForNpmBetasMock = searchForNpmBetas as jest.Mock;
-const searchForDockerReleasesMock = searchForDockerReleases as jest.Mock;
+const searchForDockerBetasMock = searchForDockerBetas as jest.Mock;
 const searchForMavenSnapshotsMock = searchForMavenSnapshots as jest.Mock;
 
 describe('preparePreReleaseVersion', () => {
@@ -37,7 +37,7 @@ describe('preparePreReleaseVersion', () => {
 		expect(result).toEqualRight(buildContext);
 
 		expect(searchForNpmBetasMock).not.toHaveBeenCalled();
-		expect(searchForDockerReleasesMock).not.toHaveBeenCalled();
+		expect(searchForDockerBetasMock).not.toHaveBeenCalled();
 		expect(searchForMavenSnapshotsMock).not.toHaveBeenCalled();
 	});
 
