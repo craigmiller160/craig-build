@@ -8,7 +8,7 @@ import { checkForUncommittedChanges } from '../../src/stages/checkForUncommitted
 import { validateDependencyVersions } from '../../src/stages/validateDependencyVersions';
 import { validateProjectVersionAllowed } from '../../src/stages/validateProjectVersionAllowed';
 import { validateKubernetesConfig } from '../../src/stages/validateKubernetesConfig';
-import validateGitTag from '../../old-src/stages/config-validation/tasks/validateGitTag';
+import { validateGitTag } from '../../src/stages/validateGitTag';
 
 describe('stages', () => {
 	it('all early stages are added in the correct order', () => {

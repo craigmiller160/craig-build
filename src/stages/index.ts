@@ -8,7 +8,7 @@ import { getProjectInfo } from './getProjectInfo';
 import { validateProjectVersionAllowed } from './validateProjectVersionAllowed';
 import { validateDependencyVersions } from './validateDependencyVersions';
 import { validateKubernetesConfig } from './validateKubernetesConfig';
-import {validateGitTag} from './validateGitTag';
+import { validateGitTag } from './validateGitTag';
 
 export const EARLY_STAGES: EarlyStage[] = [
 	getCommandInfo,
