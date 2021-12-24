@@ -1,6 +1,6 @@
 import { Stage, StageFunction } from './Stage';
 import { BuildContext } from '../context/BuildContext';
-import {__, match, when} from 'ts-pattern';
+import { __, match, when } from 'ts-pattern';
 import { isApplication } from '../context/projectTypeUtils';
 import * as E from 'fp-ts/Either';
 import { pipe } from 'fp-ts/function';
@@ -11,6 +11,7 @@ import { getCwd } from '../command/getCwd';
 import { KUBERNETES_DEPLOY_FILE } from '../configFileTypes/constants';
 import { parseYaml } from '../functions/Yaml';
 import { KubeDeployment } from '../configFileTypes/KubeDeployment';
+import { stringifyJson } from '../functions/Json';
 
 const KUBE_IMAGE_REGEX =
 	/^(?<repoPrefix>.*:\d*)\/(?<imageName>.*):(?<imageVersion>.*)$/;
@@ -35,14 +36,33 @@ const evaluateImageRegex = (image?: string): E.Either<Error, KubeValues> =>
 			E.left(new Error('Kubernetes image does not match pattern'))
 		);
 
+const validateKubeValues = (
+	kubeValues: KubeValues
+): E.Either<Error, KubeValues> =>
+	match(kubeValues)
+		.with({}, () => E.right(kubeValues))
+		.otherwise(() =>
+			E.left(
+				new Error(
+					`Kubernetes image is invalid: ${stringifyJson(
+						kubeValues,
+						2
+					)}`
+				)
+			)
+		);
+
 const validateConfig = (
 	context: BuildContext,
 	kubeDeployment: KubeDeployment
-): E.Either<Error, BuildContext> => {
-	evaluateImageRegex(
-		kubeDeployment?.spec?.template?.spec?.containers?.[0]?.image
+): E.Either<Error, BuildContext> =>
+	pipe(
+		evaluateImageRegex(
+			kubeDeployment?.spec?.template?.spec?.containers?.[0]?.image
+		),
+		E.chain(validateKubeValues),
+		E.map(() => context)
 	);
-};
 
 const readAndValidateConfig = (
 	context: BuildContext
