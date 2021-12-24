@@ -1,6 +1,11 @@
 import { ProjectType } from '../../src/context/ProjectType';
 import { ProjectInfo } from '../../src/context/ProjectInfo';
-import { isDocker, isMaven, isNpm } from '../../old-src/utils/projectTypeUtils';
+import {
+	isApplication,
+	isDocker,
+	isMaven,
+	isNpm
+} from '../../old-src/utils/projectTypeUtils';
 import { isPreRelease, isRelease } from '../../src/context/projectTypeUtils';
 
 const projectTypes = Object.values(ProjectType);
@@ -82,5 +87,16 @@ describe('projectTypeUtils', () => {
 				isPreRelease: false
 			})
 		).toEqual(false);
+	});
+
+	it('isApplication', () => {
+		const result = projectTypes.map(isApplication);
+		expect(result).toHaveLength(6);
+		npmLibrary(result, false);
+		mavenLibrary(result, false);
+		npmApplication(result, true);
+		mavenApplication(result, true);
+		dockerApplication(result, true);
+		dockerImage(result, false);
 	});
 });
