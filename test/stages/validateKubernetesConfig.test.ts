@@ -147,4 +147,18 @@ describe('validateKubernetesConfig', () => {
 		const result = await validateKubernetesConfig.execute(buildContext)();
 		expect(result).toEqualLeft(new Error());
 	});
+
+	it('kubernetes config has no image', async () => {
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDir, 'mavenReleaseApplicationNoImage')
+		);
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.MavenApplication,
+			projectInfo
+		};
+
+		const result = await validateKubernetesConfig.execute(buildContext)();
+		expect(result).toEqualLeft(new Error());
+	})
 });
