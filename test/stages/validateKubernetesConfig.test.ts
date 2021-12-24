@@ -6,8 +6,15 @@ import { baseWorkingDir } from '../testutils/baseWorkingDir';
 import path from 'path';
 import { validateKubernetesConfig } from '../../src/stages/validateKubernetesConfig';
 import '@relmify/jest-fp-ts';
+import ProjectInfo from '../../old-src/types/ProjectInfo';
 
 const baseBuildContext = createBuildContext();
+const projectInfo: ProjectInfo = {
+	group: 'io.craigmiller160',
+	name: 'email-service',
+	version: '1.0.0',
+	isPreRelease: false
+};
 
 describe('validateKubernetesConfig', () => {
 	beforeEach(() => {
@@ -63,11 +70,34 @@ describe('validateKubernetesConfig', () => {
 	});
 
 	it('kubernetes config is valid', async () => {
-		throw new Error();
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDir, 'mavenReleaseApplication')
+		);
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.MavenApplication,
+			projectInfo
+		};
+
+		const result = await validateKubernetesConfig.execute(buildContext)();
+		expect(result).toEqualRight(buildContext);
 	});
 
 	it('kubernetes config does not have version placeholder', async () => {
-		throw new Error();
+		getCwdMock.mockImplementation(() =>
+			path.resolve(
+				baseWorkingDir,
+				'mavenReleaseApplicationWrongKubeVersion'
+			)
+		);
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.MavenApplication,
+			projectInfo
+		};
+
+		const result = await validateKubernetesConfig.execute(buildContext)();
+		expect(result).toEqualLeft(new Error());
 	});
 
 	it('kubernetes config has wrong project name', async () => {
