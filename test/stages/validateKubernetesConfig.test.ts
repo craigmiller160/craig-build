@@ -6,7 +6,7 @@ import { baseWorkingDir } from '../testutils/baseWorkingDir';
 import path from 'path';
 import { validateKubernetesConfig } from '../../src/stages/validateKubernetesConfig';
 import '@relmify/jest-fp-ts';
-import ProjectInfo from '../../old-src/types/ProjectInfo';
+import { ProjectInfo } from '../../src/context/ProjectInfo';
 
 const baseBuildContext = createBuildContext();
 const projectInfo: ProjectInfo = {
