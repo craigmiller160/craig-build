@@ -1,13 +1,14 @@
 import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
 import { ProjectType } from '../../src/context/ProjectType';
-import { buildArtifact } from '../../src/stages/buildArtifact';
-import '@relmify/jest-fp-ts';
-import { runCommandMock } from '../testutils/runCommandMock';
 import {
+	buildArtifact,
 	MAVEN_BUILD_CMD,
 	NPM_BUILD_CMD
-} from '../../old-src/stages/createArtifact/tasks/buildAndTest';
+} from '../../src/stages/buildArtifact';
+import '@relmify/jest-fp-ts';
+import { runCommandMock } from '../testutils/runCommandMock';
+import * as E from 'fp-ts/Either';
 
 const baseBuildContext = createBuildContext();
 
@@ -29,6 +30,7 @@ describe('buildArtifact', () => {
 	});
 
 	it('builds maven artifact', async () => {
+		runCommandMock.mockImplementation(() => E.right(''));
 		const buildContext: BuildContext = {
 			...baseBuildContext,
 			projectType: ProjectType.MavenApplication
@@ -37,10 +39,13 @@ describe('buildArtifact', () => {
 		const result = await buildArtifact.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
 
-		expect(runCommandMock).toHaveBeenCalledWith(MAVEN_BUILD_CMD);
+		expect(runCommandMock).toHaveBeenCalledWith(MAVEN_BUILD_CMD, {
+			printOutput: true
+		});
 	});
 
 	it('builds npm artifact', async () => {
+		runCommandMock.mockImplementation(() => E.right(''));
 		const buildContext: BuildContext = {
 			...baseBuildContext,
 			projectType: ProjectType.NpmApplication
@@ -49,6 +54,8 @@ describe('buildArtifact', () => {
 		const result = await buildArtifact.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
 
-		expect(runCommandMock).toHaveBeenCalledWith(NPM_BUILD_CMD);
+		expect(runCommandMock).toHaveBeenCalledWith(NPM_BUILD_CMD, {
+			printOutput: true
+		});
 	});
 });
