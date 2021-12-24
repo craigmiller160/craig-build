@@ -21,14 +21,8 @@ interface KubeValues {
 	imageVersion: string;
 }
 
-// TODO need test for regex failing
-
-const validateConfig = (
-	context: BuildContext,
-	kubeDeployment: KubeDeployment
-): E.Either<Error, BuildContext> => {
-	const kubeImage = kubeDeployment.spec.template.spec.containers[0].image;
-	match(kubeImage)
+const evaluateImageRegex = (image: string): E.Either<Error, KubeValues> =>
+	match(image)
 		.with(
 			when<string>((_) => KUBE_IMAGE_REGEX.test(_)),
 			(_) =>
@@ -39,6 +33,12 @@ const validateConfig = (
 		.otherwise(() =>
 			E.left(new Error('Kubernetes image does not match pattern'))
 		);
+
+const validateConfig = (
+	context: BuildContext,
+	kubeDeployment: KubeDeployment
+): E.Either<Error, BuildContext> => {
+	evaluateImageRegex(kubeDeployment.spec.template.spec.containers[0].image)
 };
 
 const readAndValidateConfig = (
