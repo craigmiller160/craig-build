@@ -6,6 +6,7 @@ import { pipe } from 'fp-ts/function';
 import { match, when } from 'ts-pattern';
 import { logger } from '../logger';
 import { isMaven, isNpm } from '../context/projectTypeUtils';
+import { runCommand } from '../command/runCommand';
 
 export const MAVEN_BUILD_CMD = 'mvn clean deploy -Ddependency-check.skip=true';
 export const NPM_BUILD_CMD = 'yarn build';
@@ -13,9 +14,11 @@ export const NPM_BUILD_CMD = 'yarn build';
 const runBuildCommand = (
 	context: BuildContext,
 	command: string
-): E.Either<Error, BuildContext> => {
-	throw new Error();
-};
+): E.Either<Error, BuildContext> =>
+	pipe(
+		runCommand(command, { printOutput: true }),
+		E.map(() => context)
+	);
 
 const handleBuildingArtifactByProject = (
 	context: BuildContext
