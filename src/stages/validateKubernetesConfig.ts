@@ -16,6 +16,7 @@ import {
 import { parseYaml } from '../functions/Yaml';
 import { KubeDeployment } from '../configFileTypes/KubeDeployment';
 import { stringifyJson } from '../functions/Json';
+import { logger } from '../logger';
 
 const KUBE_IMAGE_REGEX =
 	/^(?<repoPrefix>.*:\d*)\/(?<imageName>.*):(?<imageVersion>.*)$/;
@@ -91,7 +92,10 @@ const validateConfigByProject = (
 ): E.Either<Error, BuildContext> =>
 	match(context)
 		.with({ projectType: when(isApplication) }, readAndValidateConfig)
-		.otherwise(E.right);
+		.otherwise((_) => {
+			logger.debug('Skipping stage');
+			return E.right(_);
+		});
 
 const execute: StageFunction = (context) =>
 	pipe(validateConfigByProject(context), TE.fromEither);

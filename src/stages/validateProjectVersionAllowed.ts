@@ -17,6 +17,7 @@ import {
 } from '../services/NexusRepoApi';
 import { NexusSearchResult } from '../services/NexusSearchResult';
 import * as A from 'fp-ts/Array';
+import { logger } from '../logger';
 
 const isReleaseVersionUnique = (
 	nexusResult: NexusSearchResult,
@@ -59,7 +60,10 @@ const handleValidationByProject = (
 			{ projectType: when(isDocker), projectInfo: when(isRelease) },
 			(_) => validateReleaseVersion(_, searchForDockerReleases)
 		)
-		.otherwise(() => TE.right(context));
+		.otherwise(() => {
+			logger.debug('Skipping stage');
+			return TE.right(context);
+		});
 
 const execute: StageFunction = (context) =>
 	pipe(
