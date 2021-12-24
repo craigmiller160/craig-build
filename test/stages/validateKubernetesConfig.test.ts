@@ -133,4 +133,18 @@ describe('validateKubernetesConfig', () => {
 		const result = await validateKubernetesConfig.execute(buildContext)();
 		expect(result).toEqualLeft(new Error());
 	});
+
+	it('kubernetes config has totally image not matching regex', async () => {
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDir, 'mavenReleaseApplicationInvalidImage')
+		);
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.MavenApplication,
+			projectInfo
+		};
+
+		const result = await validateKubernetesConfig.execute(buildContext)();
+		expect(result).toEqualLeft(new Error());
+	});
 });
