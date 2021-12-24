@@ -5,18 +5,34 @@ import { isApplication } from '../context/projectTypeUtils';
 import * as E from 'fp-ts/Either';
 import { pipe } from 'fp-ts/function';
 import * as TE from 'fp-ts/TaskEither';
+import { readFile } from '../functions/readFile';
+import path from 'path';
+import { getCwd } from '../command/getCwd';
+import { KUBERNETES_DEPLOY_FILE } from '../configFileTypes/constants';
+import { parseYaml } from '../functions/Yaml';
+import KubeDeployment from '../configFileTypes/KubeDeployment';
 
 const validateConfig = (
-	context: BuildContext
+	context: BuildContext,
+	kubeDeployment: KubeDeployment
 ): E.Either<Error, BuildContext> => {
 	throw new Error();
 };
+
+const readAndValidateConfig = (
+	context: BuildContext
+): E.Either<Error, BuildContext> =>
+	pipe(
+		readFile(path.resolve(getCwd(), KUBERNETES_DEPLOY_FILE)),
+		E.chain((_) => parseYaml<KubeDeployment>(_)),
+		E.chain((_) => validateConfig(context, _))
+	);
 
 const validateConfigByProject = (
 	context: BuildContext
 ): E.Either<Error, BuildContext> =>
 	match(context)
-		.with({ projectType: when(isApplication) }, validateConfig)
+		.with({ projectType: when(isApplication) }, readAndValidateConfig)
 		.otherwise(E.right);
 
 const execute: StageFunction = (context) =>
