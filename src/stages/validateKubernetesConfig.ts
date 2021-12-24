@@ -1,6 +1,6 @@
 import { Stage, StageFunction } from './Stage';
 import { BuildContext } from '../context/BuildContext';
-import { match, when } from 'ts-pattern';
+import {__, match, when} from 'ts-pattern';
 import { isApplication } from '../context/projectTypeUtils';
 import * as E from 'fp-ts/Either';
 import { pipe } from 'fp-ts/function';
@@ -21,8 +21,9 @@ interface KubeValues {
 	imageVersion: string;
 }
 
-const evaluateImageRegex = (image: string): E.Either<Error, KubeValues> =>
-	match(image)
+const evaluateImageRegex = (image?: string): E.Either<Error, KubeValues> =>
+	match(image ?? '')
+		.with('', () => E.left(new Error('Kubernetes config is missing image')))
 		.with(
 			when<string>((_) => KUBE_IMAGE_REGEX.test(_)),
 			(_) =>
@@ -38,7 +39,9 @@ const validateConfig = (
 	context: BuildContext,
 	kubeDeployment: KubeDeployment
 ): E.Either<Error, BuildContext> => {
-	evaluateImageRegex(kubeDeployment.spec.template.spec.containers[0].image)
+	evaluateImageRegex(
+		kubeDeployment?.spec?.template?.spec?.containers?.[0]?.image
+	);
 };
 
 const readAndValidateConfig = (

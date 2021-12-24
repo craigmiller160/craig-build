@@ -145,7 +145,9 @@ describe('validateKubernetesConfig', () => {
 		};
 
 		const result = await validateKubernetesConfig.execute(buildContext)();
-		expect(result).toEqualLeft(new Error());
+		expect(result).toEqualLeft(
+			new Error('Kubernetes image does not match pattern')
+		);
 	});
 
 	it('kubernetes config has no image', async () => {
@@ -159,6 +161,8 @@ describe('validateKubernetesConfig', () => {
 		};
 
 		const result = await validateKubernetesConfig.execute(buildContext)();
-		expect(result).toEqualLeft(new Error());
-	})
+		expect(result).toEqualLeft(
+			new Error('Kubernetes config is missing image')
+		);
+	});
 });
