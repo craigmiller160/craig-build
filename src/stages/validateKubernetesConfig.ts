@@ -8,7 +8,11 @@ import * as TE from 'fp-ts/TaskEither';
 import { readFile } from '../functions/readFile';
 import path from 'path';
 import { getCwd } from '../command/getCwd';
-import { KUBERNETES_DEPLOY_FILE } from '../configFileTypes/constants';
+import {
+	DOCKER_REPO_PREFIX,
+	IMAGE_VERSION_ENV,
+	KUBERNETES_DEPLOY_FILE
+} from '../configFileTypes/constants';
 import { parseYaml } from '../functions/Yaml';
 import { KubeDeployment } from '../configFileTypes/KubeDeployment';
 import { stringifyJson } from '../functions/Json';
@@ -37,10 +41,18 @@ const evaluateImageRegex = (image?: string): E.Either<Error, KubeValues> =>
 		);
 
 const validateKubeValues = (
+	context: BuildContext,
 	kubeValues: KubeValues
 ): E.Either<Error, KubeValues> =>
 	match(kubeValues)
-		.with({}, () => E.right(kubeValues))
+		.with(
+			{
+				repoPrefix: DOCKER_REPO_PREFIX,
+				imageName: context.projectInfo.name,
+				imageVersion: IMAGE_VERSION_ENV
+			},
+			() => E.right(kubeValues)
+		)
 		.otherwise(() =>
 			E.left(
 				new Error(
@@ -60,7 +72,7 @@ const validateConfig = (
 		evaluateImageRegex(
 			kubeDeployment?.spec?.template?.spec?.containers?.[0]?.image
 		),
-		E.chain(validateKubeValues),
+		E.chain((_) => validateKubeValues(context, _)),
 		E.map(() => context)
 	);
 
