@@ -6,7 +6,7 @@ import * as E from 'fp-ts/Either';
 import '@relmify/jest-fp-ts';
 
 const baseBuildContext = createBuildContext();
-const versions: string[] = ['v0.0.1', 'v0.1.1'];
+const versions = 'v0.0.1\nv0.1.1';
 
 describe('validateGitTag', () => {
 	beforeEach(() => {
@@ -57,7 +57,9 @@ describe('validateGitTag', () => {
 		};
 
 		const result = await validateGitTag.execute(buildContext)();
-		expect(result).toEqualLeft(new Error('Git tag for project release version already exists'));
+		expect(result).toEqualLeft(
+			new Error('Git tag for project release version already exists')
+		);
 
 		expect(runCommandMock).toHaveBeenCalledWith('git tag');
 	});
