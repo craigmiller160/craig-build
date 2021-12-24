@@ -12,5 +12,8 @@ module.exports = {
 	modulePathIgnorePatterns: [path.resolve(process.cwd(), '.yalc')],
 	transform: {
 		'^.+\\.tsx?$': 'ts-jest'
-	}
+	},
+	reporters: [
+		['jest-summarizing-reporter', { diffs: true }]
+	]
 };

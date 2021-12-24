@@ -31,11 +31,7 @@ const invalidItem: NexusSearchResultItem = {
 	format: '',
 	group: '',
 	name: '',
-	version: pipe(
-		baseBuildContext.projectInfo,
-		O.map((_) => _.version),
-		O.getOrElse(() => '')
-	),
+	version: baseBuildContext.projectInfo.version,
 	assets: []
 };
 
@@ -48,14 +44,11 @@ describe('validateProjectVersionAllowed', () => {
 		searchForNpmReleasesMock.mockImplementation(() => TE.left(new Error()));
 		const buildContext: BuildContext = {
 			...baseBuildContext,
-			projectType: O.some(ProjectType.NpmApplication),
-			projectInfo: pipe(
-				baseBuildContext.projectInfo,
-				O.map((_) => ({
-					..._,
-					isPreRelease: true
-				}))
-			)
+			projectType: ProjectType.NpmApplication,
+			projectInfo: {
+				...baseBuildContext.projectInfo,
+				isPreRelease: true
+			}
 		};
 
 		const result = await validateProjectVersionAllowed.execute(
@@ -70,14 +63,11 @@ describe('validateProjectVersionAllowed', () => {
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
-			projectType: O.some(ProjectType.MavenApplication),
-			projectInfo: pipe(
-				baseBuildContext.projectInfo,
-				O.map((_) => ({
-					..._,
-					isPreRelease: true
-				}))
-			)
+			projectType: ProjectType.MavenApplication,
+			projectInfo: {
+				...baseBuildContext.projectInfo,
+				isPreRelease: true
+			}
 		};
 
 		const result = await validateProjectVersionAllowed.execute(
@@ -92,14 +82,11 @@ describe('validateProjectVersionAllowed', () => {
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
-			projectType: O.some(ProjectType.DockerApplication),
-			projectInfo: pipe(
-				baseBuildContext.projectInfo,
-				O.map((_) => ({
-					..._,
-					isPreRelease: true
-				}))
-			)
+			projectType: ProjectType.DockerApplication,
+			projectInfo: {
+				...baseBuildContext.projectInfo,
+				isPreRelease: true
+			}
 		};
 
 		const result = await validateProjectVersionAllowed.execute(
@@ -114,14 +101,11 @@ describe('validateProjectVersionAllowed', () => {
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
-			projectType: O.some(ProjectType.NpmApplication),
-			projectInfo: pipe(
-				baseBuildContext.projectInfo,
-				O.map((_) => ({
-					..._,
-					isPreRelease: false
-				}))
-			)
+			projectType: ProjectType.NpmApplication,
+			projectInfo: {
+				...baseBuildContext.projectInfo,
+				isPreRelease: false
+			}
 		};
 
 		const result = await validateProjectVersionAllowed.execute(
@@ -136,14 +120,11 @@ describe('validateProjectVersionAllowed', () => {
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
-			projectType: O.some(ProjectType.MavenApplication),
-			projectInfo: pipe(
-				baseBuildContext.projectInfo,
-				O.map((_) => ({
-					..._,
-					isPreRelease: false
-				}))
-			)
+			projectType: ProjectType.MavenApplication,
+			projectInfo: {
+				...baseBuildContext.projectInfo,
+				isPreRelease: false
+			}
 		};
 
 		const result = await validateProjectVersionAllowed.execute(
@@ -158,14 +139,11 @@ describe('validateProjectVersionAllowed', () => {
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
-			projectType: O.some(ProjectType.DockerApplication),
-			projectInfo: pipe(
-				baseBuildContext.projectInfo,
-				O.map((_) => ({
-					..._,
-					isPreRelease: false
-				}))
-			)
+			projectType: ProjectType.DockerApplication,
+			projectInfo: {
+				...baseBuildContext.projectInfo,
+				isPreRelease: false
+			}
 		};
 
 		const result = await validateProjectVersionAllowed.execute(
@@ -180,14 +158,11 @@ describe('validateProjectVersionAllowed', () => {
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
-			projectType: O.some(ProjectType.NpmApplication),
-			projectInfo: pipe(
-				baseBuildContext.projectInfo,
-				O.map((_) => ({
-					..._,
-					isPreRelease: false
-				}))
-			)
+			projectType: ProjectType.NpmApplication,
+			projectInfo: {
+				...baseBuildContext.projectInfo,
+				isPreRelease: false
+			}
 		};
 
 		const result = await validateProjectVersionAllowed.execute(
@@ -204,14 +179,11 @@ describe('validateProjectVersionAllowed', () => {
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
-			projectType: O.some(ProjectType.MavenApplication),
-			projectInfo: pipe(
-				baseBuildContext.projectInfo,
-				O.map((_) => ({
-					..._,
-					isPreRelease: false
-				}))
-			)
+			projectType: ProjectType.MavenApplication,
+			projectInfo: {
+				...baseBuildContext.projectInfo,
+				isPreRelease: false
+			}
 		};
 
 		const result = await validateProjectVersionAllowed.execute(
@@ -228,14 +200,11 @@ describe('validateProjectVersionAllowed', () => {
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
-			projectType: O.some(ProjectType.DockerApplication),
-			projectInfo: pipe(
-				baseBuildContext.projectInfo,
-				O.map((_) => ({
-					..._,
-					isPreRelease: false
-				}))
-			)
+			projectType: ProjectType.DockerApplication,
+			projectInfo: {
+				...baseBuildContext.projectInfo,
+				isPreRelease: false
+			}
 		};
 
 		const result = await validateProjectVersionAllowed.execute(
