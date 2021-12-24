@@ -4,9 +4,7 @@ import { getCwdMock } from '../testutils/getCwdMock';
 import path from 'path';
 import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
-import * as O from 'fp-ts/Option';
 import { ProjectType } from '../../src/context/ProjectType';
-import { pipe } from 'fp-ts/function';
 import { validateDependencyVersions } from '../../src/stages/validateDependencyVersions';
 
 const baseBuildContext = createBuildContext();
@@ -22,14 +20,11 @@ describe('validateDependencyVersions', () => {
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
-			projectType: O.some(ProjectType.MavenApplication),
-			projectInfo: pipe(
-				baseBuildContext.projectInfo,
-				O.map((_) => ({
-					..._,
-					isPreRelease: true
-				}))
-			)
+			projectType: ProjectType.MavenApplication,
+			projectInfo: {
+				...baseBuildContext.projectInfo,
+				isPreRelease: true
+			}
 		};
 		const result = await validateDependencyVersions.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
@@ -41,14 +36,11 @@ describe('validateDependencyVersions', () => {
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
-			projectType: O.some(ProjectType.NpmApplication),
-			projectInfo: pipe(
-				baseBuildContext.projectInfo,
-				O.map((_) => ({
-					..._,
-					isPreRelease: true
-				}))
-			)
+			projectType: ProjectType.NpmApplication,
+			projectInfo: {
+				...baseBuildContext.projectInfo,
+				isPreRelease: true
+			}
 		};
 		const result = await validateDependencyVersions.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
@@ -60,14 +52,11 @@ describe('validateDependencyVersions', () => {
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
-			projectType: O.some(ProjectType.DockerApplication),
-			projectInfo: pipe(
-				baseBuildContext.projectInfo,
-				O.map((_) => ({
-					..._,
-					isPreRelease: false
-				}))
-			)
+			projectType: ProjectType.DockerApplication,
+			projectInfo: {
+				...baseBuildContext.projectInfo,
+				isPreRelease: false
+			}
 		};
 		const result = await validateDependencyVersions.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
@@ -79,14 +68,11 @@ describe('validateDependencyVersions', () => {
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
-			projectType: O.some(ProjectType.MavenApplication),
-			projectInfo: pipe(
-				baseBuildContext.projectInfo,
-				O.map((_) => ({
-					..._,
-					isPreRelease: false
-				}))
-			)
+			projectType: ProjectType.MavenApplication,
+			projectInfo: {
+				...baseBuildContext.projectInfo,
+				isPreRelease: false
+			}
 		};
 		const result = await validateDependencyVersions.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
@@ -98,14 +84,11 @@ describe('validateDependencyVersions', () => {
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
-			projectType: O.some(ProjectType.NpmApplication),
-			projectInfo: pipe(
-				baseBuildContext.projectInfo,
-				O.map((_) => ({
-					..._,
-					isPreRelease: false
-				}))
-			)
+			projectType: ProjectType.NpmApplication,
+			projectInfo: {
+				...baseBuildContext.projectInfo,
+				isPreRelease: false
+			}
 		};
 		const result = await validateDependencyVersions.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
@@ -117,14 +100,11 @@ describe('validateDependencyVersions', () => {
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
-			projectType: O.some(ProjectType.MavenApplication),
-			projectInfo: pipe(
-				baseBuildContext.projectInfo,
-				O.map((_) => ({
-					..._,
-					isPreRelease: false
-				}))
-			)
+			projectType: ProjectType.MavenApplication,
+			projectInfo: {
+				...baseBuildContext.projectInfo,
+				isPreRelease: false
+			}
 		};
 		const result = await validateDependencyVersions.execute(buildContext)();
 		expect(result).toEqualLeft(
@@ -138,14 +118,11 @@ describe('validateDependencyVersions', () => {
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
-			projectType: O.some(ProjectType.NpmApplication),
-			projectInfo: pipe(
-				baseBuildContext.projectInfo,
-				O.map((_) => ({
-					..._,
-					isPreRelease: false
-				}))
-			)
+			projectType: ProjectType.NpmApplication,
+			projectInfo: {
+				...baseBuildContext.projectInfo,
+				isPreRelease: false
+			}
 		};
 		const result = await validateDependencyVersions.execute(buildContext)();
 		expect(result).toEqualLeft(

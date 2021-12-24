@@ -1,4 +1,4 @@
-import { STAGES } from '../../src/stages';
+import { EARLY_STAGES, STAGES } from '../../src/stages';
 import { getCommandInfo } from '../../src/stages/getCommandInfo';
 import { getBuildToolInfo } from '../../src/stages/getBuildToolInfo';
 import { validateBuildToolVersion } from '../../src/stages/validateBuildToolVersion';
@@ -9,15 +9,21 @@ import { validateDependencyVersions } from '../../src/stages/validateDependencyV
 import { validateProjectVersionAllowed } from '../../src/stages/validateProjectVersionAllowed';
 
 describe('stages', () => {
-	it('all stages are added in the correct order', () => {
-		const stageNames = STAGES.map((_) => _.name);
+	it('all early stages are added in the correct order', () => {
+		const stageNames = EARLY_STAGES.map((_) => _.name);
 		expect(stageNames).toEqual([
 			getCommandInfo.name,
 			getBuildToolInfo.name,
 			validateBuildToolVersion.name,
 			checkForUncommittedChanges.name,
 			getProjectType.name,
-			getProjectInfo.name,
+			getProjectInfo.name
+		]);
+	});
+
+	it('all main stages are added in the correct order', () => {
+		const stageNames = STAGES.map((_) => _.name);
+		expect(stageNames).toEqual([
 			validateDependencyVersions.name,
 			validateProjectVersionAllowed.name
 		]);

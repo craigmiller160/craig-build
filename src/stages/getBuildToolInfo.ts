@@ -1,4 +1,4 @@
-import { Stage, StageFunction } from './Stage';
+import { EarlyStage, EarlyStageFunction } from './Stage';
 import { PackageJson } from '../configFileTypes/PackageJson';
 import { pipe } from 'fp-ts/function';
 import { readFile } from '../functions/readFile';
@@ -7,12 +7,12 @@ import * as E from 'fp-ts/Either';
 import { parseJson } from '../functions/Json';
 import { npmSeparateGroupAndName } from '../utils/npmSeparateGroupAndName';
 import { BuildToolInfo } from '../context/BuildToolInfo';
-import { BuildContext } from '../context/BuildContext';
 import * as O from 'fp-ts/Option';
 import * as TE from 'fp-ts/TaskEither';
 import { NPM_PROJECT_FILE } from '../configFileTypes/constants';
+import { IncompleteBuildContext } from '../context/IncompleteBuildContext';
 
-const execute: StageFunction = (context) =>
+const execute: EarlyStageFunction = (context) =>
 	pipe(
 		readFile(path.resolve(__dirname, '..', '..', NPM_PROJECT_FILE)),
 		E.chain((_) => parseJson<PackageJson>(_)),
@@ -29,7 +29,7 @@ const execute: StageFunction = (context) =>
 			})
 		),
 		E.map(
-			(_): BuildContext => ({
+			(_): IncompleteBuildContext => ({
 				...context,
 				buildToolInfo: O.some(_)
 			})
@@ -37,7 +37,7 @@ const execute: StageFunction = (context) =>
 		TE.fromEither
 	);
 
-export const getBuildToolInfo: Stage = {
+export const getBuildToolInfo: EarlyStage = {
 	name: 'Get Build Tool Info',
 	execute
 };

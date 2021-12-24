@@ -1,4 +1,4 @@
-import { Stage, StageFunction } from './Stage';
+import { EarlyStage, EarlyStageFunction } from './Stage';
 import { pipe } from 'fp-ts/function';
 import { extractProjectType } from '../context/contextExtraction';
 import * as E from 'fp-ts/Either';
@@ -79,7 +79,7 @@ const readProjectInfoByType = (
 			E.left(new Error(`Unsupported ProjectType: ${projectType}`))
 		);
 
-const execute: StageFunction = (context) =>
+const execute: EarlyStageFunction = (context) =>
 	pipe(
 		extractProjectType(context),
 		E.chain(readProjectInfoByType),
@@ -90,7 +90,7 @@ const execute: StageFunction = (context) =>
 		TE.fromEither
 	);
 
-export const getProjectInfo: Stage = {
+export const getProjectInfo: EarlyStage = {
 	name: 'Get Project Info',
 	execute
 };

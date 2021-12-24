@@ -1,18 +1,24 @@
 import { BuildContext } from './context/BuildContext';
 import * as TE from 'fp-ts/TaskEither';
-import { Stage } from './stages/Stage';
+import { BaseStage, BaseStageFunction } from './stages/Stage';
 import * as A from 'fp-ts/Array';
 import { pipe } from 'fp-ts/function';
 import { logger } from './logger';
-import { STAGES } from './stages';
+import { EARLY_STAGES, STAGES } from './stages';
 import * as EU from './functions/EitherUtils';
 import { stringifyJson } from './functions/Json';
-import { toLoggable } from './context/LoggableBuildContext';
+import { IncompleteBuildContext } from './context/IncompleteBuildContext';
+import { Context } from './context/Context';
+import { toLoggableContext } from './context/contextLogging';
+import { fromIncompleteContext } from './context/fromIncompleteContext';
 
-const executeStage = (
-	contextTE: TE.TaskEither<Error, BuildContext>,
-	stage: Stage
-): TE.TaskEither<Error, BuildContext> =>
+const executeStage = <
+	Ctx extends Context,
+	StageFn extends BaseStageFunction<Ctx>
+>(
+	contextTE: TE.TaskEither<Error, Ctx>,
+	stage: BaseStage<Ctx, StageFn>
+) =>
 	pipe(
 		contextTE,
 		TE.chain((context) => {
@@ -22,7 +28,7 @@ const executeStage = (
 				TE.map((_) => {
 					logger.info(
 						`Completed stage: ${stage.name} ${EU.getOrThrow(
-							stringifyJson(toLoggable(_), 2)
+							stringifyJson(toLoggableContext(_), 2)
 						)}`
 					);
 					return _;
@@ -36,13 +42,30 @@ const executeStage = (
 		})
 	);
 
+const executeAllStages = <
+	Ctx extends Context,
+	StageFn extends BaseStageFunction<Ctx>
+>(
+	context: Ctx,
+	stages: BaseStage<Ctx, StageFn>[]
+): TE.TaskEither<Error, Ctx> =>
+	pipe(
+		stages,
+		A.reduce(TE.right<Error, Ctx>(context), (ctxTE, stage) =>
+			executeStage(ctxTE, stage)
+		)
+	);
+
+const incompleteToCompleteContext = (
+	context: IncompleteBuildContext
+): TE.TaskEither<Error, BuildContext> =>
+	pipe(fromIncompleteContext(context), TE.fromEither);
+
 export const execute = (
-	context: BuildContext
+	context: IncompleteBuildContext
 ): TE.TaskEither<Error, BuildContext> =>
 	pipe(
-		STAGES,
-		A.reduce(
-			TE.right<Error, BuildContext>(context),
-			(ctxTE, stage: Stage) => executeStage(ctxTE, stage)
-		)
+		executeAllStages(context, EARLY_STAGES),
+		TE.chain(incompleteToCompleteContext),
+		TE.chain((_) => executeAllStages(_, STAGES))
 	);

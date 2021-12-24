@@ -1,4 +1,4 @@
-import { Stage, StageFunction } from './Stage';
+import { EarlyStage, EarlyStageFunction } from './Stage';
 import path from 'path';
 import { getCwd } from '../command/getCwd';
 import fs from 'fs';
@@ -57,7 +57,7 @@ const checkProjectFilesForType = (): E.Either<Error, ProjectType> =>
 		)
 		.otherwise(() => E.left(new Error('Unable to identify ProjectType')));
 
-const execute: StageFunction = (context) =>
+const execute: EarlyStageFunction = (context) =>
 	pipe(
 		checkProjectFilesForType(),
 		E.map((projectType) => ({
@@ -67,7 +67,7 @@ const execute: StageFunction = (context) =>
 		TE.fromEither
 	);
 
-export const getProjectType: Stage = {
+export const getProjectType: EarlyStage = {
 	name: 'Get Project Type',
 	execute
 };

@@ -5,6 +5,7 @@ import * as O from 'fp-ts/Option';
 import { BuildToolInfo } from '../../src/context/BuildToolInfo';
 import { ProjectType } from '../../src/context/ProjectType';
 import { ProjectInfo } from '../../src/context/ProjectInfo';
+import { IncompleteBuildContext } from '../../src/context/IncompleteBuildContext';
 
 const defaultCommandInfo: CommandInfo = {
 	type: CommandType.FULL_BUILD
@@ -26,17 +27,36 @@ const defaultProjectInfo: ProjectInfo = {
 };
 
 const defaultBuildContext: BuildContext = {
+	commandInfo: defaultCommandInfo,
+	buildToolInfo: defaultBuildToolInfo,
+	projectType: defaultProjectType,
+	projectInfo: defaultProjectInfo
+};
+
+const defaultIncompleteBuildContext: IncompleteBuildContext = {
 	commandInfo: O.some(defaultCommandInfo),
 	buildToolInfo: O.some(defaultBuildToolInfo),
 	projectType: O.some(defaultProjectType),
 	projectInfo: O.some(defaultProjectInfo)
 };
 
-export const createBuildContext = ({
+export const createIncompleteBuildContext = ({
 	commandInfo = O.some(defaultCommandInfo),
 	buildToolInfo = O.some(defaultBuildToolInfo),
 	projectType = O.some(defaultProjectType),
 	projectInfo = O.some(defaultProjectInfo)
+}: Partial<IncompleteBuildContext> = defaultIncompleteBuildContext): IncompleteBuildContext => ({
+	commandInfo,
+	buildToolInfo,
+	projectType,
+	projectInfo
+});
+
+export const createBuildContext = ({
+	commandInfo = defaultCommandInfo,
+	buildToolInfo = defaultBuildToolInfo,
+	projectType = defaultProjectType,
+	projectInfo = defaultProjectInfo
 }: Partial<BuildContext> = defaultBuildContext): BuildContext => ({
 	commandInfo,
 	buildToolInfo,

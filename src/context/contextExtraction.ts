@@ -1,12 +1,15 @@
-import { BuildContext } from './BuildContext';
 import * as E from 'fp-ts/Either';
 import { BuildToolInfo } from './BuildToolInfo';
 import { pipe } from 'fp-ts/function';
 import { ProjectType } from './ProjectType';
 import { ProjectInfo } from './ProjectInfo';
+import { IncompleteBuildContext } from './IncompleteBuildContext';
 
+// TODO consider deleting all of these if unnecessary
+
+// TODO this is used
 export const extractBuildToolInfo = (
-	context: BuildContext
+	context: IncompleteBuildContext
 ): E.Either<Error, BuildToolInfo> =>
 	pipe(
 		context.buildToolInfo,
@@ -14,7 +17,7 @@ export const extractBuildToolInfo = (
 	);
 
 export const extractProjectType = (
-	context: BuildContext
+	context: IncompleteBuildContext
 ): E.Either<Error, ProjectType> =>
 	pipe(
 		context.projectType,
@@ -22,7 +25,7 @@ export const extractProjectType = (
 	);
 
 export const extractProjectInfo = (
-	context: BuildContext
+	context: IncompleteBuildContext
 ): E.Either<Error, ProjectInfo> =>
 	pipe(
 		context.projectInfo,
