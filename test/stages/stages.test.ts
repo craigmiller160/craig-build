@@ -10,6 +10,7 @@ import { validateProjectVersionAllowed } from '../../src/stages/validateProjectV
 import { validateKubernetesConfig } from '../../src/stages/validateKubernetesConfig';
 import { validateGitTag } from '../../src/stages/validateGitTag';
 import { buildArtifact } from '../../src/stages/buildArtifact';
+import { preparePreReleaseVersion } from '../../src/stages/preparePreReleaseVersion';
 
 describe('stages', () => {
 	it('all early stages are added in the correct order', () => {
@@ -31,7 +32,8 @@ describe('stages', () => {
 			validateProjectVersionAllowed.name,
 			validateKubernetesConfig.name,
 			validateGitTag.name,
-			buildArtifact.name
+			buildArtifact.name,
+			preparePreReleaseVersion.name
 		]);
 	});
 });
