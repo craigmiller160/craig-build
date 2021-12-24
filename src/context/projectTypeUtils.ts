@@ -1,5 +1,4 @@
 import { ProjectType } from './ProjectType';
-import { ProjectInfo } from './ProjectInfo';
 
 export const isMaven = (projectType: ProjectType): boolean =>
 	[ProjectType.MavenApplication, ProjectType.MavenLibrary].includes(
@@ -13,12 +12,6 @@ export const isDocker = (projectType: ProjectType): boolean =>
 	[ProjectType.DockerApplication, ProjectType.DockerImage].includes(
 		projectType
 	);
-
-export const isRelease = (projectInfo: ProjectInfo): boolean =>
-	!projectInfo.isPreRelease;
-
-export const isPreRelease = (projectInfo: ProjectInfo): boolean =>
-	projectInfo.isPreRelease;
 
 export const isApplication = (projectType: ProjectType): boolean =>
 	[
