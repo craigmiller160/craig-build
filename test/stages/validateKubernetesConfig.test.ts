@@ -88,7 +88,6 @@ describe('validateKubernetesConfig', () => {
 		};
 
 		const result = await validateKubernetesConfig.execute(buildContext)();
-		console.log(result);
 		expect(result).toEqualRight(buildContext);
 	});
 

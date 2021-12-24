@@ -82,6 +82,7 @@ const readAndValidateConfig = (
 ): E.Either<Error, BuildContext> =>
 	pipe(
 		readFile(path.join(getCwd(), KUBERNETES_DEPLOY_FILE)),
+		E.map((_) => _.split('---')[0]),
 		E.chain((_) => parseYaml<KubeDeployment>(_)),
 		E.chain((_) => validateConfig(context, _))
 	);
