@@ -100,11 +100,37 @@ describe('validateKubernetesConfig', () => {
 		expect(result).toEqualLeft(new Error());
 	});
 
-	it('kubernetes config has wrong project name', async () => {
-		throw new Error();
+	it('kubernetes config has wrong image name', async () => {
+		getCwdMock.mockImplementation(() =>
+			path.resolve(
+				baseWorkingDir,
+				'mavenReleaseApplicationWrongImageName'
+			)
+		);
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.MavenApplication,
+			projectInfo
+		};
+
+		const result = await validateKubernetesConfig.execute(buildContext)();
+		expect(result).toEqualLeft(new Error());
 	});
 
 	it('kubernetes config has wrong repo prefix', async () => {
-		throw new Error();
+		getCwdMock.mockImplementation(() =>
+			path.resolve(
+				baseWorkingDir,
+				'mavenReleaseApplicationWrongRepoPrefix'
+			)
+		);
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.MavenApplication,
+			projectInfo
+		};
+
+		const result = await validateKubernetesConfig.execute(buildContext)();
+		expect(result).toEqualLeft(new Error());
 	});
 });
