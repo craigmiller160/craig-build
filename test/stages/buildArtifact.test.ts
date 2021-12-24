@@ -4,6 +4,10 @@ import { ProjectType } from '../../src/context/ProjectType';
 import { buildArtifact } from '../../src/stages/buildArtifact';
 import '@relmify/jest-fp-ts';
 import { runCommandMock } from '../testutils/runCommandMock';
+import {
+	MAVEN_BUILD_CMD,
+	NPM_BUILD_CMD
+} from '../../old-src/stages/createArtifact/tasks/buildAndTest';
 
 const baseBuildContext = createBuildContext();
 
@@ -33,7 +37,7 @@ describe('buildArtifact', () => {
 		const result = await buildArtifact.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
 
-		expect(runCommandMock).toHaveBeenCalledWith('mvn clean deploy');
+		expect(runCommandMock).toHaveBeenCalledWith(MAVEN_BUILD_CMD);
 	});
 
 	it('builds npm artifact', async () => {
@@ -45,6 +49,6 @@ describe('buildArtifact', () => {
 		const result = await buildArtifact.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
 
-		expect(runCommandMock).toHaveBeenCalledWith('yarn build');
+		expect(runCommandMock).toHaveBeenCalledWith(NPM_BUILD_CMD);
 	});
 });

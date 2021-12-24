@@ -19,7 +19,7 @@ import * as A from 'fp-ts/Array';
 import * as O from 'fp-ts/Option';
 import { parseJson } from '../functions/Json';
 import { PackageJson } from '../configFileTypes/PackageJson';
-import {isRelease} from '../context/projectInfoUtils';
+import { isRelease } from '../context/projectInfoUtils';
 
 const MAVEN_PROPERTY_REGEX = /\${.*}/;
 

@@ -3,11 +3,7 @@ import { BuildContext } from '../context/BuildContext';
 import { pipe } from 'fp-ts/function';
 import * as TE from 'fp-ts/TaskEither';
 import { match, when } from 'ts-pattern';
-import {
-	isDocker,
-	isMaven,
-	isNpm
-} from '../context/projectTypeUtils';
+import { isDocker, isMaven, isNpm } from '../context/projectTypeUtils';
 import {
 	NexusRepoGroupSearchFn,
 	searchForDockerReleases,
@@ -17,7 +13,7 @@ import {
 import { NexusSearchResult } from '../services/NexusSearchResult';
 import * as A from 'fp-ts/Array';
 import { logger } from '../logger';
-import {isRelease} from '../context/projectInfoUtils';
+import { isRelease } from '../context/projectInfoUtils';
 
 const isReleaseVersionUnique = (
 	nexusResult: NexusSearchResult,
