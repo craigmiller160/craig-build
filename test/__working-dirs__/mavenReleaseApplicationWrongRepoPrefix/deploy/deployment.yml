@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: email-service
-          image: craigmiller160.ddns.net:30004/email-service:${KUBE_IMG_VERSION}
+          image: foobar.ddns.net:30004/email-service:${KUBE_IMG_VERSION}
 ---
 apiVersion: v1
 kind: Service

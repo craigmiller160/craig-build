@@ -19,3 +19,10 @@ export const isRelease = (projectInfo: ProjectInfo): boolean =>
 
 export const isPreRelease = (projectInfo: ProjectInfo): boolean =>
 	projectInfo.isPreRelease;
+
+export const isApplication = (projectType: ProjectType): boolean =>
+	[
+		ProjectType.DockerApplication,
+		ProjectType.MavenApplication,
+		ProjectType.NpmApplication
+	].includes(projectType);
