@@ -8,3 +8,4 @@ export const KUBERNETES_DEPLOY_FILE = path.resolve(
 	DEPLOY_DIRECTORY,
 	'deployment.yml'
 );
+export const DOCKER_REPO_PREFIX = 'craigmiller160.ddns.net:30004';
