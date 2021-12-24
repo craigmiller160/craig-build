@@ -10,7 +10,13 @@ import path from 'path';
 import { getCwd } from '../command/getCwd';
 import { KUBERNETES_DEPLOY_FILE } from '../configFileTypes/constants';
 import { parseYaml } from '../functions/Yaml';
-import KubeDeployment from '../configFileTypes/KubeDeployment';
+import { KubeDeployment } from '../configFileTypes/KubeDeployment';
+
+interface KubeValues {
+	repoPrefix: string;
+	imageName: string;
+	imageVersion: string;
+}
 
 const validateConfig = (
 	context: BuildContext,

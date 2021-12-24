@@ -20,7 +20,7 @@ interface KubeRootMetadata {
 	name: string;
 }
 
-export default interface KubeDeployment {
+export interface KubeDeployment {
 	apiVersion: string;
 	kind: string;
 	spec: KubeRootSpec;

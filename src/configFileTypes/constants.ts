@@ -9,3 +9,4 @@ export const KUBERNETES_DEPLOY_FILE = path.resolve(
 	'deployment.yml'
 );
 export const DOCKER_REPO_PREFIX = 'craigmiller160.ddns.net:30004';
+export const IMAGE_VERSION_ENV = '${KUBE_IMG_VERSION}';
