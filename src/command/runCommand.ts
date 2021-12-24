@@ -63,7 +63,7 @@ export const runCommand = (
 	command: string,
 	options?: Partial<CommandOptions>
 ): E.Either<Error, string> => {
-	logger.debug(`Running Command: ${command}`);
+	logger.debug(`Running Command: [${command}]`);
 	const { printOutput, cwd } = getCommandOptions(options);
 
 	const result = spawn.sync('bash', ['-c', command], {
