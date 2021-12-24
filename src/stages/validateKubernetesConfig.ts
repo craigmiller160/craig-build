@@ -1,6 +1,6 @@
 import { Stage, StageFunction } from './Stage';
 import { BuildContext } from '../context/BuildContext';
-import { __, match, when } from 'ts-pattern';
+import { match, when } from 'ts-pattern';
 import { isApplication } from '../context/projectTypeUtils';
 import * as E from 'fp-ts/Either';
 import { pipe } from 'fp-ts/function';
@@ -16,7 +16,6 @@ import {
 import { parseYaml } from '../functions/Yaml';
 import { KubeDeployment } from '../configFileTypes/KubeDeployment';
 import { stringifyJson } from '../functions/Json';
-import { getCwdMock } from '../../test/testutils/getCwdMock';
 
 const KUBE_IMAGE_REGEX =
 	/^(?<repoPrefix>.*:\d*)\/(?<imageName>.*):(?<imageVersion>.*)$/;
