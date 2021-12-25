@@ -201,7 +201,6 @@ describe('preparePreReleaseVersion', () => {
 		});
 
 		expect(searchForDockerBetasMock).toHaveBeenCalledWith(
-			'craigmiller160',
 			'my-project'
 		);
 		expect(searchForNpmBetasMock).not.toHaveBeenCalled();
@@ -238,7 +237,6 @@ describe('preparePreReleaseVersion', () => {
 		});
 
 		expect(searchForDockerBetasMock).toHaveBeenCalledWith(
-			'craigmiller160',
 			'my-project'
 		);
 		expect(searchForNpmBetasMock).not.toHaveBeenCalled();
