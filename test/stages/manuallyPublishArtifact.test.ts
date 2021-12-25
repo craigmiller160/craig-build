@@ -2,8 +2,13 @@ import '@relmify/jest-fp-ts';
 import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
 import { ProjectType } from '../../src/context/ProjectType';
-import { manuallyPublishArtifact } from '../../src/stages/manuallyPublishArtifact';
+import {
+	CLEAR_FILES_COMMAND,
+	manuallyPublishArtifact
+} from '../../src/stages/manuallyPublishArtifact';
 import { runCommandMock } from '../testutils/runCommandMock';
+import * as TE from 'fp-ts/TaskEither';
+import { NPM_PUBLISH_COMMAND } from '../../old-src/stages/createArtifact/tasks/publish';
 
 const baseBuildContext = createBuildContext();
 
@@ -37,6 +42,25 @@ describe('manuallyPublishArtifact', () => {
 	});
 
 	it('publishes NPM project', async () => {
-		throw new Error();
+		runCommandMock.mockImplementation(() => TE.right(''));
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.NpmApplication,
+			projectInfo: {
+				...baseBuildContext.projectInfo,
+				version: '1.0.0'
+			}
+		};
+
+		const result = await manuallyPublishArtifact.execute(buildContext)();
+		expect(result).toEqual(buildContext);
+
+		expect(runCommandMock).toHaveBeenCalledTimes(2);
+		expect(runCommandMock).toHaveBeenNthCalledWith(
+			0,
+			`${NPM_PUBLISH_COMMAND} 1.0.0`,
+			{ printOutput: true }
+		);
+		expect(runCommandMock).toHaveBeenNthCalledWith(1, CLEAR_FILES_COMMAND);
 	});
 });
