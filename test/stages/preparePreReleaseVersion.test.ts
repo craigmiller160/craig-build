@@ -164,6 +164,7 @@ describe('preparePreReleaseVersion', () => {
 			'io.craigmiller160',
 			'my-project'
 		);
+		throw new Error();
 	});
 
 	it('cannot find recently created Maven pre-release artifact version', async () => {
