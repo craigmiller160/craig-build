@@ -34,6 +34,8 @@ const updateProjectInfo = (
 
 // TODO consider instead reading the version from the build output
 // TODO or maybe query .m2?
+// TODO querying .m2, /group/name/version/maven-metadata-nexus.xml, /metadata/versioning/snapshotVersions/snapshotVersion[extension="jar"]/value
+// TODO above file path and xpath gives you the pre-release version
 const handleMavenPreReleaseVersion = (
 	context: BuildContext
 ): TE.TaskEither<Error, BuildContext> =>
