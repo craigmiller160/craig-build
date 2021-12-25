@@ -15,6 +15,13 @@ import { NexusSearchResult } from '../services/NexusSearchResult';
 import * as O from 'fp-ts/Option';
 import * as A from 'fp-ts/Array';
 
+const BETA_VERSION_REGEX = /^(?<version>.*-beta)\.(?<betaNumber>\d*)$/;
+
+interface BetaRegexGroups {
+	version: string;
+	betaNumber: string;
+}
+
 const findMatchingVersion = (
 	nexusResult: NexusSearchResult,
 	version: string
@@ -63,6 +70,13 @@ const handleMavenPreReleaseVersion = (
 		TE.map((_) => updateProjectInfo(context, _))
 	);
 
+const bumpBetaVersion = (fullVersion: string): string => {
+	const { version, betaNumber } = BETA_VERSION_REGEX.exec(fullVersion)
+		?.groups as unknown as BetaRegexGroups;
+	const newBetaNumber = parseInt(betaNumber) + 1;
+	return `${version}.${newBetaNumber}`;
+};
+
 const handleNpmPreReleaseVersion = (
 	context: BuildContext
 ): TE.TaskEither<Error, BuildContext> =>
@@ -71,6 +85,7 @@ const handleNpmPreReleaseVersion = (
 		TE.map((nexusResult) =>
 			pipe(
 				findMatchingVersion(nexusResult, context.projectInfo.version),
+				O.map(bumpBetaVersion),
 				O.getOrElse(() => `${context.projectInfo.version}.1`)
 			)
 		),
@@ -85,6 +100,7 @@ const handleDockerPreReleaseVersion = (
 		TE.map((nexusResult) =>
 			pipe(
 				findMatchingVersion(nexusResult, context.projectInfo.version),
+				O.map(bumpBetaVersion),
 				O.getOrElse(() => `${context.projectInfo.version}.1`)
 			)
 		),
