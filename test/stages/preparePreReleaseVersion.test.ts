@@ -200,9 +200,7 @@ describe('preparePreReleaseVersion', () => {
 			}
 		});
 
-		expect(searchForDockerBetasMock).toHaveBeenCalledWith(
-			'my-project'
-		);
+		expect(searchForDockerBetasMock).toHaveBeenCalledWith('my-project');
 		expect(searchForNpmBetasMock).not.toHaveBeenCalled();
 		expect(searchForMavenSnapshotsMock).not.toHaveBeenCalled();
 	});
@@ -217,7 +215,7 @@ describe('preparePreReleaseVersion', () => {
 
 		const buildContext: BuildContext = {
 			...baseBuildContext,
-			projectType: ProjectType.NpmApplication,
+			projectType: ProjectType.DockerApplication,
 			projectInfo: {
 				...baseBuildContext.projectInfo,
 				group: 'craigmiller160',
@@ -236,9 +234,7 @@ describe('preparePreReleaseVersion', () => {
 			}
 		});
 
-		expect(searchForDockerBetasMock).toHaveBeenCalledWith(
-			'my-project'
-		);
+		expect(searchForDockerBetasMock).toHaveBeenCalledWith('my-project');
 		expect(searchForNpmBetasMock).not.toHaveBeenCalled();
 		expect(searchForMavenSnapshotsMock).not.toHaveBeenCalled();
 	});
