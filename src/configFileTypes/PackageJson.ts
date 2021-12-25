@@ -1,10 +1,10 @@
 export interface Dependencies {
-	[key: string]: string;
+	readonly [key: string]: string;
 }
 
 export interface PackageJson {
-	name: string;
-	version: string;
-	dependencies?: Dependencies;
-	devDependencies?: Dependencies;
+	readonly name: string;
+	readonly version: string;
+	readonly dependencies?: Dependencies;
+	readonly devDependencies?: Dependencies;
 }

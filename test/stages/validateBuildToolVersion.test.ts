@@ -1,4 +1,4 @@
-import { createBuildContext } from '../testutils/createBuildContext';
+import { createIncompleteBuildContext } from '../testutils/createBuildContext';
 import * as O from 'fp-ts/Option';
 import { validateBuildToolVersion } from '../../src/stages/validateBuildToolVersion';
 import { searchForNpmReleases } from '../../src/services/NexusRepoApi';
@@ -36,7 +36,7 @@ describe('validateBuildToolVersion', () => {
 	});
 
 	it('tool version is highest release version', async () => {
-		const buildContext = createBuildContext({
+		const buildContext = createIncompleteBuildContext({
 			buildToolInfo: O.some({
 				group: 'craigmiller160',
 				name: 'craig-build',
@@ -61,7 +61,7 @@ describe('validateBuildToolVersion', () => {
 	});
 
 	it('tool version is not highest release version', async () => {
-		const buildContext = createBuildContext({
+		const buildContext = createIncompleteBuildContext({
 			buildToolInfo: O.some({
 				group: 'craigmiller160',
 				name: 'craig-build',
@@ -90,7 +90,7 @@ describe('validateBuildToolVersion', () => {
 	});
 
 	it('user allows tool with pre-release version to run', async () => {
-		const buildContext = createBuildContext({
+		const buildContext = createIncompleteBuildContext({
 			buildToolInfo: O.some({
 				group: 'craigmiller160',
 				name: 'craig-build',
@@ -106,7 +106,7 @@ describe('validateBuildToolVersion', () => {
 	});
 
 	it('user does not allow tool with pre-release version to run', async () => {
-		const buildContext = createBuildContext({
+		const buildContext = createIncompleteBuildContext({
 			buildToolInfo: O.some({
 				group: 'craigmiller160',
 				name: 'craig-build',

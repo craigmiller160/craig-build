@@ -1,6 +1,6 @@
 export interface ProjectInfo {
-	group: string;
-	name: string;
-	version: string;
-	isPreRelease: boolean;
+	readonly group: string;
+	readonly name: string;
+	readonly version: string;
+	readonly isPreRelease: boolean;
 }

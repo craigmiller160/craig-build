@@ -1,28 +1,28 @@
 interface KubeContainer {
-	name: string;
-	image: string;
+	readonly name: string;
+	readonly image: string;
 }
 
 interface KubeTemplateSpec {
-	containers: KubeContainer[];
+	readonly containers: KubeContainer[];
 }
 
 interface KubeTemplate {
-	spec: KubeTemplateSpec;
+	readonly spec: KubeTemplateSpec;
 }
 
 interface KubeRootSpec {
-	replicas: number;
-	template: KubeTemplate;
+	readonly replicas: number;
+	readonly template: KubeTemplate;
 }
 
 interface KubeRootMetadata {
-	name: string;
+	readonly name: string;
 }
 
 export interface KubeDeployment {
-	apiVersion: string;
-	kind: string;
-	spec: KubeRootSpec;
-	metadata: KubeRootMetadata;
+	readonly apiVersion: string;
+	readonly kind: string;
+	readonly spec: KubeRootSpec;
+	readonly metadata: KubeRootMetadata;
 }

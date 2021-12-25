@@ -10,6 +10,7 @@ import { validateDependencyVersions } from './validateDependencyVersions';
 import { validateKubernetesConfig } from './validateKubernetesConfig';
 import { validateGitTag } from './validateGitTag';
 import { buildArtifact } from './buildArtifact';
+import { preparePreReleaseVersion } from './preparePreReleaseVersion';
 
 export const EARLY_STAGES: EarlyStage[] = [
 	getCommandInfo,
@@ -25,5 +26,6 @@ export const STAGES: Stage[] = [
 	validateProjectVersionAllowed,
 	validateKubernetesConfig,
 	validateGitTag,
-	buildArtifact
+	buildArtifact,
+	preparePreReleaseVersion
 ];

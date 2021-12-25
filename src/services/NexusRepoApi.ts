@@ -117,6 +117,21 @@ export const searchForDockerReleases = (name: string) =>
 		extractResponseData
 	);
 
+export const searchForDockerBetas = (name: string) =>
+	pipe(
+		TE.tryCatch(() => {
+			const query = qs.stringify({
+				repository: 'docker-private',
+				name,
+				sort,
+				direction,
+				version: '*beta*'
+			});
+			return restApiInstance.get<NexusSearchResult>(`/search?${query}`);
+		}, unknownToError),
+		extractResponseData
+	);
+
 export const downloadArtifact = (
 	url: string,
 	targetPath: string

@@ -2,7 +2,7 @@ import * as E from 'fp-ts/Either';
 import { PackageJson } from '../../src/configFileTypes/PackageJson';
 import { readFile } from '../../src/functions/readFile';
 import { getBuildToolInfo } from '../../src/stages/getBuildToolInfo';
-import { createBuildContext } from '../testutils/createBuildContext';
+import { createIncompleteBuildContext } from '../testutils/createBuildContext';
 import '@relmify/jest-fp-ts';
 import * as O from 'fp-ts/Option';
 
@@ -21,7 +21,7 @@ const preReleasePackageJson: PackageJson = {
 	version: '1.0.0-beta'
 };
 
-const buildContext = createBuildContext();
+const buildContext = createIncompleteBuildContext();
 
 describe('getBuildToolInfo', () => {
 	beforeEach(() => {

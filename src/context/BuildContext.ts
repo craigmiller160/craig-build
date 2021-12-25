@@ -5,8 +5,8 @@ import { ProjectInfo } from './ProjectInfo';
 import { Context } from './Context';
 
 export interface BuildContext extends Context {
-	commandInfo: CommandInfo;
-	buildToolInfo: BuildToolInfo;
-	projectType: ProjectType;
-	projectInfo: ProjectInfo;
+	readonly commandInfo: CommandInfo;
+	readonly buildToolInfo: BuildToolInfo;
+	readonly projectType: ProjectType;
+	readonly projectInfo: ProjectInfo;
 }
