@@ -25,7 +25,7 @@ jest.mock('../../src/services/NexusRepoApi', () => ({
 
 jest.mock('os', () => ({
 	homedir: jest.fn()
-}))
+}));
 
 const baseBuildContext = createBuildContext();
 
@@ -137,7 +137,9 @@ describe('preparePreReleaseVersion', () => {
 	});
 
 	it('looks up recently created maven pre-release version from .m2', async () => {
-		homedirMock.mockImplementation(() => path.join(baseWorkingDir, 'mavenPreReleaseInfoM2'));
+		homedirMock.mockImplementation(() =>
+			path.join(baseWorkingDir, 'mavenPreReleaseInfoM2')
+		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
 			projectType: ProjectType.MavenApplication,
@@ -151,6 +153,7 @@ describe('preparePreReleaseVersion', () => {
 		};
 
 		const result = await preparePreReleaseVersion.execute(buildContext)();
+		console.log(result);
 		expect(result).toEqualRight({
 			...buildContext,
 			projectInfo: {
@@ -161,10 +164,6 @@ describe('preparePreReleaseVersion', () => {
 
 		expect(searchForNpmBetasMock).not.toHaveBeenCalled();
 		expect(searchForDockerBetasMock).not.toHaveBeenCalled();
-	});
-
-	it('cannot find recently created Maven pre-release artifact version', async () => {
-		throw new Error();
 	});
 
 	it('prepares pre-release version for Docker project based on existing version', async () => {
