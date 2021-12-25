@@ -15,7 +15,8 @@ import * as TE from 'fp-ts/TaskEither';
 
 jest.mock('../../src/services/NexusRepoApi', () => ({
 	searchForNpmBetas: jest.fn(),
-	searchForDockerReleases: jest.fn()
+	searchForMavenSnapshots: jest.fn(),
+	searchForDockerBetas: jest.fn()
 }));
 
 const baseBuildContext = createBuildContext();
@@ -29,7 +30,7 @@ const createItem = (version: string): NexusSearchResultItem => ({
 	group: '',
 	format: '',
 	repository: '',
-	version: '',
+	version,
 	id: '',
 	assets: []
 });
