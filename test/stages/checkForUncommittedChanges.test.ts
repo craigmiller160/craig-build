@@ -1,7 +1,7 @@
 import { runCommandMock } from '../testutils/runCommandMock';
 import * as E from 'fp-ts/Either';
 import '@relmify/jest-fp-ts';
-import { createBuildContext, createIncompleteBuildContext } from '../testutils/createBuildContext';
+import { createIncompleteBuildContext } from '../testutils/createBuildContext';
 import {
 	checkForUncommittedChanges,
 	GIT_COMMAND

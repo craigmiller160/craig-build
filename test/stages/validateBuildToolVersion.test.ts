@@ -1,7 +1,4 @@
-import {
-	createBuildContext,
-	createIncompleteBuildContext
-} from '../testutils/createBuildContext';
+import { createIncompleteBuildContext } from '../testutils/createBuildContext';
 import * as O from 'fp-ts/Option';
 import { validateBuildToolVersion } from '../../src/stages/validateBuildToolVersion';
 import { searchForNpmReleases } from '../../src/services/NexusRepoApi';

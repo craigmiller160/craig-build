@@ -1,13 +1,9 @@
 import { OptionValues, program } from 'commander';
 import { CommandType } from '../../src/context/CommandType';
-import { BuildContext } from '../../src/context/BuildContext';
 import * as O from 'fp-ts/Option';
 import { getCommandInfo } from '../../src/stages/getCommandInfo';
 import '@relmify/jest-fp-ts';
-import {
-	createBuildContext,
-	createIncompleteBuildContext
-} from '../testutils/createBuildContext';
+import { createIncompleteBuildContext } from '../testutils/createBuildContext';
 import { IncompleteBuildContext } from '../../src/context/IncompleteBuildContext';
 
 jest.mock('commander', () => {

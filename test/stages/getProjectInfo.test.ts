@@ -1,7 +1,6 @@
 import { getCwdMock } from '../testutils/getCwdMock';
 import path from 'path';
-import { createBuildContext, createIncompleteBuildContext } from '../testutils/createBuildContext';
-import { BuildContext } from '../../src/context/BuildContext';
+import { createIncompleteBuildContext } from '../testutils/createBuildContext';
 import * as O from 'fp-ts/Option';
 import { ProjectType } from '../../src/context/ProjectType';
 import { getProjectInfo } from '../../src/stages/getProjectInfo';

@@ -1,11 +1,7 @@
 import { getCwdMock } from '../testutils/getCwdMock';
 import path from 'path';
 import { getProjectType } from '../../src/stages/getProjectType';
-import {
-	createBuildContext,
-	createIncompleteBuildContext
-} from '../testutils/createBuildContext';
-import { BuildContext } from '../../src/context/BuildContext';
+import { createIncompleteBuildContext } from '../testutils/createBuildContext';
 import ProjectType from '../../old-src/types/ProjectType';
 import * as O from 'fp-ts/Option';
 import '@relmify/jest-fp-ts';
