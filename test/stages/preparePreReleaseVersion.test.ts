@@ -13,6 +13,9 @@ import {
 } from '../../src/services/NexusSearchResult';
 import { ProjectType } from '../../src/context/ProjectType';
 import * as TE from 'fp-ts/TaskEither';
+import { baseWorkingDir } from '../testutils/baseWorkingDir';
+import path from 'path';
+import { homedir } from 'os';
 
 jest.mock('../../src/services/NexusRepoApi', () => ({
 	searchForNpmBetas: jest.fn(),
@@ -20,11 +23,16 @@ jest.mock('../../src/services/NexusRepoApi', () => ({
 	searchForDockerBetas: jest.fn()
 }));
 
+jest.mock('os', () => ({
+	homedir: jest.fn()
+}))
+
 const baseBuildContext = createBuildContext();
 
 const searchForNpmBetasMock = searchForNpmBetas as jest.Mock;
 const searchForDockerBetasMock = searchForDockerBetas as jest.Mock;
-const searchForMavenSnapshotsMock = searchForMavenSnapshots as jest.Mock;
+const homedirMock = homedir as jest.Mock;
+const searchForMavenSnapshotsMock = searchForMavenSnapshots as jest.Mock; // TODO delete if unused
 
 const createItem = (version: string): NexusSearchResultItem => ({
 	name: '',
@@ -128,15 +136,8 @@ describe('preparePreReleaseVersion', () => {
 		expect(searchForMavenSnapshotsMock).not.toHaveBeenCalled();
 	});
 
-	it('grabs recently created Maven pre-release artifact version', async () => {
-		const version = '1.0.0-SNAPSHOT-20210101-2222';
-		const nexusResult: NexusSearchResult = {
-			items: [createItem(version)]
-		};
-		searchForMavenSnapshotsMock.mockImplementation(() =>
-			TE.right(nexusResult)
-		);
-
+	it('looks up recently created maven pre-release version from .m2', async () => {
+		homedirMock.mockImplementation(() => path.join(baseWorkingDir, 'mavenPreReleaseInfoM2'));
 		const buildContext: BuildContext = {
 			...baseBuildContext,
 			projectType: ProjectType.MavenApplication,
@@ -145,7 +146,7 @@ describe('preparePreReleaseVersion', () => {
 				group: 'io.craigmiller160',
 				name: 'my-project',
 				isPreRelease: true,
-				version: '1.0.0-SNAPSHOT'
+				version: '1.1.0-SNAPSHOT'
 			}
 		};
 
@@ -154,17 +155,12 @@ describe('preparePreReleaseVersion', () => {
 			...buildContext,
 			projectInfo: {
 				...buildContext.projectInfo,
-				version
+				version: '1.1.0-20211225.003019-1'
 			}
 		});
 
 		expect(searchForNpmBetasMock).not.toHaveBeenCalled();
 		expect(searchForDockerBetasMock).not.toHaveBeenCalled();
-		expect(searchForMavenSnapshotsMock).toHaveBeenCalledWith(
-			'io.craigmiller160',
-			'my-project'
-		);
-		throw new Error();
 	});
 
 	it('cannot find recently created Maven pre-release artifact version', async () => {
