@@ -93,15 +93,51 @@ describe('downloadArtifactForDeployment', () => {
 		)();
 		expect(result).toEqualRight(buildContext);
 
-		expect(downloadArtifactMock).toHaveBeenCalledWith('downloadUrl')
+		expect(downloadArtifactMock).toHaveBeenCalledWith(
+			'downloadUrl',
+			'file.jar'
+		);
 		expect(searchForMavenSnapshotsMock).not.toHaveBeenCalled();
-		expect(searchForMavenReleasesMock).toHaveBeenCalledWith('craigmiller160', 'my-project', '1.0.0');
+		expect(searchForMavenReleasesMock).toHaveBeenCalledWith(
+			'craigmiller160',
+			'my-project',
+			'1.0.0'
+		);
 		expect(downloadArtifactMock).not.toHaveBeenCalled();
 		expect(searchForNpmReleasesMock).not.toHaveBeenCalled();
 	});
 
 	it('downloads maven pre-release artifact', async () => {
-		throw new Error();
+		searchForMavenReleasesMock.mockImplementation(() =>
+			TE.right({ items: [createItem('1.1.0-SNAPSHOT')] })
+		);
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.MavenApplication,
+			projectInfo: {
+				...baseBuildContext.projectInfo,
+				version: '1.1.0-20211225.003019-1',
+				isPreRelease: true
+			}
+		};
+
+		const result = await downloadArtifactForDeployment.execute(
+			buildContext
+		)();
+		expect(result).toEqualRight(buildContext);
+
+		expect(downloadArtifactMock).toHaveBeenCalledWith(
+			'downloadUrl',
+			'file.jar'
+		);
+		expect(searchForMavenReleasesMock).not.toHaveBeenCalled();
+		expect(searchForMavenReleasesMock).toHaveBeenCalledWith(
+			'craigmiller160',
+			'my-project',
+			'1.1.0-SNAPSHOT'
+		);
+		expect(downloadArtifactMock).not.toHaveBeenCalled();
+		expect(searchForNpmReleasesMock).not.toHaveBeenCalled();
 	});
 
 	it('downloads npm release artifact', async () => {
