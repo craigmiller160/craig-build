@@ -1,6 +1,7 @@
 import {
 	downloadArtifact,
-	restApiInstance, searchForDockerBetas,
+	restApiInstance,
+	searchForDockerBetas,
 	searchForDockerReleases,
 	searchForMavenReleases,
 	searchForMavenSnapshots,
