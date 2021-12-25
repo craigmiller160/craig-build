@@ -167,14 +167,16 @@ describe('preparePreReleaseVersion', () => {
 	});
 
 	it('cannot find recently created Maven pre-release artifact version', async () => {
-		throw new Error()
-	})
+		throw new Error();
+	});
 
 	it('prepares pre-release version for Docker project based on existing version', async () => {
 		const nexusResult: NexusSearchResult = {
 			items: [createItem('1.0.0-beta.2')]
 		};
-		searchForDockerBetasMock.mockImplementation(() => TE.right(nexusResult));
+		searchForDockerBetasMock.mockImplementation(() =>
+			TE.right(nexusResult)
+		);
 
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -209,7 +211,9 @@ describe('preparePreReleaseVersion', () => {
 		const nexusResult: NexusSearchResult = {
 			items: [createItem('1.1.0-beta.2')]
 		};
-		searchForDockerBetasMock.mockImplementation(() => TE.right(nexusResult));
+		searchForDockerBetasMock.mockImplementation(() =>
+			TE.right(nexusResult)
+		);
 
 		const buildContext: BuildContext = {
 			...baseBuildContext,
