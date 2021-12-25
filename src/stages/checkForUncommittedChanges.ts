@@ -20,8 +20,7 @@ const handleCommandResult = (message: string): E.Either<Error, string> =>
 const execute: EarlyStageFunction = (context) =>
 	pipe(
 		runCommand(GIT_COMMAND),
-		E.chain(handleCommandResult),
-		TE.fromEither,
+		TE.chain((_) => pipe(handleCommandResult(_), TE.fromEither)),
 		TE.map(() => context)
 	);
 

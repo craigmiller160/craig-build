@@ -1,5 +1,5 @@
 import { runCommandMock } from '../testutils/runCommandMock';
-import * as E from 'fp-ts/Either';
+import * as TE from 'fp-ts/TaskEither';
 import '@relmify/jest-fp-ts';
 import { createIncompleteBuildContext } from '../testutils/createBuildContext';
 import {
@@ -15,7 +15,7 @@ describe('checkForUncommittedChanges', () => {
 	});
 
 	it('uncommitted changes found', async () => {
-		runCommandMock.mockImplementation(() => E.right(''));
+		runCommandMock.mockImplementation(() => TE.right(''));
 
 		const result = await checkForUncommittedChanges.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
@@ -24,7 +24,7 @@ describe('checkForUncommittedChanges', () => {
 	});
 
 	it('uncommitted changes not found', async () => {
-		runCommandMock.mockImplementation(() => E.right('abc'));
+		runCommandMock.mockImplementation(() => TE.right('abc'));
 
 		const result = await checkForUncommittedChanges.execute(buildContext)();
 		expect(result).toEqualLeft(

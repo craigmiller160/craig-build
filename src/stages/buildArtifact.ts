@@ -1,6 +1,5 @@
 import { Stage, StageFunction } from './Stage';
 import { BuildContext } from '../context/BuildContext';
-import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
 import { pipe } from 'fp-ts/function';
 import { match, when } from 'ts-pattern';
@@ -14,15 +13,15 @@ export const NPM_BUILD_CMD = 'yarn build';
 const runBuildCommand = (
 	context: BuildContext,
 	command: string
-): E.Either<Error, BuildContext> =>
+): TE.TaskEither<Error, BuildContext> =>
 	pipe(
 		runCommand(command, { printOutput: true }),
-		E.map(() => context)
+		TE.map(() => context)
 	);
 
 const handleBuildingArtifactByProject = (
 	context: BuildContext
-): E.Either<Error, BuildContext> =>
+): TE.TaskEither<Error, BuildContext> =>
 	match(context)
 		.with({ projectType: when(isMaven) }, (_) =>
 			runBuildCommand(_, MAVEN_BUILD_CMD)
@@ -32,11 +31,11 @@ const handleBuildingArtifactByProject = (
 		)
 		.otherwise(() => {
 			logger.debug('Skipping stage');
-			return E.right(context);
+			return TE.right(context);
 		});
 
 const execute: StageFunction = (context) =>
-	pipe(handleBuildingArtifactByProject(context), TE.fromEither);
+	handleBuildingArtifactByProject(context);
 
 export const buildArtifact: Stage = {
 	name: 'Build Artifact',

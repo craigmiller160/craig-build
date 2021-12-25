@@ -8,7 +8,7 @@ import {
 	NPM_BUILD_CMD
 } from '../../src/stages/buildArtifact';
 import '@relmify/jest-fp-ts';
-import * as E from 'fp-ts/Either';
+import * as TE from 'fp-ts/TaskEither';
 
 const baseBuildContext = createBuildContext();
 
@@ -30,7 +30,7 @@ describe('buildArtifact', () => {
 	});
 
 	it('builds maven artifact', async () => {
-		runCommandMock.mockImplementation(() => E.right(''));
+		runCommandMock.mockImplementation(() => TE.right(''));
 		const buildContext: BuildContext = {
 			...baseBuildContext,
 			projectType: ProjectType.MavenApplication
@@ -45,7 +45,7 @@ describe('buildArtifact', () => {
 	});
 
 	it('builds npm artifact', async () => {
-		runCommandMock.mockImplementation(() => E.right(''));
+		runCommandMock.mockImplementation(() => TE.right(''));
 		const buildContext: BuildContext = {
 			...baseBuildContext,
 			projectType: ProjectType.NpmApplication
