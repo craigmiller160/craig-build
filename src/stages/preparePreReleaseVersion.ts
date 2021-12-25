@@ -13,7 +13,7 @@ import {
 import { NexusSearchResult } from '../services/NexusSearchResult';
 import * as O from 'fp-ts/Option';
 import * as A from 'fp-ts/Array';
-import { readFile } from '../functions/readFile';
+import { readFile } from '../functions/File';
 import { homedir } from 'os';
 import * as E from 'fp-ts/Either';
 import path from 'path';

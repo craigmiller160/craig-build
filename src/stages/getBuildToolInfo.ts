@@ -1,7 +1,7 @@
 import { EarlyStage, EarlyStageFunction } from './Stage';
 import { PackageJson } from '../configFileTypes/PackageJson';
 import { pipe } from 'fp-ts/function';
-import { readFile } from '../functions/readFile';
+import { readFile } from '../functions/File';
 import path from 'path';
 import * as E from 'fp-ts/Either';
 import { parseJson } from '../functions/Json';

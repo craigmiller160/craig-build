@@ -8,7 +8,7 @@ import { match, when } from 'ts-pattern';
 import * as TE from 'fp-ts/TaskEither';
 import * as O from 'fp-ts/Option';
 import { isDocker, isMaven, isNpm } from '../context/projectTypeUtils';
-import { readFile } from '../functions/readFile';
+import { readFile } from '../functions/File';
 import path from 'path';
 import { getCwd } from '../command/getCwd';
 import { npmSeparateGroupAndName } from '../utils/npmSeparateGroupAndName';

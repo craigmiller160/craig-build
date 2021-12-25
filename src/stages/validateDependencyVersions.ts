@@ -6,7 +6,7 @@ import { match, when } from 'ts-pattern';
 import { isMaven, isNpm } from '../context/projectTypeUtils';
 import { logger } from '../logger';
 import * as TE from 'fp-ts/TaskEither';
-import { readFile } from '../functions/readFile';
+import { readFile } from '../functions/File';
 import { getCwd } from '../command/getCwd';
 import path from 'path';
 import {

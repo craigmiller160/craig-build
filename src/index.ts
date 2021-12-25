@@ -4,7 +4,7 @@ import { pipe } from 'fp-ts/function';
 import { program } from 'commander';
 import { parseJson } from './functions/Json';
 import path from 'path';
-import { readFile } from './functions/readFile';
+import { readFile } from './functions/File';
 import * as E from 'fp-ts/Either';
 import { PackageJson } from './configFileTypes/PackageJson';
 import * as EU from './functions/EitherUtils';
