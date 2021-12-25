@@ -17,7 +17,7 @@ describe('gitTag', () => {
 			}
 		};
 
-		const result = gitTag.execute(buildContext)();
+		const result = await gitTag.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
 
 		expect(runCommandMock).not.toHaveBeenCalled();
