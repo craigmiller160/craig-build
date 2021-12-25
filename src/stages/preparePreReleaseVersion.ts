@@ -6,7 +6,11 @@ import { logger } from '../logger';
 import { isDocker, isMaven, isNpm } from '../context/projectTypeUtils';
 import { isPreRelease } from '../context/projectInfoUtils';
 import { pipe } from 'fp-ts/function';
-import { searchForMavenSnapshots } from '../services/NexusRepoApi';
+import {
+	searchForDockerBetas,
+	searchForMavenSnapshots,
+	searchForNpmBetas
+} from '../services/NexusRepoApi';
 import { NexusSearchResult } from '../services/NexusSearchResult';
 import * as O from 'fp-ts/Option';
 import * as A from 'fp-ts/Array';
@@ -61,15 +65,31 @@ const handleMavenPreReleaseVersion = (
 
 const handleNpmPreReleaseVersion = (
 	context: BuildContext
-): TE.TaskEither<Error, BuildContext> => {
-	throw new Error();
-};
+): TE.TaskEither<Error, BuildContext> =>
+	pipe(
+		searchForNpmBetas(context.projectInfo.group, context.projectInfo.name),
+		TE.map((nexusResult) =>
+			pipe(
+				findMatchingVersion(nexusResult, context.projectInfo.version),
+				O.getOrElse(() => `${context.projectInfo.version}.1`)
+			)
+		),
+		TE.map((_) => updateProjectInfo(context, _))
+	);
 
 const handleDockerPreReleaseVersion = (
 	context: BuildContext
-): TE.TaskEither<Error, BuildContext> => {
-	throw new Error();
-};
+): TE.TaskEither<Error, BuildContext> =>
+	pipe(
+		searchForDockerBetas(context.projectInfo.name),
+		TE.map((nexusResult) =>
+			pipe(
+				findMatchingVersion(nexusResult, context.projectInfo.version),
+				O.getOrElse(() => `${context.projectInfo.version}.1`)
+			)
+		),
+		TE.map((_) => updateProjectInfo(context, _))
+	);
 
 const handlePreparingPreReleaseVersionByProject = (
 	context: BuildContext
