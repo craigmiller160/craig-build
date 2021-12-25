@@ -11,9 +11,7 @@ import {
 	searchForNpmReleases
 } from '../../src/services/NexusRepoApi';
 import * as TE from 'fp-ts/TaskEither';
-import NexusSearchResult, {
-	NexusSearchResultItem
-} from '../../old-src/types/NexusSearchResult';
+import { NexusSearchResultItem } from '../../src/services/NexusSearchResult';
 
 jest.mock('../../src/services/NexusRepoApi', () => ({
 	downloadArtifact: jest.fn()
@@ -203,6 +201,6 @@ describe('downloadArtifactForDeployment', () => {
 			'1.0.0-beta'
 		);
 		expect(searchForMavenReleasesMock).not.toHaveBeenCalled();
-		expect(searchForNpmReleasesMock).not.toHaveBeenCalled()
+		expect(searchForNpmReleasesMock).not.toHaveBeenCalled();
 	});
 });
