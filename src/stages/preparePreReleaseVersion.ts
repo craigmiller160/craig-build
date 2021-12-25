@@ -32,6 +32,8 @@ const updateProjectInfo = (
 	}
 });
 
+// TODO consider instead reading the version from the build output
+// TODO or maybe query .m2?
 const handleMavenPreReleaseVersion = (
 	context: BuildContext
 ): TE.TaskEither<Error, BuildContext> =>
