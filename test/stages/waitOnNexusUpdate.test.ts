@@ -46,7 +46,7 @@ describe('waitOnNexusUpdate', () => {
 		waitMock.mockImplementation(() => T.of(''));
 		const buildContext: BuildContext = {
 			...baseBuildContext,
-			projectType: ProjectType.NpmLibrary
+			projectType: ProjectType.NpmApplication
 		};
 
 		const result = await waitOnNexusUpdate.execute(buildContext)();

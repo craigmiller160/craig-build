@@ -4,8 +4,9 @@ import * as TE from 'fp-ts/TaskEither';
 import { match, when } from 'ts-pattern';
 import { logger } from '../logger';
 import { wait } from '../utils/wait';
-import { isApplication } from '../context/projectTypeUtils';
+import { isApplication, isDocker } from '../context/projectTypeUtils';
 import { pipe } from 'fp-ts/function';
+import { ProjectType } from '../context/ProjectType';
 
 const WAIT_TIME_MILLIS = 3000;
 
@@ -19,11 +20,14 @@ const waitForNonDockerApplication = (
 		TE.mapLeft(() => new Error('Error waiting on Nexus'))
 	);
 
+const isNonDockerApplication = (projectType: ProjectType): boolean =>
+	isApplication(projectType) && !isDocker(projectType);
+
 const handleWaitingByProject = (
 	context: BuildContext
 ): TE.TaskEither<Error, BuildContext> =>
 	match(context)
-		.with({ projectType: when(isApplication) }, waitForNonDockerApplication)
+		.with({ projectType: when(isNonDockerApplication) }, waitForNonDockerApplication)
 		.otherwise(() => {
 			logger.debug('Skipping stage');
 			return TE.right(context);
