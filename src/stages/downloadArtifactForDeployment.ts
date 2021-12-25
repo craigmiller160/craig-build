@@ -12,6 +12,13 @@ import {
 } from '../services/NexusRepoApi';
 import { isMaven, isNpm } from '../context/projectTypeUtils';
 import { isPreRelease, isRelease } from '../context/projectInfoUtils';
+import { ProjectType } from '../context/ProjectType';
+
+const getExtension = (projectType: ProjectType): string =>
+	match(projectType)
+		.with(when(isMaven), () => 'jar')
+		.with(when(isNpm), () => 'tgz')
+		.run();
 
 const doDownloadArtifact = (
 	context: BuildContext,
