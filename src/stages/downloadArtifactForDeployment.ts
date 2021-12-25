@@ -5,6 +5,6 @@ const execute: StageFunction = (context) => {
 };
 
 export const downloadArtifactForDeployment: Stage = {
-	name: 'Download Artifact',
+	name: 'Download Artifact For Deployment',
 	execute
 };
