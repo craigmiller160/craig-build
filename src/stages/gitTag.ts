@@ -4,12 +4,15 @@ import * as TE from 'fp-ts/TaskEither';
 import { match, when } from 'ts-pattern';
 import { logger } from '../logger';
 import { isRelease } from '../context/projectInfoUtils';
+import { pipe } from 'fp-ts/function';
+import { runCommand } from '../command/runCommand';
 
-const doGitTag = (
-	context: BuildContext
-): TE.TaskEither<Error, BuildContext> => {
-	throw new Error();
-};
+const doGitTag = (context: BuildContext): TE.TaskEither<Error, BuildContext> =>
+	pipe(
+		runCommand(`git tag v${context.projectInfo.version}`),
+		TE.chain(() => runCommand('git push --tags')),
+		TE.map(() => context)
+	);
 
 const handleGitTagByProject = (
 	context: BuildContext
