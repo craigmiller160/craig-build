@@ -27,7 +27,10 @@ const handleWaitingByProject = (
 	context: BuildContext
 ): TE.TaskEither<Error, BuildContext> =>
 	match(context)
-		.with({ projectType: when(isNonDockerApplication) }, waitForNonDockerApplication)
+		.with(
+			{ projectType: when(isNonDockerApplication) },
+			waitForNonDockerApplication
+		)
 		.otherwise(() => {
 			logger.debug('Skipping stage');
 			return TE.right(context);
