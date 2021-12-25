@@ -7,8 +7,11 @@ import { wait } from '../utils/wait';
 import { isApplication, isDocker } from '../context/projectTypeUtils';
 import { pipe } from 'fp-ts/function';
 import { ProjectType } from '../context/ProjectType';
+import * as P from 'fp-ts/Predicate';
 
 const WAIT_TIME_MILLIS = 3000;
+
+type IsNonDockerAppFn = (projectType: ProjectType) => boolean;
 
 const waitForNonDockerApplication = (
 	context: BuildContext
@@ -20,8 +23,10 @@ const waitForNonDockerApplication = (
 		TE.mapLeft(() => new Error('Error waiting on Nexus'))
 	);
 
-const isNonDockerApplication = (projectType: ProjectType): boolean =>
-	isApplication(projectType) && !isDocker(projectType);
+const isNonDockerApplication: IsNonDockerAppFn = pipe(
+	isApplication,
+	P.and(P.not(isDocker))
+);
 
 const handleWaitingByProject = (
 	context: BuildContext
