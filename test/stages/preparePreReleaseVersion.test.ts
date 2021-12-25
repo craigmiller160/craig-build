@@ -7,9 +7,10 @@ import {
 	searchForMavenSnapshots,
 	searchForNpmBetas
 } from '../../src/services/NexusRepoApi';
-import NexusSearchResult, {
+import {
+	NexusSearchResult,
 	NexusSearchResultItem
-} from '../../old-src/types/NexusSearchResult';
+} from '../../src/services/NexusSearchResult';
 import { ProjectType } from '../../src/context/ProjectType';
 import * as TE from 'fp-ts/TaskEither';
 
