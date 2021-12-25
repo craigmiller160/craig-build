@@ -11,6 +11,7 @@ import { validateKubernetesConfig } from '../../src/stages/validateKubernetesCon
 import { validateGitTag } from '../../src/stages/validateGitTag';
 import { buildArtifact } from '../../src/stages/buildArtifact';
 import { preparePreReleaseVersion } from '../../src/stages/preparePreReleaseVersion';
+import { manuallyPublishArtifact } from '../../src/stages/manuallyPublishArtifact';
 
 describe('stages', () => {
 	it('all early stages are added in the correct order', () => {
@@ -33,7 +34,8 @@ describe('stages', () => {
 			validateKubernetesConfig.name,
 			validateGitTag.name,
 			buildArtifact.name,
-			preparePreReleaseVersion.name
+			preparePreReleaseVersion.name,
+			manuallyPublishArtifact.name
 		]);
 	});
 });
