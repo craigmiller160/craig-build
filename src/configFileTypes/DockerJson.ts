@@ -1,4 +1,4 @@
 export interface DockerJson {
-	name: string;
-	version: string;
+	readonly name: string;
+	readonly version: string;
 }

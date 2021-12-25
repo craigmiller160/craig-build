@@ -7,10 +7,10 @@ import { IncompleteBuildContext } from './IncompleteBuildContext';
 import { Context } from './Context';
 
 export interface LoggableBuildContext extends Context {
-	commandInfo: CommandInfo | null;
-	buildToolInfo: BuildToolInfo | null;
-	projectType: ProjectType | null;
-	projectInfo: ProjectInfo | null;
+	readonly commandInfo: CommandInfo | null;
+	readonly buildToolInfo: BuildToolInfo | null;
+	readonly projectType: ProjectType | null;
+	readonly projectInfo: ProjectInfo | null;
 }
 
 export const incompleteToLoggableContext = (

@@ -1,23 +1,23 @@
 export interface MavenDependency {
-	groupId: string[];
-	artifactId: string[];
-	version?: string[];
+	readonly groupId: string[];
+	readonly artifactId: string[];
+	readonly version?: string[];
 }
 
 export interface MavenDependencies {
-	dependency: MavenDependency[];
+	readonly dependency: MavenDependency[];
 }
 
 export interface MavenProperties {
-	[key: string]: string[];
+	readonly [key: string]: string[];
 }
 
 export interface PomXml {
-	project: {
-		groupId: string[];
-		artifactId: string[];
-		version: string[];
-		properties?: MavenProperties[];
-		dependencies: MavenDependencies[];
+	readonly project: {
+		readonly groupId: string[];
+		readonly artifactId: string[];
+		readonly version: string[];
+		readonly properties?: MavenProperties[];
+		readonly dependencies: MavenDependencies[];
 	};
 }

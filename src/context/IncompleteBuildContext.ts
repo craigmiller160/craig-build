@@ -6,8 +6,8 @@ import { ProjectInfo } from './ProjectInfo';
 import { Context } from './Context';
 
 export interface IncompleteBuildContext extends Context {
-	commandInfo: O.Option<CommandInfo>;
-	buildToolInfo: O.Option<BuildToolInfo>;
-	projectType: O.Option<ProjectType>;
-	projectInfo: O.Option<ProjectInfo>;
+	readonly commandInfo: O.Option<CommandInfo>;
+	readonly buildToolInfo: O.Option<BuildToolInfo>;
+	readonly projectType: O.Option<ProjectType>;
+	readonly projectInfo: O.Option<ProjectInfo>;
 }
