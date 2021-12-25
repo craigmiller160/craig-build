@@ -40,6 +40,6 @@ const handleValidationByProject = (
 const execute: StageFunction = (context) => handleValidationByProject(context);
 
 export const validateGitTag: Stage = {
-	name: 'Validate Git Tag',
+	name: 'Validate Existing Git Tag',
 	execute
 };

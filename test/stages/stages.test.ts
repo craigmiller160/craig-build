@@ -12,6 +12,7 @@ import { validateGitTag } from '../../src/stages/validateGitTag';
 import { buildArtifact } from '../../src/stages/buildArtifact';
 import { preparePreReleaseVersion } from '../../src/stages/preparePreReleaseVersion';
 import { manuallyPublishArtifact } from '../../src/stages/manuallyPublishArtifact';
+import gitTag from '../../old-src/stages/cleanup/tasks/gitTag';
 
 describe('stages', () => {
 	it('all early stages are added in the correct order', () => {
@@ -35,7 +36,8 @@ describe('stages', () => {
 			validateGitTag.name,
 			buildArtifact.name,
 			preparePreReleaseVersion.name,
-			manuallyPublishArtifact.name
+			manuallyPublishArtifact.name,
+			gitTag.name
 		]);
 	});
 });
