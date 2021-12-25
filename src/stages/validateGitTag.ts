@@ -1,6 +1,5 @@
 import { Stage, StageFunction } from './Stage';
 import { BuildContext } from '../context/BuildContext';
-import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
 import { pipe } from 'fp-ts/function';
 import { match, when } from 'ts-pattern';
@@ -11,10 +10,10 @@ import * as A from 'fp-ts/Array';
 
 const executeGitTagValidation = (
 	context: BuildContext
-): E.Either<Error, BuildContext> =>
+): TE.TaskEither<Error, BuildContext> =>
 	pipe(
 		runCommand('git tag'),
-		E.filterOrElse(
+		TE.filterOrElse(
 			(output) =>
 				pipe(
 					output.split('\n'),
@@ -25,21 +24,20 @@ const executeGitTagValidation = (
 			() =>
 				new Error('Git tag for project release version already exists')
 		),
-		E.map(() => context)
+		TE.map(() => context)
 	);
 
 const handleValidationByProject = (
 	context: BuildContext
-): E.Either<Error, BuildContext> =>
+): TE.TaskEither<Error, BuildContext> =>
 	match(context)
 		.with({ projectInfo: when(isRelease) }, executeGitTagValidation)
 		.otherwise(() => {
 			logger.debug('Skipping stage');
-			return E.right(context);
+			return TE.right(context);
 		});
 
-const execute: StageFunction = (context) =>
-	pipe(handleValidationByProject(context), TE.fromEither);
+const execute: StageFunction = (context) => handleValidationByProject(context);
 
 export const validateGitTag: Stage = {
 	name: 'Validate Git Tag',
