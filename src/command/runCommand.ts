@@ -7,6 +7,7 @@ import { logger } from '../logger';
 import { match, when } from 'ts-pattern';
 import { SpawnSyncReturns } from 'child_process';
 
+// TODO add environment variable support
 export interface CommandOptions {
 	printOutput: boolean;
 	cwd: string;
