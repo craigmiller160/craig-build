@@ -1,14 +1,15 @@
 import { getCwdMock } from '../testutils/getCwdMock';
 import path from 'path';
-import { createBuildContext } from '../testutils/createBuildContext';
+import { createBuildContext, createIncompleteBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
 import * as O from 'fp-ts/Option';
 import { ProjectType } from '../../src/context/ProjectType';
 import { getProjectInfo } from '../../src/stages/getProjectInfo';
 import '@relmify/jest-fp-ts';
 import { baseWorkingDir } from '../testutils/baseWorkingDir';
+import { IncompleteBuildContext } from '../../src/context/IncompleteBuildContext';
 
-const baseBuildContext = createBuildContext();
+const baseBuildContext = createIncompleteBuildContext();
 
 describe('getProjectInfo', () => {
 	beforeEach(() => {
@@ -19,11 +20,11 @@ describe('getProjectInfo', () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(baseWorkingDir, 'npmReleaseLibrary')
 		);
-		const buildContext: BuildContext = {
+		const buildContext: IncompleteBuildContext = {
 			...baseBuildContext,
 			projectType: O.some(ProjectType.NpmLibrary)
 		};
-		const expectedContext: BuildContext = {
+		const expectedContext: IncompleteBuildContext = {
 			...buildContext,
 			projectInfo: O.some({
 				group: 'craigmiller160',
@@ -40,11 +41,11 @@ describe('getProjectInfo', () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(baseWorkingDir, 'npmBetaLibrary')
 		);
-		const buildContext: BuildContext = {
+		const buildContext: IncompleteBuildContext = {
 			...baseBuildContext,
 			projectType: O.some(ProjectType.NpmLibrary)
 		};
-		const expectedContext: BuildContext = {
+		const expectedContext: IncompleteBuildContext = {
 			...buildContext,
 			projectInfo: O.some({
 				group: 'craigmiller160',
@@ -61,11 +62,11 @@ describe('getProjectInfo', () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(baseWorkingDir, 'mavenReleaseLibrary')
 		);
-		const buildContext: BuildContext = {
+		const buildContext: IncompleteBuildContext = {
 			...baseBuildContext,
 			projectType: O.some(ProjectType.MavenLibrary)
 		};
-		const expectedContext: BuildContext = {
+		const expectedContext: IncompleteBuildContext = {
 			...buildContext,
 			projectInfo: O.some({
 				group: 'io.craigmiller160',
@@ -82,11 +83,11 @@ describe('getProjectInfo', () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(baseWorkingDir, 'mavenSnapshotLibrary')
 		);
-		const buildContext: BuildContext = {
+		const buildContext: IncompleteBuildContext = {
 			...baseBuildContext,
 			projectType: O.some(ProjectType.MavenLibrary)
 		};
-		const expectedContext: BuildContext = {
+		const expectedContext: IncompleteBuildContext = {
 			...buildContext,
 			projectInfo: O.some({
 				group: 'io.craigmiller160',
@@ -103,11 +104,11 @@ describe('getProjectInfo', () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(baseWorkingDir, 'dockerReleaseImage')
 		);
-		const buildContext: BuildContext = {
+		const buildContext: IncompleteBuildContext = {
 			...baseBuildContext,
 			projectType: O.some(ProjectType.DockerImage)
 		};
-		const expectedContext: BuildContext = {
+		const expectedContext: IncompleteBuildContext = {
 			...buildContext,
 			projectInfo: O.some({
 				group: 'craigmiller160',
@@ -124,11 +125,11 @@ describe('getProjectInfo', () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(baseWorkingDir, 'dockerBetaImage')
 		);
-		const buildContext: BuildContext = {
+		const buildContext: IncompleteBuildContext = {
 			...baseBuildContext,
 			projectType: O.some(ProjectType.DockerImage)
 		};
-		const expectedContext: BuildContext = {
+		const expectedContext: IncompleteBuildContext = {
 			...buildContext,
 			projectInfo: O.some({
 				group: 'craigmiller160',

@@ -4,7 +4,11 @@ import { BuildContext } from '../../src/context/BuildContext';
 import * as O from 'fp-ts/Option';
 import { getCommandInfo } from '../../src/stages/getCommandInfo';
 import '@relmify/jest-fp-ts';
-import { createBuildContext } from '../testutils/createBuildContext';
+import {
+	createBuildContext,
+	createIncompleteBuildContext
+} from '../testutils/createBuildContext';
+import { IncompleteBuildContext } from '../../src/context/IncompleteBuildContext';
 
 jest.mock('commander', () => {
 	const { OptionValues } = jest.requireActual('commander');
@@ -28,9 +32,10 @@ describe('getCommandInfo', () => {
 			fullBuild: true
 		};
 		optsMock.mockImplementation(() => options);
-		const buildContext: BuildContext = createBuildContext({
-			commandInfo: O.none
-		});
+		const buildContext: IncompleteBuildContext =
+			createIncompleteBuildContext({
+				commandInfo: O.none
+			});
 		const result = await getCommandInfo.execute(buildContext)();
 		expect(result).toEqualRight({
 			...buildContext,
@@ -45,9 +50,10 @@ describe('getCommandInfo', () => {
 			dockerOnly: true
 		};
 		optsMock.mockImplementation(() => options);
-		const buildContext: BuildContext = createBuildContext({
-			commandInfo: O.none
-		});
+		const buildContext: IncompleteBuildContext =
+			createIncompleteBuildContext({
+				commandInfo: O.none
+			});
 		const result = await getCommandInfo.execute(buildContext)();
 		expect(result).toEqualRight({
 			...buildContext,
@@ -62,9 +68,10 @@ describe('getCommandInfo', () => {
 			kubernetesOnly: true
 		};
 		optsMock.mockImplementation(() => options);
-		const buildContext: BuildContext = createBuildContext({
-			commandInfo: O.none
-		});
+		const buildContext: IncompleteBuildContext =
+			createIncompleteBuildContext({
+				commandInfo: O.none
+			});
 		const result = await getCommandInfo.execute(buildContext)();
 		expect(result).toEqualRight({
 			...buildContext,
