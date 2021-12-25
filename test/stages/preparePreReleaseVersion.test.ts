@@ -4,7 +4,6 @@ import '@relmify/jest-fp-ts';
 import { preparePreReleaseVersion } from '../../src/stages/preparePreReleaseVersion';
 import {
 	searchForDockerBetas,
-	searchForMavenSnapshots,
 	searchForNpmBetas
 } from '../../src/services/NexusRepoApi';
 import {
@@ -19,7 +18,6 @@ import { homedir } from 'os';
 
 jest.mock('../../src/services/NexusRepoApi', () => ({
 	searchForNpmBetas: jest.fn(),
-	searchForMavenSnapshots: jest.fn(),
 	searchForDockerBetas: jest.fn()
 }));
 
@@ -32,7 +30,6 @@ const baseBuildContext = createBuildContext();
 const searchForNpmBetasMock = searchForNpmBetas as jest.Mock;
 const searchForDockerBetasMock = searchForDockerBetas as jest.Mock;
 const homedirMock = homedir as jest.Mock;
-const searchForMavenSnapshotsMock = searchForMavenSnapshots as jest.Mock; // TODO delete if unused
 
 const createItem = (version: string): NexusSearchResultItem => ({
 	name: '',
@@ -63,7 +60,7 @@ describe('preparePreReleaseVersion', () => {
 
 		expect(searchForNpmBetasMock).not.toHaveBeenCalled();
 		expect(searchForDockerBetasMock).not.toHaveBeenCalled();
-		expect(searchForMavenSnapshotsMock).not.toHaveBeenCalled();
+		expect(homedirMock).not.toHaveBeenCalled();
 	});
 
 	it('prepares pre-release version for NPM project based on existing version', async () => {
@@ -98,7 +95,7 @@ describe('preparePreReleaseVersion', () => {
 			'my-project'
 		);
 		expect(searchForDockerBetasMock).not.toHaveBeenCalled();
-		expect(searchForMavenSnapshotsMock).not.toHaveBeenCalled();
+		expect(homedirMock).not.toHaveBeenCalled();
 	});
 
 	it('prepares pre-release version for NPM project with no existing version', async () => {
@@ -133,7 +130,7 @@ describe('preparePreReleaseVersion', () => {
 			'my-project'
 		);
 		expect(searchForDockerBetasMock).not.toHaveBeenCalled();
-		expect(searchForMavenSnapshotsMock).not.toHaveBeenCalled();
+		expect(homedirMock).not.toHaveBeenCalled();
 	});
 
 	it('looks up recently created maven pre-release version from .m2', async () => {
@@ -196,7 +193,7 @@ describe('preparePreReleaseVersion', () => {
 
 		expect(searchForDockerBetasMock).toHaveBeenCalledWith('my-project');
 		expect(searchForNpmBetasMock).not.toHaveBeenCalled();
-		expect(searchForMavenSnapshotsMock).not.toHaveBeenCalled();
+		expect(homedirMock).not.toHaveBeenCalled();
 	});
 
 	it('prepares pre-release version for Docker project with no existing version', async () => {
@@ -230,6 +227,6 @@ describe('preparePreReleaseVersion', () => {
 
 		expect(searchForDockerBetasMock).toHaveBeenCalledWith('my-project');
 		expect(searchForNpmBetasMock).not.toHaveBeenCalled();
-		expect(searchForMavenSnapshotsMock).not.toHaveBeenCalled();
+		expect(homedirMock).not.toHaveBeenCalled();
 	});
 });
