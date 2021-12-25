@@ -153,7 +153,6 @@ describe('preparePreReleaseVersion', () => {
 		};
 
 		const result = await preparePreReleaseVersion.execute(buildContext)();
-		console.log(result);
 		expect(result).toEqualRight({
 			...buildContext,
 			projectInfo: {

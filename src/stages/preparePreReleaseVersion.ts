@@ -65,7 +65,7 @@ const getMavenMetadataPreReleaseVersion = (
 	metadata: MavenMetadataNexus
 ): O.Option<string> =>
 	pipe(
-		metadata.metadata.snapshotVersions[0].snapshotVersion,
+		metadata.metadata.versioning[0].snapshotVersions[0].snapshotVersion,
 		A.findFirst((_) => _.extension[0] === 'jar'),
 		O.map((_) => _.value[0])
 	);

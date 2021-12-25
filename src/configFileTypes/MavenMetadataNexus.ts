@@ -8,11 +8,15 @@ interface MavenMetadataSnapshotVersions {
 	snapshotVersion: MavenMetadataSnapshotVersion[];
 }
 
+interface MavenMetadataVersioning {
+	snapshotVersions: MavenMetadataSnapshotVersions[];
+}
+
 export interface MavenMetadataNexus {
 	readonly metadata: {
 		readonly groupId: string[];
 		readonly artifactId: string[];
 		readonly version: string[];
-		readonly snapshotVersions: MavenMetadataSnapshotVersions[];
+		readonly versioning: MavenMetadataVersioning[];
 	};
 }
