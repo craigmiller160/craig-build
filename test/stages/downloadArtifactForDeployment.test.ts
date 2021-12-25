@@ -1,6 +1,6 @@
 export {};
 
-describe('downloadArtifact', () => {
+describe('downloadArtifactForDeployment', () => {
 	it('skips for Docker project', () => {
 		throw new Error();
 	});

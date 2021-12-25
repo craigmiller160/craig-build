@@ -13,7 +13,7 @@ import { buildArtifact } from './buildArtifact';
 import { preparePreReleaseVersion } from './preparePreReleaseVersion';
 import { manuallyPublishArtifact } from './manuallyPublishArtifact';
 import { gitTag } from './gitTag';
-import { downloadArtifact } from './downloadArtifact';
+import { downloadArtifactForDeployment } from './downloadArtifactForDeployment';
 
 export const EARLY_STAGES: EarlyStage[] = [
 	getCommandInfo,
@@ -33,5 +33,5 @@ export const STAGES: Stage[] = [
 	preparePreReleaseVersion,
 	manuallyPublishArtifact,
 	gitTag,
-	downloadArtifact
+	downloadArtifactForDeployment
 ];
