@@ -2,7 +2,7 @@ import { runCommandMock } from '../testutils/runCommandMock';
 import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
 import { validateGitTag } from '../../src/stages/validateGitTag';
-import * as E from 'fp-ts/Either';
+import * as TE from 'fp-ts/TaskEither';
 import '@relmify/jest-fp-ts';
 
 const baseBuildContext = createBuildContext();
@@ -29,7 +29,7 @@ describe('validateGitTag', () => {
 	});
 
 	it('confirms there is no existing tag for release version', async () => {
-		runCommandMock.mockImplementation(() => E.right(versions));
+		runCommandMock.mockImplementation(() => TE.right(versions));
 		const buildContext: BuildContext = {
 			...baseBuildContext,
 			projectInfo: {
@@ -46,7 +46,7 @@ describe('validateGitTag', () => {
 	});
 
 	it('finds an existing tag for release version', async () => {
-		runCommandMock.mockImplementation(() => E.right(versions));
+		runCommandMock.mockImplementation(() => TE.right(versions));
 		const buildContext: BuildContext = {
 			...baseBuildContext,
 			projectInfo: {
