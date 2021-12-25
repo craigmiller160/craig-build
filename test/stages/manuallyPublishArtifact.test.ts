@@ -2,11 +2,11 @@ import '@relmify/jest-fp-ts';
 import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
 import { ProjectType } from '../../src/context/ProjectType';
+import { runCommandMock } from '../testutils/runCommandMock';
 import {
 	CLEAR_FILES_COMMAND,
 	manuallyPublishArtifact
 } from '../../src/stages/manuallyPublishArtifact';
-import { runCommandMock } from '../testutils/runCommandMock';
 import * as TE from 'fp-ts/TaskEither';
 import { NPM_PUBLISH_COMMAND } from '../../old-src/stages/createArtifact/tasks/publish';
 
@@ -24,7 +24,7 @@ describe('manuallyPublishArtifact', () => {
 		};
 
 		const result = await manuallyPublishArtifact.execute(buildContext)();
-		expect(result).toEqual(buildContext);
+		expect(result).toEqualRight(buildContext);
 
 		expect(runCommandMock).not.toHaveBeenCalled();
 	});
@@ -36,7 +36,7 @@ describe('manuallyPublishArtifact', () => {
 		};
 
 		const result = await manuallyPublishArtifact.execute(buildContext)();
-		expect(result).toEqual(buildContext);
+		expect(result).toEqualRight(buildContext);
 
 		expect(runCommandMock).not.toHaveBeenCalled();
 	});
@@ -53,14 +53,14 @@ describe('manuallyPublishArtifact', () => {
 		};
 
 		const result = await manuallyPublishArtifact.execute(buildContext)();
-		expect(result).toEqual(buildContext);
+		expect(result).toEqualRight(buildContext);
 
 		expect(runCommandMock).toHaveBeenCalledTimes(2);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
-			0,
+			1,
 			`${NPM_PUBLISH_COMMAND} 1.0.0`,
 			{ printOutput: true }
 		);
-		expect(runCommandMock).toHaveBeenNthCalledWith(1, CLEAR_FILES_COMMAND);
+		expect(runCommandMock).toHaveBeenNthCalledWith(2, CLEAR_FILES_COMMAND);
 	});
 });
