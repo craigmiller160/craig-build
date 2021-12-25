@@ -8,12 +8,17 @@ import { isPreRelease } from '../context/projectInfoUtils';
 import { pipe } from 'fp-ts/function';
 import {
 	searchForDockerBetas,
-	searchForMavenSnapshots,
 	searchForNpmBetas
 } from '../services/NexusRepoApi';
 import { NexusSearchResult } from '../services/NexusSearchResult';
 import * as O from 'fp-ts/Option';
 import * as A from 'fp-ts/Array';
+import { readFile } from '../functions/readFile';
+import { homedir } from 'os';
+import * as E from 'fp-ts/Either';
+import path from 'path';
+import { parseXml } from '../functions/Xml';
+import { MavenMetadataNexus } from '../configFileTypes/MavenMetadataNexus';
 
 const BETA_VERSION_REGEX = /^(?<version>.*-beta)\.(?<betaNumber>\d*)$/;
 
@@ -43,6 +48,28 @@ const updateProjectInfo = (
 	}
 });
 
+const createMavenM2NexusPath = (context: BuildContext): string => {
+	const groupPath = context.projectInfo.group.split('.').join(path.sep);
+	return path.join(
+		homedir(),
+		'.m2',
+		'repository',
+		groupPath,
+		context.projectInfo.name,
+		context.projectInfo.version,
+		'maven-metadata-nexus.xml'
+	);
+};
+
+const getMavenMetadataPreReleaseVersion = (
+	metadata: MavenMetadataNexus
+): O.Option<string> =>
+	pipe(
+		metadata.metadata.snapshotVersions[0].snapshotVersion,
+		A.findFirst((_) => _.extension[0] === 'jar'),
+		O.map((_) => _.value[0])
+	);
+
 // TODO consider instead reading the version from the build output
 // TODO or maybe query .m2?
 // TODO querying .m2, /group/name/version/maven-metadata-nexus.xml, /metadata/versioning/snapshotVersions/snapshotVersion[extension="jar"]/value
@@ -51,23 +78,22 @@ const handleMavenPreReleaseVersion = (
 	context: BuildContext
 ): TE.TaskEither<Error, BuildContext> =>
 	pipe(
-		searchForMavenSnapshots(
-			context.projectInfo.group,
-			context.projectInfo.name
-		),
-		TE.chain((nexusResult) =>
+		createMavenM2NexusPath(context),
+		readFile,
+		E.chain((_) => parseXml<MavenMetadataNexus>(_)),
+		E.chain((_) =>
 			pipe(
-				// TODO what if it grabs the old version?
-				findMatchingVersion(nexusResult, context.projectInfo.version),
-				TE.fromOption(
+				getMavenMetadataPreReleaseVersion(_),
+				E.fromOption(
 					() =>
 						new Error(
-							'Cannot find matching Maven pre-release artifact'
+							'Could not find Maven pre-release version in .m2'
 						)
 				)
 			)
 		),
-		TE.map((_) => updateProjectInfo(context, _))
+		E.map((_) => updateProjectInfo(context, _)),
+		TE.fromEither
 	);
 
 const bumpBetaVersion = (fullVersion: string): string => {
