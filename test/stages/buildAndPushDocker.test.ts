@@ -64,7 +64,7 @@ describe('buildAndPushDocker', () => {
 		};
 
 		const result = await buildAndPushDocker.execute(buildContext)();
-		expect(result).toEqualLeft(new Error());
+		expect(result).toEqualLeft(new Error('Missing Docker credential environment variables'));
 	});
 
 	it('no docker password environment variable', async () => {
@@ -78,7 +78,7 @@ describe('buildAndPushDocker', () => {
 		};
 
 		const result = await buildAndPushDocker.execute(buildContext)();
-		expect(result).toEqualLeft(new Error());
+		expect(result).toEqualLeft(new Error('Missing Docker credential environment variables'));
 
 		expect(runCommandMock).not.toHaveBeenCalled();
 	});
