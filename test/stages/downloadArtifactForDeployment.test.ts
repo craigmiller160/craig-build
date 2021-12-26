@@ -13,6 +13,8 @@ import {
 } from '../../src/services/NexusRepoApi';
 import * as TE from 'fp-ts/TaskEither';
 import { NexusSearchResultItem } from '../../src/services/NexusSearchResult';
+import { rmDirIfExists, mkdir } from '../../src/functions/File';
+import * as E from 'fp-ts/Either';
 
 jest.mock('../../src/services/NexusRepoApi', () => ({
 	downloadArtifact: jest.fn(),
@@ -22,11 +24,18 @@ jest.mock('../../src/services/NexusRepoApi', () => ({
 	searchForNpmReleases: jest.fn()
 }));
 
+jest.mock('../../src/functions/File', () => ({
+	mkdir: jest.fn(),
+	rmDirIfExists: jest.fn()
+}));
+
 const downloadArtifactMock = downloadArtifact as jest.Mock;
 const searchForMavenSnapshotsMock = searchForMavenSnapshots as jest.Mock;
 const searchForMavenReleasesMock = searchForMavenReleases as jest.Mock;
 const searchForNpmBetasMock = searchForNpmBetas as jest.Mock;
 const searchForNpmReleasesMock = searchForNpmReleases as jest.Mock;
+const mkdirMock = mkdir as jest.Mock;
+const rmDirIfExistsMock = rmDirIfExists as jest.Mock;
 
 const createItem = (version: string, ext: string): NexusSearchResultItem => ({
 	name: '',
@@ -57,6 +66,8 @@ describe('downloadArtifactForDeployment', () => {
 	beforeEach(() => {
 		jest.resetAllMocks();
 		downloadArtifactMock.mockImplementation(() => TE.right(''));
+		mkdirMock.mockImplementation(() => E.right(''));
+		rmDirIfExistsMock.mockImplementation(() => E.right(''))
 	});
 
 	it('skips for Docker project', async () => {
@@ -75,6 +86,8 @@ describe('downloadArtifactForDeployment', () => {
 		expect(searchForMavenReleasesMock).not.toHaveBeenCalled();
 		expect(searchForNpmBetasMock).not.toHaveBeenCalled();
 		expect(searchForNpmReleasesMock).not.toHaveBeenCalled();
+		expect(mkdirMock).not.toHaveBeenCalled();
+		expect(rmDirIfExistsMock).not.toHaveBeenCalled();
 	});
 
 	it('downloads maven release artifact', async () => {
@@ -109,6 +122,8 @@ describe('downloadArtifactForDeployment', () => {
 		);
 		expect(searchForNpmBetasMock).not.toHaveBeenCalled();
 		expect(searchForNpmReleasesMock).not.toHaveBeenCalled();
+		expect(mkdirMock).toHaveBeenCalledWith('/foo/deploy/build');
+		expect(rmDirIfExistsMock).toHaveBeenCalledWith('/foo/deploy/build');
 	});
 
 	it('downloads maven pre-release artifact', async () => {
@@ -143,6 +158,8 @@ describe('downloadArtifactForDeployment', () => {
 		);
 		expect(searchForNpmBetasMock).not.toHaveBeenCalled();
 		expect(searchForNpmReleasesMock).not.toHaveBeenCalled();
+		expect(mkdirMock).toHaveBeenCalledWith('/foo/deploy/build');
+		expect(rmDirIfExistsMock).toHaveBeenCalledWith('/foo/deploy/build');
 	});
 
 	it('downloads npm release artifact', async () => {
@@ -177,6 +194,8 @@ describe('downloadArtifactForDeployment', () => {
 		);
 		expect(searchForMavenReleasesMock).not.toHaveBeenCalled();
 		expect(searchForNpmBetasMock).not.toHaveBeenCalled();
+		expect(mkdirMock).toHaveBeenCalledWith('/foo/deploy/build');
+		expect(rmDirIfExistsMock).toHaveBeenCalledWith('/foo/deploy/build');
 	});
 
 	it('downloads npm pre-release artifact', async () => {
@@ -211,5 +230,7 @@ describe('downloadArtifactForDeployment', () => {
 		);
 		expect(searchForMavenReleasesMock).not.toHaveBeenCalled();
 		expect(searchForNpmReleasesMock).not.toHaveBeenCalled();
+		expect(mkdirMock).toHaveBeenCalledWith('/foo/deploy/build');
+		expect(rmDirIfExistsMock).toHaveBeenCalledWith('/foo/deploy/build');
 	});
 });
