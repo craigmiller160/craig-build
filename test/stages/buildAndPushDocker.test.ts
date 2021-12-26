@@ -5,6 +5,7 @@ import '@relmify/jest-fp-ts';
 import { buildAndPushDocker } from '../../src/stages/buildAndPushDocker';
 import { BuildContext } from '../../src/context/BuildContext';
 import { ProjectType } from '../../src/context/ProjectType';
+import * as TE from 'fp-ts/TaskEither';
 
 jest.mock('shell-env', () => ({
 	sync: jest.fn()
@@ -31,26 +32,30 @@ const validateCommands = () => {
 	expect(runCommandMock).toHaveBeenCalledTimes(4);
 	expect(runCommandMock).toHaveBeenNthCalledWith(
 		1,
-		'sudo docker login -u ${USER_NAME} -p ${PASSWORD}',
-		{ env: { USER_NAME: 'user', PASSWORD: 'password' } }
+		'sudo docker login -u $USER_NAME -p $PASSWORD',
+		{ env: { USER_NAME: 'user', PASSWORD: 'password' }, printOutput: true }
 	);
 	expect(runCommandMock).toHaveBeenNthCalledWith(
 		2,
-		"sudo docker image ls | grep my-project | grep 1.0.0 | awk '{ print $3 }' | xargs sudo docker image rm -f"
+		"sudo docker image ls | grep my-project | grep 1.0.0 | awk '{ print $3 }' | xargs sudo docker image rm -f",
+		{ printOutput: true }
 	);
 	expect(runCommandMock).toHaveBeenNthCalledWith(
 		3,
-		'sudo docker build --network=host -t craigmiller160.ddns.net:30004/my-project:1.0.0'
+		'sudo docker build --network=host -t craigmiller160.ddns.net:30004/my-project:1.0.0',
+		{ printOutput: true }
 	);
 	expect(runCommandMock).toHaveBeenNthCalledWith(
 		4,
-		'sudo docker push craigmiller160.ddns.net:3004/my-project:1.0.0'
+		'sudo docker push craigmiller160.ddns.net:3004/my-project:1.0.0',
+		{ printOutput: true }
 	);
 };
 
 describe('buildAndPushDocker', () => {
 	beforeEach(() => {
 		jest.resetAllMocks();
+		runCommandMock.mockImplementation(() => TE.right(''))
 	});
 
 	it('no docker username environment variable', async () => {
