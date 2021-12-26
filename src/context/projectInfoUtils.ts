@@ -1,7 +1,8 @@
 import { ProjectInfo } from './ProjectInfo';
+import * as P from 'fp-ts/Predicate';
 
-export const isRelease = (projectInfo: ProjectInfo): boolean =>
+export const isRelease: P.Predicate<ProjectInfo> = (projectInfo) =>
 	!projectInfo.isPreRelease;
 
-export const isPreRelease = (projectInfo: ProjectInfo): boolean =>
+export const isPreRelease: P.Predicate<ProjectInfo> = (projectInfo) =>
 	projectInfo.isPreRelease;
