@@ -55,7 +55,7 @@ const validateCommands = () => {
 describe('buildAndPushDocker', () => {
 	beforeEach(() => {
 		jest.resetAllMocks();
-		runCommandMock.mockImplementation(() => TE.right(''))
+		runCommandMock.mockImplementation(() => TE.right(''));
 	});
 
 	it('no docker username environment variable', async () => {
@@ -69,7 +69,9 @@ describe('buildAndPushDocker', () => {
 		};
 
 		const result = await buildAndPushDocker.execute(buildContext)();
-		expect(result).toEqualLeft(new Error('Missing Docker credential environment variables'));
+		expect(result).toEqualLeft(
+			new Error('Missing Docker credential environment variables')
+		);
 	});
 
 	it('no docker password environment variable', async () => {
@@ -83,7 +85,9 @@ describe('buildAndPushDocker', () => {
 		};
 
 		const result = await buildAndPushDocker.execute(buildContext)();
-		expect(result).toEqualLeft(new Error('Missing Docker credential environment variables'));
+		expect(result).toEqualLeft(
+			new Error('Missing Docker credential environment variables')
+		);
 
 		expect(runCommandMock).not.toHaveBeenCalled();
 	});
