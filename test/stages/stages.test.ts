@@ -14,6 +14,7 @@ import { preparePreReleaseVersion } from '../../src/stages/preparePreReleaseVers
 import { manuallyPublishArtifact } from '../../src/stages/manuallyPublishArtifact';
 import { gitTag } from '../../src/stages/gitTag';
 import { downloadArtifactForDeployment } from '../../src/stages/downloadArtifactForDeployment';
+import { buildAndPushDocker } from '../../src/stages/buildAndPushDocker';
 
 describe('stages', () => {
 	it('all early stages are added in the correct order', () => {
@@ -39,7 +40,8 @@ describe('stages', () => {
 			preparePreReleaseVersion.name,
 			manuallyPublishArtifact.name,
 			gitTag.name,
-			downloadArtifactForDeployment.name
+			downloadArtifactForDeployment.name,
+			buildAndPushDocker.name
 		]);
 	});
 });

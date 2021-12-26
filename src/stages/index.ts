@@ -14,6 +14,7 @@ import { preparePreReleaseVersion } from './preparePreReleaseVersion';
 import { manuallyPublishArtifact } from './manuallyPublishArtifact';
 import { gitTag } from './gitTag';
 import { downloadArtifactForDeployment } from './downloadArtifactForDeployment';
+import { buildAndPushDocker } from './buildAndPushDocker';
 
 export const EARLY_STAGES: EarlyStage[] = [
 	getCommandInfo,
@@ -33,5 +34,6 @@ export const STAGES: Stage[] = [
 	preparePreReleaseVersion,
 	manuallyPublishArtifact,
 	gitTag,
-	downloadArtifactForDeployment
+	downloadArtifactForDeployment,
+	buildAndPushDocker
 ];
