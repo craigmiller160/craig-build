@@ -47,7 +47,7 @@ const validateCommands = () => {
 	);
 	expect(runCommandMock).toHaveBeenNthCalledWith(
 		4,
-		'sudo docker push craigmiller160.ddns.net:3004/my-project:1.0.0',
+		'sudo docker push craigmiller160.ddns.net:30004/my-project:1.0.0',
 		{ printOutput: true }
 	);
 };
