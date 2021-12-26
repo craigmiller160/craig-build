@@ -9,6 +9,7 @@ import { isApplication, isDocker } from '../context/projectTypeUtils';
 import { logger } from '../logger';
 import { ProjectInfo } from '../context/ProjectInfo';
 import { DOCKER_REPO_PREFIX } from '../configFileTypes/constants';
+import shellEnv, {EnvironmentVariables} from 'shell-env';
 
 type IsDockerOrApplication = (projectType: ProjectType) => boolean;
 const isDockerOrApplication: IsDockerOrApplication = pipe(
@@ -23,6 +24,7 @@ const runDockerBuild = (
 	context: BuildContext
 ): TE.TaskEither<Error, BuildContext> => {
 	const dockerTag = createDockerTag(context.projectInfo);
+	shellEnv.sync<EnvironmentVariables>(); // TODO validate variables
 
 	throw new Error();
 };
