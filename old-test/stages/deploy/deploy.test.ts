@@ -10,7 +10,10 @@ import bumpDockerBeta from '../../../old-src/stages/deploy/tasks/bumpDockerPreRe
 
 jest.mock('../../../src/stages/deploy/tasks/kubeDeploy', () => jest.fn());
 jest.mock('../../../src/stages/deploy/tasks/dockerBuild', () => jest.fn());
-jest.mock('../../../src/stages/deploy/tasks/downloadArtifactForDeployment', () => jest.fn());
+jest.mock(
+	'../../../src/stages/deploy/tasks/downloadArtifactForDeployment',
+	() => jest.fn()
+);
 jest.mock('../../../src/stages/deploy/tasks/bumpDockerPreReleaseVersion', () =>
 	jest.fn()
 );
