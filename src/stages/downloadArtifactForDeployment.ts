@@ -16,7 +16,6 @@ import { isPreRelease, isRelease } from '../context/projectInfoUtils';
 import { ProjectType } from '../context/ProjectType';
 import { flow, pipe } from 'fp-ts/function';
 import {
-	NexusSearchResult,
 	NexusSearchResultAsset,
 	NexusSearchResultItem
 } from '../services/NexusSearchResult';
