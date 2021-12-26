@@ -74,9 +74,13 @@ const runDockerBuild = (
 			)
 		),
 		TE.chain(() =>
-			runCommand(`sudo docker build --network=host -t ${dockerTag}`)
+			runCommand(`sudo docker build --network=host -t ${dockerTag}`, {
+				printOutput: true
+			})
 		),
-		TE.chain(() => runCommand(`sudo docker push ${dockerTag}`)),
+		TE.chain(() =>
+			runCommand(`sudo docker push ${dockerTag}`, { printOutput: true })
+		),
 		TE.map(() => context)
 	);
 };
