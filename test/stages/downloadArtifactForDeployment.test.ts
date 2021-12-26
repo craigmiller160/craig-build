@@ -1,6 +1,7 @@
 import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
 import { ProjectType } from '../../src/context/ProjectType';
+import { getCwdMock } from '../testutils/getCwdMock';
 import { downloadArtifactForDeployment } from '../../src/stages/downloadArtifactForDeployment';
 import '@relmify/jest-fp-ts';
 import {
@@ -77,6 +78,7 @@ describe('downloadArtifactForDeployment', () => {
 	});
 
 	it('downloads maven release artifact', async () => {
+		getCwdMock.mockImplementation(() => '/foo');
 		searchForMavenReleasesMock.mockImplementation(() =>
 			TE.right({ items: [createItem('1.0.0', 'jar')] })
 		);
@@ -96,8 +98,8 @@ describe('downloadArtifactForDeployment', () => {
 		expect(result).toEqualRight(buildContext);
 
 		expect(downloadArtifactMock).toHaveBeenCalledWith(
-			'downloadUrl',
-			'file.jar'
+			'downloadUrl.jar',
+			'/foo/deploy/build/my-project-1.0.0.jar'
 		);
 		expect(searchForMavenSnapshotsMock).not.toHaveBeenCalled();
 		expect(searchForMavenReleasesMock).toHaveBeenCalledWith(
@@ -110,7 +112,8 @@ describe('downloadArtifactForDeployment', () => {
 	});
 
 	it('downloads maven pre-release artifact', async () => {
-		searchForMavenReleasesMock.mockImplementation(() =>
+		getCwdMock.mockImplementation(() => '/foo');
+		searchForMavenSnapshotsMock.mockImplementation(() =>
 			TE.right({ items: [createItem('1.1.0-20211225.003019-1', 'jar')] })
 		);
 		const buildContext: BuildContext = {
@@ -129,21 +132,22 @@ describe('downloadArtifactForDeployment', () => {
 		expect(result).toEqualRight(buildContext);
 
 		expect(downloadArtifactMock).toHaveBeenCalledWith(
-			'downloadUrl',
-			'file.jar'
+			'downloadUrl.jar',
+			'/foo/deploy/build/my-project-1.1.0-20211225.003019-1.jar'
 		);
 		expect(searchForMavenReleasesMock).not.toHaveBeenCalled();
-		expect(searchForMavenReleasesMock).toHaveBeenCalledWith(
+		expect(searchForMavenSnapshotsMock).toHaveBeenCalledWith(
 			'craigmiller160',
 			'my-project',
-			'1.1.0-SNAPSHOT'
+			'1.1.0-20211225.003019-1'
 		);
 		expect(searchForNpmBetasMock).not.toHaveBeenCalled();
 		expect(searchForNpmReleasesMock).not.toHaveBeenCalled();
 	});
 
 	it('downloads npm release artifact', async () => {
-		searchForMavenReleasesMock.mockImplementation(() =>
+		getCwdMock.mockImplementation(() => '/foo');
+		searchForNpmReleasesMock.mockImplementation(() =>
 			TE.right({ items: [createItem('1.0.0', 'tgz')] })
 		);
 		const buildContext: BuildContext = {
@@ -162,8 +166,8 @@ describe('downloadArtifactForDeployment', () => {
 		expect(result).toEqualRight(buildContext);
 
 		expect(downloadArtifactMock).toHaveBeenCalledWith(
-			'downloadUrl',
-			'file.tgz'
+			'downloadUrl.tgz',
+			'/foo/deploy/build/my-project-1.0.0.tgz'
 		);
 		expect(searchForMavenSnapshotsMock).not.toHaveBeenCalled();
 		expect(searchForNpmReleasesMock).toHaveBeenCalledWith(
@@ -176,7 +180,8 @@ describe('downloadArtifactForDeployment', () => {
 	});
 
 	it('downloads npm pre-release artifact', async () => {
-		searchForMavenReleasesMock.mockImplementation(() =>
+		getCwdMock.mockImplementation(() => '/foo');
+		searchForNpmBetasMock.mockImplementation(() =>
 			TE.right({ items: [createItem('1.0.0-beta.5', 'tgz')] })
 		);
 		const buildContext: BuildContext = {
@@ -195,14 +200,14 @@ describe('downloadArtifactForDeployment', () => {
 		expect(result).toEqualRight(buildContext);
 
 		expect(downloadArtifactMock).toHaveBeenCalledWith(
-			'downloadUrl',
-			'file.tgz'
+			'downloadUrl.tgz',
+			'/foo/deploy/build/my-project-1.0.0-beta.5.tgz'
 		);
 		expect(searchForMavenSnapshotsMock).not.toHaveBeenCalled();
 		expect(searchForNpmBetasMock).toHaveBeenCalledWith(
 			'craigmiller160',
 			'my-project',
-			'1.0.0-beta'
+			'1.0.0-beta.5'
 		);
 		expect(searchForMavenReleasesMock).not.toHaveBeenCalled();
 		expect(searchForNpmReleasesMock).not.toHaveBeenCalled();
