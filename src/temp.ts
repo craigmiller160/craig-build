@@ -1,25 +1,48 @@
-import * as P from 'fp-ts/Predicate';
-import {flow, pipe} from 'fp-ts/function';
+import * as O from 'fp-ts/Option';
+import { pipe, flow } from 'fp-ts/function';
+import * as E from 'fp-ts/Either';
 
-const text = 'hello';
+interface IncContext {
+	readonly name: O.Option<string>;
+	readonly age: O.Option<number>;
+}
 
-const lengthIs5 = (s: string): boolean => s.length === 5;
-const startsWithH = (s: string): boolean => s.startsWith('h');
-const endsWithO = (s: string): boolean => s.endsWith('oa')
+interface CompleteContext {
+	readonly name: string;
+	readonly age: number;
+}
 
-const compare = P.and(lengthIs5)(startsWithH)
-console.log(compare(text));
+const unfinishedContext: IncContext = {
+	name: O.some('Bob'),
+	age: O.none
+};
 
-const result2 = pipe(
-    lengthIs5,
-    P.and(startsWithH),
-    P.and(endsWithO)
-)(text);
-console.log(result2);
+const finishedContext: IncContext = {
+	name: O.some('Bob'),
+	age: O.some(20)
+};
 
-// const result = flow(
-// 	(s: string) => lengthIs5(s),
-// 	P.and(startsWithH)
-// )(text);
-//
-// console.log(result);
+type HandleContextFn = (
+	incContext: IncContext
+) => E.Either<Error, CompleteContext>;
+// const handleContext: HandleContextFn = flow(
+// 	O.of,
+// 	O.bind('name', (ctx) => ctx.name),
+// 	E.fromOption(() => new Error())
+// );
+const handleContext: HandleContextFn = (incContext) =>
+	pipe(
+		O.of(incContext),
+		O.bindTo('incContext'),
+		O.bind('name', (ctx) => ctx.incContext.name),
+		E.fromOption(() => new Error()),
+		E.map(() => ({
+			name: 'foo',
+			age: 10
+		}))
+	);
+
+const unfinishedResult = handleContext(unfinishedContext);
+const finishedResult = handleContext(finishedContext);
+console.log(unfinishedResult);
+console.log(finishedResult);
