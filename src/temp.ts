@@ -30,7 +30,7 @@ type HandleContextFn = (
 // 	O.bind('name', (ctx) => ctx.name),
 // 	E.fromOption(() => new Error())
 // );
-const handleContext: HandleContextFn = (incContext) =>
+const handleContext2: HandleContextFn = (incContext) =>
 	pipe(
 		O.of(incContext),
 		O.bindTo('incContext'),
@@ -41,6 +41,16 @@ const handleContext: HandleContextFn = (incContext) =>
 			age: 10
 		}))
 	);
+const handleContext: HandleContextFn = flow(
+	O.of,
+	O.bindTo('incContext'),
+	O.bind('name', (ctx) => ctx.incContext.name),
+	E.fromOption(() => new Error()),
+	E.map(() => ({
+		name: 'foo',
+		age: 10
+	}))
+);
 
 const unfinishedResult = handleContext(unfinishedContext);
 const finishedResult = handleContext(finishedContext);
