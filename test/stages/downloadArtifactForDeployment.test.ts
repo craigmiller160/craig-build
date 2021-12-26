@@ -67,7 +67,7 @@ describe('downloadArtifactForDeployment', () => {
 		jest.resetAllMocks();
 		downloadArtifactMock.mockImplementation(() => TE.right(''));
 		mkdirMock.mockImplementation(() => E.right(''));
-		rmDirIfExistsMock.mockImplementation(() => E.right(''))
+		rmDirIfExistsMock.mockImplementation(() => E.right(''));
 	});
 
 	it('skips for Docker project', async () => {
