@@ -126,14 +126,44 @@ describe('buildAndPushDocker', () => {
 	});
 
 	it('builds and pushes docker image for npm application', async () => {
-		throw new Error();
+		prepareEnvMock();
+
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.NpmApplication
+		};
+
+		const result = await buildAndPushDocker.execute(buildContext)();
+		expect(result).toEqualRight(buildContext);
+
+		validateCommands();
 	});
 
 	it('builds and pushes docker image for docker application', async () => {
-		throw new Error();
+		prepareEnvMock();
+
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.DockerApplication
+		};
+
+		const result = await buildAndPushDocker.execute(buildContext)();
+		expect(result).toEqualRight(buildContext);
+
+		validateCommands();
 	});
 
 	it('builds and pushes docker image for docker image', async () => {
-		throw new Error();
+		prepareEnvMock();
+
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.DockerImage
+		};
+
+		const result = await buildAndPushDocker.execute(buildContext)();
+		expect(result).toEqualRight(buildContext);
+
+		validateCommands();
 	});
 });
