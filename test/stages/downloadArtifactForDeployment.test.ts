@@ -23,7 +23,7 @@ const searchForMavenReleasesMock = searchForMavenReleases as jest.Mock;
 const searchForNpmBetasMock = searchForNpmBetas as jest.Mock;
 const searchForNpmReleasesMock = searchForNpmReleases as jest.Mock;
 
-const createItem = (version: string): NexusSearchResultItem => ({
+const createItem = (version: string, ext: string): NexusSearchResultItem => ({
 	name: '',
 	version,
 	group: '',
@@ -32,7 +32,7 @@ const createItem = (version: string): NexusSearchResultItem => ({
 	assets: [
 		{
 			id: '',
-			downloadUrl: 'downloadUrl',
+			downloadUrl: `downloadUrl.${ext}`,
 			path: ''
 		}
 	],
@@ -74,7 +74,7 @@ describe('downloadArtifactForDeployment', () => {
 
 	it('downloads maven release artifact', async () => {
 		searchForMavenReleasesMock.mockImplementation(() =>
-			TE.right({ items: [createItem('1.0.0')] })
+			TE.right({ items: [createItem('1.0.0', 'jar')] })
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -107,7 +107,7 @@ describe('downloadArtifactForDeployment', () => {
 
 	it('downloads maven pre-release artifact', async () => {
 		searchForMavenReleasesMock.mockImplementation(() =>
-			TE.right({ items: [createItem('1.1.0-20211225.003019-1')] })
+			TE.right({ items: [createItem('1.1.0-20211225.003019-1', 'jar')] })
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -140,7 +140,7 @@ describe('downloadArtifactForDeployment', () => {
 
 	it('downloads npm release artifact', async () => {
 		searchForMavenReleasesMock.mockImplementation(() =>
-			TE.right({ items: [createItem('1.0.0')] })
+			TE.right({ items: [createItem('1.0.0', 'tgz')] })
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -173,7 +173,7 @@ describe('downloadArtifactForDeployment', () => {
 
 	it('downloads npm pre-release artifact', async () => {
 		searchForMavenReleasesMock.mockImplementation(() =>
-			TE.right({ items: [createItem('1.0.0-beta.5')] })
+			TE.right({ items: [createItem('1.0.0-beta.5', 'tgz')] })
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
