@@ -24,6 +24,8 @@ import { ProjectInfo } from '../context/ProjectInfo';
 import path from 'path';
 import * as O from 'fp-ts/Option';
 import { getCwd } from '../command/getCwd';
+import { mkdir, rmDirIfExists } from '../functions/File';
+import * as E from 'fp-ts/Either';
 
 const getExtension = (projectType: ProjectType): TE.TaskEither<Error, string> =>
 	match(projectType)
@@ -32,6 +34,17 @@ const getExtension = (projectType: ProjectType): TE.TaskEither<Error, string> =>
 		.otherwise(() =>
 			TE.left(new Error(`No extension for ProjectType: ${projectType}`))
 		);
+
+const createTargetDirPath = () => path.join(getCwd(), 'deploy', 'build');
+
+const createTargetDir = (): TE.TaskEither<Error, string> =>
+	pipe(
+		E.right(createTargetDirPath()),
+		E.bindTo('targetDir'),
+		E.chainFirst(({ targetDir }) => rmDirIfExists(targetDir)),
+		E.chain(({ targetDir }) => mkdir(targetDir)),
+		TE.fromEither
+	);
 
 type GetFirstItem = (
 	items: NexusSearchResultItem[]
@@ -57,7 +70,7 @@ const createTargetFilePath = (
 ): TE.TaskEither<Error, string> =>
 	pipe(
 		`${projectInfo.name}-${projectInfo.version}.${ext}`,
-		(_) => path.resolve(getCwd(), 'deploy', 'build', _),
+		(_) => path.join(createTargetDirPath(), _),
 		TE.right
 	);
 
@@ -66,7 +79,8 @@ const doDownloadArtifact = (
 	searchFn: NexusRepoGroupSearchFn
 ): TE.TaskEither<Error, BuildContext> =>
 	pipe(
-		getExtension(context.projectType),
+		createTargetDir(),
+		TE.chain(() => getExtension(context.projectType)),
 		TE.bindTo('ext'),
 		TE.bind('result', () =>
 			searchFn(
