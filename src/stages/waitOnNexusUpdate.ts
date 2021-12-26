@@ -21,8 +21,7 @@ const waitForNonDockerApplication = (
 		TE.mapLeft(() => new Error('Error waiting on Nexus'))
 	);
 
-type IsNonDockerAppFn = (projectType: ProjectType) => boolean;
-const isNonDockerApplication: IsNonDockerAppFn = pipe(
+const isNonDockerApplication: P.Predicate<ProjectType> = pipe(
 	isApplication,
 	P.and(P.not(isDocker))
 );

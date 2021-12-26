@@ -9,10 +9,10 @@ import { isApplication, isDocker } from '../context/projectTypeUtils';
 import { logger } from '../logger';
 import { ProjectInfo } from '../context/ProjectInfo';
 import { DOCKER_REPO_PREFIX } from '../configFileTypes/constants';
-import shellEnv, {EnvironmentVariables} from 'shell-env';
+import shellEnv from 'shell-env';
+import { EnvironmentVariables } from '../env/EnvironmentVariables';
 
-type IsDockerOrApplication = (projectType: ProjectType) => boolean;
-const isDockerOrApplication: IsDockerOrApplication = pipe(
+const isDockerOrApplication: P.Predicate<ProjectType> = pipe(
 	isApplication,
 	P.or(isDocker)
 );
