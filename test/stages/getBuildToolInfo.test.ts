@@ -1,12 +1,12 @@
 import * as E from 'fp-ts/Either';
 import { PackageJson } from '../../src/configFileTypes/PackageJson';
-import { readFile } from '../../src/functions/readFile';
+import { readFile } from '../../src/functions/File';
 import { getBuildToolInfo } from '../../src/stages/getBuildToolInfo';
 import { createIncompleteBuildContext } from '../testutils/createBuildContext';
 import '@relmify/jest-fp-ts';
 import * as O from 'fp-ts/Option';
 
-jest.mock('../../src/functions/readFile', () => ({
+jest.mock('../../src/functions/File', () => ({
 	readFile: jest.fn()
 }));
 

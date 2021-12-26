@@ -5,7 +5,7 @@ import { isApplication } from '../context/projectTypeUtils';
 import * as E from 'fp-ts/Either';
 import { pipe } from 'fp-ts/function';
 import * as TE from 'fp-ts/TaskEither';
-import { readFile } from '../functions/readFile';
+import { readFile } from '../functions/File';
 import path from 'path';
 import { getCwd } from '../command/getCwd';
 import {

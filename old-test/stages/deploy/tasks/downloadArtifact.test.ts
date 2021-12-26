@@ -106,7 +106,7 @@ const emptySearchResult: NexusSearchResult = {
 	items: []
 };
 
-describe('downloadArtifact task', () => {
+describe('downloadArtifactForDeployment task', () => {
 	beforeEach(() => {
 		jest.resetAllMocks();
 		cleanDirs();

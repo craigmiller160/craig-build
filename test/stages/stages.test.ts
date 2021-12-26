@@ -12,7 +12,8 @@ import { validateGitTag } from '../../src/stages/validateGitTag';
 import { buildArtifact } from '../../src/stages/buildArtifact';
 import { preparePreReleaseVersion } from '../../src/stages/preparePreReleaseVersion';
 import { manuallyPublishArtifact } from '../../src/stages/manuallyPublishArtifact';
-import gitTag from '../../old-src/stages/cleanup/tasks/gitTag';
+import { gitTag } from '../../src/stages/gitTag';
+import { downloadArtifactForDeployment } from '../../src/stages/downloadArtifactForDeployment';
 
 describe('stages', () => {
 	it('all early stages are added in the correct order', () => {
@@ -37,7 +38,8 @@ describe('stages', () => {
 			buildArtifact.name,
 			preparePreReleaseVersion.name,
 			manuallyPublishArtifact.name,
-			gitTag.name
+			gitTag.name,
+			downloadArtifactForDeployment.name
 		]);
 	});
 });
