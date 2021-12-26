@@ -11,6 +11,13 @@ import { ProjectInfo } from '../context/ProjectInfo';
 import { DOCKER_REPO_PREFIX } from '../configFileTypes/constants';
 import shellEnv from 'shell-env';
 import { EnvironmentVariables } from '../env/EnvironmentVariables';
+import * as O from 'fp-ts/Option';
+import { runCommand } from '../command/runCommand';
+
+interface DockerCreds {
+	readonly userName: string;
+	readonly password: string;
+}
 
 const isDockerOrApplication: P.Predicate<ProjectType> = pipe(
 	isApplication,
@@ -20,13 +27,58 @@ const isDockerOrApplication: P.Predicate<ProjectType> = pipe(
 const createDockerTag = (projectInfo: ProjectInfo): string =>
 	`${DOCKER_REPO_PREFIX}/${projectInfo.name}:${projectInfo.version}`;
 
+const getAndValidateDockerEnvVariables = (): TE.TaskEither<
+	Error,
+	DockerCreds
+> =>
+	pipe(
+		O.of(shellEnv.sync<EnvironmentVariables>()),
+		O.bindTo('env'),
+		O.bind('userName', ({ env }) => O.fromNullable(env.NEXUS_DOCKER_USER)),
+		O.bind('password', ({ env }) =>
+			O.fromNullable(env.NEXUS_DOCKER_PASSWORD)
+		),
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		O.map(({ env, ...creds }): DockerCreds => creds),
+		TE.fromOption(
+			() => new Error('Missing Docker credential environment variables')
+		)
+	);
 const runDockerBuild = (
 	context: BuildContext
 ): TE.TaskEither<Error, BuildContext> => {
 	const dockerTag = createDockerTag(context.projectInfo);
-	shellEnv.sync<EnvironmentVariables>(); // TODO validate variables
-
-	throw new Error();
+	return pipe(
+		getAndValidateDockerEnvVariables(),
+		TE.chain((_) =>
+			runCommand('sudo docker login $USER_NAME $PASSWORD', {
+				env: {
+					USER_NAME: _.userName,
+					PASSWORD: _.password
+				},
+				printOutput: true
+			})
+		),
+		TE.chain(() =>
+			runCommand(
+				[
+					'sudo docker image ls',
+					`grep ${context.projectInfo.name}`,
+					`grep ${context.projectInfo.version}`,
+					"awk '{ print $3 }'",
+					'xargs sudo docker image rm -f'
+				].join(' | '),
+				{
+					printOutput: true
+				}
+			)
+		),
+		TE.chain(() =>
+			runCommand(`sudo docker build --network=host -t ${dockerTag}`)
+		),
+		TE.chain(() => runCommand(`sudo docker push ${dockerTag}`)),
+		TE.map(() => context)
+	);
 };
 
 const handleDockerBuildByProject = (
