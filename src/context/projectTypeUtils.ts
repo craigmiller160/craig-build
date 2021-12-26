@@ -1,19 +1,20 @@
 import { ProjectType } from './ProjectType';
+import * as P from 'fp-ts/Predicate';
 
-export const isMaven = (projectType: ProjectType): boolean =>
+export const isMaven: P.Predicate<ProjectType> = (projectType) =>
 	[ProjectType.MavenApplication, ProjectType.MavenLibrary].includes(
 		projectType
 	);
 
-export const isNpm = (projectType: ProjectType): boolean =>
+export const isNpm: P.Predicate<ProjectType> = (projectType) =>
 	[ProjectType.NpmApplication, ProjectType.NpmLibrary].includes(projectType);
 
-export const isDocker = (projectType: ProjectType): boolean =>
+export const isDocker: P.Predicate<ProjectType> = (projectType) =>
 	[ProjectType.DockerApplication, ProjectType.DockerImage].includes(
 		projectType
 	);
 
-export const isApplication = (projectType: ProjectType): boolean =>
+export const isApplication: P.Predicate<ProjectType> = (projectType) =>
 	[
 		ProjectType.DockerApplication,
 		ProjectType.MavenApplication,
