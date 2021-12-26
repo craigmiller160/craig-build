@@ -45,10 +45,11 @@ const handleContext: HandleContextFn = flow(
 	O.of,
 	O.bindTo('incContext'),
 	O.bind('name', (ctx) => ctx.incContext.name),
-	E.fromOption(() => new Error()),
-	E.map(() => ({
-		name: 'foo',
-		age: 10
+	O.bind('age', (ctx) => ctx.incContext.age),
+	E.fromOption(() => new Error('Incomplete Context')),
+	E.map(({ name, age }) => ({
+		name,
+		age
 	}))
 );
 
