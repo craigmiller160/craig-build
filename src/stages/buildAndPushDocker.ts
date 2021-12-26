@@ -7,6 +7,8 @@ import { ProjectType } from '../context/ProjectType';
 import { pipe } from 'fp-ts/function';
 import { isApplication, isDocker } from '../context/projectTypeUtils';
 import { logger } from '../logger';
+import { ProjectInfo } from '../context/ProjectInfo';
+import { DOCKER_REPO_PREFIX } from '../configFileTypes/constants';
 
 type IsDockerOrApplication = (projectType: ProjectType) => boolean;
 const isDockerOrApplication: IsDockerOrApplication = pipe(
@@ -14,9 +16,14 @@ const isDockerOrApplication: IsDockerOrApplication = pipe(
 	P.or(isDocker)
 );
 
+const createDockerTag = (projectInfo: ProjectInfo): string =>
+	`${DOCKER_REPO_PREFIX}/${projectInfo.name}:${projectInfo.version}`;
+
 const runDockerBuild = (
 	context: BuildContext
 ): TE.TaskEither<Error, BuildContext> => {
+	const dockerTag = createDockerTag(context.projectInfo);
+
 	throw new Error();
 };
 
