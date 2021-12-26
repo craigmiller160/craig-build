@@ -11,8 +11,6 @@ import * as P from 'fp-ts/Predicate';
 
 const WAIT_TIME_MILLIS = 3000;
 
-type IsNonDockerAppFn = (projectType: ProjectType) => boolean;
-
 const waitForNonDockerApplication = (
 	context: BuildContext
 ): TE.TaskEither<Error, BuildContext> =>
@@ -23,6 +21,7 @@ const waitForNonDockerApplication = (
 		TE.mapLeft(() => new Error('Error waiting on Nexus'))
 	);
 
+type IsNonDockerAppFn = (projectType: ProjectType) => boolean;
 const isNonDockerApplication: IsNonDockerAppFn = pipe(
 	isApplication,
 	P.and(P.not(isDocker))
