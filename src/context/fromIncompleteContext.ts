@@ -15,7 +15,7 @@ export const fromIncompleteContext: FromIncompleteContextFn = flow(
 	O.bind('buildToolInfo', ({ context }) => context.buildToolInfo),
 	O.bind('projectType', ({ context }) => context.projectType),
 	O.bind('projectInfo', ({ context }) => context.projectInfo),
-	O.map(({ context, ...rest }) => rest),
+	O.map(({ context, ...rest }) => rest), // eslint-disable-line @typescript-eslint/no-unused-vars
 	E.fromOption(
 		() => new Error('IncompleteBuildContext has not yet been completed')
 	)
