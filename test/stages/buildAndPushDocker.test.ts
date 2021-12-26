@@ -27,6 +27,27 @@ const prepareEnvMock = () =>
 		NEXUS_DOCKER_PASSWORD: 'password'
 	}));
 
+const validateCommands = () => {
+	expect(runCommandMock).toHaveBeenCalledTimes(4);
+	expect(runCommandMock).toHaveBeenNthCalledWith(
+		1,
+		'sudo docker login -u ${USER_NAME} -p ${PASSWORD}',
+		{ env: { USER_NAME: 'user', PASSWORD: 'password' } }
+	);
+	expect(runCommandMock).toHaveBeenNthCalledWith(
+		2,
+		"sudo docker image ls | grep my-project | grep 1.0.0 | awk '{ print $3 }' | xargs sudo docker image rm -f"
+	);
+	expect(runCommandMock).toHaveBeenNthCalledWith(
+		3,
+		'sudo docker build --network=host -t craigmiller160.ddns.net:30004/my-project:1.0.0'
+	);
+	expect(runCommandMock).toHaveBeenNthCalledWith(
+		4,
+		'sudo docker push craigmiller160.ddns.net:3004/my-project:1.0.0'
+	);
+};
+
 describe('buildAndPushDocker', () => {
 	beforeEach(() => {
 		jest.resetAllMocks();
@@ -91,7 +112,17 @@ describe('buildAndPushDocker', () => {
 	});
 
 	it('builds and pushes docker image for maven application', async () => {
-		throw new Error();
+		prepareEnvMock();
+
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.MavenApplication
+		};
+
+		const result = await buildAndPushDocker.execute(buildContext)();
+		expect(result).toEqualRight(buildContext);
+
+		validateCommands();
 	});
 
 	it('builds and pushes docker image for npm application', async () => {
