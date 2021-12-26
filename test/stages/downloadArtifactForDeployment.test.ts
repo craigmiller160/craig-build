@@ -14,7 +14,11 @@ import * as TE from 'fp-ts/TaskEither';
 import { NexusSearchResultItem } from '../../src/services/NexusSearchResult';
 
 jest.mock('../../src/services/NexusRepoApi', () => ({
-	downloadArtifact: jest.fn()
+	downloadArtifact: jest.fn(),
+	searchForMavenSnapshots: jest.fn(),
+	searchForMavenReleases: jest.fn(),
+	searchForNpmBetas: jest.fn(),
+	searchForNpmReleases: jest.fn()
 }));
 
 const downloadArtifactMock = downloadArtifact as jest.Mock;
