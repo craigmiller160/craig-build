@@ -4,7 +4,7 @@ import * as TE from 'fp-ts/TaskEither';
 import { match, when } from 'ts-pattern';
 import { logger } from '../logger';
 import { isApplication } from '../context/projectTypeUtils';
-import { flow, pipe } from 'fp-ts/function';
+import { pipe } from 'fp-ts/function';
 import { listFilesInDir } from '../functions/File';
 import path from 'path';
 import { getCwd } from '../command/getCwd';
