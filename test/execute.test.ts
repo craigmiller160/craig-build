@@ -16,6 +16,8 @@ import { fullBuild_release_mavenLibrary } from './expectedExecutions/fullBuild_r
 import { fullBuild_preRelease_mavenLibrary } from './expectedExecutions/fullBuild_preRelease_mavenLibrary';
 import { fullBuild_release_npmApplication } from './expectedExecutions/fullBuild_release_npmApplication';
 import { fullBuild_preRelease_npmApplication } from './expectedExecutions/fullBuild_preRelease_npmApplication';
+import { fullBuild_release_npmLibrary } from './expectedExecutions/fullBuild_release_npmLibrary';
+import { fullBuild_preRelease_npmLibrary } from './expectedExecutions/fullBuild_preRelease_npmLibrary';
 
 jest.mock('../src/stages', () => {
 	const createSetupStageMock = (stage: SetupStage): SetupStage => ({
@@ -287,11 +289,69 @@ describe('execute', () => {
 	});
 
 	it('executes full build for release NpmLibrary', async () => {
-		throw new Error();
+		const incompleteContext: IncompleteBuildContext = {
+			...baseIncompleteContext,
+			commandInfo: O.some({
+				type: CommandType.FULL_BUILD
+			}),
+			projectType: O.some(ProjectType.NpmLibrary),
+			projectInfo: O.some({
+				...baseContext.projectInfo,
+				isPreRelease: false
+			})
+		};
+		const context: BuildContext = {
+			...baseContext,
+			commandInfo: {
+				type: CommandType.FULL_BUILD
+			},
+			projectType: ProjectType.NpmLibrary,
+			projectInfo: {
+				...baseContext.projectInfo,
+				isPreRelease: false
+			}
+		};
+		prepareSetupStageExecutionMock(incompleteContext);
+		prepareConditionalStageExecutionMock(context);
+
+		const result = await execute(incompleteContext)();
+		expect(result).toEqualRight(context);
+
+		validateSetupStages();
+		validateConditionalStages(fullBuild_release_npmLibrary);
 	});
 
 	it('executes full build for pre-release NpmLibrary', async () => {
-		throw new Error();
+		const incompleteContext: IncompleteBuildContext = {
+			...baseIncompleteContext,
+			commandInfo: O.some({
+				type: CommandType.FULL_BUILD
+			}),
+			projectType: O.some(ProjectType.NpmLibrary),
+			projectInfo: O.some({
+				...baseContext.projectInfo,
+				isPreRelease: true
+			})
+		};
+		const context: BuildContext = {
+			...baseContext,
+			commandInfo: {
+				type: CommandType.FULL_BUILD
+			},
+			projectType: ProjectType.NpmLibrary,
+			projectInfo: {
+				...baseContext.projectInfo,
+				isPreRelease: true
+			}
+		};
+		prepareSetupStageExecutionMock(incompleteContext);
+		prepareConditionalStageExecutionMock(context);
+
+		const result = await execute(incompleteContext)();
+		expect(result).toEqualRight(context);
+
+		validateSetupStages();
+		validateConditionalStages(fullBuild_preRelease_npmLibrary);
 	});
 
 	it('executes full build for release NpmApplication', async () => {
