@@ -1,4 +1,4 @@
-import { SetupStage, EarlyStageFunction } from './Stage';
+import { SetupStage, StageExecuteFn } from './Stage';
 import { pipe } from 'fp-ts/function';
 import { extractProjectType } from '../context/contextExtraction';
 import * as E from 'fp-ts/Either';
@@ -22,6 +22,7 @@ import {
 	MAVEN_PROJECT_FILE,
 	NPM_PROJECT_FILE
 } from '../configFileTypes/constants';
+import { IncompleteBuildContext } from '../context/IncompleteBuildContext';
 
 const readMavenProjectInfo = (): E.Either<Error, ProjectInfo> =>
 	pipe(
@@ -79,7 +80,7 @@ const readProjectInfoByType = (
 			E.left(new Error(`Unsupported ProjectType: ${projectType}`))
 		);
 
-const execute: EarlyStageFunction = (context) =>
+const execute: StageExecuteFn<IncompleteBuildContext> = (context) =>
 	pipe(
 		extractProjectType(context),
 		E.chain(readProjectInfoByType),

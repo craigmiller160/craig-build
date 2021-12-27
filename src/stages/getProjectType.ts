@@ -1,4 +1,4 @@
-import { SetupStage, EarlyStageFunction } from './Stage';
+import { SetupStage, StageExecuteFn } from './Stage';
 import path from 'path';
 import { getCwd } from '../command/getCwd';
 import fs from 'fs';
@@ -8,6 +8,7 @@ import * as E from 'fp-ts/Either';
 import { pipe } from 'fp-ts/function';
 import * as O from 'fp-ts/Option';
 import * as TE from 'fp-ts/TaskEither';
+import { IncompleteBuildContext } from '../context/IncompleteBuildContext';
 
 const NPM_PROJECT_FILE = 'package.json';
 const MVN_PROJECT_FILE = 'pom.xml';
@@ -57,7 +58,7 @@ const checkProjectFilesForType = (): E.Either<Error, ProjectType> =>
 		)
 		.otherwise(() => E.left(new Error('Unable to identify ProjectType')));
 
-const execute: EarlyStageFunction = (context) =>
+const execute: StageExecuteFn<IncompleteBuildContext> = (context) =>
 	pipe(
 		checkProjectFilesForType(),
 		E.map((projectType) => ({

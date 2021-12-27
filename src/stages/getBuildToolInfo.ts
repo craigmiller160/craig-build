@@ -1,4 +1,3 @@
-import { SetupStage, EarlyStageFunction } from './Stage';
 import { PackageJson } from '../configFileTypes/PackageJson';
 import { pipe } from 'fp-ts/function';
 import { readFile } from '../functions/File';
@@ -11,8 +10,9 @@ import * as O from 'fp-ts/Option';
 import * as TE from 'fp-ts/TaskEither';
 import { NPM_PROJECT_FILE } from '../configFileTypes/constants';
 import { IncompleteBuildContext } from '../context/IncompleteBuildContext';
+import { SetupStage, StageExecuteFn } from './Stage';
 
-const execute: EarlyStageFunction = (context) =>
+const execute: StageExecuteFn<IncompleteBuildContext> = (context) =>
 	pipe(
 		readFile(path.resolve(__dirname, '..', '..', NPM_PROJECT_FILE)),
 		E.chain((_) => parseJson<PackageJson>(_)),

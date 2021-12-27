@@ -1,4 +1,3 @@
-import { Stage, StageFunction } from './Stage';
 import { BuildContext } from '../context/BuildContext';
 import * as TE from 'fp-ts/TaskEither';
 import { match, when } from 'ts-pattern';
@@ -11,7 +10,7 @@ import {
 	searchForNpmBetas,
 	searchForNpmReleases
 } from '../services/NexusRepoApi';
-import { isMaven, isNpm } from '../context/projectTypeUtils';
+import { isDocker, isMaven, isNpm } from '../context/projectTypeUtils';
 import { isPreRelease, isRelease } from '../context/projectInfoUtils';
 import { ProjectType } from '../context/ProjectType';
 import { flow, pipe } from 'fp-ts/function';
@@ -26,6 +25,8 @@ import * as O from 'fp-ts/Option';
 import { getCwd } from '../command/getCwd';
 import { mkdir, rmDirIfExists } from '../functions/File';
 import * as E from 'fp-ts/Either';
+import { ConditionalStage, StageExecuteFn } from './Stage';
+import * as P from 'fp-ts/Predicate';
 
 const getExtension = (projectType: ProjectType): TE.TaskEither<Error, string> =>
 	match(projectType)
@@ -126,9 +127,17 @@ const downloadArtifactByProject = (
 			return TE.right(context);
 		});
 
-const execute: StageFunction = (context) => downloadArtifactByProject(context);
+const isNotDocker: P.Predicate<ProjectType> = P.not(isDocker);
 
-export const downloadArtifactForDeployment: Stage = {
+const execute: StageExecuteFn<BuildContext> = (context) =>
+	downloadArtifactByProject(context);
+const commandAllowsStage: P.Predicate<BuildContext> = () => true;
+const projectAllowsStage: P.Predicate<BuildContext> = (context) =>
+	isNotDocker(context.projectType);
+
+export const downloadArtifactForDeployment: ConditionalStage = {
 	name: 'Download Artifact For Deployment',
-	execute
+	execute,
+	commandAllowsStage,
+	projectAllowsStage
 };

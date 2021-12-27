@@ -1,4 +1,4 @@
-import { SetupStage, EarlyStageFunction } from './Stage';
+import { SetupStage, StageExecuteFn } from './Stage';
 import { match } from 'ts-pattern';
 import { OptionValues } from 'commander';
 import { CommandInfo } from '../context/CommandInfo';
@@ -6,6 +6,7 @@ import { CommandType } from '../context/CommandType';
 import * as TE from 'fp-ts/TaskEither';
 import * as O from 'fp-ts/Option';
 import { program } from 'commander';
+import { IncompleteBuildContext } from '../context/IncompleteBuildContext';
 
 const constructCommandInfo = (options: OptionValues): CommandInfo =>
 	match<OptionValues, CommandInfo>(options)
@@ -16,7 +17,7 @@ const constructCommandInfo = (options: OptionValues): CommandInfo =>
 		}))
 		.run();
 
-const execute: EarlyStageFunction = (context) =>
+const execute: StageExecuteFn<IncompleteBuildContext> = (context) =>
 	TE.right({
 		...context,
 		commandInfo: O.some(constructCommandInfo(program.opts()))
