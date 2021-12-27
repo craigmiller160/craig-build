@@ -1,4 +1,4 @@
-import { SetupStage, EarlyStageFunction } from './Stage';
+import { SetupStage, StageExecuteFn } from './Stage';
 import { match } from 'ts-pattern';
 import { pipe } from 'fp-ts/function';
 import { BuildToolInfo } from '../context/BuildToolInfo';
@@ -10,6 +10,7 @@ import { NexusSearchResult } from '../services/NexusSearchResult';
 import { extractBuildToolInfo } from '../context/contextExtraction';
 import { readUserInput } from '../utils/readUserInput';
 import { logger } from '../logger';
+import { IncompleteBuildContext } from '../context/IncompleteBuildContext';
 
 const compareVersions = (
 	nexusItemVersion: string,
@@ -78,7 +79,7 @@ const checkBuildToolInfo = (
 		.with({ isPreRelease: true }, handlePreReleaseVersionValidation)
 		.otherwise(handleReleaseVersionValidation);
 
-const execute: EarlyStageFunction = (context) =>
+const execute: StageExecuteFn<IncompleteBuildContext> = (context) =>
 	pipe(
 		extractBuildToolInfo(context),
 		TE.fromEither,
