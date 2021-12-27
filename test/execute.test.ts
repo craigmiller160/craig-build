@@ -7,6 +7,10 @@ import { ConditionalStage, SetupStage } from '../src/stages/Stage';
 import { IncompleteBuildContext } from '../src/context/IncompleteBuildContext';
 import * as O from 'fp-ts/Option';
 import { CommandType } from '../src/context/CommandType';
+import { BuildContext } from '../src/context/BuildContext';
+import { ProjectType } from '../src/context/ProjectType';
+import * as TE from 'fp-ts/TaskEither';
+import { conditionalStages, setupStages } from '../src/stages';
 
 const setupStageExecuteFn = jest.fn();
 const conditionalStageExecuteFn = jest.fn();
@@ -28,6 +32,9 @@ const createConditionalStageMock = (
 const baseIncompleteContext = createIncompleteBuildContext();
 const baseContext = createBuildContext();
 
+const setupStagesWithMocks = setupStages.map(createSetupStageMock)
+const conditionalStagesWithMocks = conditionalStages.map(createConditionalStageMock);
+
 describe('execute', () => {
 	beforeEach(() => {
 		jest.resetAllMocks();
@@ -40,6 +47,21 @@ describe('execute', () => {
 				type: CommandType.FULL_BUILD
 			})
 		};
+		const context: BuildContext = {
+			...baseContext,
+			commandInfo: {
+				type: CommandType.FULL_BUILD
+			},
+			projectType: ProjectType.MavenApplication,
+			projectInfo: {
+				...baseContext.projectInfo,
+				isPreRelease: false
+			}
+		};
+		setupStageExecuteFn.mockImplementation(() =>
+			TE.right(incompleteContext)
+		);
+		conditionalStageExecuteFn.mockImplementation(() => TE.right(context));
 
 		throw new Error();
 	});
