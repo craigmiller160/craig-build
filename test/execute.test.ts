@@ -15,19 +15,16 @@ import { execute } from '../src/execute';
 import { fullBuild_release_mavenApplication } from './expectedExecutions/fullBuild_release_mavenApplication';
 
 jest.mock('../src/stages', () => {
-	const setupStageExecuteFn = jest.fn();
-	const conditionalStageExecuteFn = jest.fn();
-
 	const createSetupStageMock = (stage: SetupStage): SetupStage => ({
 		name: stage.name,
-		execute: setupStageExecuteFn
+		execute: jest.fn()
 	});
 
 	const createConditionalStageMock = (
 		stage: ConditionalStage
 	): ConditionalStage => ({
 		name: stage.name,
-		execute: conditionalStageExecuteFn,
+		execute: jest.fn(),
 		commandAllowsStage: stage.commandAllowsStage,
 		projectAllowsStage: stage.projectAllowsStage
 	});
@@ -44,14 +41,18 @@ const baseIncompleteContext = createIncompleteBuildContext();
 const baseContext = createBuildContext();
 
 const prepareSetupStageExecutionMock = (context: IncompleteBuildContext) => {
-	(setupStages[0].execute as jest.Mock).mockImplementation(() =>
-		TE.right(context)
-	);
+	setupStages.forEach((stage) => {
+		(stage.execute as jest.Mock).mockImplementation(() =>
+			TE.right(context)
+		);
+	});
 };
 const prepareConditionalStageExecutionMock = (context: BuildContext) => {
-	(conditionalStages[0].execute as jest.Mock).mockImplementation(() =>
-		TE.right(context)
-	);
+	conditionalStages.forEach((stage) => {
+		(stage.execute as jest.Mock).mockImplementation(() =>
+			TE.right(context)
+		);
+	});
 };
 
 const validateSetupStages = () => {
