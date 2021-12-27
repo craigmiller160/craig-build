@@ -17,3 +17,6 @@ export const mkdir = (dirPath: string): E.Either<Error, string> =>
 		() => fs.mkdirSync(dirPath, { recursive: true }),
 		unknownToError
 	);
+
+export const listFilesInDir = (dirPath: string): E.Either<Error, string[]> =>
+	E.tryCatch(() => fs.readdirSync(dirPath), unknownToError);
