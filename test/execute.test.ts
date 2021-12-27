@@ -14,6 +14,7 @@ import { conditionalStages, setupStages } from '../src/stages';
 import { execute } from '../src/execute';
 import { fullBuild_release_mavenApplication } from './expectedExecutions/fullBuild_release_mavenApplication';
 import { ExpectedExecution } from './expectedExecutions/ExpectedExecution';
+import { fullBuild_preRelease_mavenApplication } from './expectedExecutions/fullBuild_preRelease_mavenApplication';
 
 jest.mock('../src/stages', () => {
 	const createSetupStageMock = (stage: SetupStage): SetupStage => ({
@@ -114,39 +115,63 @@ describe('execute', () => {
 		validateConditionalStages(fullBuild_release_mavenApplication);
 	});
 
-	it('executes full build for pre-release MavenApplication', () => {
+	it('executes full build for pre-release MavenApplication', async () => {
+		const incompleteContext: IncompleteBuildContext = {
+			...baseIncompleteContext,
+			commandInfo: O.some({
+				type: CommandType.FULL_BUILD
+			})
+		};
+		const context: BuildContext = {
+			...baseContext,
+			commandInfo: {
+				type: CommandType.FULL_BUILD
+			},
+			projectType: ProjectType.MavenApplication,
+			projectInfo: {
+				...baseContext.projectInfo,
+				isPreRelease: true
+			}
+		};
+		prepareSetupStageExecutionMock(incompleteContext);
+		prepareConditionalStageExecutionMock(context);
+
+		const result = await execute(incompleteContext)();
+		expect(result).toEqualRight(context);
+
+		validateSetupStages();
+		validateConditionalStages(fullBuild_preRelease_mavenApplication);
+	});
+
+	it('executes full build for release MavenLibrary', async () => {
 		throw new Error();
 	});
 
-	it('executes full build for release MavenLibrary', () => {
+	it('executes full build for pre-release MavenLibrary', async () => {
 		throw new Error();
 	});
 
-	it('executes full build for pre-release MavenLibrary', () => {
+	it('executes full build for release NpmApplication', async () => {
 		throw new Error();
 	});
 
-	it('executes full build for release NpmApplication', () => {
+	it('executes full build for pre-release NpmApplication', async () => {
 		throw new Error();
 	});
 
-	it('executes full build for pre-release NpmApplication', () => {
+	it('executes full build for release NpmLibrary', async () => {
 		throw new Error();
 	});
 
-	it('executes full build for release NpmLibrary', () => {
+	it('executes full build for pre-release NpmLibrary', async () => {
 		throw new Error();
 	});
 
-	it('executes full build for pre-release NpmLibrary', () => {
+	it('executes full build for release NpmApplication', async () => {
 		throw new Error();
 	});
 
-	it('executes full build for release NpmApplication', () => {
-		throw new Error();
-	});
-
-	it('executes full build for pre-release NpmApplication', () => {
+	it('executes full build for pre-release NpmApplication', async () => {
 		throw new Error();
 	});
 });
