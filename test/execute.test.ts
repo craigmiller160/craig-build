@@ -354,11 +354,19 @@ describe('execute', () => {
 		validateConditionalStages(fullBuild_preRelease_npmLibrary);
 	});
 
-	it('executes full build for release NpmApplication', async () => {
+	it('executes full build for release DockerApplication', async () => {
 		throw new Error();
 	});
 
-	it('executes full build for pre-release NpmApplication', async () => {
+	it('executes full build for pre-release DockerApplication', async () => {
+		throw new Error();
+	});
+
+	it('executes full build for release DockerImage', async () => {
+		throw new Error();
+	});
+
+	it('executes full build for pre-release DockerImage', async () => {
 		throw new Error();
 	});
 });
