@@ -21,9 +21,7 @@ const handleDeployByProject = (
 			return TE.right(context);
 		});
 
-const execute: StageFunction = (context) => {
-	throw new Error();
-};
+const execute: StageFunction = (context) => handleDeployByProject(context);
 
 export const deployToKubernetes: Stage = {
 	name: 'Deploy to Kubernetes',
