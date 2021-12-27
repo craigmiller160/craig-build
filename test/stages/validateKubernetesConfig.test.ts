@@ -29,54 +29,6 @@ describe('validateKubernetesConfig', () => {
 		jest.resetAllMocks();
 	});
 
-	it('skips for NpmLibrary', async () => {
-		getCwdMock.mockImplementation(() =>
-			path.resolve(
-				baseWorkingDir,
-				'mavenReleaseApplicationWrongKubeVersion'
-			)
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.NpmLibrary
-		};
-
-		const result = await validateKubernetesConfig.execute(buildContext)();
-		expect(result).toEqualRight(buildContext);
-	});
-
-	it('skips for MavenLibrary', async () => {
-		getCwdMock.mockImplementation(() =>
-			path.resolve(
-				baseWorkingDir,
-				'mavenReleaseApplicationWrongKubeVersion'
-			)
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.MavenLibrary
-		};
-
-		const result = await validateKubernetesConfig.execute(buildContext)();
-		expect(result).toEqualRight(buildContext);
-	});
-
-	it('skips for DockerImage', async () => {
-		getCwdMock.mockImplementation(() =>
-			path.resolve(
-				baseWorkingDir,
-				'mavenReleaseApplicationWrongKubeVersion'
-			)
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.DockerImage
-		};
-
-		const result = await validateKubernetesConfig.execute(buildContext)();
-		expect(result).toEqualRight(buildContext);
-	});
-
 	it('kubernetes config is valid', async () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(baseWorkingDir, 'mavenReleaseApplication')

@@ -70,26 +70,6 @@ describe('downloadArtifactForDeployment', () => {
 		rmDirIfExistsMock.mockImplementation(() => E.right(''));
 	});
 
-	it('skips for Docker project', async () => {
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.DockerApplication
-		};
-
-		const result = await downloadArtifactForDeployment.execute(
-			buildContext
-		)();
-		expect(result).toEqualRight(buildContext);
-
-		expect(downloadArtifactMock).not.toHaveBeenCalled();
-		expect(searchForMavenSnapshotsMock).not.toHaveBeenCalled();
-		expect(searchForMavenReleasesMock).not.toHaveBeenCalled();
-		expect(searchForNpmBetasMock).not.toHaveBeenCalled();
-		expect(searchForNpmReleasesMock).not.toHaveBeenCalled();
-		expect(mkdirMock).not.toHaveBeenCalled();
-		expect(rmDirIfExistsMock).not.toHaveBeenCalled();
-	});
-
 	it('downloads maven release artifact', async () => {
 		getCwdMock.mockImplementation(() => '/foo');
 		searchForMavenReleasesMock.mockImplementation(() =>

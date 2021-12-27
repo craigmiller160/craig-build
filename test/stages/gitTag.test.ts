@@ -8,21 +8,6 @@ import * as TE from 'fp-ts/TaskEither';
 const baseBuildContext = createBuildContext();
 
 describe('gitTag', () => {
-	it('skips for pre-release project', async () => {
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectInfo: {
-				...baseBuildContext.projectInfo,
-				isPreRelease: true
-			}
-		};
-
-		const result = await gitTag.execute(buildContext)();
-		expect(result).toEqualRight(buildContext);
-
-		expect(runCommandMock).not.toHaveBeenCalled();
-	});
-
 	it('creates and pushes tag for release project', async () => {
 		runCommandMock.mockImplementation(() => TE.right(''));
 		const buildContext: BuildContext = {

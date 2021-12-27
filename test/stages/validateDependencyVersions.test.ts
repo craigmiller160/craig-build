@@ -14,54 +14,6 @@ describe('validateDependencyVersions', () => {
 		jest.resetAllMocks();
 	});
 
-	it('skips validation for pre-release maven project', async () => {
-		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDir, 'mavenSnapshotApplication')
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.MavenApplication,
-			projectInfo: {
-				...baseBuildContext.projectInfo,
-				isPreRelease: true
-			}
-		};
-		const result = await validateDependencyVersions.execute(buildContext)();
-		expect(result).toEqualRight(buildContext);
-	});
-
-	it('skips validation for pre-release npm project', async () => {
-		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDir, 'npmBetaApplication')
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.NpmApplication,
-			projectInfo: {
-				...baseBuildContext.projectInfo,
-				isPreRelease: true
-			}
-		};
-		const result = await validateDependencyVersions.execute(buildContext)();
-		expect(result).toEqualRight(buildContext);
-	});
-
-	it('skips validation for docker project', async () => {
-		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDir, 'dockerReleaseApplication')
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.DockerApplication,
-			projectInfo: {
-				...baseBuildContext.projectInfo,
-				isPreRelease: false
-			}
-		};
-		const result = await validateDependencyVersions.execute(buildContext)();
-		expect(result).toEqualRight(buildContext);
-	});
-
 	it('all release dependencies are valid for maven project', async () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(baseWorkingDir, 'mavenReleaseApplication')

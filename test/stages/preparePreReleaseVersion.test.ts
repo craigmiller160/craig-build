@@ -46,23 +46,6 @@ describe('preparePreReleaseVersion', () => {
 		jest.resetAllMocks();
 	});
 
-	it('skips for release project', async () => {
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectInfo: {
-				...baseBuildContext.projectInfo,
-				isPreRelease: false
-			}
-		};
-
-		const result = await preparePreReleaseVersion.execute(buildContext)();
-		expect(result).toEqualRight(buildContext);
-
-		expect(searchForNpmBetasMock).not.toHaveBeenCalled();
-		expect(searchForDockerBetasMock).not.toHaveBeenCalled();
-		expect(homedirMock).not.toHaveBeenCalled();
-	});
-
 	it('prepares pre-release version for NPM project based on existing version', async () => {
 		const nexusResult: NexusSearchResult = {
 			items: [createItem('1.0.0-beta.2')]

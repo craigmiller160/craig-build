@@ -13,21 +13,6 @@ describe('validateGitTag', () => {
 		jest.resetAllMocks();
 	});
 
-	it('skips pre-release project', async () => {
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectInfo: {
-				...baseBuildContext.projectInfo,
-				isPreRelease: true
-			}
-		};
-
-		const result = await validateGitTag.execute(buildContext)();
-		expect(result).toEqualRight(buildContext);
-
-		expect(runCommandMock).not.toHaveBeenCalled();
-	});
-
 	it('confirms there is no existing tag for release version', async () => {
 		runCommandMock.mockImplementation(() => TE.right(versions));
 		const buildContext: BuildContext = {

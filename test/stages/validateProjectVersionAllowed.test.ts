@@ -38,61 +38,6 @@ describe('validateProjectVersionAllowed', () => {
 		jest.resetAllMocks();
 	});
 
-	it('allows npm pre-release version', async () => {
-		searchForNpmReleasesMock.mockImplementation(() => TE.left(new Error()));
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.NpmApplication,
-			projectInfo: {
-				...baseBuildContext.projectInfo,
-				isPreRelease: true
-			}
-		};
-
-		const result = await validateProjectVersionAllowed.execute(
-			buildContext
-		)();
-		expect(result).toEqualRight(buildContext);
-	});
-
-	it('allows maven pre-release version', async () => {
-		searchForMavenReleasesMock.mockImplementation(() =>
-			TE.left(new Error())
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.MavenApplication,
-			projectInfo: {
-				...baseBuildContext.projectInfo,
-				isPreRelease: true
-			}
-		};
-
-		const result = await validateProjectVersionAllowed.execute(
-			buildContext
-		)();
-		expect(result).toEqualRight(buildContext);
-	});
-
-	it('allows docker pre-release version', async () => {
-		searchForDockerReleasesMock.mockImplementation(() =>
-			TE.left(new Error())
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.DockerApplication,
-			projectInfo: {
-				...baseBuildContext.projectInfo,
-				isPreRelease: true
-			}
-		};
-
-		const result = await validateProjectVersionAllowed.execute(
-			buildContext
-		)();
-		expect(result).toEqualRight(buildContext);
-	});
-
 	it('allows npm release version with no conflicts', async () => {
 		searchForNpmReleasesMock.mockImplementation(() =>
 			TE.right({ items: [] })

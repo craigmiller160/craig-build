@@ -92,34 +92,6 @@ describe('buildAndPushDocker', () => {
 		expect(runCommandMock).not.toHaveBeenCalled();
 	});
 
-	it('skips for npm library', async () => {
-		prepareEnvMock();
-
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.NpmLibrary
-		};
-
-		const result = await buildAndPushDocker.execute(buildContext)();
-		expect(result).toEqualRight(buildContext);
-
-		expect(runCommandMock).not.toHaveBeenCalled();
-	});
-
-	it('skips for maven library', async () => {
-		prepareEnvMock();
-
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.MavenLibrary
-		};
-
-		const result = await buildAndPushDocker.execute(buildContext)();
-		expect(result).toEqualRight(buildContext);
-
-		expect(runCommandMock).not.toHaveBeenCalled();
-	});
-
 	it('builds and pushes docker image for maven application', async () => {
 		prepareEnvMock();
 

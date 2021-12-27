@@ -24,45 +24,6 @@ describe('deployToKubernetes', () => {
 		runCommandMock.mockImplementation(() => TE.right(''));
 	});
 
-	it('skips for NpmLibrary', async () => {
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.NpmLibrary
-		};
-
-		const result = await deployToKubernetes.execute(buildContext)();
-		expect(result).toEqualRight(buildContext);
-
-		expect(runCommandMock).not.toHaveBeenCalled();
-		expect(getCwdMock).not.toHaveBeenCalled();
-	});
-
-	it('skips for MavenLibrary', async () => {
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.MavenLibrary
-		};
-
-		const result = await deployToKubernetes.execute(buildContext)();
-		expect(result).toEqualRight(buildContext);
-
-		expect(runCommandMock).not.toHaveBeenCalled();
-		expect(getCwdMock).not.toHaveBeenCalled();
-	});
-
-	it('skips for DockerImage', async () => {
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.DockerImage
-		};
-
-		const result = await deployToKubernetes.execute(buildContext)();
-		expect(result).toEqualRight(buildContext);
-
-		expect(runCommandMock).not.toHaveBeenCalled();
-		expect(getCwdMock).not.toHaveBeenCalled();
-	});
-
 	it('deploys for MavenApplication', async () => {
 		const baseCwd = path.join(baseWorkingDir, 'mavenReleaseApplication');
 		getCwdMock.mockImplementation(() => baseCwd);
