@@ -13,6 +13,7 @@ import * as TE from 'fp-ts/TaskEither';
 import { conditionalStages, setupStages } from '../src/stages';
 import { execute } from '../src/execute';
 import { fullBuild_release_mavenApplication } from './expectedExecutions/fullBuild_release_mavenApplication';
+import { ExpectedExecution } from './expectedExecutions/ExpectedExecution';
 
 jest.mock('../src/stages', () => {
 	const createSetupStageMock = (stage: SetupStage): SetupStage => ({
@@ -62,7 +63,7 @@ const validateSetupStages = () => {
 };
 
 // TODO need type for this once interface is figured out
-const validateConditionalStages = (expected: { [key: string]: boolean }) => {
+const validateConditionalStages = (expected: ExpectedExecution) => {
 	expect(Object.keys(expected)).toHaveLength(conditionalStages.length);
 	conditionalStages.forEach((stage) => {
 		try {

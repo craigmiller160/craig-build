@@ -9,9 +9,10 @@ import { gitTag } from '../../src/stages/gitTag';
 import { downloadArtifactForDeployment } from '../../src/stages/downloadArtifactForDeployment';
 import { buildAndPushDocker } from '../../src/stages/buildAndPushDocker';
 import { deployToKubernetes } from '../../src/stages/deployToKubernetes';
+import { ExpectedExecution } from './ExpectedExecution';
 
 // TODO how to make this an interface?
-export const fullBuild_release_mavenApplication = {
+export const fullBuild_release_mavenApplication: ExpectedExecution = {
 	[validateDependencyVersions.name]: true,
 	[validateProjectVersionAllowed.name]: true,
 	[validateKubernetesConfig.name]: true,
