@@ -86,11 +86,47 @@ describe('deployToKubernetes', () => {
 	});
 
 	it('deploys for NpmApplication', async () => {
-		throw new Error();
+		const baseCwd = path.join(baseWorkingDir, 'npmReleaseApplication');
+		getCwdMock.mockImplementation(() => baseCwd);
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.NpmApplication
+		};
+
+		const result = await deployToKubernetes.execute(buildContext)();
+		expect(result).toEqualRight(buildContext);
+
+		expect(runCommandMock).toHaveBeenCalledTimes(1);
+		expect(runCommandMock).toHaveBeenNthCalledWith(
+			1,
+			'KUBE_IMG_VERSION=1.0.0 envsubst < deployment.yml | kubectl apply -f -',
+			{
+				cwd: path.join(baseWorkingDir, 'deploy'),
+				printOutput: true
+			}
+		);
 	});
 
 	it('deploys for DockerApplication', async () => {
-		throw new Error();
+		const baseCwd = path.join(baseWorkingDir, 'dockerReleaseApplication');
+		getCwdMock.mockImplementation(() => baseCwd);
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.DockerApplication
+		};
+
+		const result = await deployToKubernetes.execute(buildContext)();
+		expect(result).toEqualRight(buildContext);
+
+		expect(runCommandMock).toHaveBeenCalledTimes(1);
+		expect(runCommandMock).toHaveBeenNthCalledWith(
+			1,
+			'KUBE_IMG_VERSION=1.0.0 envsubst < deployment.yml | kubectl apply -f -',
+			{
+				cwd: path.join(baseWorkingDir, 'deploy'),
+				printOutput: true
+			}
+		);
 	});
 
 	it('deploys for MavenApplication with configmap', async () => {
