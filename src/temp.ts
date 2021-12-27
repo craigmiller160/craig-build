@@ -1,58 +1,100 @@
-/* eslint-disable */
+import { ConditionalStage } from './stages/Stage';
 import { BuildContext } from './context/BuildContext';
 import * as TE from 'fp-ts/TaskEither';
-import { pipe } from 'fp-ts/function';
-import * as P from 'fp-ts/Predicate';
 import { createBuildContext } from '../test/testutils/createBuildContext';
+import { pipe } from 'fp-ts/function';
 import { match, when } from 'ts-pattern';
 
-type StageExecuteFn = (
+export {};
+
+enum StageStatus {
+	PROCEED = 'PROCEED',
+	SKIP_FOR_COMMAND = 'SKIP_FOR_COMMAND',
+	SKIP_FOR_PROJECT = 'SKIP_FOR_PROJECT'
+}
+
+interface ConditionalStageExecution {
+	readonly status: StageStatus;
+	readonly stage: ConditionalStage;
+	readonly context: BuildContext;
+}
+
+const of = (
+	stage: ConditionalStage,
 	context: BuildContext
-) => TE.TaskEither<Error, BuildContext>;
+): ConditionalStageExecution => ({
+	stage,
+	context,
+	status: StageStatus.PROCEED
+});
 
-interface BaseStage {
-	name: string;
-	execute: StageExecuteFn;
-}
+const theContext = createBuildContext();
 
-interface ConditionalStage extends BaseStage {
-	commandAllowsStage: P.Predicate<BuildContext>;
-	projectAllowsStage: P.Predicate<BuildContext>;
-}
-
-const doRunStage = (stage: ConditionalStage): P.Predicate<BuildContext> => {
-	return pipe(stage.commandAllowsStage, P.and(stage.projectAllowsStage));
-};
-
-const buildContext: BuildContext = createBuildContext();
-const theStage: ConditionalStage = {
+const stage: ConditionalStage = {
 	name: '',
-	execute: () => TE.left(new Error()),
+	execute: () => TE.right(theContext),
 	commandAllowsStage: () => true,
 	projectAllowsStage: () => true
 };
 
-const runStage = (
-	context: BuildContext,
-	stage: ConditionalStage
-): TE.TaskEither<Error, BuildContext> => {
-	const shouldRunStage = pipe(
-		stage.commandAllowsStage,
-		P.and(stage.commandAllowsStage)
-	);
-	return match(context)
-		.with(when(shouldRunStage), stage.execute)
-		.otherwise(() => TE.right(context));
-};
+interface Container {
+	stage: ConditionalStage;
+	context: BuildContext;
+	status: StageStatus;
+}
+
+const createContainer = (
+	stage: ConditionalStage,
+	context: BuildContext
+): Container => ({
+	stage,
+	context,
+	status: StageStatus.PROCEED
+});
+
+const testCommandAllowsStage = (container: Container): Container =>
+	match(container)
+		.with(
+			{
+				stage: when((stage) => stage.commandAllowsStage(theContext))
+			},
+			(_) => _
+		)
+		.otherwise((_) => ({
+			..._,
+			status: StageStatus.SKIP_FOR_COMMAND
+		}));
+
+const testProjectAllowsStage = (container: Container): Container =>
+	match(container)
+		.with({ status: StageStatus.SKIP_FOR_COMMAND }, (_) => _)
+		.with(
+			{
+				status: StageStatus.PROCEED,
+				stage: when((stage) => stage.projectAllowsStage(theContext))
+			},
+			(_) => _
+		)
+		.otherwise((_) => ({
+			..._,
+			status: StageStatus.SKIP_FOR_PROJECT
+		}));
+
+const executeStage = (
+	container: Container
+): TE.TaskEither<Error, BuildContext> =>
+	match(container)
+		.with({ status: StageStatus.PROCEED }, ({ stage, context }) =>
+			stage.execute(context)
+		)
+		.otherwise(({ context }) => {
+			console.log('Skipping');
+			return TE.right(context);
+		});
 
 pipe(
-	TE.right(buildContext),
-	TE.chain((_) => runStage(_, theStage))
+	createContainer(stage, theContext),
+	testCommandAllowsStage,
+	testProjectAllowsStage,
+	executeStage
 );
-
-const result: boolean = doRunStage(theStage)(buildContext);
-
-/*
- * EarlyStages will all always run
- * After that, stage runs will be conditional
- */
