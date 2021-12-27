@@ -42,12 +42,11 @@ const doDeploy = (
 	context: BuildContext
 ): TE.TaskEither<Error, BuildContext> => {
 	const deployDir = path.join(getCwd(), 'deploy');
-	pipe(
+	return pipe(
 		findConfigmaps(deployDir),
-		TE.chain((_) => deployConfigmaps(deployDir, _))
+		TE.chain((_) => deployConfigmaps(deployDir, _)),
+		TE.map(() => context)
 	);
-
-	throw new Error();
 };
 
 const handleDeployByProject = (
