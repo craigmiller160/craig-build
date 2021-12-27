@@ -45,6 +45,15 @@ const doDeploy = (
 	return pipe(
 		findConfigmaps(deployDir),
 		TE.chain((_) => deployConfigmaps(deployDir, _)),
+		TE.chain(() =>
+			runCommand(
+				`KUBE_IMG_VERSION=${context.projectInfo.version} envsubt < deployment.yml | kubectl apply -f -`,
+				{
+					printOutput: true,
+					cwd: deployDir
+				}
+			)
+		),
 		TE.map(() => context)
 	);
 };
