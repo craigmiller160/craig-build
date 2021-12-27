@@ -1,7 +1,4 @@
-import {
-	createBuildContext,
-	createIncompleteBuildContext
-} from './testutils/createBuildContext';
+import { createBuildContext, createIncompleteBuildContext } from './testutils/createBuildContext';
 import '@relmify/jest-fp-ts';
 import { ConditionalStage, SetupStage } from '../src/stages/Stage';
 import { IncompleteBuildContext } from '../src/context/IncompleteBuildContext';
@@ -93,6 +90,11 @@ describe('execute', () => {
 			...baseIncompleteContext,
 			commandInfo: O.some({
 				type: CommandType.FULL_BUILD
+			}),
+			projectType: O.some(ProjectType.MavenApplication),
+			projectInfo: O.some({
+				...baseContext.projectInfo,
+				isPreRelease: false
 			})
 		};
 		const context: BuildContext = {
@@ -121,6 +123,11 @@ describe('execute', () => {
 			...baseIncompleteContext,
 			commandInfo: O.some({
 				type: CommandType.FULL_BUILD
+			}),
+			projectType: O.some(ProjectType.MavenApplication),
+			projectInfo: O.some({
+				...baseContext.projectInfo,
+				isPreRelease: true
 			})
 		};
 		const context: BuildContext = {
@@ -149,6 +156,11 @@ describe('execute', () => {
 			...baseIncompleteContext,
 			commandInfo: O.some({
 				type: CommandType.FULL_BUILD
+			}),
+			projectType: O.some(ProjectType.MavenLibrary),
+			projectInfo: O.some({
+				...baseContext.projectInfo,
+				isPreRelease: false
 			})
 		};
 		const context: BuildContext = {
