@@ -15,6 +15,7 @@ import { manuallyPublishArtifact } from '../../src/stages/manuallyPublishArtifac
 import { gitTag } from '../../src/stages/gitTag';
 import { downloadArtifactForDeployment } from '../../src/stages/downloadArtifactForDeployment';
 import { buildAndPushDocker } from '../../src/stages/buildAndPushDocker';
+import { deployToKubernetes } from '../../src/stages/deployToKubernetes';
 
 describe('stages', () => {
 	it('all early stages are added in the correct order', () => {
@@ -41,7 +42,8 @@ describe('stages', () => {
 			manuallyPublishArtifact.name,
 			gitTag.name,
 			downloadArtifactForDeployment.name,
-			buildAndPushDocker.name
+			buildAndPushDocker.name,
+			deployToKubernetes.name
 		]);
 	});
 });
