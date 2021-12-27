@@ -1,11 +1,12 @@
-import { Stage, StageFunction } from './Stage';
 import { BuildContext } from '../context/BuildContext';
 import * as TE from 'fp-ts/TaskEither';
 import { pipe } from 'fp-ts/function';
 import { match, when } from 'ts-pattern';
-import { logger } from '../logger';
 import { isMaven, isNpm } from '../context/projectTypeUtils';
 import { runCommand } from '../command/runCommand';
+import { ConditionalStage, StageExecuteFn } from './Stage';
+import * as P from 'fp-ts/Predicate';
+import { ProjectType } from '../context/ProjectType';
 
 export const MAVEN_BUILD_CMD = 'mvn clean deploy -Ddependency-check.skip=true';
 export const NPM_BUILD_CMD = 'yarn build';
@@ -29,15 +30,19 @@ const handleBuildingArtifactByProject = (
 		.with({ projectType: when(isNpm) }, (_) =>
 			runBuildCommand(_, NPM_BUILD_CMD)
 		)
-		.otherwise(() => {
-			logger.debug('Skipping stage');
-			return TE.right(context);
-		});
+		.run();
 
-const execute: StageFunction = (context) =>
+const isMavenOrNpm: P.Predicate<ProjectType> = pipe(isMaven, P.or(isNpm));
+
+const execute: StageExecuteFn<BuildContext> = (context) =>
 	handleBuildingArtifactByProject(context);
+const commandAllowsStage: P.Predicate<BuildContext> = () => true;
+const projectAllowsStage: P.Predicate<BuildContext> = (context) =>
+	isMavenOrNpm(context.projectType);
 
-export const buildArtifact: Stage = {
+export const buildArtifact: ConditionalStage = {
 	name: 'Build Artifact',
-	execute
+	execute,
+	commandAllowsStage,
+	projectAllowsStage
 };
