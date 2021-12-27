@@ -1,4 +1,3 @@
-import { Stage, StageFunction } from './Stage';
 import { BuildContext } from '../context/BuildContext';
 import * as TE from 'fp-ts/TaskEither';
 import { pipe } from 'fp-ts/function';
@@ -7,6 +6,8 @@ import { logger } from '../logger';
 import { isRelease } from '../context/projectInfoUtils';
 import { runCommand } from '../command/runCommand';
 import * as A from 'fp-ts/Array';
+import * as P from 'fp-ts/Predicate';
+import { ConditionalStage, StageExecuteFn } from './Stage';
 
 const executeGitTagValidation = (
 	context: BuildContext
@@ -32,14 +33,17 @@ const handleValidationByProject = (
 ): TE.TaskEither<Error, BuildContext> =>
 	match(context)
 		.with({ projectInfo: when(isRelease) }, executeGitTagValidation)
-		.otherwise(() => {
-			logger.debug('Skipping stage');
-			return TE.right(context);
-		});
+		.run();
 
-const execute: StageFunction = (context) => handleValidationByProject(context);
+const execute: StageExecuteFn<BuildContext> = (context) =>
+	handleValidationByProject(context);
+const commandAllowsStage: P.Predicate<BuildContext> = () => true;
+const projectAllowsStage: P.Predicate<BuildContext> = (context) =>
+	isRelease(context.projectInfo);
 
-export const validateGitTag: Stage = {
+export const validateGitTag: ConditionalStage = {
 	name: 'Validate Existing Git Tag',
-	execute
+	execute,
+	commandAllowsStage,
+	projectAllowsStage
 };
