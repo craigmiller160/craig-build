@@ -12,7 +12,6 @@ import { toLoggableContext } from './context/toLoggableContext';
 import { fromIncompleteContext } from './context/fromIncompleteContext';
 import { BaseStage, ConditionalStage } from './stages/Stage';
 import * as P from 'fp-ts/Predicate';
-import * as O from 'fp-ts/Option';
 import { match, when } from 'ts-pattern';
 
 const isConditionalStage = (stage: BaseStage<any>): stage is ConditionalStage =>
