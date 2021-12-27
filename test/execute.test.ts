@@ -32,8 +32,8 @@ jest.mock('../src/stages', () => {
 	const { conditionalStages, setupStages } =
 		jest.requireActual('../src/stages');
 	return {
-		conditionalStages: conditionalStages.map(createSetupStageMock),
-		setupStages: setupStages.map(createConditionalStageMock)
+		conditionalStages: conditionalStages.map(createConditionalStageMock),
+		setupStages: setupStages.map(createSetupStageMock)
 	};
 });
 
