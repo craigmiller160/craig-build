@@ -18,6 +18,10 @@ import { match, when } from 'ts-pattern';
 const isConditionalStage = (stage: BaseStage<any>): stage is ConditionalStage =>
 	(stage as any).commandAllowsStage !== undefined;
 
+// TODO delete if unused
+const isBuildContext = (context: Context): context is BuildContext =>
+	!['Some', 'None'].includes((context as any).commandInfo._tag);
+
 const shouldStageRun = <Ctx extends Context>(
 	context: Ctx,
 	stage: BaseStage<Ctx>
