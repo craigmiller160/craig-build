@@ -10,7 +10,12 @@ import {
 	searchForNpmBetas,
 	searchForNpmReleases
 } from '../services/NexusRepoApi';
-import { isDocker, isMaven, isNpm } from '../context/projectTypeUtils';
+import {
+	isApplication,
+	isDocker,
+	isMaven,
+	isNpm
+} from '../context/projectTypeUtils';
 import { isPreRelease, isRelease } from '../context/projectInfoUtils';
 import { ProjectType } from '../context/ProjectType';
 import { flow, pipe } from 'fp-ts/function';
@@ -129,8 +134,10 @@ const isNotDocker: P.Predicate<ProjectType> = P.not(isDocker);
 const execute: StageExecuteFn<BuildContext> = (context) =>
 	downloadArtifactByProject(context);
 const commandAllowsStage: P.Predicate<BuildContext> = () => true;
-const projectAllowsStage: P.Predicate<BuildContext> = (context) =>
-	isNotDocker(context.projectType);
+const projectAllowsStage: P.Predicate<BuildContext> = pipe(
+	(_: BuildContext) => isNotDocker(_.projectType),
+	P.and((_) => isApplication(_.projectType))
+);
 
 export const downloadArtifactForDeployment: ConditionalStage = {
 	name: 'Download Artifact For Deployment',
