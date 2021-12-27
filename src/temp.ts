@@ -87,8 +87,8 @@ const executeStage = (
 		.with({ status: StageStatus.PROCEED }, ({ stage, context }) =>
 			stage.execute(context)
 		)
-		.otherwise(({ context }) => {
-			console.log('Skipping');
+		.otherwise(({ context, status }) => {
+			console.log('Skipping', status);
 			return TE.right(context);
 		});
 
