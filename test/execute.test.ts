@@ -13,6 +13,7 @@ import { fullBuild_release_mavenApplication } from './expectedExecutions/fullBui
 import { ExpectedExecution } from './expectedExecutions/ExpectedExecution';
 import { fullBuild_preRelease_mavenApplication } from './expectedExecutions/fullBuild_preRelease_mavenApplication';
 import { fullBuild_release_mavenLibrary } from './expectedExecutions/fullBuild_release_mavenLibrary';
+import { fullBuild_preRelease_mavenLibrary } from './expectedExecutions/fullBuild_preRelease_mavenLibrary';
 
 jest.mock('../src/stages', () => {
 	const createSetupStageMock = (stage: SetupStage): SetupStage => ({
@@ -185,7 +186,36 @@ describe('execute', () => {
 	});
 
 	it('executes full build for pre-release MavenLibrary', async () => {
-		throw new Error();
+		const incompleteContext: IncompleteBuildContext = {
+			...baseIncompleteContext,
+			commandInfo: O.some({
+				type: CommandType.FULL_BUILD
+			}),
+			projectType: O.some(ProjectType.MavenLibrary),
+			projectInfo: O.some({
+				...baseContext.projectInfo,
+				isPreRelease: true
+			})
+		};
+		const context: BuildContext = {
+			...baseContext,
+			commandInfo: {
+				type: CommandType.FULL_BUILD
+			},
+			projectType: ProjectType.MavenLibrary,
+			projectInfo: {
+				...baseContext.projectInfo,
+				isPreRelease: true
+			}
+		};
+		prepareSetupStageExecutionMock(incompleteContext);
+		prepareConditionalStageExecutionMock(context);
+
+		const result = await execute(incompleteContext)();
+		expect(result).toEqualRight(context);
+
+		validateSetupStages();
+		validateConditionalStages(fullBuild_preRelease_mavenLibrary);
 	});
 
 	it('executes full build for release NpmApplication', async () => {
