@@ -1,4 +1,4 @@
-import { EarlyStage, EarlyStageFunction } from './Stage';
+import { SetupStage, EarlyStageFunction } from './Stage';
 import { match } from 'ts-pattern';
 import { pipe } from 'fp-ts/function';
 import { BuildToolInfo } from '../context/BuildToolInfo';
@@ -86,7 +86,7 @@ const execute: EarlyStageFunction = (context) =>
 		TE.map(() => context)
 	);
 
-export const validateBuildToolVersion: EarlyStage = {
+export const validateBuildToolVersion: SetupStage = {
 	name: 'Validate Build Tool Version',
 	execute
 };

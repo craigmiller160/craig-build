@@ -1,4 +1,4 @@
-import { EarlyStage, EarlyStageFunction } from './Stage';
+import { SetupStage, EarlyStageFunction } from './Stage';
 import { runCommand } from '../command/runCommand';
 import { pipe } from 'fp-ts/function';
 import * as E from 'fp-ts/Either';
@@ -24,7 +24,7 @@ const execute: EarlyStageFunction = (context) =>
 		TE.map(() => context)
 	);
 
-export const checkForUncommittedChanges: EarlyStage = {
+export const checkForUncommittedChanges: SetupStage = {
 	name: 'Check For Uncommitted Changes',
 	execute
 };

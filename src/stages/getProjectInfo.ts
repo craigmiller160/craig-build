@@ -1,4 +1,4 @@
-import { EarlyStage, EarlyStageFunction } from './Stage';
+import { SetupStage, EarlyStageFunction } from './Stage';
 import { pipe } from 'fp-ts/function';
 import { extractProjectType } from '../context/contextExtraction';
 import * as E from 'fp-ts/Either';
@@ -90,7 +90,7 @@ const execute: EarlyStageFunction = (context) =>
 		TE.fromEither
 	);
 
-export const getProjectInfo: EarlyStage = {
+export const getProjectInfo: SetupStage = {
 	name: 'Get Project Info',
 	execute
 };

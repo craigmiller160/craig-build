@@ -1,4 +1,4 @@
-import { EARLY_STAGES, STAGES } from '../../src/stages';
+import { setupStages, conditionalStages } from '../../src/stages';
 import { getCommandInfo } from '../../src/stages/getCommandInfo';
 import { getBuildToolInfo } from '../../src/stages/getBuildToolInfo';
 import { validateBuildToolVersion } from '../../src/stages/validateBuildToolVersion';
@@ -19,7 +19,7 @@ import { deployToKubernetes } from '../../src/stages/deployToKubernetes';
 
 describe('stages', () => {
 	it('all early stages are added in the correct order', () => {
-		const stageNames = EARLY_STAGES.map((_) => _.name);
+		const stageNames = setupStages.map((_) => _.name);
 		expect(stageNames).toEqual([
 			getCommandInfo.name,
 			getBuildToolInfo.name,
@@ -31,7 +31,7 @@ describe('stages', () => {
 	});
 
 	it('all main stages are added in the correct order', () => {
-		const stageNames = STAGES.map((_) => _.name);
+		const stageNames = conditionalStages.map((_) => _.name);
 		expect(stageNames).toEqual([
 			validateDependencyVersions.name,
 			validateProjectVersionAllowed.name,

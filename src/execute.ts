@@ -1,10 +1,9 @@
 import { BuildContext } from './context/BuildContext';
 import * as TE from 'fp-ts/TaskEither';
-import { BaseStage, BaseStageFunction } from './stages/Stage';
 import * as A from 'fp-ts/Array';
 import { pipe } from 'fp-ts/function';
 import { logger } from './logger';
-import { EARLY_STAGES, STAGES } from './stages';
+import { setupStages, conditionalStages } from './stages';
 import * as EU from './functions/EitherUtils';
 import { stringifyJson } from './functions/Json';
 import { IncompleteBuildContext } from './context/IncompleteBuildContext';
@@ -65,7 +64,7 @@ export const execute = (
 	context: IncompleteBuildContext
 ): TE.TaskEither<Error, BuildContext> =>
 	pipe(
-		executeAllStages(context, EARLY_STAGES),
+		executeAllStages(context, setupStages),
 		TE.chain(incompleteToCompleteContext),
-		TE.chain((_) => executeAllStages(_, STAGES))
+		TE.chain((_) => executeAllStages(_, conditionalStages))
 	);

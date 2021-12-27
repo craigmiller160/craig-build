@@ -1,4 +1,4 @@
-import { EarlyStage, EarlyStageFunction } from './Stage';
+import { SetupStage, EarlyStageFunction } from './Stage';
 import { PackageJson } from '../configFileTypes/PackageJson';
 import { pipe } from 'fp-ts/function';
 import { readFile } from '../functions/File';
@@ -37,7 +37,7 @@ const execute: EarlyStageFunction = (context) =>
 		TE.fromEither
 	);
 
-export const getBuildToolInfo: EarlyStage = {
+export const getBuildToolInfo: SetupStage = {
 	name: 'Get Build Tool Info',
 	execute
 };

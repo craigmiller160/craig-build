@@ -13,7 +13,7 @@ export interface BaseStage<Ctx extends Context> {
 	execute: StageExecuteFn<Ctx>;
 }
 
-export type EarlyStage = BaseStage<IncompleteBuildContext>;
+export type SetupStage = BaseStage<IncompleteBuildContext>;
 
 export interface ConditionalStage extends BaseStage<BuildContext> {
 	commandAllowsStage: P.Predicate<BuildContext>;

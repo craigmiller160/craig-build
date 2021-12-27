@@ -1,4 +1,4 @@
-import { EarlyStage, Stage } from './Stage';
+import { SetupStage, ConditionalStage } from './Stage';
 import { getCommandInfo } from './getCommandInfo';
 import { getBuildToolInfo } from './getBuildToolInfo';
 import { validateBuildToolVersion } from './validateBuildToolVersion';
@@ -17,7 +17,7 @@ import { downloadArtifactForDeployment } from './downloadArtifactForDeployment';
 import { buildAndPushDocker } from './buildAndPushDocker';
 import { deployToKubernetes } from './deployToKubernetes';
 
-export const EARLY_STAGES: EarlyStage[] = [
+export const setupStages: SetupStage[] = [
 	getCommandInfo,
 	getBuildToolInfo,
 	validateBuildToolVersion,
@@ -26,7 +26,7 @@ export const EARLY_STAGES: EarlyStage[] = [
 	getProjectInfo
 ];
 
-export const STAGES: Stage[] = [
+export const conditionalStages: ConditionalStage[] = [
 	validateDependencyVersions,
 	validateProjectVersionAllowed,
 	validateKubernetesConfig,

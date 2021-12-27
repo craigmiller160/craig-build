@@ -1,4 +1,4 @@
-import { EarlyStage, EarlyStageFunction } from './Stage';
+import { SetupStage, EarlyStageFunction } from './Stage';
 import path from 'path';
 import { getCwd } from '../command/getCwd';
 import fs from 'fs';
@@ -67,7 +67,7 @@ const execute: EarlyStageFunction = (context) =>
 		TE.fromEither
 	);
 
-export const getProjectType: EarlyStage = {
+export const getProjectType: SetupStage = {
 	name: 'Get Project Type',
 	execute
 };

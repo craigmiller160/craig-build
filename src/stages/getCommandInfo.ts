@@ -1,4 +1,4 @@
-import { EarlyStage, EarlyStageFunction } from './Stage';
+import { SetupStage, EarlyStageFunction } from './Stage';
 import { match } from 'ts-pattern';
 import { OptionValues } from 'commander';
 import { CommandInfo } from '../context/CommandInfo';
@@ -22,7 +22,7 @@ const execute: EarlyStageFunction = (context) =>
 		commandInfo: O.some(constructCommandInfo(program.opts()))
 	});
 
-export const getCommandInfo: EarlyStage = {
+export const getCommandInfo: SetupStage = {
 	name: 'Get Command Info',
 	execute
 };

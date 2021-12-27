@@ -4,7 +4,7 @@ import {
 	createBuildContext,
 	createIncompleteBuildContext
 } from './testutils/createBuildContext';
-import { STAGES, EARLY_STAGES } from '../src/stages';
+import { conditionalStages, setupStages } from '../src/stages';
 import * as TE from 'fp-ts/TaskEither';
 import { BaseStageFunction } from '../src/stages/Stage';
 import '@relmify/jest-fp-ts';
@@ -55,64 +55,64 @@ describe('execute', () => {
 	});
 
 	it('executes all early and main stages successfully', async () => {
-		mockStageFn(EARLY_STAGES[0].execute, TE.right(incompleteBuildContext));
-		mockStageFn(EARLY_STAGES[1].execute, TE.right(incompleteBuildContext));
-		mockStageFn(EARLY_STAGES[2].execute, TE.right(incompleteBuildContext));
+		mockStageFn(setupStages[0].execute, TE.right(incompleteBuildContext));
+		mockStageFn(setupStages[1].execute, TE.right(incompleteBuildContext));
+		mockStageFn(setupStages[2].execute, TE.right(incompleteBuildContext));
 
-		mockStageFn(STAGES[0].execute, TE.right(buildContext));
-		mockStageFn(STAGES[1].execute, TE.right(buildContext));
-		mockStageFn(STAGES[2].execute, TE.right(buildContext));
+		mockStageFn(conditionalStages[0].execute, TE.right(buildContext));
+		mockStageFn(conditionalStages[1].execute, TE.right(buildContext));
+		mockStageFn(conditionalStages[2].execute, TE.right(buildContext));
 
 		const result = await execute(incompleteBuildContext)();
 		expect(result).toEqualRight(buildContext);
 
-		expect(EARLY_STAGES[0].execute).toHaveBeenCalled();
-		expect(EARLY_STAGES[1].execute).toHaveBeenCalled();
-		expect(EARLY_STAGES[2].execute).toHaveBeenCalled();
-		expect(STAGES[0].execute).toHaveBeenCalled();
-		expect(STAGES[1].execute).toHaveBeenCalled();
-		expect(STAGES[2].execute).toHaveBeenCalled();
+		expect(setupStages[0].execute).toHaveBeenCalled();
+		expect(setupStages[1].execute).toHaveBeenCalled();
+		expect(setupStages[2].execute).toHaveBeenCalled();
+		expect(conditionalStages[0].execute).toHaveBeenCalled();
+		expect(conditionalStages[1].execute).toHaveBeenCalled();
+		expect(conditionalStages[2].execute).toHaveBeenCalled();
 	});
 
 	it('aborts execution after early stage error', async () => {
 		const error = new Error('Dying');
-		mockStageFn(EARLY_STAGES[0].execute, TE.right(incompleteBuildContext));
-		mockStageFn(EARLY_STAGES[1].execute, TE.left(error));
-		mockStageFn(EARLY_STAGES[2].execute, TE.right(incompleteBuildContext));
+		mockStageFn(setupStages[0].execute, TE.right(incompleteBuildContext));
+		mockStageFn(setupStages[1].execute, TE.left(error));
+		mockStageFn(setupStages[2].execute, TE.right(incompleteBuildContext));
 
-		mockStageFn(STAGES[0].execute, TE.right(buildContext));
-		mockStageFn(STAGES[1].execute, TE.right(buildContext));
-		mockStageFn(STAGES[2].execute, TE.right(buildContext));
+		mockStageFn(conditionalStages[0].execute, TE.right(buildContext));
+		mockStageFn(conditionalStages[1].execute, TE.right(buildContext));
+		mockStageFn(conditionalStages[2].execute, TE.right(buildContext));
 
 		const result = await execute(incompleteBuildContext)();
 		expect(result).toEqualLeft(error);
 
-		expect(EARLY_STAGES[0].execute).toHaveBeenCalled();
-		expect(EARLY_STAGES[1].execute).toHaveBeenCalled();
-		expect(EARLY_STAGES[2].execute).not.toHaveBeenCalled();
-		expect(STAGES[0].execute).not.toHaveBeenCalled();
-		expect(STAGES[1].execute).not.toHaveBeenCalled();
-		expect(STAGES[2].execute).not.toHaveBeenCalled();
+		expect(setupStages[0].execute).toHaveBeenCalled();
+		expect(setupStages[1].execute).toHaveBeenCalled();
+		expect(setupStages[2].execute).not.toHaveBeenCalled();
+		expect(conditionalStages[0].execute).not.toHaveBeenCalled();
+		expect(conditionalStages[1].execute).not.toHaveBeenCalled();
+		expect(conditionalStages[2].execute).not.toHaveBeenCalled();
 	});
 
 	it('aborts execution after main stage error', async () => {
 		const error = new Error('Dying');
-		mockStageFn(EARLY_STAGES[0].execute, TE.right(incompleteBuildContext));
-		mockStageFn(EARLY_STAGES[1].execute, TE.right(incompleteBuildContext));
-		mockStageFn(EARLY_STAGES[2].execute, TE.right(incompleteBuildContext));
+		mockStageFn(setupStages[0].execute, TE.right(incompleteBuildContext));
+		mockStageFn(setupStages[1].execute, TE.right(incompleteBuildContext));
+		mockStageFn(setupStages[2].execute, TE.right(incompleteBuildContext));
 
-		mockStageFn(STAGES[0].execute, TE.right(buildContext));
-		mockStageFn(STAGES[1].execute, TE.left(error));
-		mockStageFn(STAGES[2].execute, TE.right(buildContext));
+		mockStageFn(conditionalStages[0].execute, TE.right(buildContext));
+		mockStageFn(conditionalStages[1].execute, TE.left(error));
+		mockStageFn(conditionalStages[2].execute, TE.right(buildContext));
 
 		const result = await execute(incompleteBuildContext)();
 		expect(result).toEqualLeft(error);
 
-		expect(EARLY_STAGES[0].execute).toHaveBeenCalled();
-		expect(EARLY_STAGES[1].execute).toHaveBeenCalled();
-		expect(EARLY_STAGES[2].execute).toHaveBeenCalled();
-		expect(STAGES[0].execute).toHaveBeenCalled();
-		expect(STAGES[1].execute).toHaveBeenCalled();
-		expect(STAGES[2].execute).not.toHaveBeenCalled();
+		expect(setupStages[0].execute).toHaveBeenCalled();
+		expect(setupStages[1].execute).toHaveBeenCalled();
+		expect(setupStages[2].execute).toHaveBeenCalled();
+		expect(conditionalStages[0].execute).toHaveBeenCalled();
+		expect(conditionalStages[1].execute).toHaveBeenCalled();
+		expect(conditionalStages[2].execute).not.toHaveBeenCalled();
 	});
 });
