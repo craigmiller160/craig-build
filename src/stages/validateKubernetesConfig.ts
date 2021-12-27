@@ -1,4 +1,3 @@
-import { Stage, StageFunction } from './Stage';
 import { BuildContext } from '../context/BuildContext';
 import { match, when } from 'ts-pattern';
 import { isApplication } from '../context/projectTypeUtils';
@@ -17,6 +16,8 @@ import { parseYaml } from '../functions/Yaml';
 import { KubeDeployment } from '../configFileTypes/KubeDeployment';
 import { stringifyJson } from '../functions/Json';
 import { logger } from '../logger';
+import * as P from 'fp-ts/Predicate';
+import { ConditionalStage, StageExecuteFn } from './Stage';
 
 const KUBE_IMAGE_REGEX =
 	/^(?<repoPrefix>.*:\d*)\/(?<imageName>.*):(?<imageVersion>.*)$/;
@@ -97,10 +98,14 @@ const validateConfigByProject = (
 			return E.right(_);
 		});
 
-const execute: StageFunction = (context) =>
+const execute: StageExecuteFn<BuildContext> = (context) =>
 	pipe(validateConfigByProject(context), TE.fromEither);
+const commandAllowsStage: P.Predicate<BuildContext> = () => true;
+const projectAllowsStage: P.Predicate<BuildContext> = () => true;
 
-export const validateKubernetesConfig: Stage = {
+export const validateKubernetesConfig: ConditionalStage = {
 	name: 'Validate Kubernetes Config',
-	execute
+	execute,
+	commandAllowsStage,
+	projectAllowsStage
 };
