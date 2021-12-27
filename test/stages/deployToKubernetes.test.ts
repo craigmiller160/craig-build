@@ -79,7 +79,7 @@ describe('deployToKubernetes', () => {
 			1,
 			'KUBE_IMG_VERSION=1.0.0 envsubst < deployment.yml | kubectl apply -f -',
 			{
-				cwd: path.join(baseWorkingDir, 'deploy'),
+				cwd: path.join(baseCwd, 'deploy'),
 				printOutput: true
 			}
 		);
@@ -101,7 +101,7 @@ describe('deployToKubernetes', () => {
 			1,
 			'KUBE_IMG_VERSION=1.0.0 envsubst < deployment.yml | kubectl apply -f -',
 			{
-				cwd: path.join(baseWorkingDir, 'deploy'),
+				cwd: path.join(baseCwd, 'deploy'),
 				printOutput: true
 			}
 		);
@@ -123,7 +123,7 @@ describe('deployToKubernetes', () => {
 			1,
 			'KUBE_IMG_VERSION=1.0.0 envsubst < deployment.yml | kubectl apply -f -',
 			{
-				cwd: path.join(baseWorkingDir, 'deploy'),
+				cwd: path.join(baseCwd, 'deploy'),
 				printOutput: true
 			}
 		);
@@ -148,7 +148,7 @@ describe('deployToKubernetes', () => {
 			1,
 			'kubectl apply -f one.configmap.yml',
 			{
-				env: path.join(baseWorkingDir, 'deploy'),
+				env: path.join(baseCwd, 'deploy'),
 				printOutput: true
 			}
 		);
@@ -156,7 +156,7 @@ describe('deployToKubernetes', () => {
 			2,
 			'KUBE_IMG_VERSION=1.0.0 envsubst < deployment.yml | kubectl apply -f -',
 			{
-				cwd: path.join(baseWorkingDir, 'deploy'),
+				cwd: path.join(baseCwd, 'deploy'),
 				printOutput: true
 			}
 		);
@@ -181,7 +181,7 @@ describe('deployToKubernetes', () => {
 			1,
 			'kubectl apply -f one.configmap.yml',
 			{
-				env: path.join(baseWorkingDir, 'deploy'),
+				env: path.join(baseCwd, 'deploy'),
 				printOutput: true
 			}
 		);
@@ -189,7 +189,7 @@ describe('deployToKubernetes', () => {
 			2,
 			'kubectl apply -f two.configmap.yml',
 			{
-				env: path.join(baseWorkingDir, 'deploy'),
+				env: path.join(baseCwd, 'deploy'),
 				printOutput: true
 			}
 		);
@@ -197,7 +197,7 @@ describe('deployToKubernetes', () => {
 			3,
 			'KUBE_IMG_VERSION=1.0.0 envsubst < deployment.yml | kubectl apply -f -',
 			{
-				cwd: path.join(baseWorkingDir, 'deploy'),
+				cwd: path.join(baseCwd, 'deploy'),
 				printOutput: true
 			}
 		);
