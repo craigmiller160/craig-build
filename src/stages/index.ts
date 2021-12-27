@@ -15,6 +15,7 @@ import { manuallyPublishArtifact } from './manuallyPublishArtifact';
 import { gitTag } from './gitTag';
 import { downloadArtifactForDeployment } from './downloadArtifactForDeployment';
 import { buildAndPushDocker } from './buildAndPushDocker';
+import { deployToKubernetes } from './deployToKubernetes';
 
 export const EARLY_STAGES: EarlyStage[] = [
 	getCommandInfo,
@@ -35,5 +36,6 @@ export const STAGES: Stage[] = [
 	manuallyPublishArtifact,
 	gitTag,
 	downloadArtifactForDeployment,
-	buildAndPushDocker
+	buildAndPushDocker,
+	deployToKubernetes
 ];
