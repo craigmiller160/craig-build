@@ -1,8 +1,6 @@
-import { Stage, StageFunction } from './Stage';
 import * as TE from 'fp-ts/TaskEither';
 import { BuildContext } from '../context/BuildContext';
 import { match, when } from 'ts-pattern';
-import { logger } from '../logger';
 import { isDocker, isMaven, isNpm } from '../context/projectTypeUtils';
 import { isPreRelease } from '../context/projectInfoUtils';
 import { pipe } from 'fp-ts/function';
@@ -17,8 +15,10 @@ import { readFile } from '../functions/File';
 import { homedir } from 'os';
 import * as E from 'fp-ts/Either';
 import path from 'path';
+import * as P from 'fp-ts/Predicate';
 import { parseXml } from '../functions/Xml';
 import { MavenMetadataNexus } from '../configFileTypes/MavenMetadataNexus';
+import { ConditionalStage, StageExecuteFn } from './Stage';
 
 const BETA_VERSION_REGEX = /^(?<version>.*-beta)\.(?<betaNumber>\d*)$/;
 
@@ -145,15 +145,17 @@ const handlePreparingPreReleaseVersionByProject = (
 			{ projectType: when(isDocker), projectInfo: when(isPreRelease) },
 			handleDockerPreReleaseVersion
 		)
-		.otherwise(() => {
-			logger.debug('Skipping stage');
-			return TE.right(context);
-		});
+		.run();
 
-const execute: StageFunction = (context) =>
+const execute: StageExecuteFn<BuildContext> = (context) =>
 	handlePreparingPreReleaseVersionByProject(context);
+const commandAllowsStage: P.Predicate<BuildContext> = () => true;
+const projectAllowsStage: P.Predicate<BuildContext> = (context) =>
+	isPreRelease(context.projectInfo);
 
-export const preparePreReleaseVersion: Stage = {
+export const preparePreReleaseVersion: ConditionalStage = {
 	name: 'Prepare Pre-Release Version',
-	execute
+	execute,
+	commandAllowsStage,
+	projectAllowsStage
 };

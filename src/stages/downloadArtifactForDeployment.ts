@@ -122,10 +122,7 @@ const downloadArtifactByProject = (
 		.with({ projectType: when(isNpm), projectInfo: when(isRelease) }, (_) =>
 			doDownloadArtifact(_, searchForNpmReleases)
 		)
-		.otherwise(() => {
-			logger.debug('Skipping stage');
-			return TE.right(context);
-		});
+		.run();
 
 const isNotDocker: P.Predicate<ProjectType> = P.not(isDocker);
 
