@@ -93,15 +93,13 @@ const validateConfigByProject = (
 ): E.Either<Error, BuildContext> =>
 	match(context)
 		.with({ projectType: when(isApplication) }, readAndValidateConfig)
-		.otherwise((_) => {
-			logger.debug('Skipping stage');
-			return E.right(_);
-		});
+		.run();
 
 const execute: StageExecuteFn<BuildContext> = (context) =>
 	pipe(validateConfigByProject(context), TE.fromEither);
 const commandAllowsStage: P.Predicate<BuildContext> = () => true;
-const projectAllowsStage: P.Predicate<BuildContext> = () => true;
+const projectAllowsStage: P.Predicate<BuildContext> = (context) =>
+	isApplication(context.projectType);
 
 export const validateKubernetesConfig: ConditionalStage = {
 	name: 'Validate Kubernetes Config',
