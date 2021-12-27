@@ -32,21 +32,26 @@ jest.mock('../src/stages', () => {
 		projectAllowsStage: stage.projectAllowsStage
 	});
 
-	const { conditionalStages, setupStages } = jest.requireActual('../src/stages');
+	const { conditionalStages, setupStages } =
+		jest.requireActual('../src/stages');
 	return {
 		conditionalStages: conditionalStages.map(createSetupStageMock),
-		setupStages: setupStages.map(createConditionalStageMock);
-	}
+		setupStages: setupStages.map(createConditionalStageMock)
+	};
 });
 
 const baseIncompleteContext = createIncompleteBuildContext();
 const baseContext = createBuildContext();
 
 const prepareSetupStageExecutionMock = (context: IncompleteBuildContext) => {
-	(setupStages[0].execute as jest.Mock).mockImplementation(() => TE.right(context));
+	(setupStages[0].execute as jest.Mock).mockImplementation(() =>
+		TE.right(context)
+	);
 };
 const prepareConditionalStageExecutionMock = (context: BuildContext) => {
-	(conditionalStages[0].execute as jest.Mock).mockImplementation(() => TE.right(context));
+	(conditionalStages[0].execute as jest.Mock).mockImplementation(() =>
+		TE.right(context)
+	);
 };
 
 const validateSetupStages = () => {
@@ -56,7 +61,7 @@ const validateSetupStages = () => {
 };
 
 // TODO need type for this once interface is figured out
-const validateConditionalStages = (expected: {[key: string]: boolean}) => {
+const validateConditionalStages = (expected: { [key: string]: boolean }) => {
 	expect(Object.keys(expected)).toHaveLength(conditionalStages.length);
 	conditionalStages.forEach((stage) => {
 		const expectedValue = expected[stage.name];
@@ -66,7 +71,7 @@ const validateConditionalStages = (expected: {[key: string]: boolean}) => {
 		} else {
 			expect(stage.execute).not.toHaveBeenCalled();
 		}
-	})
+	});
 };
 
 describe('execute', () => {
