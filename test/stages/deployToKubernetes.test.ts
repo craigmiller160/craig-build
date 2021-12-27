@@ -130,10 +130,76 @@ describe('deployToKubernetes', () => {
 	});
 
 	it('deploys for MavenApplication with configmap', async () => {
-		throw new Error();
+		const baseCwd = path.join(
+			baseWorkingDir,
+			'mavenReleaseApplicationOneConfigmap'
+		);
+		getCwdMock.mockImplementation(() => baseCwd);
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.MavenApplication
+		};
+
+		const result = await deployToKubernetes.execute(buildContext)();
+		expect(result).toEqualRight(buildContext);
+
+		expect(runCommandMock).toHaveBeenCalledTimes(2);
+		expect(runCommandMock).toHaveBeenNthCalledWith(
+			1,
+			'kubectl apply -f one.configmap.yml',
+			{
+				env: path.join(baseWorkingDir, 'deploy'),
+				printOutput: true
+			}
+		);
+		expect(runCommandMock).toHaveBeenNthCalledWith(
+			2,
+			'KUBE_IMG_VERSION=1.0.0 envsubst < deployment.yml | kubectl apply -f -',
+			{
+				cwd: path.join(baseWorkingDir, 'deploy'),
+				printOutput: true
+			}
+		);
 	});
 
 	it('deploys for MavenApplication with multiple configmaps', async () => {
-		throw new Error();
+		const baseCwd = path.join(
+			baseWorkingDir,
+			'mavenReleaseApplicationTwoConfigmaps'
+		);
+		getCwdMock.mockImplementation(() => baseCwd);
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.MavenApplication
+		};
+
+		const result = await deployToKubernetes.execute(buildContext)();
+		expect(result).toEqualRight(buildContext);
+
+		expect(runCommandMock).toHaveBeenCalledTimes(3);
+		expect(runCommandMock).toHaveBeenNthCalledWith(
+			1,
+			'kubectl apply -f one.configmap.yml',
+			{
+				env: path.join(baseWorkingDir, 'deploy'),
+				printOutput: true
+			}
+		);
+		expect(runCommandMock).toHaveBeenNthCalledWith(
+			2,
+			'kubectl apply -f two.configmap.yml',
+			{
+				env: path.join(baseWorkingDir, 'deploy'),
+				printOutput: true
+			}
+		);
+		expect(runCommandMock).toHaveBeenNthCalledWith(
+			3,
+			'KUBE_IMG_VERSION=1.0.0 envsubst < deployment.yml | kubectl apply -f -',
+			{
+				cwd: path.join(baseWorkingDir, 'deploy'),
+				printOutput: true
+			}
+		);
 	});
 });
