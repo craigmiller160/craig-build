@@ -10,7 +10,7 @@ import { IncompleteBuildContext } from './IncompleteBuildContext';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const isOption = (value: any): value is O.Option<any> =>
-	value._tag !== undefined;
+	value._tag === 'Some' || value._tag === 'None';
 
 export const toLoggableContext = (context: Context): LoggableBuildContext =>
 	match(context)

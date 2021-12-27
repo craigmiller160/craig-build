@@ -9,7 +9,7 @@ import * as EU from './functions/EitherUtils';
 import { stringifyJson } from './functions/Json';
 import { IncompleteBuildContext } from './context/IncompleteBuildContext';
 import { Context } from './context/Context';
-import { toLoggableContext } from './context/contextLogging';
+import { toLoggableContext } from './context/toLoggableContext';
 import { fromIncompleteContext } from './context/fromIncompleteContext';
 
 const executeStage = <

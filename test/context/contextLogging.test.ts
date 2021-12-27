@@ -4,7 +4,7 @@ import { CommandType } from '../../src/context/CommandType';
 import { ProjectType } from '../../src/context/ProjectType';
 import { BuildContext } from '../../src/context/BuildContext';
 import { LoggableBuildContext } from '../../src/context/LoggableBuildContext';
-import { toLoggableContext } from '../../src/context/contextLogging';
+import { toLoggableContext } from '../../src/context/toLoggableContext';
 
 const incompleteContext: IncompleteBuildContext = {
 	commandInfo: O.some({
