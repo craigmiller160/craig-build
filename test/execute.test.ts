@@ -11,36 +11,49 @@ import { BuildContext } from '../src/context/BuildContext';
 import { ProjectType } from '../src/context/ProjectType';
 import * as TE from 'fp-ts/TaskEither';
 import { conditionalStages, setupStages } from '../src/stages';
+import { execute } from '../src/execute';
 
-const setupStageExecuteFn = jest.fn();
-const conditionalStageExecuteFn = jest.fn();
+jest.mock('../src/stages', () => {
+	const setupStageExecuteFn = jest.fn();
+	const conditionalStageExecuteFn = jest.fn();
 
-const createSetupStageMock = (stage: SetupStage): SetupStage => ({
-	name: stage.name,
-	execute: setupStageExecuteFn
-});
+	const createSetupStageMock = (stage: SetupStage): SetupStage => ({
+		name: stage.name,
+		execute: setupStageExecuteFn
+	});
 
-const createConditionalStageMock = (
-	stage: ConditionalStage
-): ConditionalStage => ({
-	name: stage.name,
-	execute: conditionalStageExecuteFn,
-	commandAllowsStage: stage.commandAllowsStage,
-	projectAllowsStage: stage.projectAllowsStage
+	const createConditionalStageMock = (
+		stage: ConditionalStage
+	): ConditionalStage => ({
+		name: stage.name,
+		execute: conditionalStageExecuteFn,
+		commandAllowsStage: stage.commandAllowsStage,
+		projectAllowsStage: stage.projectAllowsStage
+	});
+
+	const { conditionalStages, setupStages } = jest.requireActual('../src/stages');
+	return {
+		conditionalStages: conditionalStages.map(createSetupStageMock),
+		setupStages: setupStages.map(createConditionalStageMock);
+	}
 });
 
 const baseIncompleteContext = createIncompleteBuildContext();
 const baseContext = createBuildContext();
 
-const setupStagesWithMocks = setupStages.map(createSetupStageMock)
-const conditionalStagesWithMocks = conditionalStages.map(createConditionalStageMock);
+const prepareSetupStageExecutionMock = (context: IncompleteBuildContext) => {
+	(setupStages[0].execute as jest.Mock).mockImplementation(() => TE.right(context));
+};
+const prepareConditionalStageExecutionMock = (context: BuildContext) => {
+	(conditionalStages[0].execute as jest.Mock).mockImplementation(() => TE.right(context));
+}
 
 describe('execute', () => {
 	beforeEach(() => {
 		jest.resetAllMocks();
 	});
 
-	it('executes full build for release MavenApplication', () => {
+	it('executes full build for release MavenApplication', async () => {
 		const incompleteContext: IncompleteBuildContext = {
 			...baseIncompleteContext,
 			commandInfo: O.some({
@@ -58,12 +71,13 @@ describe('execute', () => {
 				isPreRelease: false
 			}
 		};
-		setupStageExecuteFn.mockImplementation(() =>
-			TE.right(incompleteContext)
-		);
-		conditionalStageExecuteFn.mockImplementation(() => TE.right(context));
+		prepareSetupStageExecutionMock(incompleteContext);
+		prepareConditionalStageExecutionMock(context);
 
-		throw new Error();
+		const result = await execute(incompleteContext)();
+		expect(result).toEqualRight(context);
+
+		// TODO validate which stages were called
 	});
 
 	it('executes full build for pre-release MavenApplication', () => {
