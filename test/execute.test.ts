@@ -12,6 +12,7 @@ import { ProjectType } from '../src/context/ProjectType';
 import * as TE from 'fp-ts/TaskEither';
 import { conditionalStages, setupStages } from '../src/stages';
 import { execute } from '../src/execute';
+import { fullBuild_release_mavenApplication } from './expectedExecutions/fullBuild_release_mavenApplication';
 
 jest.mock('../src/stages', () => {
 	const setupStageExecuteFn = jest.fn();
@@ -46,7 +47,27 @@ const prepareSetupStageExecutionMock = (context: IncompleteBuildContext) => {
 };
 const prepareConditionalStageExecutionMock = (context: BuildContext) => {
 	(conditionalStages[0].execute as jest.Mock).mockImplementation(() => TE.right(context));
-}
+};
+
+const validateSetupStages = () => {
+	setupStages.forEach((stage) => {
+		expect(stage.execute).toHaveBeenCalled();
+	});
+};
+
+// TODO need type for this once interface is figured out
+const validateConditionalStages = (expected: {[key: string]: boolean}) => {
+	expect(Object.keys(expected)).toHaveLength(conditionalStages.length);
+	conditionalStages.forEach((stage) => {
+		const expectedValue = expected[stage.name];
+		expect(expectedValue).not.toBeUndefined();
+		if (expectedValue) {
+			expect(stage.execute).toHaveBeenCalled();
+		} else {
+			expect(stage.execute).not.toHaveBeenCalled();
+		}
+	})
+};
 
 describe('execute', () => {
 	beforeEach(() => {
@@ -77,7 +98,8 @@ describe('execute', () => {
 		const result = await execute(incompleteContext)();
 		expect(result).toEqualRight(context);
 
-		// TODO validate which stages were called
+		validateSetupStages();
+		validateConditionalStages(fullBuild_release_mavenApplication);
 	});
 
 	it('executes full build for pre-release MavenApplication', () => {
