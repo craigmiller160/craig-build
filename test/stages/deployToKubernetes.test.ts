@@ -148,7 +148,7 @@ describe('deployToKubernetes', () => {
 			1,
 			'kubectl apply -f one.configmap.yml',
 			{
-				env: path.join(baseCwd, 'deploy'),
+				cwd: path.join(baseCwd, 'deploy'),
 				printOutput: true
 			}
 		);
@@ -181,7 +181,7 @@ describe('deployToKubernetes', () => {
 			1,
 			'kubectl apply -f one.configmap.yml',
 			{
-				env: path.join(baseCwd, 'deploy'),
+				cwd: path.join(baseCwd, 'deploy'),
 				printOutput: true
 			}
 		);
@@ -189,7 +189,7 @@ describe('deployToKubernetes', () => {
 			2,
 			'kubectl apply -f two.configmap.yml',
 			{
-				env: path.join(baseCwd, 'deploy'),
+				cwd: path.join(baseCwd, 'deploy'),
 				printOutput: true
 			}
 		);
