@@ -65,12 +65,17 @@ const validateSetupStages = () => {
 const validateConditionalStages = (expected: { [key: string]: boolean }) => {
 	expect(Object.keys(expected)).toHaveLength(conditionalStages.length);
 	conditionalStages.forEach((stage) => {
-		const expectedValue = expected[stage.name];
-		expect(expectedValue).not.toBeUndefined();
-		if (expectedValue) {
-			expect(stage.execute).toHaveBeenCalled();
-		} else {
-			expect(stage.execute).not.toHaveBeenCalled();
+		try {
+			const expectedValue = expected[stage.name];
+			expect(expectedValue).not.toBeUndefined();
+			if (expectedValue) {
+				expect(stage.execute).toHaveBeenCalled();
+			} else {
+				expect(stage.execute).not.toHaveBeenCalled();
+			}
+		} catch (ex) {
+			console.error('ERROR WITH STAGE', stage.name);
+			throw ex;
 		}
 	});
 };
