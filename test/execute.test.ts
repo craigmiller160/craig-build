@@ -18,6 +18,10 @@ import { fullBuild_release_npmApplication } from './expectedExecutions/fullBuild
 import { fullBuild_preRelease_npmApplication } from './expectedExecutions/fullBuild_preRelease_npmApplication';
 import { fullBuild_release_npmLibrary } from './expectedExecutions/fullBuild_release_npmLibrary';
 import { fullBuild_preRelease_npmLibrary } from './expectedExecutions/fullBuild_preRelease_npmLibrary';
+import { fullBuild_release_dockerApplication } from './expectedExecutions/fullBuild_release_dockerApplication';
+import { fullBuild_preRelease_dockerApplication } from './expectedExecutions/fullBuild_preRelease_dockerApplication';
+import { fullBuild_release_dockerImage } from './expectedExecutions/fullBuild_release_dockerImage';
+import { fullBuild_preRelease_dockerImage } from './expectedExecutions/fullBuild_preRelease_dockerImage';
 
 jest.mock('../src/stages', () => {
 	const createSetupStageMock = (stage: SetupStage): SetupStage => ({
@@ -355,18 +359,134 @@ describe('execute', () => {
 	});
 
 	it('executes full build for release DockerApplication', async () => {
-		throw new Error();
+		const incompleteContext: IncompleteBuildContext = {
+			...baseIncompleteContext,
+			commandInfo: O.some({
+				type: CommandType.FULL_BUILD
+			}),
+			projectType: O.some(ProjectType.DockerApplication),
+			projectInfo: O.some({
+				...baseContext.projectInfo,
+				isPreRelease: false
+			})
+		};
+		const context: BuildContext = {
+			...baseContext,
+			commandInfo: {
+				type: CommandType.FULL_BUILD
+			},
+			projectType: ProjectType.DockerApplication,
+			projectInfo: {
+				...baseContext.projectInfo,
+				isPreRelease: false
+			}
+		};
+		prepareSetupStageExecutionMock(incompleteContext);
+		prepareConditionalStageExecutionMock(context);
+
+		const result = await execute(incompleteContext)();
+		expect(result).toEqualRight(context);
+
+		validateSetupStages();
+		validateConditionalStages(fullBuild_release_dockerApplication);
 	});
 
 	it('executes full build for pre-release DockerApplication', async () => {
-		throw new Error();
+		const incompleteContext: IncompleteBuildContext = {
+			...baseIncompleteContext,
+			commandInfo: O.some({
+				type: CommandType.FULL_BUILD
+			}),
+			projectType: O.some(ProjectType.DockerApplication),
+			projectInfo: O.some({
+				...baseContext.projectInfo,
+				isPreRelease: true
+			})
+		};
+		const context: BuildContext = {
+			...baseContext,
+			commandInfo: {
+				type: CommandType.FULL_BUILD
+			},
+			projectType: ProjectType.DockerApplication,
+			projectInfo: {
+				...baseContext.projectInfo,
+				isPreRelease: true
+			}
+		};
+		prepareSetupStageExecutionMock(incompleteContext);
+		prepareConditionalStageExecutionMock(context);
+
+		const result = await execute(incompleteContext)();
+		expect(result).toEqualRight(context);
+
+		validateSetupStages();
+		validateConditionalStages(fullBuild_preRelease_dockerApplication);
 	});
 
 	it('executes full build for release DockerImage', async () => {
-		throw new Error();
+		const incompleteContext: IncompleteBuildContext = {
+			...baseIncompleteContext,
+			commandInfo: O.some({
+				type: CommandType.FULL_BUILD
+			}),
+			projectType: O.some(ProjectType.DockerImage),
+			projectInfo: O.some({
+				...baseContext.projectInfo,
+				isPreRelease: false
+			})
+		};
+		const context: BuildContext = {
+			...baseContext,
+			commandInfo: {
+				type: CommandType.FULL_BUILD
+			},
+			projectType: ProjectType.DockerImage,
+			projectInfo: {
+				...baseContext.projectInfo,
+				isPreRelease: false
+			}
+		};
+		prepareSetupStageExecutionMock(incompleteContext);
+		prepareConditionalStageExecutionMock(context);
+
+		const result = await execute(incompleteContext)();
+		expect(result).toEqualRight(context);
+
+		validateSetupStages();
+		validateConditionalStages(fullBuild_release_dockerImage);
 	});
 
 	it('executes full build for pre-release DockerImage', async () => {
-		throw new Error();
+		const incompleteContext: IncompleteBuildContext = {
+			...baseIncompleteContext,
+			commandInfo: O.some({
+				type: CommandType.FULL_BUILD
+			}),
+			projectType: O.some(ProjectType.DockerImage),
+			projectInfo: O.some({
+				...baseContext.projectInfo,
+				isPreRelease: true
+			})
+		};
+		const context: BuildContext = {
+			...baseContext,
+			commandInfo: {
+				type: CommandType.FULL_BUILD
+			},
+			projectType: ProjectType.DockerImage,
+			projectInfo: {
+				...baseContext.projectInfo,
+				isPreRelease: true
+			}
+		};
+		prepareSetupStageExecutionMock(incompleteContext);
+		prepareConditionalStageExecutionMock(context);
+
+		const result = await execute(incompleteContext)();
+		expect(result).toEqualRight(context);
+
+		validateSetupStages();
+		validateConditionalStages(fullBuild_preRelease_dockerImage);
 	});
 });
