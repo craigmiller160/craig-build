@@ -1,4 +1,7 @@
-import { createBuildContext, createIncompleteBuildContext } from './testutils/createBuildContext';
+import {
+	createBuildContext,
+	createIncompleteBuildContext
+} from './testutils/createBuildContext';
 import '@relmify/jest-fp-ts';
 import { ConditionalStage, SetupStage } from '../src/stages/Stage';
 import { IncompleteBuildContext } from '../src/context/IncompleteBuildContext';
@@ -83,6 +86,7 @@ const validateConditionalStages = (expected: ExpectedExecution) => {
 				expect(stage.execute).not.toHaveBeenCalled();
 			}
 		} catch (ex) {
+			// eslint-disable-next-line no-console
 			console.error('ERROR WITH STAGE', stage.name);
 			throw ex;
 		}

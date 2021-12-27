@@ -14,8 +14,10 @@ import { BaseStage, ConditionalStage } from './stages/Stage';
 import * as P from 'fp-ts/Predicate';
 import { match, when } from 'ts-pattern';
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 const isConditionalStage = (stage: BaseStage<any>): stage is ConditionalStage =>
 	(stage as any).commandAllowsStage !== undefined;
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 const shouldStageRun = <Ctx extends Context>(
 	context: Ctx,

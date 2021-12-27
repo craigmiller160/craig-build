@@ -11,7 +11,6 @@ import {
 } from '../services/NexusRepoApi';
 import { NexusSearchResult } from '../services/NexusSearchResult';
 import * as A from 'fp-ts/Array';
-import { logger } from '../logger';
 import { isRelease } from '../context/projectInfoUtils';
 import { ConditionalStage, StageExecuteFn } from './Stage';
 import * as P from 'fp-ts/Predicate';

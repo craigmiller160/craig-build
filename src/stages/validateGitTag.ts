@@ -2,7 +2,6 @@ import { BuildContext } from '../context/BuildContext';
 import * as TE from 'fp-ts/TaskEither';
 import { pipe } from 'fp-ts/function';
 import { match, when } from 'ts-pattern';
-import { logger } from '../logger';
 import { isRelease } from '../context/projectInfoUtils';
 import { runCommand } from '../command/runCommand';
 import * as A from 'fp-ts/Array';

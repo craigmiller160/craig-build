@@ -1,7 +1,6 @@
 import { BuildContext } from '../context/BuildContext';
 import * as TE from 'fp-ts/TaskEither';
 import { match, when } from 'ts-pattern';
-import { logger } from '../logger';
 import {
 	downloadArtifact,
 	NexusRepoGroupSearchFn,

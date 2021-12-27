@@ -5,7 +5,6 @@ import { match, when } from 'ts-pattern';
 import { ProjectType } from '../context/ProjectType';
 import { pipe } from 'fp-ts/function';
 import { isApplication, isDocker } from '../context/projectTypeUtils';
-import { logger } from '../logger';
 import { ProjectInfo } from '../context/ProjectInfo';
 import { DOCKER_REPO_PREFIX } from '../configFileTypes/constants';
 import shellEnv from 'shell-env';
@@ -90,17 +89,14 @@ const handleDockerBuildByProject = (
 ): TE.TaskEither<Error, BuildContext> =>
 	match(context)
 		.with({ projectType: when(isDockerOrApplication) }, runDockerBuild)
-		.otherwise(() => {
-			logger.debug('Skipping stage');
-			return TE.right(context);
-		});
+		.run();
 
 const commandAllowsStage: P.Predicate<BuildContext> = () => true;
 const projectAllowsStage: P.Predicate<BuildContext> = (context) =>
 	isDockerOrApplication(context.projectType);
 
 const execute: StageExecuteFn<BuildContext> = (context) =>
-	runDockerBuild(context);
+	handleDockerBuildByProject(context);
 
 export const buildAndPushDocker: ConditionalStage = {
 	name: 'Build and Push Docker',

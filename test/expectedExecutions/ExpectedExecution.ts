@@ -1,3 +1,3 @@
 export interface ExpectedExecution {
-    [key: string]: boolean
+	[key: string]: boolean;
 }

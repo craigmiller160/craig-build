@@ -15,7 +15,6 @@ import {
 import { parseYaml } from '../functions/Yaml';
 import { KubeDeployment } from '../configFileTypes/KubeDeployment';
 import { stringifyJson } from '../functions/Json';
-import { logger } from '../logger';
 import * as P from 'fp-ts/Predicate';
 import { ConditionalStage, StageExecuteFn } from './Stage';
 
