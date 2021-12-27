@@ -10,13 +10,11 @@ import { IncompleteBuildContext } from './context/IncompleteBuildContext';
 import { Context } from './context/Context';
 import { toLoggableContext } from './context/toLoggableContext';
 import { fromIncompleteContext } from './context/fromIncompleteContext';
+import { BaseStage } from './stages/Stage';
 
-const executeStage = <
-	Ctx extends Context,
-	StageFn extends BaseStageFunction<Ctx>
->(
+const executeStage = <Ctx extends Context>(
 	contextTE: TE.TaskEither<Error, Ctx>,
-	stage: BaseStage<Ctx, StageFn>
+	stage: BaseStage<Ctx>
 ) =>
 	pipe(
 		contextTE,
@@ -41,12 +39,9 @@ const executeStage = <
 		})
 	);
 
-const executeAllStages = <
-	Ctx extends Context,
-	StageFn extends BaseStageFunction<Ctx>
->(
+const executeAllStages = <Ctx extends Context>(
 	context: Ctx,
-	stages: BaseStage<Ctx, StageFn>[]
+	stages: BaseStage<Ctx>[]
 ): TE.TaskEither<Error, Ctx> =>
 	pipe(
 		stages,
