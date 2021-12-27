@@ -11,16 +11,16 @@ import { buildAndPushDocker } from '../../src/stages/buildAndPushDocker';
 import { deployToKubernetes } from '../../src/stages/deployToKubernetes';
 import { ExpectedExecution } from './ExpectedExecution';
 
-export const fullBuild_preRelease_mavenApplication: ExpectedExecution = {
-	[validateDependencyVersions.name]: false,
-	[validateProjectVersionAllowed.name]: false,
-	[validateKubernetesConfig.name]: true,
-	[validateGitTag.name]: false,
+export const fullBuild_release_mavenLibrary: ExpectedExecution = {
+	[validateDependencyVersions.name]: true,
+	[validateProjectVersionAllowed.name]: true,
+	[validateKubernetesConfig.name]: false,
+	[validateGitTag.name]: true,
 	[buildArtifact.name]: true,
-	[preparePreReleaseVersion.name]: true,
+	[preparePreReleaseVersion.name]: false,
 	[manuallyPublishArtifact.name]: false,
-	[gitTag.name]: false,
-	[downloadArtifactForDeployment.name]: true,
-	[buildAndPushDocker.name]: true,
-	[deployToKubernetes.name]: true
+	[gitTag.name]: true,
+	[downloadArtifactForDeployment.name]: false,
+	[buildAndPushDocker.name]: false,
+	[deployToKubernetes.name]: false
 };
