@@ -7,7 +7,7 @@ import '@relmify/jest-fp-ts';
 
 const completeContext: IncompleteBuildContext = {
 	commandInfo: O.some({
-		type: CommandType.FULL_BUILD
+		type: CommandType.FullBuild
 	}),
 	buildToolInfo: O.some({
 		group: '',
@@ -28,7 +28,7 @@ describe('fromIncompleteContext', () => {
 	it('context is complete', () => {
 		expect(fromIncompleteContext(completeContext)).toEqualRight({
 			commandInfo: {
-				type: CommandType.FULL_BUILD
+				type: CommandType.FullBuild
 			},
 			buildToolInfo: {
 				group: '',

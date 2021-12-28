@@ -102,7 +102,7 @@ describe('execute', () => {
 		const incompleteContext: IncompleteBuildContext = {
 			...baseIncompleteContext,
 			commandInfo: O.some({
-				type: CommandType.FULL_BUILD
+				type: CommandType.FullBuild
 			}),
 			projectType: O.some(ProjectType.MavenApplication),
 			projectInfo: O.some({
@@ -113,7 +113,7 @@ describe('execute', () => {
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
-				type: CommandType.FULL_BUILD
+				type: CommandType.FullBuild
 			},
 			projectType: ProjectType.MavenApplication,
 			projectInfo: {
@@ -135,7 +135,7 @@ describe('execute', () => {
 		const incompleteContext: IncompleteBuildContext = {
 			...baseIncompleteContext,
 			commandInfo: O.some({
-				type: CommandType.FULL_BUILD
+				type: CommandType.FullBuild
 			}),
 			projectType: O.some(ProjectType.MavenApplication),
 			projectInfo: O.some({
@@ -146,7 +146,7 @@ describe('execute', () => {
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
-				type: CommandType.FULL_BUILD
+				type: CommandType.FullBuild
 			},
 			projectType: ProjectType.MavenApplication,
 			projectInfo: {
@@ -168,7 +168,7 @@ describe('execute', () => {
 		const incompleteContext: IncompleteBuildContext = {
 			...baseIncompleteContext,
 			commandInfo: O.some({
-				type: CommandType.FULL_BUILD
+				type: CommandType.FullBuild
 			}),
 			projectType: O.some(ProjectType.MavenLibrary),
 			projectInfo: O.some({
@@ -179,7 +179,7 @@ describe('execute', () => {
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
-				type: CommandType.FULL_BUILD
+				type: CommandType.FullBuild
 			},
 			projectType: ProjectType.MavenLibrary,
 			projectInfo: {
@@ -201,7 +201,7 @@ describe('execute', () => {
 		const incompleteContext: IncompleteBuildContext = {
 			...baseIncompleteContext,
 			commandInfo: O.some({
-				type: CommandType.FULL_BUILD
+				type: CommandType.FullBuild
 			}),
 			projectType: O.some(ProjectType.MavenLibrary),
 			projectInfo: O.some({
@@ -212,7 +212,7 @@ describe('execute', () => {
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
-				type: CommandType.FULL_BUILD
+				type: CommandType.FullBuild
 			},
 			projectType: ProjectType.MavenLibrary,
 			projectInfo: {
@@ -234,7 +234,7 @@ describe('execute', () => {
 		const incompleteContext: IncompleteBuildContext = {
 			...baseIncompleteContext,
 			commandInfo: O.some({
-				type: CommandType.FULL_BUILD
+				type: CommandType.FullBuild
 			}),
 			projectType: O.some(ProjectType.NpmApplication),
 			projectInfo: O.some({
@@ -245,7 +245,7 @@ describe('execute', () => {
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
-				type: CommandType.FULL_BUILD
+				type: CommandType.FullBuild
 			},
 			projectType: ProjectType.NpmApplication,
 			projectInfo: {
@@ -267,7 +267,7 @@ describe('execute', () => {
 		const incompleteContext: IncompleteBuildContext = {
 			...baseIncompleteContext,
 			commandInfo: O.some({
-				type: CommandType.FULL_BUILD
+				type: CommandType.FullBuild
 			}),
 			projectType: O.some(ProjectType.NpmApplication),
 			projectInfo: O.some({
@@ -278,7 +278,7 @@ describe('execute', () => {
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
-				type: CommandType.FULL_BUILD
+				type: CommandType.FullBuild
 			},
 			projectType: ProjectType.NpmApplication,
 			projectInfo: {
@@ -300,7 +300,7 @@ describe('execute', () => {
 		const incompleteContext: IncompleteBuildContext = {
 			...baseIncompleteContext,
 			commandInfo: O.some({
-				type: CommandType.FULL_BUILD
+				type: CommandType.FullBuild
 			}),
 			projectType: O.some(ProjectType.NpmLibrary),
 			projectInfo: O.some({
@@ -311,7 +311,7 @@ describe('execute', () => {
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
-				type: CommandType.FULL_BUILD
+				type: CommandType.FullBuild
 			},
 			projectType: ProjectType.NpmLibrary,
 			projectInfo: {
@@ -333,7 +333,7 @@ describe('execute', () => {
 		const incompleteContext: IncompleteBuildContext = {
 			...baseIncompleteContext,
 			commandInfo: O.some({
-				type: CommandType.FULL_BUILD
+				type: CommandType.FullBuild
 			}),
 			projectType: O.some(ProjectType.NpmLibrary),
 			projectInfo: O.some({
@@ -344,7 +344,7 @@ describe('execute', () => {
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
-				type: CommandType.FULL_BUILD
+				type: CommandType.FullBuild
 			},
 			projectType: ProjectType.NpmLibrary,
 			projectInfo: {
@@ -366,7 +366,7 @@ describe('execute', () => {
 		const incompleteContext: IncompleteBuildContext = {
 			...baseIncompleteContext,
 			commandInfo: O.some({
-				type: CommandType.FULL_BUILD
+				type: CommandType.FullBuild
 			}),
 			projectType: O.some(ProjectType.DockerApplication),
 			projectInfo: O.some({
@@ -377,7 +377,7 @@ describe('execute', () => {
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
-				type: CommandType.FULL_BUILD
+				type: CommandType.FullBuild
 			},
 			projectType: ProjectType.DockerApplication,
 			projectInfo: {
@@ -399,7 +399,7 @@ describe('execute', () => {
 		const incompleteContext: IncompleteBuildContext = {
 			...baseIncompleteContext,
 			commandInfo: O.some({
-				type: CommandType.FULL_BUILD
+				type: CommandType.FullBuild
 			}),
 			projectType: O.some(ProjectType.DockerApplication),
 			projectInfo: O.some({
@@ -410,7 +410,7 @@ describe('execute', () => {
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
-				type: CommandType.FULL_BUILD
+				type: CommandType.FullBuild
 			},
 			projectType: ProjectType.DockerApplication,
 			projectInfo: {
@@ -432,7 +432,7 @@ describe('execute', () => {
 		const incompleteContext: IncompleteBuildContext = {
 			...baseIncompleteContext,
 			commandInfo: O.some({
-				type: CommandType.FULL_BUILD
+				type: CommandType.FullBuild
 			}),
 			projectType: O.some(ProjectType.DockerImage),
 			projectInfo: O.some({
@@ -443,7 +443,7 @@ describe('execute', () => {
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
-				type: CommandType.FULL_BUILD
+				type: CommandType.FullBuild
 			},
 			projectType: ProjectType.DockerImage,
 			projectInfo: {
@@ -465,7 +465,7 @@ describe('execute', () => {
 		const incompleteContext: IncompleteBuildContext = {
 			...baseIncompleteContext,
 			commandInfo: O.some({
-				type: CommandType.FULL_BUILD
+				type: CommandType.FullBuild
 			}),
 			projectType: O.some(ProjectType.DockerImage),
 			projectInfo: O.some({
@@ -476,7 +476,7 @@ describe('execute', () => {
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
-				type: CommandType.FULL_BUILD
+				type: CommandType.FullBuild
 			},
 			projectType: ProjectType.DockerImage,
 			projectInfo: {

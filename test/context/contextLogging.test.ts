@@ -8,7 +8,7 @@ import { toLoggableContext } from '../../src/context/toLoggableContext';
 
 const incompleteContext: IncompleteBuildContext = {
 	commandInfo: O.some({
-		type: CommandType.FULL_BUILD
+		type: CommandType.FullBuild
 	}),
 	buildToolInfo: O.some({
 		group: '',
@@ -22,7 +22,7 @@ const incompleteContext: IncompleteBuildContext = {
 
 const loggableIncompleteContext: LoggableBuildContext = {
 	commandInfo: {
-		type: CommandType.FULL_BUILD
+		type: CommandType.FullBuild
 	},
 	buildToolInfo: {
 		group: '',
@@ -36,7 +36,7 @@ const loggableIncompleteContext: LoggableBuildContext = {
 
 const loggableBuildContext: LoggableBuildContext = {
 	commandInfo: {
-		type: CommandType.FULL_BUILD
+		type: CommandType.FullBuild
 	},
 	buildToolInfo: {
 		group: '',
@@ -55,7 +55,7 @@ const loggableBuildContext: LoggableBuildContext = {
 
 const buildContext: BuildContext = {
 	commandInfo: {
-		type: CommandType.FULL_BUILD
+		type: CommandType.FullBuild
 	},
 	buildToolInfo: {
 		group: '',

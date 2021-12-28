@@ -10,10 +10,10 @@ import { IncompleteBuildContext } from '../context/IncompleteBuildContext';
 
 const constructCommandInfo = (options: OptionValues): CommandInfo =>
 	match<OptionValues, CommandInfo>(options)
-		.with({ fullBuild: true }, () => ({ type: CommandType.FULL_BUILD }))
-		.with({ dockerOnly: true }, () => ({ type: CommandType.DOCKER_ONLY }))
+		.with({ fullBuild: true }, () => ({ type: CommandType.FullBuild }))
+		.with({ dockerOnly: true }, () => ({ type: CommandType.DockerOnly }))
 		.with({ kubernetesOnly: true }, () => ({
-			type: CommandType.KUBERNETES_ONLY
+			type: CommandType.KubernetesOnly
 		}))
 		.run();
 

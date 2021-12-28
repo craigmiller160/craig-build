@@ -36,7 +36,7 @@ describe('getCommandInfo', () => {
 		expect(result).toEqualRight({
 			...buildContext,
 			commandInfo: O.some({
-				type: CommandType.FULL_BUILD
+				type: CommandType.FullBuild
 			})
 		});
 	});
@@ -54,7 +54,7 @@ describe('getCommandInfo', () => {
 		expect(result).toEqualRight({
 			...buildContext,
 			commandInfo: O.some({
-				type: CommandType.DOCKER_ONLY
+				type: CommandType.DockerOnly
 			})
 		});
 	});
@@ -72,7 +72,7 @@ describe('getCommandInfo', () => {
 		expect(result).toEqualRight({
 			...buildContext,
 			commandInfo: O.some({
-				type: CommandType.KUBERNETES_ONLY
+				type: CommandType.KubernetesOnly
 			})
 		});
 	});

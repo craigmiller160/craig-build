@@ -8,7 +8,7 @@ import { ProjectInfo } from '../../src/context/ProjectInfo';
 import { IncompleteBuildContext } from '../../src/context/IncompleteBuildContext';
 
 const defaultCommandInfo: CommandInfo = {
-	type: CommandType.FULL_BUILD
+	type: CommandType.FullBuild
 };
 const defaultBuildToolInfo: BuildToolInfo = {
 	group: 'craigmiller160',
