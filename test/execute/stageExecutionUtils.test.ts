@@ -1,8 +1,28 @@
-export {};
+import { createBuildContext } from '../testutils/createBuildContext';
+import { Stage } from '../../src/stages/Stage';
+import * as TE from 'fp-ts/TaskEither';
+import { createStageExecution } from '../../src/execute/stageExecutionUtils';
+import { StageExecutionStatus } from '../../src/execute/StageExecutionStatus';
+
+const baseContext = createBuildContext();
+const mockStage: Stage = {
+	name: 'Mock Stage',
+	execute: () => TE.right(baseContext),
+	commandAllowsStage: jest.fn(),
+	projectAllowsStage: jest.fn()
+};
 
 describe('stageExecutionUtils', () => {
+	beforeEach(() => {
+		jest.resetAllMocks();
+	});
+
 	it('createStageExecution', () => {
-		throw new Error();
+		const execution = createStageExecution(mockStage);
+		expect(execution).toEqual({
+			stage: mockStage,
+			status: StageExecutionStatus.Proceed
+		});
 	});
 
 	describe('proceedIfCommandAllowed', () => {
