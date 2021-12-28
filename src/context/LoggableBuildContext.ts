@@ -1,3 +1,4 @@
+// TODO delete this whole file
 import { CommandInfo } from './CommandInfo';
 import { getOrNull } from '../functions/OptionUtils';
 import { BuildToolInfo } from './BuildToolInfo';

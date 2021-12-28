@@ -1,3 +1,4 @@
+// TODO delete this whole file
 import * as E from 'fp-ts/Either';
 import { BuildToolInfo } from './BuildToolInfo';
 import { pipe } from 'fp-ts/function';
