@@ -7,6 +7,8 @@ import { runCommand } from '../command/runCommand';
 import * as A from 'fp-ts/Array';
 import * as P from 'fp-ts/Predicate';
 import { Stage, StageExecuteFn } from './Stage';
+import { CommandType } from '../context/CommandType';
+import { isKubernetesOnly } from '../context/commandTypeUtils';
 
 const executeGitTagValidation = (
 	context: BuildContext
@@ -34,8 +36,11 @@ const handleValidationByProject = (
 		.with({ projectInfo: when(isRelease) }, executeGitTagValidation)
 		.run();
 
+const isNotKubernetesOnly: P.Predicate<CommandType> = P.not(isKubernetesOnly);
+
 const execute: StageExecuteFn = (context) => handleValidationByProject(context);
-const commandAllowsStage: P.Predicate<BuildContext> = () => true;
+const commandAllowsStage: P.Predicate<BuildContext> = (context) =>
+	isNotKubernetesOnly(context.commandInfo.type);
 const projectAllowsStage: P.Predicate<BuildContext> = (context) =>
 	isRelease(context.projectInfo);
 

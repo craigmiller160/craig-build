@@ -7,6 +7,8 @@ import { runCommand } from '../command/runCommand';
 import * as P from 'fp-ts/Predicate';
 import { ProjectType } from '../context/ProjectType';
 import { Stage, StageExecuteFn } from './Stage';
+import { CommandType } from '../context/CommandType';
+import { isKubernetesOnly } from '../context/commandTypeUtils';
 
 export const MAVEN_BUILD_CMD = 'mvn clean deploy -Ddependency-check.skip=true';
 export const NPM_BUILD_CMD = 'yarn build';
@@ -33,10 +35,12 @@ const handleBuildingArtifactByProject = (
 		.run();
 
 const isMavenOrNpm: P.Predicate<ProjectType> = pipe(isMaven, P.or(isNpm));
+const isNotKubernetesOnly: P.Predicate<CommandType> = P.not(isKubernetesOnly);
 
 const execute: StageExecuteFn = (context) =>
 	handleBuildingArtifactByProject(context);
-const commandAllowsStage: P.Predicate<BuildContext> = () => true;
+const commandAllowsStage: P.Predicate<BuildContext> = (context) =>
+	isNotKubernetesOnly(context.commandInfo.type);
 const projectAllowsStage: P.Predicate<BuildContext> = (context) =>
 	isMavenOrNpm(context.projectType);
 

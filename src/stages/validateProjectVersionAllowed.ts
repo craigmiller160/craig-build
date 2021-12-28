@@ -14,6 +14,8 @@ import * as A from 'fp-ts/Array';
 import { isRelease } from '../context/projectInfoUtils';
 import { Stage, StageExecuteFn } from './Stage';
 import * as P from 'fp-ts/Predicate';
+import { CommandType } from '../context/CommandType';
+import { isKubernetesOnly } from '../context/commandTypeUtils';
 
 const isReleaseVersionUnique = (
 	nexusResult: NexusSearchResult,
@@ -58,12 +60,15 @@ const handleValidationByProject = (
 		)
 		.run();
 
+const isNotKubernetesOnly: P.Predicate<CommandType> = P.not(isKubernetesOnly);
+
 const execute: StageExecuteFn = (context) =>
 	pipe(
 		handleValidationByProject(context),
 		TE.map(() => context)
 	);
-const commandAllowsStage: P.Predicate<BuildContext> = () => true;
+const commandAllowsStage: P.Predicate<BuildContext> = (context) =>
+	isNotKubernetesOnly(context.commandInfo.type);
 const projectAllowsStage: P.Predicate<BuildContext> = (context) =>
 	isRelease(context.projectInfo);
 

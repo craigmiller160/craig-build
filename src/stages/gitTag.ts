@@ -6,6 +6,8 @@ import { pipe } from 'fp-ts/function';
 import { runCommand } from '../command/runCommand';
 import { Stage, StageExecuteFn } from './Stage';
 import * as P from 'fp-ts/Predicate';
+import { CommandType } from '../context/CommandType';
+import { isKubernetesOnly } from '../context/commandTypeUtils';
 
 const doGitTag = (context: BuildContext): TE.TaskEither<Error, BuildContext> =>
 	pipe(
@@ -21,8 +23,11 @@ const handleGitTagByProject = (
 		.with({ projectInfo: when(isRelease) }, doGitTag)
 		.run();
 
+const isNotKubernetesOnly: P.Predicate<CommandType> = P.not(isKubernetesOnly);
+
 const execute: StageExecuteFn = (context) => handleGitTagByProject(context);
-const commandAllowsStage: P.Predicate<BuildContext> = () => true;
+const commandAllowsStage: P.Predicate<BuildContext> = (context) =>
+	isNotKubernetesOnly(context.commandInfo.type);
 const projectAllowsStage: P.Predicate<BuildContext> = (context) =>
 	isRelease(context.projectInfo);
 
