@@ -73,7 +73,7 @@ describe('execute.kubernetesOnly', () => {
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
-				type: CommandType.FullBuild
+				type: CommandType.KubernetesOnly
 			},
 			projectType: ProjectType.MavenApplication,
 			projectInfo: {
@@ -93,7 +93,7 @@ describe('execute.kubernetesOnly', () => {
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
-				type: CommandType.FullBuild
+				type: CommandType.KubernetesOnly
 			},
 			projectType: ProjectType.MavenApplication,
 			projectInfo: {
@@ -113,7 +113,7 @@ describe('execute.kubernetesOnly', () => {
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
-				type: CommandType.FullBuild
+				type: CommandType.KubernetesOnly
 			},
 			projectType: ProjectType.MavenLibrary,
 			projectInfo: {
@@ -133,7 +133,7 @@ describe('execute.kubernetesOnly', () => {
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
-				type: CommandType.FullBuild
+				type: CommandType.KubernetesOnly
 			},
 			projectType: ProjectType.MavenLibrary,
 			projectInfo: {
@@ -153,7 +153,7 @@ describe('execute.kubernetesOnly', () => {
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
-				type: CommandType.FullBuild
+				type: CommandType.KubernetesOnly
 			},
 			projectType: ProjectType.NpmApplication,
 			projectInfo: {
@@ -174,7 +174,7 @@ describe('execute.kubernetesOnly', () => {
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
-				type: CommandType.FullBuild
+				type: CommandType.KubernetesOnly
 			},
 			projectType: ProjectType.NpmApplication,
 			projectInfo: {
@@ -195,7 +195,7 @@ describe('execute.kubernetesOnly', () => {
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
-				type: CommandType.FullBuild
+				type: CommandType.KubernetesOnly
 			},
 			projectType: ProjectType.NpmLibrary,
 			projectInfo: {
@@ -216,7 +216,7 @@ describe('execute.kubernetesOnly', () => {
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
-				type: CommandType.FullBuild
+				type: CommandType.KubernetesOnly
 			},
 			projectType: ProjectType.NpmLibrary,
 			projectInfo: {
@@ -237,7 +237,7 @@ describe('execute.kubernetesOnly', () => {
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
-				type: CommandType.FullBuild
+				type: CommandType.KubernetesOnly
 			},
 			projectType: ProjectType.DockerApplication,
 			projectInfo: {
@@ -258,7 +258,7 @@ describe('execute.kubernetesOnly', () => {
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
-				type: CommandType.FullBuild
+				type: CommandType.KubernetesOnly
 			},
 			projectType: ProjectType.DockerApplication,
 			projectInfo: {
@@ -279,7 +279,7 @@ describe('execute.kubernetesOnly', () => {
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
-				type: CommandType.FullBuild
+				type: CommandType.KubernetesOnly
 			},
 			projectType: ProjectType.DockerImage,
 			projectInfo: {
@@ -300,7 +300,7 @@ describe('execute.kubernetesOnly', () => {
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
-				type: CommandType.FullBuild
+				type: CommandType.KubernetesOnly
 			},
 			projectType: ProjectType.DockerImage,
 			projectInfo: {
