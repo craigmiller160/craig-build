@@ -4,6 +4,7 @@ import { BuildContext } from '../../src/context/BuildContext';
 import { validateGitTag } from '../../src/stages/validateGitTag';
 import * as TE from 'fp-ts/TaskEither';
 import '@relmify/jest-fp-ts';
+import { VersionType } from '../../src/context/VersionType';
 
 const baseBuildContext = createBuildContext();
 const versions = 'v0.0.1\nv0.1.1';
@@ -19,7 +20,7 @@ describe('validateGitTag', () => {
 			...baseBuildContext,
 			projectInfo: {
 				...baseBuildContext.projectInfo,
-				isPreRelease: false,
+				versionType: VersionType.Release,
 				version: '1.0.0'
 			}
 		};
@@ -36,7 +37,7 @@ describe('validateGitTag', () => {
 			...baseBuildContext,
 			projectInfo: {
 				...baseBuildContext.projectInfo,
-				isPreRelease: false,
+				versionType: VersionType.Release,
 				version: '0.1.1'
 			}
 		};

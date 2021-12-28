@@ -15,13 +15,14 @@ import {
 	IMAGE_VERSION_ENV
 } from '../../src/configFileTypes/constants';
 import { stringifyJson } from '../../src/functions/Json';
+import { VersionType } from '../../src/context/VersionType';
 
 const baseBuildContext = createBuildContext();
 const projectInfo: ProjectInfo = {
 	group: 'io.craigmiller160',
 	name: 'email-service',
 	version: '1.0.0',
-	isPreRelease: false
+	versionType: VersionType.Release
 };
 
 describe('validateKubernetesConfig', () => {

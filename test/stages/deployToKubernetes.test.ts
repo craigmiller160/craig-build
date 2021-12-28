@@ -8,13 +8,14 @@ import '@relmify/jest-fp-ts';
 import path from 'path';
 import { baseWorkingDir } from '../testutils/baseWorkingDir';
 import * as TE from 'fp-ts/TaskEither';
+import { VersionType } from '../../src/context/VersionType';
 
 const baseBuildContext = createBuildContext({
 	projectInfo: {
 		group: 'craigmiller160',
 		name: 'my-project',
 		version: '1.0.0',
-		isPreRelease: false
+		versionType: VersionType.Release
 	}
 });
 

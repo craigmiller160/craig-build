@@ -2,9 +2,10 @@ import * as E from 'fp-ts/Either';
 import { PackageJson } from '../../src/configFileTypes/PackageJson';
 import { readFile } from '../../src/functions/File';
 import { getBuildToolInfo } from '../../src/stages/getBuildToolInfo';
-import { createIncompleteBuildContext } from '../testutils/createBuildContext';
 import '@relmify/jest-fp-ts';
 import * as O from 'fp-ts/Option';
+import { createBuildContext } from '../testutils/createBuildContext';
+import { VersionType } from '../../src/context/VersionType';
 
 jest.mock('../../src/functions/File', () => ({
 	readFile: jest.fn()
@@ -21,7 +22,7 @@ const preReleasePackageJson: PackageJson = {
 	version: '1.0.0-beta'
 };
 
-const buildContext = createIncompleteBuildContext();
+const buildContext = createBuildContext();
 
 describe('getBuildToolInfo', () => {
 	beforeEach(() => {
@@ -35,12 +36,12 @@ describe('getBuildToolInfo', () => {
 		const result = await getBuildToolInfo.execute(buildContext)();
 		expect(result).toEqualRight({
 			...buildContext,
-			buildToolInfo: O.some({
+			buildToolInfo: {
 				group: 'craigmiller160',
 				name: 'craig-build',
 				version: '1.0.0-beta',
-				isPreRelease: true
-			})
+				versionType: VersionType.PreRelease
+			}
 		});
 	});
 
@@ -51,12 +52,12 @@ describe('getBuildToolInfo', () => {
 		const result = await getBuildToolInfo.execute(buildContext)();
 		expect(result).toEqualRight({
 			...buildContext,
-			buildToolInfo: O.some({
+			buildToolInfo: {
 				group: 'craigmiller160',
 				name: 'craig-build',
 				version: '1.0.0',
-				isPreRelease: false
-			})
+				versionType: VersionType.Release
+			}
 		});
 	});
 });

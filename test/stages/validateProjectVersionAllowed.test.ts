@@ -10,6 +10,7 @@ import ProjectType from '../../old-src/types/ProjectType';
 import { validateProjectVersionAllowed } from '../../src/stages/validateProjectVersionAllowed';
 import { NexusSearchResultItem } from '../../src/services/NexusSearchResult';
 import * as TE from 'fp-ts/TaskEither';
+import { VersionType } from '../../src/context/VersionType';
 
 jest.mock('../../src/services/NexusRepoApi', () => ({
 	searchForDockerReleases: jest.fn(),
@@ -47,7 +48,7 @@ describe('validateProjectVersionAllowed', () => {
 			projectType: ProjectType.NpmApplication,
 			projectInfo: {
 				...baseBuildContext.projectInfo,
-				isPreRelease: false
+				versionType: VersionType.Release
 			}
 		};
 
@@ -66,7 +67,7 @@ describe('validateProjectVersionAllowed', () => {
 			projectType: ProjectType.MavenApplication,
 			projectInfo: {
 				...baseBuildContext.projectInfo,
-				isPreRelease: false
+				versionType: VersionType.Release
 			}
 		};
 
@@ -85,7 +86,7 @@ describe('validateProjectVersionAllowed', () => {
 			projectType: ProjectType.DockerApplication,
 			projectInfo: {
 				...baseBuildContext.projectInfo,
-				isPreRelease: false
+				versionType: VersionType.Release
 			}
 		};
 
@@ -104,7 +105,7 @@ describe('validateProjectVersionAllowed', () => {
 			projectType: ProjectType.NpmApplication,
 			projectInfo: {
 				...baseBuildContext.projectInfo,
-				isPreRelease: false
+				versionType: VersionType.Release
 			}
 		};
 
@@ -125,7 +126,7 @@ describe('validateProjectVersionAllowed', () => {
 			projectType: ProjectType.MavenApplication,
 			projectInfo: {
 				...baseBuildContext.projectInfo,
-				isPreRelease: false
+				versionType: VersionType.Release
 			}
 		};
 
@@ -146,7 +147,7 @@ describe('validateProjectVersionAllowed', () => {
 			projectType: ProjectType.DockerApplication,
 			projectInfo: {
 				...baseBuildContext.projectInfo,
-				isPreRelease: false
+				versionType: VersionType.Release
 			}
 		};
 

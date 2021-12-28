@@ -4,6 +4,7 @@ import { BuildContext } from '../../src/context/BuildContext';
 import { gitTag } from '../../src/stages/gitTag';
 import '@relmify/jest-fp-ts';
 import * as TE from 'fp-ts/TaskEither';
+import { VersionType } from '../../src/context/VersionType';
 
 const baseBuildContext = createBuildContext();
 
@@ -14,7 +15,7 @@ describe('gitTag', () => {
 			...baseBuildContext,
 			projectInfo: {
 				...baseBuildContext.projectInfo,
-				isPreRelease: false,
+				versionType: VersionType.Release,
 				version: '1.0.0'
 			}
 		};

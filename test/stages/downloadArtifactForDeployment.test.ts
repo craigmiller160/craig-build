@@ -15,6 +15,7 @@ import * as TE from 'fp-ts/TaskEither';
 import { NexusSearchResultItem } from '../../src/services/NexusSearchResult';
 import { rmDirIfExists, mkdir } from '../../src/functions/File';
 import * as E from 'fp-ts/Either';
+import { VersionType } from '../../src/context/VersionType';
 
 jest.mock('../../src/services/NexusRepoApi', () => ({
 	downloadArtifact: jest.fn(),
@@ -57,7 +58,7 @@ const baseBuildContext = createBuildContext({
 	projectInfo: {
 		group: 'craigmiller160',
 		name: 'my-project',
-		isPreRelease: false,
+		versionType: VersionType.Release,
 		version: ''
 	}
 });
@@ -81,7 +82,7 @@ describe('downloadArtifactForDeployment', () => {
 			projectInfo: {
 				...baseBuildContext.projectInfo,
 				version: '1.0.0',
-				isPreRelease: false
+				versionType: VersionType.Release
 			}
 		};
 
@@ -117,7 +118,7 @@ describe('downloadArtifactForDeployment', () => {
 			projectInfo: {
 				...baseBuildContext.projectInfo,
 				version: '1.1.0-20211225.003019-1',
-				isPreRelease: true
+				versionType: VersionType.PreRelease
 			}
 		};
 
@@ -153,7 +154,7 @@ describe('downloadArtifactForDeployment', () => {
 			projectInfo: {
 				...baseBuildContext.projectInfo,
 				version: '1.0.0',
-				isPreRelease: false
+				versionType: VersionType.Release
 			}
 		};
 
@@ -189,7 +190,7 @@ describe('downloadArtifactForDeployment', () => {
 			projectInfo: {
 				...baseBuildContext.projectInfo,
 				version: '1.0.0-beta.5',
-				isPreRelease: true
+				versionType: VersionType.PreRelease
 			}
 		};
 
