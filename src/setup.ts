@@ -1,9 +1,23 @@
-import * as O from 'fp-ts/Option';
-import { IncompleteBuildContext } from './context/IncompleteBuildContext';
+import { BuildContext } from './context/BuildContext';
+import { CommandType } from './context/CommandType';
+import { VersionType } from './context/VersionType';
+import { ProjectType } from './context/ProjectType';
 
-export const setupBuildContext = (): IncompleteBuildContext => ({
-	commandInfo: O.none,
-	buildToolInfo: O.none,
-	projectType: O.none,
-	projectInfo: O.none
+export const setupBuildContext = (): BuildContext => ({
+	commandInfo: {
+		type: CommandType.Unknown
+	},
+	buildToolInfo: {
+		group: '',
+		name: '',
+		version: '',
+		versionType: VersionType.Unknown
+	},
+	projectType: ProjectType.Unknown,
+	projectInfo: {
+		group: '',
+		name: '',
+		version: '',
+		versionType: VersionType.Unknown
+	}
 });
