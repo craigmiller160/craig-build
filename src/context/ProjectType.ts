@@ -4,5 +4,6 @@ export enum ProjectType {
 	NpmApplication = 'NpmApplication',
 	MavenApplication = 'MavenApplication',
 	DockerApplication = 'DockerApplication',
-	DockerImage = 'DockerImage'
+	DockerImage = 'DockerImage',
+	Unknown = 'Unknown'
 }

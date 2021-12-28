@@ -1,4 +1,4 @@
-import { EARLY_STAGES, STAGES } from '../../src/stages';
+import { stages } from '../../src/stages';
 import { getCommandInfo } from '../../src/stages/getCommandInfo';
 import { getBuildToolInfo } from '../../src/stages/getBuildToolInfo';
 import { validateBuildToolVersion } from '../../src/stages/validateBuildToolVersion';
@@ -18,21 +18,15 @@ import { buildAndPushDocker } from '../../src/stages/buildAndPushDocker';
 import { deployToKubernetes } from '../../src/stages/deployToKubernetes';
 
 describe('stages', () => {
-	it('all early stages are added in the correct order', () => {
-		const stageNames = EARLY_STAGES.map((_) => _.name);
+	it('all stages are added in the correct order', () => {
+		const stageNames = stages.map((_) => _.name);
 		expect(stageNames).toEqual([
 			getCommandInfo.name,
 			getBuildToolInfo.name,
 			validateBuildToolVersion.name,
 			checkForUncommittedChanges.name,
 			getProjectType.name,
-			getProjectInfo.name
-		]);
-	});
-
-	it('all main stages are added in the correct order', () => {
-		const stageNames = STAGES.map((_) => _.name);
-		expect(stageNames).toEqual([
+			getProjectInfo.name,
 			validateDependencyVersions.name,
 			validateProjectVersionAllowed.name,
 			validateKubernetesConfig.name,

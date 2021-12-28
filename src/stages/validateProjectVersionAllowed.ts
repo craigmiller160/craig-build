@@ -1,4 +1,3 @@
-import { Stage, StageFunction } from './Stage';
 import { BuildContext } from '../context/BuildContext';
 import { pipe } from 'fp-ts/function';
 import * as TE from 'fp-ts/TaskEither';
@@ -12,8 +11,9 @@ import {
 } from '../services/NexusRepoApi';
 import { NexusSearchResult } from '../services/NexusSearchResult';
 import * as A from 'fp-ts/Array';
-import { logger } from '../logger';
 import { isRelease } from '../context/projectInfoUtils';
+import { Stage, StageExecuteFn } from './Stage';
+import * as P from 'fp-ts/Predicate';
 
 const isReleaseVersionUnique = (
 	nexusResult: NexusSearchResult,
@@ -56,18 +56,20 @@ const handleValidationByProject = (
 			{ projectType: when(isDocker), projectInfo: when(isRelease) },
 			(_) => validateReleaseVersion(_, searchForDockerReleases)
 		)
-		.otherwise(() => {
-			logger.debug('Skipping stage');
-			return TE.right(context);
-		});
+		.run();
 
-const execute: StageFunction = (context) =>
+const execute: StageExecuteFn = (context) =>
 	pipe(
 		handleValidationByProject(context),
 		TE.map(() => context)
 	);
+const commandAllowsStage: P.Predicate<BuildContext> = () => true;
+const projectAllowsStage: P.Predicate<BuildContext> = (context) =>
+	isRelease(context.projectInfo);
 
 export const validateProjectVersionAllowed: Stage = {
 	name: 'Validate Project Version Allowed',
-	execute
+	execute,
+	commandAllowsStage,
+	projectAllowsStage
 };

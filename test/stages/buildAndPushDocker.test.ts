@@ -6,6 +6,7 @@ import { buildAndPushDocker } from '../../src/stages/buildAndPushDocker';
 import { BuildContext } from '../../src/context/BuildContext';
 import { ProjectType } from '../../src/context/ProjectType';
 import * as TE from 'fp-ts/TaskEither';
+import { VersionType } from '../../src/context/VersionType';
 
 jest.mock('shell-env', () => ({
 	sync: jest.fn()
@@ -16,7 +17,7 @@ const baseBuildContext = createBuildContext({
 		group: 'craigmiller160',
 		name: 'my-project',
 		version: '1.0.0',
-		isPreRelease: false
+		versionType: VersionType.Release
 	}
 });
 
@@ -88,34 +89,6 @@ describe('buildAndPushDocker', () => {
 		expect(result).toEqualLeft(
 			new Error('Missing Docker credential environment variables')
 		);
-
-		expect(runCommandMock).not.toHaveBeenCalled();
-	});
-
-	it('skips for npm library', async () => {
-		prepareEnvMock();
-
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.NpmLibrary
-		};
-
-		const result = await buildAndPushDocker.execute(buildContext)();
-		expect(result).toEqualRight(buildContext);
-
-		expect(runCommandMock).not.toHaveBeenCalled();
-	});
-
-	it('skips for maven library', async () => {
-		prepareEnvMock();
-
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.MavenLibrary
-		};
-
-		const result = await buildAndPushDocker.execute(buildContext)();
-		expect(result).toEqualRight(buildContext);
 
 		expect(runCommandMock).not.toHaveBeenCalled();
 	});

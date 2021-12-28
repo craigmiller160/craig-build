@@ -15,6 +15,7 @@ import * as TE from 'fp-ts/TaskEither';
 import { baseWorkingDir } from '../testutils/baseWorkingDir';
 import path from 'path';
 import { homedir } from 'os';
+import { VersionType } from '../../src/context/VersionType';
 
 jest.mock('../../src/services/NexusRepoApi', () => ({
 	searchForNpmBetas: jest.fn(),
@@ -46,23 +47,6 @@ describe('preparePreReleaseVersion', () => {
 		jest.resetAllMocks();
 	});
 
-	it('skips for release project', async () => {
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectInfo: {
-				...baseBuildContext.projectInfo,
-				isPreRelease: false
-			}
-		};
-
-		const result = await preparePreReleaseVersion.execute(buildContext)();
-		expect(result).toEqualRight(buildContext);
-
-		expect(searchForNpmBetasMock).not.toHaveBeenCalled();
-		expect(searchForDockerBetasMock).not.toHaveBeenCalled();
-		expect(homedirMock).not.toHaveBeenCalled();
-	});
-
 	it('prepares pre-release version for NPM project based on existing version', async () => {
 		const nexusResult: NexusSearchResult = {
 			items: [createItem('1.0.0-beta.2')]
@@ -76,7 +60,7 @@ describe('preparePreReleaseVersion', () => {
 				...baseBuildContext.projectInfo,
 				group: 'craigmiller160',
 				name: 'my-project',
-				isPreRelease: true,
+				versionType: VersionType.PreRelease,
 				version: '1.0.0-beta'
 			}
 		};
@@ -111,7 +95,7 @@ describe('preparePreReleaseVersion', () => {
 				...baseBuildContext.projectInfo,
 				group: 'craigmiller160',
 				name: 'my-project',
-				isPreRelease: true,
+				versionType: VersionType.PreRelease,
 				version: '1.0.0-beta'
 			}
 		};
@@ -144,7 +128,7 @@ describe('preparePreReleaseVersion', () => {
 				...baseBuildContext.projectInfo,
 				group: 'io.craigmiller160',
 				name: 'my-project',
-				isPreRelease: true,
+				versionType: VersionType.PreRelease,
 				version: '1.1.0-SNAPSHOT'
 			}
 		};
@@ -177,7 +161,7 @@ describe('preparePreReleaseVersion', () => {
 				...baseBuildContext.projectInfo,
 				group: 'craigmiller160',
 				name: 'my-project',
-				isPreRelease: true,
+				versionType: VersionType.PreRelease,
 				version: '1.0.0-beta'
 			}
 		};
@@ -211,7 +195,7 @@ describe('preparePreReleaseVersion', () => {
 				...baseBuildContext.projectInfo,
 				group: 'craigmiller160',
 				name: 'my-project',
-				isPreRelease: true,
+				versionType: VersionType.PreRelease,
 				version: '1.0.0-beta'
 			}
 		};

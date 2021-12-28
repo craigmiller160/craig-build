@@ -1,13 +1,12 @@
-import { Stage, StageFunction } from './Stage';
 import { BuildContext } from '../context/BuildContext';
 import * as TE from 'fp-ts/TaskEither';
 import { match, when } from 'ts-pattern';
-import { logger } from '../logger';
 import { wait } from '../utils/wait';
 import { isApplication, isDocker } from '../context/projectTypeUtils';
 import { pipe } from 'fp-ts/function';
 import { ProjectType } from '../context/ProjectType';
 import * as P from 'fp-ts/Predicate';
+import { Stage, StageExecuteFn } from './Stage';
 
 const WAIT_TIME_MILLIS = 3000;
 
@@ -34,14 +33,16 @@ const handleWaitingByProject = (
 			{ projectType: when(isNonDockerApplication) },
 			waitForNonDockerApplication
 		)
-		.otherwise(() => {
-			logger.debug('Skipping stage');
-			return TE.right(context);
-		});
+		.run();
 
-const execute: StageFunction = (context) => handleWaitingByProject(context);
+const execute: StageExecuteFn = (context) => handleWaitingByProject(context);
+const commandAllowsStage: P.Predicate<BuildContext> = () => true;
+const projectAllowsStage: P.Predicate<BuildContext> = (context) =>
+	isNonDockerApplication(context.projectType);
 
 export const waitOnNexusUpdate: Stage = {
 	name: 'Wait On Nexus Update',
-	execute
+	execute,
+	commandAllowsStage,
+	projectAllowsStage
 };

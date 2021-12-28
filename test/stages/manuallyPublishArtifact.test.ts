@@ -17,30 +17,6 @@ describe('manuallyPublishArtifact', () => {
 		jest.resetAllMocks();
 	});
 
-	it('skips for Maven project', async () => {
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.MavenApplication
-		};
-
-		const result = await manuallyPublishArtifact.execute(buildContext)();
-		expect(result).toEqualRight(buildContext);
-
-		expect(runCommandMock).not.toHaveBeenCalled();
-	});
-
-	it('skips for Docker project', async () => {
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.DockerApplication
-		};
-
-		const result = await manuallyPublishArtifact.execute(buildContext)();
-		expect(result).toEqualRight(buildContext);
-
-		expect(runCommandMock).not.toHaveBeenCalled();
-	});
-
 	it('publishes NPM project', async () => {
 		runCommandMock.mockImplementation(() => TE.right(''));
 		const buildContext: BuildContext = {

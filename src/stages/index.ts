@@ -1,4 +1,3 @@
-import { EarlyStage, Stage } from './Stage';
 import { getCommandInfo } from './getCommandInfo';
 import { getBuildToolInfo } from './getBuildToolInfo';
 import { validateBuildToolVersion } from './validateBuildToolVersion';
@@ -16,17 +15,15 @@ import { gitTag } from './gitTag';
 import { downloadArtifactForDeployment } from './downloadArtifactForDeployment';
 import { buildAndPushDocker } from './buildAndPushDocker';
 import { deployToKubernetes } from './deployToKubernetes';
+import { Stage } from './Stage';
 
-export const EARLY_STAGES: EarlyStage[] = [
+export const stages: Stage[] = [
 	getCommandInfo,
 	getBuildToolInfo,
 	validateBuildToolVersion,
 	checkForUncommittedChanges,
 	getProjectType,
-	getProjectInfo
-];
-
-export const STAGES: Stage[] = [
+	getProjectInfo,
 	validateDependencyVersions,
 	validateProjectVersionAllowed,
 	validateKubernetesConfig,

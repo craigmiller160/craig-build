@@ -1,14 +1,28 @@
 import { setupBuildContext } from '../src/setup';
-import * as O from 'fp-ts/Option';
+import { CommandType } from '../src/context/CommandType';
+import { VersionType } from '../src/context/VersionType';
+import { ProjectType } from '../src/context/ProjectType';
 
 describe('setup', () => {
 	it('setupBuildContext', () => {
 		const buildContext = setupBuildContext();
 		expect(buildContext).toEqual({
-			commandInfo: O.none,
-			buildToolInfo: O.none,
-			projectType: O.none,
-			projectInfo: O.none
+			commandInfo: {
+				type: CommandType.Unknown
+			},
+			buildToolInfo: {
+				group: '',
+				name: '',
+				version: '',
+				versionType: VersionType.Unknown
+			},
+			projectType: ProjectType.Unknown,
+			projectInfo: {
+				group: '',
+				name: '',
+				version: '',
+				versionType: VersionType.Unknown
+			}
 		});
 	});
 });

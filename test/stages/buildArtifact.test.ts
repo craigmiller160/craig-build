@@ -17,18 +17,6 @@ describe('buildArtifact', () => {
 		jest.resetAllMocks();
 	});
 
-	it('skips docker projects', async () => {
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.DockerApplication
-		};
-
-		const result = await buildArtifact.execute(buildContext)();
-		expect(result).toEqualRight(buildContext);
-
-		expect(runCommandMock).not.toHaveBeenCalled();
-	});
-
 	it('builds maven artifact', async () => {
 		runCommandMock.mockImplementation(() => TE.right(''));
 		const buildContext: BuildContext = {

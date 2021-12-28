@@ -1,4 +1,3 @@
-import { Stage, StageFunction } from './Stage';
 import { BuildContext } from '../context/BuildContext';
 import * as TE from 'fp-ts/TaskEither';
 import * as P from 'fp-ts/Predicate';
@@ -6,13 +5,13 @@ import { match, when } from 'ts-pattern';
 import { ProjectType } from '../context/ProjectType';
 import { pipe } from 'fp-ts/function';
 import { isApplication, isDocker } from '../context/projectTypeUtils';
-import { logger } from '../logger';
 import { ProjectInfo } from '../context/ProjectInfo';
 import { DOCKER_REPO_PREFIX } from '../configFileTypes/constants';
 import shellEnv from 'shell-env';
 import { EnvironmentVariables } from '../env/EnvironmentVariables';
 import * as O from 'fp-ts/Option';
 import { runCommand } from '../command/runCommand';
+import { Stage, StageExecuteFn } from './Stage';
 
 interface DockerCreds {
 	readonly userName: string;
@@ -90,14 +89,18 @@ const handleDockerBuildByProject = (
 ): TE.TaskEither<Error, BuildContext> =>
 	match(context)
 		.with({ projectType: when(isDockerOrApplication) }, runDockerBuild)
-		.otherwise(() => {
-			logger.debug('Skipping stage');
-			return TE.right(context);
-		});
+		.run();
 
-const execute: StageFunction = (context) => handleDockerBuildByProject(context);
+const commandAllowsStage: P.Predicate<BuildContext> = () => true;
+const projectAllowsStage: P.Predicate<BuildContext> = (context) =>
+	isDockerOrApplication(context.projectType);
+
+const execute: StageExecuteFn = (context) =>
+	handleDockerBuildByProject(context);
 
 export const buildAndPushDocker: Stage = {
 	name: 'Build and Push Docker',
-	execute
+	execute,
+	commandAllowsStage,
+	projectAllowsStage
 };

@@ -1,5 +1,3 @@
-import { createIncompleteBuildContext } from '../testutils/createBuildContext';
-import * as O from 'fp-ts/Option';
 import { validateBuildToolVersion } from '../../src/stages/validateBuildToolVersion';
 import { searchForNpmReleases } from '../../src/services/NexusRepoApi';
 import NexusSearchResult, {
@@ -9,6 +7,8 @@ import * as TE from 'fp-ts/TaskEither';
 import * as T from 'fp-ts/Task';
 import '@relmify/jest-fp-ts';
 import { readUserInput } from '../../src/utils/readUserInput';
+import { createBuildContext } from '../testutils/createBuildContext';
+import { VersionType } from '../../src/context/VersionType';
 
 jest.mock('../../src/services/NexusRepoApi', () => ({
 	searchForNpmReleases: jest.fn()
@@ -36,13 +36,13 @@ describe('validateBuildToolVersion', () => {
 	});
 
 	it('tool version is highest release version', async () => {
-		const buildContext = createIncompleteBuildContext({
-			buildToolInfo: O.some({
+		const buildContext = createBuildContext({
+			buildToolInfo: {
 				group: 'craigmiller160',
 				name: 'craig-build',
 				version: '1.1.0',
-				isPreRelease: false
-			})
+				versionType: VersionType.Release
+			}
 		});
 		const nexusResult: NexusSearchResult = {
 			items: [createNexusItem('1.0.0')]
@@ -61,13 +61,13 @@ describe('validateBuildToolVersion', () => {
 	});
 
 	it('tool version is not highest release version', async () => {
-		const buildContext = createIncompleteBuildContext({
-			buildToolInfo: O.some({
+		const buildContext = createBuildContext({
+			buildToolInfo: {
 				group: 'craigmiller160',
 				name: 'craig-build',
 				version: '1.1.0',
-				isPreRelease: false
-			})
+				versionType: VersionType.Release
+			}
 		});
 		const nexusResult: NexusSearchResult = {
 			items: [createNexusItem('1.2.0')]
@@ -90,13 +90,13 @@ describe('validateBuildToolVersion', () => {
 	});
 
 	it('user allows tool with pre-release version to run', async () => {
-		const buildContext = createIncompleteBuildContext({
-			buildToolInfo: O.some({
+		const buildContext = createBuildContext({
+			buildToolInfo: {
 				group: 'craigmiller160',
 				name: 'craig-build',
 				version: '1.0.0-beta',
-				isPreRelease: true
-			})
+				versionType: VersionType.PreRelease
+			}
 		});
 		readUserInputMock.mockImplementation(() => T.of('y'));
 		const result = await validateBuildToolVersion.execute(buildContext)();
@@ -106,13 +106,13 @@ describe('validateBuildToolVersion', () => {
 	});
 
 	it('user does not allow tool with pre-release version to run', async () => {
-		const buildContext = createIncompleteBuildContext({
-			buildToolInfo: O.some({
+		const buildContext = createBuildContext({
+			buildToolInfo: {
 				group: 'craigmiller160',
 				name: 'craig-build',
 				version: '1.0.0-beta',
-				isPreRelease: true
-			})
+				versionType: VersionType.PreRelease
+			}
 		});
 		readUserInputMock.mockImplementation(() => T.of('n'));
 		const result = await validateBuildToolVersion.execute(buildContext)();
