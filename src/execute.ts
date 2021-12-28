@@ -3,21 +3,11 @@ import * as TE from 'fp-ts/TaskEither';
 import * as A from 'fp-ts/Array';
 import { pipe } from 'fp-ts/function';
 import { logger } from './logger';
-import { setupStages, conditionalStages } from './stages';
 import * as EU from './functions/EitherUtils';
 import { stringifyJson } from './functions/Json';
-import { IncompleteBuildContext } from './context/IncompleteBuildContext';
-import { Context } from './context/Context';
-import { toLoggableContext } from './context/toLoggableContext';
-import { fromIncompleteContext } from './context/fromIncompleteContext';
-import { BaseStage, ConditionalStage } from './stages/Stage';
 import * as P from 'fp-ts/Predicate';
 import { match, when } from 'ts-pattern';
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
-const isConditionalStage = (stage: BaseStage<any>): stage is ConditionalStage =>
-	(stage as any).commandAllowsStage !== undefined;
-/* eslint-enable @typescript-eslint/no-explicit-any */
+import { stages } from './stages';
 
 const shouldStageRun = <Ctx extends Context>(
 	context: Ctx,
@@ -43,6 +33,16 @@ const executeStage = <Ctx extends Context>(
 			return TE.right(context);
 		});
 
+const verifyAndExecuteStage = (contextTE: TE.TaskEither<Error, BuildContext>): TE.TaskEither<Error, BuildContext> => {
+	pipe(
+		contextTE,
+		TE.map((_) => {
+			logger.info(`Starting stage: ${stage.name}`);
+			return _;
+		}),
+	)
+}
+
 const setupAndExecuteStage = <Ctx extends Context>(
 	contextTE: TE.TaskEither<Error, Ctx>,
 	stage: BaseStage<Ctx>
@@ -57,7 +57,7 @@ const setupAndExecuteStage = <Ctx extends Context>(
 		TE.map((_) => {
 			logger.info(
 				`Completed stage: ${stage.name} ${EU.getOrThrow(
-					stringifyJson(toLoggableContext(_), 2)
+					stringifyJson(_, 2)
 				)}`
 			);
 			return _;
@@ -69,27 +69,12 @@ const setupAndExecuteStage = <Ctx extends Context>(
 		})
 	);
 
-const executeAllStages = <Ctx extends Context>(
-	context: Ctx,
-	stages: BaseStage<Ctx>[]
-): TE.TaskEither<Error, Ctx> =>
+export const execute = (
+	context: BuildContext
+): TE.TaskEither<Error, BuildContext> =>
 	pipe(
 		stages,
-		A.reduce(TE.right<Error, Ctx>(context), (ctxTE, stage) =>
+		A.reduce(TE.right<Error, BuildContext>(context), (ctxTE, stage) =>
 			setupAndExecuteStage(ctxTE, stage)
 		)
-	);
-
-const incompleteToCompleteContext = (
-	context: IncompleteBuildContext
-): TE.TaskEither<Error, BuildContext> =>
-	pipe(fromIncompleteContext(context), TE.fromEither);
-
-export const execute = (
-	context: IncompleteBuildContext
-): TE.TaskEither<Error, BuildContext> =>
-	pipe(
-		executeAllStages(context, setupStages),
-		TE.chain(incompleteToCompleteContext),
-		TE.chain((_) => executeAllStages(_, conditionalStages))
 	);
