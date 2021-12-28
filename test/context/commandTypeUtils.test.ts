@@ -1,5 +1,9 @@
 import { CommandType } from '../../src/context/CommandType';
-import { isDockerOnly, isFullBuild, isKubernetesOnly } from '../../src/context/commandTypeUtils';
+import {
+	isDockerOnly,
+	isFullBuild,
+	isKubernetesOnly
+} from '../../src/context/commandTypeUtils';
 
 export {};
 

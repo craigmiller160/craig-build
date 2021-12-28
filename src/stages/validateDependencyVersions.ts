@@ -21,7 +21,6 @@ import { PackageJson } from '../configFileTypes/PackageJson';
 import { isRelease } from '../context/projectInfoUtils';
 import { Stage, StageExecuteFn } from './Stage';
 import { ProjectType } from '../context/ProjectType';
-import { Command } from 'commander';
 import { CommandType } from '../context/CommandType';
 import { isKubernetesOnly } from '../context/commandTypeUtils';
 
