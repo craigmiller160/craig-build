@@ -1,5 +1,5 @@
-import { Stage } from '../../src/stages/Stage';
-import { BuildContext } from '../../src/context/BuildContext';
+import { Stage } from '../stages/Stage';
+import { BuildContext } from '../context/BuildContext';
 import { StageExecution } from './StageExecution';
 import { StageExecutionStatus } from './StageExecutionStatus';
 import { match, when } from 'ts-pattern';
