@@ -13,15 +13,13 @@ import { Stage, StageExecuteFn } from './Stage';
 import { BuildContext } from '../context/BuildContext';
 import { VersionType } from '../context/VersionType';
 import { match, when } from 'ts-pattern';
+import { regexTest } from '../functions/RegExp';
 
 const VERSION_REGEX = /^.*-beta$/;
 
 const getVersionType = (version: string): VersionType =>
 	match(version)
-		.with(
-			when<string>((_) => VERSION_REGEX.test(_)),
-			() => VersionType.PreRelease
-		)
+		.with(when(regexTest(VERSION_REGEX)), () => VersionType.PreRelease)
 		.otherwise(() => VersionType.Release);
 
 const execute: StageExecuteFn = (context) =>
