@@ -35,14 +35,14 @@ export const proceedIfProjectAllowed =
 			.with(
 				{
 					status: StageExecutionStatus.Proceed,
-					stage: when((_) => _.commandAllowsStage(context))
+					stage: when((_) => _.projectAllowsStage(context))
 				},
 				(_) => _
 			)
 			.with({ status: StageExecutionStatus.SkipForCommand }, (_) => _)
 			.otherwise((_) => ({
 				..._,
-				status: StageExecutionStatus.SkipForCommand
+				status: StageExecutionStatus.SkipForProject
 			}));
 
 export const executeIfAllowed =
