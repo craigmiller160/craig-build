@@ -19,10 +19,10 @@ const conditionallyExecuteStage = (
 	stage: Stage
 ): TE.TaskEither<Error, BuildContext> =>
 	pipe(
-		createStageExecution(stage, context),
-		proceedIfCommandAllows,
-		proceedIfProjectAllows,
-		executeIfAllowed
+		createStageExecution(stage),
+		proceedIfCommandAllows(context),
+		proceedIfProjectAllows(context),
+		executeIfAllowed(context)
 	);
 
 const executeStage = (

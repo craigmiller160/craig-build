@@ -8,61 +8,53 @@ import { logger } from '../logger';
 
 // TODO write tests for these
 
-export const createStageExecution = (
-	stage: Stage,
-	context: BuildContext
-): StageExecution => ({
+export const createStageExecution = (stage: Stage): StageExecution => ({
 	stage,
-	context,
 	status: StageExecutionStatus.Proceed
 });
 
-export const proceedIfCommandAllows = (
-	execution: StageExecution
-): StageExecution =>
-	match(execution)
-		.with(
-			{
-				status: StageExecutionStatus.Proceed,
-				stage: when((stage) =>
-					stage.commandAllowsStage(execution.context)
-				)
-			},
-			(_) => _
-		)
-		.with({ status: StageExecutionStatus.SkipForProject }, (_) => _)
-		.otherwise((_) => ({
-			..._,
-			status: StageExecutionStatus.SkipForCommand
-		}));
+export const proceedIfCommandAllows =
+	(context: BuildContext) =>
+	(execution: StageExecution): StageExecution =>
+		match(execution)
+			.with(
+				{
+					status: StageExecutionStatus.Proceed,
+					stage: when((_) => _.commandAllowsStage(context))
+				},
+				(_) => _
+			)
+			.with({ status: StageExecutionStatus.SkipForProject }, (_) => _)
+			.otherwise((_) => ({
+				..._,
+				status: StageExecutionStatus.SkipForCommand
+			}));
 
-export const proceedIfProjectAllows = (
-	execution: StageExecution
-): StageExecution =>
-	match(execution)
-		.with(
-			{
-				status: StageExecutionStatus.Proceed,
-				stage: when((stage) =>
-					stage.commandAllowsStage(execution.context)
-				)
-			},
-			(_) => _
-		)
-		.with({ status: StageExecutionStatus.SkipForCommand }, (_) => _)
-		.otherwise((_) => ({
-			..._,
-			status: StageExecutionStatus.SkipForCommand
-		}));
+export const proceedIfProjectAllows =
+	(context: BuildContext) =>
+	(execution: StageExecution): StageExecution =>
+		match(execution)
+			.with(
+				{
+					status: StageExecutionStatus.Proceed,
+					stage: when((_) => _.commandAllowsStage(context))
+				},
+				(_) => _
+			)
+			.with({ status: StageExecutionStatus.SkipForCommand }, (_) => _)
+			.otherwise((_) => ({
+				..._,
+				status: StageExecutionStatus.SkipForCommand
+			}));
 
-export const executeIfAllowed = (
-	execution: StageExecution
-): TE.TaskEither<Error, BuildContext> =>
-	match(execution)
-		.with({ status: StageExecutionStatus.Proceed }, (_) =>
-			_.stage.execute(_.context)
-		)
-		.otherwise(({ context, status }) => {
-			logger.debug(`Skipping stage. Reason: ${status}`);
-			return TE.right(context);
-		});
+export const executeIfAllowed =
+	(context: BuildContext) =>
+	(execution: StageExecution): TE.TaskEither<Error, BuildContext> =>
+		match(execution)
+			.with({ status: StageExecutionStatus.Proceed }, (_) =>
+				_.stage.execute(context)
+			)
+			.otherwise(({ status }) => {
+				logger.debug(`Skipping stage. Reason: ${status}`);
+				return TE.right(context);
+			});
