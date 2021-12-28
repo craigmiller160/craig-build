@@ -13,7 +13,7 @@ export const createStageExecution = (stage: Stage): StageExecution => ({
 	status: StageExecutionStatus.Proceed
 });
 
-export const proceedIfCommandAllows =
+export const proceedIfCommandAllowed =
 	(context: BuildContext) =>
 	(execution: StageExecution): StageExecution =>
 		match(execution)
@@ -30,7 +30,7 @@ export const proceedIfCommandAllows =
 				status: StageExecutionStatus.SkipForCommand
 			}));
 
-export const proceedIfProjectAllows =
+export const proceedIfProjectAllowed =
 	(context: BuildContext) =>
 	(execution: StageExecution): StageExecution =>
 		match(execution)
