@@ -35,8 +35,7 @@ const handleWaitingByProject = (
 		)
 		.run();
 
-const execute: StageExecuteFn = (context) =>
-	handleWaitingByProject(context);
+const execute: StageExecuteFn = (context) => handleWaitingByProject(context);
 const commandAllowsStage: P.Predicate<BuildContext> = () => true;
 const projectAllowsStage: P.Predicate<BuildContext> = (context) =>
 	isNonDockerApplication(context.projectType);

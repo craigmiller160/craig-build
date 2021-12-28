@@ -130,8 +130,7 @@ const downloadArtifactByProject = (
 
 const isNotDocker: P.Predicate<ProjectType> = P.not(isDocker);
 
-const execute: StageExecuteFn = (context) =>
-	downloadArtifactByProject(context);
+const execute: StageExecuteFn = (context) => downloadArtifactByProject(context);
 const commandAllowsStage: P.Predicate<BuildContext> = () => true;
 const projectAllowsStage: P.Predicate<BuildContext> = pipe(
 	(_: BuildContext) => isNotDocker(_.projectType),

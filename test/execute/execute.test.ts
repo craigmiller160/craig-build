@@ -1,6 +1,5 @@
 import { createBuildContext } from '../testutils/createBuildContext';
 import '@relmify/jest-fp-ts';
-import * as O from 'fp-ts/Option';
 import { CommandType } from '../../src/context/CommandType';
 import { BuildContext } from '../../src/context/BuildContext';
 import { ProjectType } from '../../src/context/ProjectType';

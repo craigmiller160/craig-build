@@ -5,7 +5,6 @@ import { ProjectType } from '../context/ProjectType';
 import { ProjectInfo } from '../context/ProjectInfo';
 import { match, when } from 'ts-pattern';
 import * as TE from 'fp-ts/TaskEither';
-import * as O from 'fp-ts/Option';
 import * as P from 'fp-ts/Predicate';
 import { isDocker, isMaven, isNpm } from '../context/projectTypeUtils';
 import { readFile } from '../functions/File';

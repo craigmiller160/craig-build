@@ -1,7 +1,6 @@
 import { BuildContext } from '../../src/context/BuildContext';
 import { CommandInfo } from '../../src/context/CommandInfo';
 import { CommandType } from '../../src/context/CommandType';
-import * as O from 'fp-ts/Option';
 import { BuildToolInfo } from '../../src/context/BuildToolInfo';
 import { ProjectType } from '../../src/context/ProjectType';
 import { ProjectInfo } from '../../src/context/ProjectInfo';

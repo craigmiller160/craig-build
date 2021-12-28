@@ -30,8 +30,7 @@ const handlePublishByProject = (
 		.with({ projectType: when(isNpm) }, publishNpmArtifact)
 		.run();
 
-const execute: StageExecuteFn = (context) =>
-	handlePublishByProject(context);
+const execute: StageExecuteFn = (context) => handlePublishByProject(context);
 const commandAllowsStage: P.Predicate<BuildContext> = () => true;
 const projectAllowsStage: P.Predicate<BuildContext> = (context) =>
 	isNpm(context.projectType);
