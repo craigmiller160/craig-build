@@ -1,16 +1,10 @@
-import {
-	createBuildContext,
-	createIncompleteBuildContext
-} from '../testutils/createBuildContext';
+import { createBuildContext } from '../testutils/createBuildContext';
 import '@relmify/jest-fp-ts';
-import { ConditionalStage, SetupStage } from '../../src/stages/Stage';
-import { IncompleteBuildContext } from '../src/context/IncompleteBuildContext';
 import * as O from 'fp-ts/Option';
 import { CommandType } from '../../src/context/CommandType';
 import { BuildContext } from '../../src/context/BuildContext';
 import { ProjectType } from '../../src/context/ProjectType';
 import * as TE from 'fp-ts/TaskEither';
-import { conditionalStages, setupStages } from '../../src/stages';
 import { execute } from '../../src/execute';
 import { fullBuild_release_mavenApplication } from '../expectedExecutions/fullBuild_release_mavenApplication';
 import { ExpectedExecution } from '../expectedExecutions/ExpectedExecution';
@@ -25,58 +19,37 @@ import { fullBuild_release_dockerApplication } from '../expectedExecutions/fullB
 import { fullBuild_preRelease_dockerApplication } from '../expectedExecutions/fullBuild_preRelease_dockerApplication';
 import { fullBuild_release_dockerImage } from '../expectedExecutions/fullBuild_release_dockerImage';
 import { fullBuild_preRelease_dockerImage } from '../expectedExecutions/fullBuild_preRelease_dockerImage';
+import { Stage } from '../../src/stages/Stage';
+import { stages } from '../../src/stages';
+import { VersionType } from '../../src/context/VersionType';
 
 jest.mock('../src/stages', () => {
-	const createSetupStageMock = (stage: SetupStage): SetupStage => ({
-		name: stage.name,
-		execute: jest.fn()
-	});
-
-	const createConditionalStageMock = (
-		stage: ConditionalStage
-	): ConditionalStage => ({
+	const createStageMock = (stage: Stage): Stage => ({
 		name: stage.name,
 		execute: jest.fn(),
 		commandAllowsStage: stage.commandAllowsStage,
 		projectAllowsStage: stage.projectAllowsStage
 	});
 
-	const { conditionalStages, setupStages } =
-		jest.requireActual('../src/stages');
+	const { stages } = jest.requireActual('../src/stages');
 	return {
-		conditionalStages: conditionalStages.map(createConditionalStageMock),
-		setupStages: setupStages.map(createSetupStageMock)
+		stages: stages.map(createStageMock())
 	};
 });
 
-const baseIncompleteContext = createIncompleteBuildContext();
 const baseContext = createBuildContext();
-
-const prepareSetupStageExecutionMock = (context: IncompleteBuildContext) => {
-	setupStages.forEach((stage) => {
+const prepareStageExecutionMock = (context: BuildContext) => {
+	stages.forEach((stage) => {
 		(stage.execute as jest.Mock).mockImplementation(() =>
 			TE.right(context)
 		);
-	});
-};
-const prepareConditionalStageExecutionMock = (context: BuildContext) => {
-	conditionalStages.forEach((stage) => {
-		(stage.execute as jest.Mock).mockImplementation(() =>
-			TE.right(context)
-		);
-	});
-};
-
-const validateSetupStages = () => {
-	setupStages.forEach((stage) => {
-		expect(stage.execute).toHaveBeenCalled();
 	});
 };
 
 // TODO need type for this once interface is figured out
-const validateConditionalStages = (expected: ExpectedExecution) => {
-	expect(Object.keys(expected)).toHaveLength(conditionalStages.length);
-	conditionalStages.forEach((stage) => {
+const validateStages = (expected: ExpectedExecution) => {
+	expect(Object.keys(expected)).toHaveLength(stages.length);
+	stages.forEach((stage) => {
 		try {
 			const expectedValue = expected[stage.name];
 			expect(expectedValue).not.toBeUndefined();
@@ -99,17 +72,6 @@ describe('execute', () => {
 	});
 
 	it('executes full build for release MavenApplication', async () => {
-		const incompleteContext: IncompleteBuildContext = {
-			...baseIncompleteContext,
-			commandInfo: O.some({
-				type: CommandType.FullBuild
-			}),
-			projectType: O.some(ProjectType.MavenApplication),
-			projectInfo: O.some({
-				...baseContext.projectInfo,
-				isPreRelease: false
-			})
-		};
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
@@ -118,31 +80,18 @@ describe('execute', () => {
 			projectType: ProjectType.MavenApplication,
 			projectInfo: {
 				...baseContext.projectInfo,
-				isPreRelease: false
+				versionType: VersionType.Release
 			}
 		};
-		prepareSetupStageExecutionMock(incompleteContext);
-		prepareConditionalStageExecutionMock(context);
+		prepareStageExecutionMock(context);
 
-		const result = await execute(incompleteContext)();
+		const result = await execute(context)();
 		expect(result).toEqualRight(context);
 
-		validateSetupStages();
-		validateConditionalStages(fullBuild_release_mavenApplication);
+		validateStages(fullBuild_release_mavenApplication);
 	});
 
 	it('executes full build for pre-release MavenApplication', async () => {
-		const incompleteContext: IncompleteBuildContext = {
-			...baseIncompleteContext,
-			commandInfo: O.some({
-				type: CommandType.FullBuild
-			}),
-			projectType: O.some(ProjectType.MavenApplication),
-			projectInfo: O.some({
-				...baseContext.projectInfo,
-				isPreRelease: true
-			})
-		};
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
@@ -151,31 +100,18 @@ describe('execute', () => {
 			projectType: ProjectType.MavenApplication,
 			projectInfo: {
 				...baseContext.projectInfo,
-				isPreRelease: true
+				versionType: VersionType.PreRelease
 			}
 		};
-		prepareSetupStageExecutionMock(incompleteContext);
-		prepareConditionalStageExecutionMock(context);
+		prepareStageExecutionMock(context);
 
-		const result = await execute(incompleteContext)();
+		const result = await execute(context)();
 		expect(result).toEqualRight(context);
 
-		validateSetupStages();
-		validateConditionalStages(fullBuild_preRelease_mavenApplication);
+		validateStages(fullBuild_preRelease_mavenApplication);
 	});
 
 	it('executes full build for release MavenLibrary', async () => {
-		const incompleteContext: IncompleteBuildContext = {
-			...baseIncompleteContext,
-			commandInfo: O.some({
-				type: CommandType.FullBuild
-			}),
-			projectType: O.some(ProjectType.MavenLibrary),
-			projectInfo: O.some({
-				...baseContext.projectInfo,
-				isPreRelease: false
-			})
-		};
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
@@ -184,31 +120,18 @@ describe('execute', () => {
 			projectType: ProjectType.MavenLibrary,
 			projectInfo: {
 				...baseContext.projectInfo,
-				isPreRelease: false
+				versionType: VersionType.Release
 			}
 		};
-		prepareSetupStageExecutionMock(incompleteContext);
-		prepareConditionalStageExecutionMock(context);
+		prepareStageExecutionMock(context);
 
-		const result = await execute(incompleteContext)();
+		const result = await execute(context)();
 		expect(result).toEqualRight(context);
 
-		validateSetupStages();
-		validateConditionalStages(fullBuild_release_mavenLibrary);
+		validateStages(fullBuild_release_mavenLibrary);
 	});
 
 	it('executes full build for pre-release MavenLibrary', async () => {
-		const incompleteContext: IncompleteBuildContext = {
-			...baseIncompleteContext,
-			commandInfo: O.some({
-				type: CommandType.FullBuild
-			}),
-			projectType: O.some(ProjectType.MavenLibrary),
-			projectInfo: O.some({
-				...baseContext.projectInfo,
-				isPreRelease: true
-			})
-		};
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
@@ -217,31 +140,18 @@ describe('execute', () => {
 			projectType: ProjectType.MavenLibrary,
 			projectInfo: {
 				...baseContext.projectInfo,
-				isPreRelease: true
+				versionType: VersionType.PreRelease
 			}
 		};
-		prepareSetupStageExecutionMock(incompleteContext);
-		prepareConditionalStageExecutionMock(context);
+		prepareStageExecutionMock(context);
 
-		const result = await execute(incompleteContext)();
+		const result = await execute(context)();
 		expect(result).toEqualRight(context);
 
-		validateSetupStages();
-		validateConditionalStages(fullBuild_preRelease_mavenLibrary);
+		validateStages(fullBuild_preRelease_mavenLibrary);
 	});
 
 	it('executes full build for release NpmApplication', async () => {
-		const incompleteContext: IncompleteBuildContext = {
-			...baseIncompleteContext,
-			commandInfo: O.some({
-				type: CommandType.FullBuild
-			}),
-			projectType: O.some(ProjectType.NpmApplication),
-			projectInfo: O.some({
-				...baseContext.projectInfo,
-				isPreRelease: false
-			})
-		};
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
@@ -250,31 +160,19 @@ describe('execute', () => {
 			projectType: ProjectType.NpmApplication,
 			projectInfo: {
 				...baseContext.projectInfo,
-				isPreRelease: false
+				versionType: VersionType.Release
 			}
 		};
-		prepareSetupStageExecutionMock(incompleteContext);
-		prepareConditionalStageExecutionMock(context);
 
-		const result = await execute(incompleteContext)();
+		prepareStageExecutionMock(context);
+
+		const result = await execute(context)();
 		expect(result).toEqualRight(context);
 
-		validateSetupStages();
-		validateConditionalStages(fullBuild_release_npmApplication);
+		validateStages(fullBuild_release_npmApplication);
 	});
 
 	it('executes full build for pre-release NpmApplication', async () => {
-		const incompleteContext: IncompleteBuildContext = {
-			...baseIncompleteContext,
-			commandInfo: O.some({
-				type: CommandType.FullBuild
-			}),
-			projectType: O.some(ProjectType.NpmApplication),
-			projectInfo: O.some({
-				...baseContext.projectInfo,
-				isPreRelease: true
-			})
-		};
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
@@ -283,31 +181,19 @@ describe('execute', () => {
 			projectType: ProjectType.NpmApplication,
 			projectInfo: {
 				...baseContext.projectInfo,
-				isPreRelease: true
+				versionType: VersionType.PreRelease
 			}
 		};
-		prepareSetupStageExecutionMock(incompleteContext);
-		prepareConditionalStageExecutionMock(context);
 
-		const result = await execute(incompleteContext)();
+		prepareStageExecutionMock(context);
+
+		const result = await execute(context)();
 		expect(result).toEqualRight(context);
 
-		validateSetupStages();
-		validateConditionalStages(fullBuild_preRelease_npmApplication);
+		validateStages(fullBuild_preRelease_npmApplication);
 	});
 
 	it('executes full build for release NpmLibrary', async () => {
-		const incompleteContext: IncompleteBuildContext = {
-			...baseIncompleteContext,
-			commandInfo: O.some({
-				type: CommandType.FullBuild
-			}),
-			projectType: O.some(ProjectType.NpmLibrary),
-			projectInfo: O.some({
-				...baseContext.projectInfo,
-				isPreRelease: false
-			})
-		};
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
@@ -316,31 +202,19 @@ describe('execute', () => {
 			projectType: ProjectType.NpmLibrary,
 			projectInfo: {
 				...baseContext.projectInfo,
-				isPreRelease: false
+				versionType: VersionType.Release
 			}
 		};
-		prepareSetupStageExecutionMock(incompleteContext);
-		prepareConditionalStageExecutionMock(context);
 
-		const result = await execute(incompleteContext)();
+		prepareStageExecutionMock(context);
+
+		const result = await execute(context)();
 		expect(result).toEqualRight(context);
 
-		validateSetupStages();
-		validateConditionalStages(fullBuild_release_npmLibrary);
+		validateStages(fullBuild_release_npmLibrary);
 	});
 
 	it('executes full build for pre-release NpmLibrary', async () => {
-		const incompleteContext: IncompleteBuildContext = {
-			...baseIncompleteContext,
-			commandInfo: O.some({
-				type: CommandType.FullBuild
-			}),
-			projectType: O.some(ProjectType.NpmLibrary),
-			projectInfo: O.some({
-				...baseContext.projectInfo,
-				isPreRelease: true
-			})
-		};
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
@@ -349,31 +223,19 @@ describe('execute', () => {
 			projectType: ProjectType.NpmLibrary,
 			projectInfo: {
 				...baseContext.projectInfo,
-				isPreRelease: true
+				versionType: VersionType.PreRelease
 			}
 		};
-		prepareSetupStageExecutionMock(incompleteContext);
-		prepareConditionalStageExecutionMock(context);
 
-		const result = await execute(incompleteContext)();
+		prepareStageExecutionMock(context);
+
+		const result = await execute(context)();
 		expect(result).toEqualRight(context);
 
-		validateSetupStages();
-		validateConditionalStages(fullBuild_preRelease_npmLibrary);
+		validateStages(fullBuild_preRelease_npmLibrary);
 	});
 
 	it('executes full build for release DockerApplication', async () => {
-		const incompleteContext: IncompleteBuildContext = {
-			...baseIncompleteContext,
-			commandInfo: O.some({
-				type: CommandType.FullBuild
-			}),
-			projectType: O.some(ProjectType.DockerApplication),
-			projectInfo: O.some({
-				...baseContext.projectInfo,
-				isPreRelease: false
-			})
-		};
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
@@ -382,31 +244,19 @@ describe('execute', () => {
 			projectType: ProjectType.DockerApplication,
 			projectInfo: {
 				...baseContext.projectInfo,
-				isPreRelease: false
+				versionType: VersionType.Release
 			}
 		};
-		prepareSetupStageExecutionMock(incompleteContext);
-		prepareConditionalStageExecutionMock(context);
 
-		const result = await execute(incompleteContext)();
+		prepareStageExecutionMock(context);
+
+		const result = await execute(context)();
 		expect(result).toEqualRight(context);
 
-		validateSetupStages();
-		validateConditionalStages(fullBuild_release_dockerApplication);
+		validateStages(fullBuild_release_dockerApplication);
 	});
 
 	it('executes full build for pre-release DockerApplication', async () => {
-		const incompleteContext: IncompleteBuildContext = {
-			...baseIncompleteContext,
-			commandInfo: O.some({
-				type: CommandType.FullBuild
-			}),
-			projectType: O.some(ProjectType.DockerApplication),
-			projectInfo: O.some({
-				...baseContext.projectInfo,
-				isPreRelease: true
-			})
-		};
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
@@ -415,31 +265,19 @@ describe('execute', () => {
 			projectType: ProjectType.DockerApplication,
 			projectInfo: {
 				...baseContext.projectInfo,
-				isPreRelease: true
+				versionType: VersionType.PreRelease
 			}
 		};
-		prepareSetupStageExecutionMock(incompleteContext);
-		prepareConditionalStageExecutionMock(context);
 
-		const result = await execute(incompleteContext)();
+		prepareStageExecutionMock(context);
+
+		const result = await execute(context)();
 		expect(result).toEqualRight(context);
 
-		validateSetupStages();
-		validateConditionalStages(fullBuild_preRelease_dockerApplication);
+		validateStages(fullBuild_preRelease_dockerApplication);
 	});
 
 	it('executes full build for release DockerImage', async () => {
-		const incompleteContext: IncompleteBuildContext = {
-			...baseIncompleteContext,
-			commandInfo: O.some({
-				type: CommandType.FullBuild
-			}),
-			projectType: O.some(ProjectType.DockerImage),
-			projectInfo: O.some({
-				...baseContext.projectInfo,
-				isPreRelease: false
-			})
-		};
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
@@ -448,31 +286,19 @@ describe('execute', () => {
 			projectType: ProjectType.DockerImage,
 			projectInfo: {
 				...baseContext.projectInfo,
-				isPreRelease: false
+				versionType: VersionType.Release
 			}
 		};
-		prepareSetupStageExecutionMock(incompleteContext);
-		prepareConditionalStageExecutionMock(context);
 
-		const result = await execute(incompleteContext)();
+		prepareStageExecutionMock(context);
+
+		const result = await execute(context)();
 		expect(result).toEqualRight(context);
 
-		validateSetupStages();
-		validateConditionalStages(fullBuild_release_dockerImage);
+		validateStages(fullBuild_release_dockerImage);
 	});
 
 	it('executes full build for pre-release DockerImage', async () => {
-		const incompleteContext: IncompleteBuildContext = {
-			...baseIncompleteContext,
-			commandInfo: O.some({
-				type: CommandType.FullBuild
-			}),
-			projectType: O.some(ProjectType.DockerImage),
-			projectInfo: O.some({
-				...baseContext.projectInfo,
-				isPreRelease: true
-			})
-		};
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
@@ -481,16 +307,15 @@ describe('execute', () => {
 			projectType: ProjectType.DockerImage,
 			projectInfo: {
 				...baseContext.projectInfo,
-				isPreRelease: true
+				versionType: VersionType.PreRelease
 			}
 		};
-		prepareSetupStageExecutionMock(incompleteContext);
-		prepareConditionalStageExecutionMock(context);
 
-		const result = await execute(incompleteContext)();
+		prepareStageExecutionMock(context);
+
+		const result = await execute(context)();
 		expect(result).toEqualRight(context);
 
-		validateSetupStages();
-		validateConditionalStages(fullBuild_preRelease_dockerImage);
+		validateStages(fullBuild_preRelease_dockerImage);
 	});
 });
