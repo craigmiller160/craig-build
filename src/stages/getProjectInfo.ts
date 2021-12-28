@@ -23,13 +23,14 @@ import {
 } from '../configFileTypes/constants';
 import { BuildContext } from '../context/BuildContext';
 import { VersionType } from '../context/VersionType';
+import { regexTest } from '../functions/RegExp';
 
 const BETA_VERSION_REGEX = /^.*-beta/;
 const SNAPSHOT_VERSION_REGEX = /^.*-SNAPSHOT/;
 
 const matchesPreReleaseRegex: P.Predicate<string> = pipe(
-	(s: string) => BETA_VERSION_REGEX.test(s),
-	P.or((s: string) => SNAPSHOT_VERSION_REGEX.test(s))
+	regexTest(BETA_VERSION_REGEX),
+	P.or(regexTest(SNAPSHOT_VERSION_REGEX))
 );
 
 const getVersionType = (version: string): VersionType =>
