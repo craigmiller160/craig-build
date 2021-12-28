@@ -19,7 +19,7 @@ import * as P from 'fp-ts/Predicate';
 import { parseJson } from '../functions/Json';
 import { PackageJson } from '../configFileTypes/PackageJson';
 import { isRelease } from '../context/projectInfoUtils';
-import { ConditionalStage, StageExecuteFn } from './Stage';
+import { Stage, StageExecuteFn } from './Stage';
 import { ProjectType } from '../context/ProjectType';
 
 const MAVEN_PROPERTY_REGEX = /\${.*}/;
@@ -138,7 +138,7 @@ const handleValidationByProject = (
 
 const isNotDocker: P.Predicate<ProjectType> = P.not(isDocker);
 
-const execute: StageExecuteFn<BuildContext> = (context) =>
+const execute: StageExecuteFn = (context) =>
 	pipe(handleValidationByProject(context), TE.fromEither);
 const commandAllowsStage: P.Predicate<BuildContext> = () => true;
 const projectAllowsStage: P.Predicate<BuildContext> = pipe(
@@ -146,7 +146,7 @@ const projectAllowsStage: P.Predicate<BuildContext> = pipe(
 	P.and((_) => isRelease(_.projectInfo))
 );
 
-export const validateDependencyVersions: ConditionalStage = {
+export const validateDependencyVersions: Stage = {
 	name: 'Validate Dependency Versions',
 	execute,
 	commandAllowsStage,

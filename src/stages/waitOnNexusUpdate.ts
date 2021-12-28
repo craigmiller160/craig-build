@@ -6,7 +6,7 @@ import { isApplication, isDocker } from '../context/projectTypeUtils';
 import { pipe } from 'fp-ts/function';
 import { ProjectType } from '../context/ProjectType';
 import * as P from 'fp-ts/Predicate';
-import { ConditionalStage, StageExecuteFn } from './Stage';
+import { Stage, StageExecuteFn } from './Stage';
 
 const WAIT_TIME_MILLIS = 3000;
 
@@ -35,13 +35,13 @@ const handleWaitingByProject = (
 		)
 		.run();
 
-const execute: StageExecuteFn<BuildContext> = (context) =>
+const execute: StageExecuteFn = (context) =>
 	handleWaitingByProject(context);
 const commandAllowsStage: P.Predicate<BuildContext> = () => true;
 const projectAllowsStage: P.Predicate<BuildContext> = (context) =>
 	isNonDockerApplication(context.projectType);
 
-export const waitOnNexusUpdate: ConditionalStage = {
+export const waitOnNexusUpdate: Stage = {
 	name: 'Wait On Nexus Update',
 	execute,
 	commandAllowsStage,

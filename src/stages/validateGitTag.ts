@@ -6,7 +6,7 @@ import { isRelease } from '../context/projectInfoUtils';
 import { runCommand } from '../command/runCommand';
 import * as A from 'fp-ts/Array';
 import * as P from 'fp-ts/Predicate';
-import { ConditionalStage, StageExecuteFn } from './Stage';
+import { Stage, StageExecuteFn } from './Stage';
 
 const executeGitTagValidation = (
 	context: BuildContext
@@ -34,13 +34,12 @@ const handleValidationByProject = (
 		.with({ projectInfo: when(isRelease) }, executeGitTagValidation)
 		.run();
 
-const execute: StageExecuteFn<BuildContext> = (context) =>
-	handleValidationByProject(context);
+const execute: StageExecuteFn = (context) => handleValidationByProject(context);
 const commandAllowsStage: P.Predicate<BuildContext> = () => true;
 const projectAllowsStage: P.Predicate<BuildContext> = (context) =>
 	isRelease(context.projectInfo);
 
-export const validateGitTag: ConditionalStage = {
+export const validateGitTag: Stage = {
 	name: 'Validate Existing Git Tag',
 	execute,
 	commandAllowsStage,

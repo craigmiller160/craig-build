@@ -12,7 +12,7 @@ import {
 import { NexusSearchResult } from '../services/NexusSearchResult';
 import * as A from 'fp-ts/Array';
 import { isRelease } from '../context/projectInfoUtils';
-import { ConditionalStage, StageExecuteFn } from './Stage';
+import { Stage, StageExecuteFn } from './Stage';
 import * as P from 'fp-ts/Predicate';
 
 const isReleaseVersionUnique = (
@@ -58,7 +58,7 @@ const handleValidationByProject = (
 		)
 		.run();
 
-const execute: StageExecuteFn<BuildContext> = (context) =>
+const execute: StageExecuteFn = (context) =>
 	pipe(
 		handleValidationByProject(context),
 		TE.map(() => context)
@@ -67,7 +67,7 @@ const commandAllowsStage: P.Predicate<BuildContext> = () => true;
 const projectAllowsStage: P.Predicate<BuildContext> = (context) =>
 	isRelease(context.projectInfo);
 
-export const validateProjectVersionAllowed: ConditionalStage = {
+export const validateProjectVersionAllowed: Stage = {
 	name: 'Validate Project Version Allowed',
 	execute,
 	commandAllowsStage,

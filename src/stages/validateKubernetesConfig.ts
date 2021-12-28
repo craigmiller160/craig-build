@@ -16,7 +16,7 @@ import { parseYaml } from '../functions/Yaml';
 import { KubeDeployment } from '../configFileTypes/KubeDeployment';
 import { stringifyJson } from '../functions/Json';
 import * as P from 'fp-ts/Predicate';
-import { ConditionalStage, StageExecuteFn } from './Stage';
+import { Stage, StageExecuteFn } from './Stage';
 
 const KUBE_IMAGE_REGEX =
 	/^(?<repoPrefix>.*:\d*)\/(?<imageName>.*):(?<imageVersion>.*)$/;
@@ -94,13 +94,13 @@ const validateConfigByProject = (
 		.with({ projectType: when(isApplication) }, readAndValidateConfig)
 		.run();
 
-const execute: StageExecuteFn<BuildContext> = (context) =>
+const execute: StageExecuteFn = (context) =>
 	pipe(validateConfigByProject(context), TE.fromEither);
 const commandAllowsStage: P.Predicate<BuildContext> = () => true;
 const projectAllowsStage: P.Predicate<BuildContext> = (context) =>
 	isApplication(context.projectType);
 
-export const validateKubernetesConfig: ConditionalStage = {
+export const validateKubernetesConfig: Stage = {
 	name: 'Validate Kubernetes Config',
 	execute,
 	commandAllowsStage,
