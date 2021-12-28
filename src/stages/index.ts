@@ -23,7 +23,7 @@ export const stages: Stage[] = [
 	validateBuildToolVersion,
 	checkForUncommittedChanges,
 	getProjectType,
-	getProjectInfo, // TODO end of addition
+	getProjectInfo,
 	validateDependencyVersions,
 	validateProjectVersionAllowed,
 	validateKubernetesConfig,

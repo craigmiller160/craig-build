@@ -10,8 +10,20 @@ import { downloadArtifactForDeployment } from '../../src/stages/downloadArtifact
 import { buildAndPushDocker } from '../../src/stages/buildAndPushDocker';
 import { deployToKubernetes } from '../../src/stages/deployToKubernetes';
 import { ExpectedExecution } from './ExpectedExecution';
+import { getCommandInfo } from '../../src/stages/getCommandInfo';
+import { getBuildToolInfo } from '../../src/stages/getBuildToolInfo';
+import { validateBuildToolVersion } from '../../src/stages/validateBuildToolVersion';
+import checkForUncommittedChanges from '../../old-src/stages/identify/tasks/checkForUncommittedChanges';
+import { getProjectType } from '../../src/stages/getProjectType';
+import { getProjectInfo } from '../../src/stages/getProjectInfo';
 
 export const fullBuild_preRelease_mavenLibrary: ExpectedExecution = {
+	[getCommandInfo.name]: true,
+	[getBuildToolInfo.name]: true,
+	[validateBuildToolVersion.name]: true,
+	[checkForUncommittedChanges.name]: true,
+	[getProjectType.name]: true,
+	[getProjectInfo.name]: true,
 	[validateDependencyVersions.name]: false,
 	[validateProjectVersionAllowed.name]: false,
 	[validateKubernetesConfig.name]: false,
