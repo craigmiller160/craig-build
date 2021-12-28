@@ -17,6 +17,7 @@ import { downloadArtifactForDeployment } from './downloadArtifactForDeployment';
 import { buildAndPushDocker } from './buildAndPushDocker';
 import { deployToKubernetes } from './deployToKubernetes';
 
+// TODO combine the two arrays... also need to update the execute test config
 export const setupStages: SetupStage[] = [
 	getCommandInfo,
 	getBuildToolInfo,
