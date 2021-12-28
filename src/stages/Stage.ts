@@ -1,21 +1,14 @@
 import { BuildContext } from '../context/BuildContext';
 import * as TE from 'fp-ts/TaskEither';
-import { IncompleteBuildContext } from '../context/IncompleteBuildContext';
-import { Context } from '../context/Context';
 import * as P from 'fp-ts/Predicate';
 
-export type StageExecuteFn<Ctx extends Context> = (
-	context: Ctx
-) => TE.TaskEither<Error, Ctx>;
+type StageExecuteFn = (
+	context: BuildContext
+) => TE.TaskEither<Error, BuildContext>;
 
-export interface BaseStage<Ctx extends Context> {
+export interface Stage {
 	readonly name: string;
-	execute: StageExecuteFn<Ctx>;
-}
-
-export type SetupStage = BaseStage<IncompleteBuildContext>;
-
-export interface ConditionalStage extends BaseStage<BuildContext> {
-	commandAllowsStage: P.Predicate<BuildContext>;
-	projectAllowsStage: P.Predicate<BuildContext>;
+	readonly execute: StageExecuteFn;
+	readonly commandAllowsStage: P.Predicate<BuildContext>;
+	readonly projectAllowsStage: P.Predicate<BuildContext>;
 }
