@@ -19,13 +19,16 @@ import * as P from 'fp-ts/Predicate';
 import { parseXml } from '../functions/Xml';
 import { MavenMetadataNexus } from '../configFileTypes/MavenMetadataNexus';
 import { Stage, StageExecuteFn } from './Stage';
-
-const BETA_VERSION_REGEX = /^(?<version>.*-beta)\.(?<betaNumber>\d*)$/;
+import { regexExecGroups } from '../functions/RegExp';
 
 interface BetaRegexGroups {
 	version: string;
 	betaNumber: string;
 }
+
+const BETA_VERSION_REGEX = /^(?<version>.*-beta)\.(?<betaNumber>\d*)$/;
+const betaVersionRegexExecGroups =
+	regexExecGroups<BetaRegexGroups>(BETA_VERSION_REGEX);
 
 const findMatchingVersion = (
 	nexusResult: NexusSearchResult,
@@ -92,12 +95,14 @@ const handleMavenPreReleaseVersion = (
 		TE.fromEither
 	);
 
-const bumpBetaVersion = (fullVersion: string): string => {
-	const { version, betaNumber } = BETA_VERSION_REGEX.exec(fullVersion)
-		?.groups as unknown as BetaRegexGroups;
-	const newBetaNumber = parseInt(betaNumber) + 1;
-	return `${version}.${newBetaNumber}`;
-};
+const bumpBetaVersion = (fullVersion: string): O.Option<string> =>
+	pipe(
+		betaVersionRegexExecGroups(fullVersion),
+		O.map(({ version, betaNumber }) => {
+			const newBetaNumber = parseInt(betaNumber) + 1;
+			return `${version}.${newBetaNumber}`;
+		})
+	);
 
 const handleNpmPreReleaseVersion = (
 	context: BuildContext
@@ -107,7 +112,7 @@ const handleNpmPreReleaseVersion = (
 		TE.map((nexusResult) =>
 			pipe(
 				findMatchingVersion(nexusResult, context.projectInfo.version),
-				O.map(bumpBetaVersion),
+				O.chain(bumpBetaVersion),
 				O.getOrElse(() => `${context.projectInfo.version}.1`)
 			)
 		),
@@ -122,7 +127,7 @@ const handleDockerPreReleaseVersion = (
 		TE.map((nexusResult) =>
 			pipe(
 				findMatchingVersion(nexusResult, context.projectInfo.version),
-				O.map(bumpBetaVersion),
+				O.chain(bumpBetaVersion),
 				O.getOrElse(() => `${context.projectInfo.version}.1`)
 			)
 		),
