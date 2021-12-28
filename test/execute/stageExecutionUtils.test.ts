@@ -3,10 +3,15 @@ import { Stage } from '../../src/stages/Stage';
 import * as TE from 'fp-ts/TaskEither';
 import {
 	createStageExecution,
-	proceedIfCommandAllowed, proceedIfProjectAllowed
+	executeIfAllowed,
+	proceedIfCommandAllowed,
+	proceedIfProjectAllowed
 } from '../../src/execute/stageExecutionUtils';
 import { StageExecutionStatus } from '../../src/execute/StageExecutionStatus';
 import { StageExecution } from '../../src/execute/StageExecution';
+import { BuildContext } from '../../src/context/BuildContext';
+import { ProjectType } from '../../src/context/ProjectType';
+import '@relmify/jest-fp-ts';
 
 const baseContext = createBuildContext();
 const mockStage: Stage = {
@@ -111,16 +116,39 @@ describe('stageExecutionUtils', () => {
 	});
 
 	describe('executeIfAllowed', () => {
-		it('status is Proceed', () => {
-			throw new Error();
+		const inputContext: BuildContext = {
+			...baseContext,
+			projectType: ProjectType.Unknown
+		};
+
+		it('status is Proceed', async () => {
+			const execution: StageExecution = {
+				stage: mockStage,
+				status: StageExecutionStatus.Proceed
+			};
+
+			const result = await executeIfAllowed(inputContext)(execution)();
+			expect(result).toEqualRight(baseContext);
 		});
 
-		it('status is SkipForCommand', () => {
-			throw new Error();
+		it('status is SkipForCommand', async () => {
+			const execution: StageExecution = {
+				stage: mockStage,
+				status: StageExecutionStatus.SkipForCommand
+			};
+
+			const result = await executeIfAllowed(inputContext)(execution)();
+			expect(result).toEqualRight(inputContext);
 		});
 
-		it('status is SkipForProject', () => {
-			throw new Error();
+		it('status is SkipForProject', async () => {
+			const execution: StageExecution = {
+				stage: mockStage,
+				status: StageExecutionStatus.SkipForProject
+			};
+
+			const result = await executeIfAllowed(inputContext)(execution)();
+			expect(result).toEqualRight(inputContext);
 		});
 	});
 });
