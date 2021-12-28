@@ -29,8 +29,8 @@ import * as O from 'fp-ts/Option';
 import { getCwd } from '../command/getCwd';
 import { mkdir, rmDirIfExists } from '../functions/File';
 import * as E from 'fp-ts/Either';
-import { ConditionalStage, StageExecuteFn } from './Stage';
 import * as P from 'fp-ts/Predicate';
+import { Stage, StageExecuteFn } from './Stage';
 
 const getExtension = (projectType: ProjectType): TE.TaskEither<Error, string> =>
 	match(projectType)
@@ -130,7 +130,7 @@ const downloadArtifactByProject = (
 
 const isNotDocker: P.Predicate<ProjectType> = P.not(isDocker);
 
-const execute: StageExecuteFn<BuildContext> = (context) =>
+const execute: StageExecuteFn = (context) =>
 	downloadArtifactByProject(context);
 const commandAllowsStage: P.Predicate<BuildContext> = () => true;
 const projectAllowsStage: P.Predicate<BuildContext> = pipe(
@@ -138,7 +138,7 @@ const projectAllowsStage: P.Predicate<BuildContext> = pipe(
 	P.and((_) => isApplication(_.projectType))
 );
 
-export const downloadArtifactForDeployment: ConditionalStage = {
+export const downloadArtifactForDeployment: Stage = {
 	name: 'Download Artifact For Deployment',
 	execute,
 	commandAllowsStage,

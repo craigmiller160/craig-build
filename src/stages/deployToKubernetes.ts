@@ -9,8 +9,8 @@ import { getCwd } from '../command/getCwd';
 import * as A from 'fp-ts/Array';
 import * as E from 'fp-ts/Either';
 import { runCommand } from '../command/runCommand';
-import { ConditionalStage, StageExecuteFn } from './Stage';
 import * as P from 'fp-ts/Predicate';
+import { Stage, StageExecuteFn } from './Stage';
 
 const findConfigmaps = (deployDir: string): TE.TaskEither<Error, string[]> =>
 	pipe(
@@ -65,13 +65,12 @@ const handleDeployByProject = (
 		.with({ projectType: when(isApplication) }, doDeploy)
 		.run();
 
-const execute: StageExecuteFn<BuildContext> = (context) =>
-	handleDeployByProject(context);
+const execute: StageExecuteFn = (context) => handleDeployByProject(context);
 const commandAllowsStage: P.Predicate<BuildContext> = () => true;
 const projectAllowsStage: P.Predicate<BuildContext> = (context) =>
 	isApplication(context.projectType);
 
-export const deployToKubernetes: ConditionalStage = {
+export const deployToKubernetes: Stage = {
 	name: 'Deploy to Kubernetes',
 	execute,
 	commandAllowsStage,
