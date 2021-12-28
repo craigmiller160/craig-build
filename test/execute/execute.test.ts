@@ -33,7 +33,7 @@ jest.mock('../src/stages', () => {
 
 	const { stages } = jest.requireActual('../src/stages');
 	return {
-		stages: stages.map(createStageMock())
+		stages: stages.map(createStageMock)
 	};
 });
 
