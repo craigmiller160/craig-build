@@ -11,7 +11,7 @@ import shellEnv from 'shell-env';
 import { EnvironmentVariables } from '../env/EnvironmentVariables';
 import * as O from 'fp-ts/Option';
 import { runCommand } from '../command/runCommand';
-import { ConditionalStage, StageExecuteFn } from './Stage';
+import { Stage, StageExecuteFn } from './Stage';
 
 interface DockerCreds {
 	readonly userName: string;
@@ -95,10 +95,10 @@ const commandAllowsStage: P.Predicate<BuildContext> = () => true;
 const projectAllowsStage: P.Predicate<BuildContext> = (context) =>
 	isDockerOrApplication(context.projectType);
 
-const execute: StageExecuteFn<BuildContext> = (context) =>
+const execute: StageExecuteFn = (context) =>
 	handleDockerBuildByProject(context);
 
-export const buildAndPushDocker: ConditionalStage = {
+export const buildAndPushDocker: Stage = {
 	name: 'Build and Push Docker',
 	execute,
 	commandAllowsStage,

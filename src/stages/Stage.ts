@@ -2,7 +2,7 @@ import { BuildContext } from '../context/BuildContext';
 import * as TE from 'fp-ts/TaskEither';
 import * as P from 'fp-ts/Predicate';
 
-type StageExecuteFn = (
+export type StageExecuteFn = (
 	context: BuildContext
 ) => TE.TaskEither<Error, BuildContext>;
 
