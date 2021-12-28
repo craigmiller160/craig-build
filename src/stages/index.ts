@@ -1,4 +1,3 @@
-import { SetupStage, ConditionalStage } from './Stage';
 import { getCommandInfo } from './getCommandInfo';
 import { getBuildToolInfo } from './getBuildToolInfo';
 import { validateBuildToolVersion } from './validateBuildToolVersion';
@@ -16,18 +15,15 @@ import { gitTag } from './gitTag';
 import { downloadArtifactForDeployment } from './downloadArtifactForDeployment';
 import { buildAndPushDocker } from './buildAndPushDocker';
 import { deployToKubernetes } from './deployToKubernetes';
+import { Stage } from './Stage';
 
-// TODO combine the two arrays... also need to update the execute test config
-export const setupStages: SetupStage[] = [
+export const stages: Stage[] = [
 	getCommandInfo,
 	getBuildToolInfo,
 	validateBuildToolVersion,
 	checkForUncommittedChanges,
 	getProjectType,
-	getProjectInfo
-];
-
-export const conditionalStages: ConditionalStage[] = [
+	getProjectInfo, // TODO end of addition
 	validateDependencyVersions,
 	validateProjectVersionAllowed,
 	validateKubernetesConfig,
