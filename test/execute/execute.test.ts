@@ -1,30 +1,30 @@
 import {
 	createBuildContext,
 	createIncompleteBuildContext
-} from './testutils/createBuildContext';
+} from '../testutils/createBuildContext';
 import '@relmify/jest-fp-ts';
-import { ConditionalStage, SetupStage } from '../src/stages/Stage';
+import { ConditionalStage, SetupStage } from '../../src/stages/Stage';
 import { IncompleteBuildContext } from '../src/context/IncompleteBuildContext';
 import * as O from 'fp-ts/Option';
-import { CommandType } from '../src/context/CommandType';
-import { BuildContext } from '../src/context/BuildContext';
-import { ProjectType } from '../src/context/ProjectType';
+import { CommandType } from '../../src/context/CommandType';
+import { BuildContext } from '../../src/context/BuildContext';
+import { ProjectType } from '../../src/context/ProjectType';
 import * as TE from 'fp-ts/TaskEither';
-import { conditionalStages, setupStages } from '../src/stages';
-import { execute } from '../src/execute';
-import { fullBuild_release_mavenApplication } from './expectedExecutions/fullBuild_release_mavenApplication';
-import { ExpectedExecution } from './expectedExecutions/ExpectedExecution';
-import { fullBuild_preRelease_mavenApplication } from './expectedExecutions/fullBuild_preRelease_mavenApplication';
-import { fullBuild_release_mavenLibrary } from './expectedExecutions/fullBuild_release_mavenLibrary';
-import { fullBuild_preRelease_mavenLibrary } from './expectedExecutions/fullBuild_preRelease_mavenLibrary';
-import { fullBuild_release_npmApplication } from './expectedExecutions/fullBuild_release_npmApplication';
-import { fullBuild_preRelease_npmApplication } from './expectedExecutions/fullBuild_preRelease_npmApplication';
-import { fullBuild_release_npmLibrary } from './expectedExecutions/fullBuild_release_npmLibrary';
-import { fullBuild_preRelease_npmLibrary } from './expectedExecutions/fullBuild_preRelease_npmLibrary';
-import { fullBuild_release_dockerApplication } from './expectedExecutions/fullBuild_release_dockerApplication';
-import { fullBuild_preRelease_dockerApplication } from './expectedExecutions/fullBuild_preRelease_dockerApplication';
-import { fullBuild_release_dockerImage } from './expectedExecutions/fullBuild_release_dockerImage';
-import { fullBuild_preRelease_dockerImage } from './expectedExecutions/fullBuild_preRelease_dockerImage';
+import { conditionalStages, setupStages } from '../../src/stages';
+import { execute } from '../../src/execute';
+import { fullBuild_release_mavenApplication } from '../expectedExecutions/fullBuild_release_mavenApplication';
+import { ExpectedExecution } from '../expectedExecutions/ExpectedExecution';
+import { fullBuild_preRelease_mavenApplication } from '../expectedExecutions/fullBuild_preRelease_mavenApplication';
+import { fullBuild_release_mavenLibrary } from '../expectedExecutions/fullBuild_release_mavenLibrary';
+import { fullBuild_preRelease_mavenLibrary } from '../expectedExecutions/fullBuild_preRelease_mavenLibrary';
+import { fullBuild_release_npmApplication } from '../expectedExecutions/fullBuild_release_npmApplication';
+import { fullBuild_preRelease_npmApplication } from '../expectedExecutions/fullBuild_preRelease_npmApplication';
+import { fullBuild_release_npmLibrary } from '../expectedExecutions/fullBuild_release_npmLibrary';
+import { fullBuild_preRelease_npmLibrary } from '../expectedExecutions/fullBuild_preRelease_npmLibrary';
+import { fullBuild_release_dockerApplication } from '../expectedExecutions/fullBuild_release_dockerApplication';
+import { fullBuild_preRelease_dockerApplication } from '../expectedExecutions/fullBuild_preRelease_dockerApplication';
+import { fullBuild_release_dockerImage } from '../expectedExecutions/fullBuild_release_dockerImage';
+import { fullBuild_preRelease_dockerImage } from '../expectedExecutions/fullBuild_preRelease_dockerImage';
 
 jest.mock('../src/stages', () => {
 	const createSetupStageMock = (stage: SetupStage): SetupStage => ({
