@@ -3,8 +3,8 @@ import { CommandType } from '../../src/context/CommandType';
 import * as O from 'fp-ts/Option';
 import { getCommandInfo } from '../../src/stages/getCommandInfo';
 import '@relmify/jest-fp-ts';
-import { createIncompleteBuildContext } from '../testutils/createBuildContext';
-import { IncompleteBuildContext } from '../../src/context/IncompleteBuildContext';
+import { BuildContext } from '../../src/context/BuildContext';
+import { createBuildContext } from '../testutils/createBuildContext';
 
 jest.mock('commander', () => {
 	const { OptionValues } = jest.requireActual('commander');
@@ -28,16 +28,17 @@ describe('getCommandInfo', () => {
 			fullBuild: true
 		};
 		optsMock.mockImplementation(() => options);
-		const buildContext: IncompleteBuildContext =
-			createIncompleteBuildContext({
-				commandInfo: O.none
-			});
+		const buildContext: BuildContext = createBuildContext({
+			commandInfo: {
+				type: CommandType.Unknown
+			}
+		});
 		const result = await getCommandInfo.execute(buildContext)();
 		expect(result).toEqualRight({
 			...buildContext,
-			commandInfo: O.some({
+			commandInfo: {
 				type: CommandType.FullBuild
-			})
+			}
 		});
 	});
 
@@ -46,16 +47,17 @@ describe('getCommandInfo', () => {
 			dockerOnly: true
 		};
 		optsMock.mockImplementation(() => options);
-		const buildContext: IncompleteBuildContext =
-			createIncompleteBuildContext({
-				commandInfo: O.none
-			});
+		const buildContext: BuildContext = createBuildContext({
+			commandInfo: {
+				type: CommandType.Unknown
+			}
+		});
 		const result = await getCommandInfo.execute(buildContext)();
 		expect(result).toEqualRight({
 			...buildContext,
-			commandInfo: O.some({
+			commandInfo: {
 				type: CommandType.DockerOnly
-			})
+			}
 		});
 	});
 
@@ -64,16 +66,17 @@ describe('getCommandInfo', () => {
 			kubernetesOnly: true
 		};
 		optsMock.mockImplementation(() => options);
-		const buildContext: IncompleteBuildContext =
-			createIncompleteBuildContext({
-				commandInfo: O.none
-			});
+		const buildContext: BuildContext = createBuildContext({
+			commandInfo: {
+				type: CommandType.Unknown
+			}
+		});
 		const result = await getCommandInfo.execute(buildContext)();
 		expect(result).toEqualRight({
 			...buildContext,
-			commandInfo: O.some({
+			commandInfo: {
 				type: CommandType.KubernetesOnly
-			})
+			}
 		});
 	});
 });
