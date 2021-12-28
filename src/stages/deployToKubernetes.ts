@@ -1,8 +1,6 @@
-import { Stage, StageFunction } from './Stage';
 import { BuildContext } from '../context/BuildContext';
 import * as TE from 'fp-ts/TaskEither';
 import { match, when } from 'ts-pattern';
-import { logger } from '../logger';
 import { isApplication } from '../context/projectTypeUtils';
 import { pipe } from 'fp-ts/function';
 import { listFilesInDir } from '../functions/File';
@@ -11,6 +9,8 @@ import { getCwd } from '../command/getCwd';
 import * as A from 'fp-ts/Array';
 import * as E from 'fp-ts/Either';
 import { runCommand } from '../command/runCommand';
+import * as P from 'fp-ts/Predicate';
+import { Stage, StageExecuteFn } from './Stage';
 
 const findConfigmaps = (deployDir: string): TE.TaskEither<Error, string[]> =>
 	pipe(
@@ -63,14 +63,16 @@ const handleDeployByProject = (
 ): TE.TaskEither<Error, BuildContext> =>
 	match(context)
 		.with({ projectType: when(isApplication) }, doDeploy)
-		.otherwise(() => {
-			logger.debug('Skipping stage');
-			return TE.right(context);
-		});
+		.run();
 
-const execute: StageFunction = (context) => handleDeployByProject(context);
+const execute: StageExecuteFn = (context) => handleDeployByProject(context);
+const commandAllowsStage: P.Predicate<BuildContext> = () => true;
+const projectAllowsStage: P.Predicate<BuildContext> = (context) =>
+	isApplication(context.projectType);
 
 export const deployToKubernetes: Stage = {
 	name: 'Deploy to Kubernetes',
-	execute
+	execute,
+	commandAllowsStage,
+	projectAllowsStage
 };

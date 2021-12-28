@@ -1,14 +1,14 @@
 import { getCwdMock } from '../testutils/getCwdMock';
 import path from 'path';
-import { createIncompleteBuildContext } from '../testutils/createBuildContext';
-import * as O from 'fp-ts/Option';
 import { ProjectType } from '../../src/context/ProjectType';
 import { getProjectInfo } from '../../src/stages/getProjectInfo';
 import '@relmify/jest-fp-ts';
 import { baseWorkingDir } from '../testutils/baseWorkingDir';
-import { IncompleteBuildContext } from '../../src/context/IncompleteBuildContext';
+import { createBuildContext } from '../testutils/createBuildContext';
+import { BuildContext } from '../../src/context/BuildContext';
+import { VersionType } from '../../src/context/VersionType';
 
-const baseBuildContext = createIncompleteBuildContext();
+const baseBuildContext = createBuildContext();
 
 describe('getProjectInfo', () => {
 	beforeEach(() => {
@@ -19,18 +19,18 @@ describe('getProjectInfo', () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(baseWorkingDir, 'npmReleaseLibrary')
 		);
-		const buildContext: IncompleteBuildContext = {
+		const buildContext: BuildContext = {
 			...baseBuildContext,
-			projectType: O.some(ProjectType.NpmLibrary)
+			projectType: ProjectType.NpmLibrary
 		};
-		const expectedContext: IncompleteBuildContext = {
+		const expectedContext: BuildContext = {
 			...buildContext,
-			projectInfo: O.some({
+			projectInfo: {
 				group: 'craigmiller160',
 				name: 'craig-build',
 				version: '1.0.0',
-				isPreRelease: false
-			})
+				versionType: VersionType.Release
+			}
 		};
 		const result = await getProjectInfo.execute(buildContext)();
 		expect(result).toEqualRight(expectedContext);
@@ -40,18 +40,18 @@ describe('getProjectInfo', () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(baseWorkingDir, 'npmBetaLibrary')
 		);
-		const buildContext: IncompleteBuildContext = {
+		const buildContext: BuildContext = {
 			...baseBuildContext,
-			projectType: O.some(ProjectType.NpmLibrary)
+			projectType: ProjectType.NpmLibrary
 		};
-		const expectedContext: IncompleteBuildContext = {
+		const expectedContext: BuildContext = {
 			...buildContext,
-			projectInfo: O.some({
+			projectInfo: {
 				group: 'craigmiller160',
 				name: 'craig-build',
 				version: '1.0.0-beta',
-				isPreRelease: true
-			})
+				versionType: VersionType.PreRelease
+			}
 		};
 		const result = await getProjectInfo.execute(buildContext)();
 		expect(result).toEqualRight(expectedContext);
@@ -61,18 +61,18 @@ describe('getProjectInfo', () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(baseWorkingDir, 'mavenReleaseLibrary')
 		);
-		const buildContext: IncompleteBuildContext = {
+		const buildContext: BuildContext = {
 			...baseBuildContext,
-			projectType: O.some(ProjectType.MavenLibrary)
+			projectType: ProjectType.MavenLibrary
 		};
-		const expectedContext: IncompleteBuildContext = {
+		const expectedContext: BuildContext = {
 			...buildContext,
-			projectInfo: O.some({
+			projectInfo: {
 				group: 'io.craigmiller160',
 				name: 'email-service',
 				version: '1.2.0',
-				isPreRelease: false
-			})
+				versionType: VersionType.Release
+			}
 		};
 		const result = await getProjectInfo.execute(buildContext)();
 		expect(result).toEqualRight(expectedContext);
@@ -82,18 +82,18 @@ describe('getProjectInfo', () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(baseWorkingDir, 'mavenSnapshotLibrary')
 		);
-		const buildContext: IncompleteBuildContext = {
+		const buildContext: BuildContext = {
 			...baseBuildContext,
-			projectType: O.some(ProjectType.MavenLibrary)
+			projectType: ProjectType.MavenLibrary
 		};
-		const expectedContext: IncompleteBuildContext = {
+		const expectedContext: BuildContext = {
 			...buildContext,
-			projectInfo: O.some({
+			projectInfo: {
 				group: 'io.craigmiller160',
 				name: 'email-service',
 				version: '1.2.0-SNAPSHOT',
-				isPreRelease: true
-			})
+				versionType: VersionType.PreRelease
+			}
 		};
 		const result = await getProjectInfo.execute(buildContext)();
 		expect(result).toEqualRight(expectedContext);
@@ -103,18 +103,18 @@ describe('getProjectInfo', () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(baseWorkingDir, 'dockerReleaseImage')
 		);
-		const buildContext: IncompleteBuildContext = {
+		const buildContext: BuildContext = {
 			...baseBuildContext,
-			projectType: O.some(ProjectType.DockerImage)
+			projectType: ProjectType.DockerImage
 		};
-		const expectedContext: IncompleteBuildContext = {
+		const expectedContext: BuildContext = {
 			...buildContext,
-			projectInfo: O.some({
+			projectInfo: {
 				group: 'craigmiller160',
 				name: 'nginx-base',
 				version: '1.0.0',
-				isPreRelease: false
-			})
+				versionType: VersionType.Release
+			}
 		};
 		const result = await getProjectInfo.execute(buildContext)();
 		expect(result).toEqualRight(expectedContext);
@@ -124,18 +124,18 @@ describe('getProjectInfo', () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(baseWorkingDir, 'dockerBetaImage')
 		);
-		const buildContext: IncompleteBuildContext = {
+		const buildContext: BuildContext = {
 			...baseBuildContext,
-			projectType: O.some(ProjectType.DockerImage)
+			projectType: ProjectType.DockerImage
 		};
-		const expectedContext: IncompleteBuildContext = {
+		const expectedContext: BuildContext = {
 			...buildContext,
-			projectInfo: O.some({
+			projectInfo: {
 				group: 'craigmiller160',
 				name: 'nginx-base',
 				version: '1.0.0-beta',
-				isPreRelease: true
-			})
+				versionType: VersionType.PreRelease
+			}
 		};
 		const result = await getProjectInfo.execute(buildContext)();
 		expect(result).toEqualRight(expectedContext);

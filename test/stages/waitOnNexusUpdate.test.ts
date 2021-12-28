@@ -18,30 +18,6 @@ describe('waitOnNexusUpdate', () => {
 		jest.resetAllMocks();
 	});
 
-	it('skips for non-application', async () => {
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.NpmLibrary
-		};
-
-		const result = await waitOnNexusUpdate.execute(buildContext)();
-		expect(result).toEqualRight(buildContext);
-
-		expect(waitMock).not.toHaveBeenCalled();
-	});
-
-	it('skips for docker', async () => {
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.DockerApplication
-		};
-
-		const result = await waitOnNexusUpdate.execute(buildContext)();
-		expect(result).toEqualRight(buildContext);
-
-		expect(waitMock).not.toHaveBeenCalled();
-	});
-
 	it('waits on non-docker application', async () => {
 		waitMock.mockImplementation(() => T.of(''));
 		const buildContext: BuildContext = {

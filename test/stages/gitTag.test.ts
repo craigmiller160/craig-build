@@ -4,32 +4,18 @@ import { BuildContext } from '../../src/context/BuildContext';
 import { gitTag } from '../../src/stages/gitTag';
 import '@relmify/jest-fp-ts';
 import * as TE from 'fp-ts/TaskEither';
+import { VersionType } from '../../src/context/VersionType';
 
 const baseBuildContext = createBuildContext();
 
 describe('gitTag', () => {
-	it('skips for pre-release project', async () => {
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectInfo: {
-				...baseBuildContext.projectInfo,
-				isPreRelease: true
-			}
-		};
-
-		const result = await gitTag.execute(buildContext)();
-		expect(result).toEqualRight(buildContext);
-
-		expect(runCommandMock).not.toHaveBeenCalled();
-	});
-
 	it('creates and pushes tag for release project', async () => {
 		runCommandMock.mockImplementation(() => TE.right(''));
 		const buildContext: BuildContext = {
 			...baseBuildContext,
 			projectInfo: {
 				...baseBuildContext.projectInfo,
-				isPreRelease: false,
+				versionType: VersionType.Release,
 				version: '1.0.0'
 			}
 		};

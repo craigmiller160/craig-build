@@ -15,66 +15,19 @@ import {
 	IMAGE_VERSION_ENV
 } from '../../src/configFileTypes/constants';
 import { stringifyJson } from '../../src/functions/Json';
+import { VersionType } from '../../src/context/VersionType';
 
 const baseBuildContext = createBuildContext();
 const projectInfo: ProjectInfo = {
 	group: 'io.craigmiller160',
 	name: 'email-service',
 	version: '1.0.0',
-	isPreRelease: false
+	versionType: VersionType.Release
 };
 
 describe('validateKubernetesConfig', () => {
 	beforeEach(() => {
 		jest.resetAllMocks();
-	});
-
-	it('skips for NpmLibrary', async () => {
-		getCwdMock.mockImplementation(() =>
-			path.resolve(
-				baseWorkingDir,
-				'mavenReleaseApplicationWrongKubeVersion'
-			)
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.NpmLibrary
-		};
-
-		const result = await validateKubernetesConfig.execute(buildContext)();
-		expect(result).toEqualRight(buildContext);
-	});
-
-	it('skips for MavenLibrary', async () => {
-		getCwdMock.mockImplementation(() =>
-			path.resolve(
-				baseWorkingDir,
-				'mavenReleaseApplicationWrongKubeVersion'
-			)
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.MavenLibrary
-		};
-
-		const result = await validateKubernetesConfig.execute(buildContext)();
-		expect(result).toEqualRight(buildContext);
-	});
-
-	it('skips for DockerImage', async () => {
-		getCwdMock.mockImplementation(() =>
-			path.resolve(
-				baseWorkingDir,
-				'mavenReleaseApplicationWrongKubeVersion'
-			)
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.DockerImage
-		};
-
-		const result = await validateKubernetesConfig.execute(buildContext)();
-		expect(result).toEqualRight(buildContext);
 	});
 
 	it('kubernetes config is valid', async () => {

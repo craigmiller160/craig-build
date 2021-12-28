@@ -1,8 +1,6 @@
-import { Stage, StageFunction } from './Stage';
 import { BuildContext } from '../context/BuildContext';
 import * as TE from 'fp-ts/TaskEither';
 import { match, when } from 'ts-pattern';
-import { logger } from '../logger';
 import {
 	downloadArtifact,
 	NexusRepoGroupSearchFn,
@@ -11,7 +9,12 @@ import {
 	searchForNpmBetas,
 	searchForNpmReleases
 } from '../services/NexusRepoApi';
-import { isMaven, isNpm } from '../context/projectTypeUtils';
+import {
+	isApplication,
+	isDocker,
+	isMaven,
+	isNpm
+} from '../context/projectTypeUtils';
 import { isPreRelease, isRelease } from '../context/projectInfoUtils';
 import { ProjectType } from '../context/ProjectType';
 import { flow, pipe } from 'fp-ts/function';
@@ -26,6 +29,8 @@ import * as O from 'fp-ts/Option';
 import { getCwd } from '../command/getCwd';
 import { mkdir, rmDirIfExists } from '../functions/File';
 import * as E from 'fp-ts/Either';
+import * as P from 'fp-ts/Predicate';
+import { Stage, StageExecuteFn } from './Stage';
 
 const getExtension = (projectType: ProjectType): TE.TaskEither<Error, string> =>
 	match(projectType)
@@ -121,14 +126,20 @@ const downloadArtifactByProject = (
 		.with({ projectType: when(isNpm), projectInfo: when(isRelease) }, (_) =>
 			doDownloadArtifact(_, searchForNpmReleases)
 		)
-		.otherwise(() => {
-			logger.debug('Skipping stage');
-			return TE.right(context);
-		});
+		.run();
 
-const execute: StageFunction = (context) => downloadArtifactByProject(context);
+const isNotDocker: P.Predicate<ProjectType> = P.not(isDocker);
+
+const execute: StageExecuteFn = (context) => downloadArtifactByProject(context);
+const commandAllowsStage: P.Predicate<BuildContext> = () => true;
+const projectAllowsStage: P.Predicate<BuildContext> = pipe(
+	(_: BuildContext) => isNotDocker(_.projectType),
+	P.and((_) => isApplication(_.projectType))
+);
 
 export const downloadArtifactForDeployment: Stage = {
 	name: 'Download Artifact For Deployment',
-	execute
+	execute,
+	commandAllowsStage,
+	projectAllowsStage
 };

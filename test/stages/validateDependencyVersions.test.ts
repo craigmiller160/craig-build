@@ -6,60 +6,13 @@ import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
 import { ProjectType } from '../../src/context/ProjectType';
 import { validateDependencyVersions } from '../../src/stages/validateDependencyVersions';
+import { VersionType } from '../../src/context/VersionType';
 
 const baseBuildContext = createBuildContext();
 
 describe('validateDependencyVersions', () => {
 	beforeEach(() => {
 		jest.resetAllMocks();
-	});
-
-	it('skips validation for pre-release maven project', async () => {
-		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDir, 'mavenSnapshotApplication')
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.MavenApplication,
-			projectInfo: {
-				...baseBuildContext.projectInfo,
-				isPreRelease: true
-			}
-		};
-		const result = await validateDependencyVersions.execute(buildContext)();
-		expect(result).toEqualRight(buildContext);
-	});
-
-	it('skips validation for pre-release npm project', async () => {
-		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDir, 'npmBetaApplication')
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.NpmApplication,
-			projectInfo: {
-				...baseBuildContext.projectInfo,
-				isPreRelease: true
-			}
-		};
-		const result = await validateDependencyVersions.execute(buildContext)();
-		expect(result).toEqualRight(buildContext);
-	});
-
-	it('skips validation for docker project', async () => {
-		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDir, 'dockerReleaseApplication')
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.DockerApplication,
-			projectInfo: {
-				...baseBuildContext.projectInfo,
-				isPreRelease: false
-			}
-		};
-		const result = await validateDependencyVersions.execute(buildContext)();
-		expect(result).toEqualRight(buildContext);
 	});
 
 	it('all release dependencies are valid for maven project', async () => {
@@ -71,7 +24,7 @@ describe('validateDependencyVersions', () => {
 			projectType: ProjectType.MavenApplication,
 			projectInfo: {
 				...baseBuildContext.projectInfo,
-				isPreRelease: false
+				versionType: VersionType.Release
 			}
 		};
 		const result = await validateDependencyVersions.execute(buildContext)();
@@ -87,7 +40,7 @@ describe('validateDependencyVersions', () => {
 			projectType: ProjectType.NpmApplication,
 			projectInfo: {
 				...baseBuildContext.projectInfo,
-				isPreRelease: false
+				versionType: VersionType.Release
 			}
 		};
 		const result = await validateDependencyVersions.execute(buildContext)();
@@ -103,7 +56,7 @@ describe('validateDependencyVersions', () => {
 			projectType: ProjectType.MavenApplication,
 			projectInfo: {
 				...baseBuildContext.projectInfo,
-				isPreRelease: false
+				versionType: VersionType.Release
 			}
 		};
 		const result = await validateDependencyVersions.execute(buildContext)();
@@ -121,7 +74,7 @@ describe('validateDependencyVersions', () => {
 			projectType: ProjectType.NpmApplication,
 			projectInfo: {
 				...baseBuildContext.projectInfo,
-				isPreRelease: false
+				versionType: VersionType.Release
 			}
 		};
 		const result = await validateDependencyVersions.execute(buildContext)();

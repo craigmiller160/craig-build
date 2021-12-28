@@ -1,5 +1,6 @@
 import { ProjectInfo } from '../../src/context/ProjectInfo';
 import { isPreRelease, isRelease } from '../../src/context/projectInfoUtils';
+import { VersionType } from '../../src/context/VersionType';
 
 describe('projectInfoUtils', () => {
 	it('isRelease', () => {
@@ -7,13 +8,13 @@ describe('projectInfoUtils', () => {
 			name: '',
 			group: '',
 			version: '',
-			isPreRelease: false
+			versionType: VersionType.Release
 		};
 		expect(isRelease(projectInfo)).toEqual(true);
 		expect(
 			isRelease({
 				...projectInfo,
-				isPreRelease: true
+				versionType: VersionType.PreRelease
 			})
 		).toEqual(false);
 	});
@@ -23,13 +24,13 @@ describe('projectInfoUtils', () => {
 			name: '',
 			group: '',
 			version: '',
-			isPreRelease: true
+			versionType: VersionType.PreRelease
 		};
 		expect(isPreRelease(projectInfo)).toEqual(true);
 		expect(
 			isPreRelease({
 				...projectInfo,
-				isPreRelease: false
+				versionType: VersionType.Release
 			})
 		).toEqual(false);
 	});

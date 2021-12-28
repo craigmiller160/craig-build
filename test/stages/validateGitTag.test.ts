@@ -4,6 +4,7 @@ import { BuildContext } from '../../src/context/BuildContext';
 import { validateGitTag } from '../../src/stages/validateGitTag';
 import * as TE from 'fp-ts/TaskEither';
 import '@relmify/jest-fp-ts';
+import { VersionType } from '../../src/context/VersionType';
 
 const baseBuildContext = createBuildContext();
 const versions = 'v0.0.1\nv0.1.1';
@@ -13,28 +14,13 @@ describe('validateGitTag', () => {
 		jest.resetAllMocks();
 	});
 
-	it('skips pre-release project', async () => {
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectInfo: {
-				...baseBuildContext.projectInfo,
-				isPreRelease: true
-			}
-		};
-
-		const result = await validateGitTag.execute(buildContext)();
-		expect(result).toEqualRight(buildContext);
-
-		expect(runCommandMock).not.toHaveBeenCalled();
-	});
-
 	it('confirms there is no existing tag for release version', async () => {
 		runCommandMock.mockImplementation(() => TE.right(versions));
 		const buildContext: BuildContext = {
 			...baseBuildContext,
 			projectInfo: {
 				...baseBuildContext.projectInfo,
-				isPreRelease: false,
+				versionType: VersionType.Release,
 				version: '1.0.0'
 			}
 		};
@@ -51,7 +37,7 @@ describe('validateGitTag', () => {
 			...baseBuildContext,
 			projectInfo: {
 				...baseBuildContext.projectInfo,
-				isPreRelease: false,
+				versionType: VersionType.Release,
 				version: '0.1.1'
 			}
 		};

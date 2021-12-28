@@ -1,4 +1,4 @@
-import { EarlyStage, EarlyStageFunction } from './Stage';
+import { Stage, StageExecuteFn } from './Stage';
 import path from 'path';
 import { getCwd } from '../command/getCwd';
 import fs from 'fs';
@@ -6,8 +6,9 @@ import { match, when } from 'ts-pattern';
 import { ProjectType } from '../context/ProjectType';
 import * as E from 'fp-ts/Either';
 import { pipe } from 'fp-ts/function';
-import * as O from 'fp-ts/Option';
+import * as P from 'fp-ts/Predicate';
 import * as TE from 'fp-ts/TaskEither';
+import { BuildContext } from '../context/BuildContext';
 
 const NPM_PROJECT_FILE = 'package.json';
 const MVN_PROJECT_FILE = 'pom.xml';
@@ -57,17 +58,21 @@ const checkProjectFilesForType = (): E.Either<Error, ProjectType> =>
 		)
 		.otherwise(() => E.left(new Error('Unable to identify ProjectType')));
 
-const execute: EarlyStageFunction = (context) =>
+const execute: StageExecuteFn = (context) =>
 	pipe(
 		checkProjectFilesForType(),
 		E.map((projectType) => ({
 			...context,
-			projectType: O.some(projectType)
+			projectType: projectType
 		})),
 		TE.fromEither
 	);
+const commandAllowsStage: P.Predicate<BuildContext> = () => true;
+const projectAllowsStage: P.Predicate<BuildContext> = () => true;
 
-export const getProjectType: EarlyStage = {
+export const getProjectType: Stage = {
 	name: 'Get Project Type',
-	execute
+	execute,
+	commandAllowsStage,
+	projectAllowsStage
 };

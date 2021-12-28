@@ -1,4 +1,3 @@
-import { EarlyStage, EarlyStageFunction } from './Stage';
 import { PackageJson } from '../configFileTypes/PackageJson';
 import { pipe } from 'fp-ts/function';
 import { readFile } from '../functions/File';
@@ -7,12 +6,23 @@ import * as E from 'fp-ts/Either';
 import { parseJson } from '../functions/Json';
 import { npmSeparateGroupAndName } from '../utils/npmSeparateGroupAndName';
 import { BuildToolInfo } from '../context/BuildToolInfo';
-import * as O from 'fp-ts/Option';
+import * as P from 'fp-ts/Predicate';
 import * as TE from 'fp-ts/TaskEither';
 import { NPM_PROJECT_FILE } from '../configFileTypes/constants';
-import { IncompleteBuildContext } from '../context/IncompleteBuildContext';
+import { Stage, StageExecuteFn } from './Stage';
+import { BuildContext } from '../context/BuildContext';
+import { VersionType } from '../context/VersionType';
+import { match, when } from 'ts-pattern';
+import { regexTest } from '../functions/RegExp';
 
-const execute: EarlyStageFunction = (context) =>
+const VERSION_REGEX = /^.*-beta$/;
+
+const getVersionType = (version: string): VersionType =>
+	match(version)
+		.with(when(regexTest(VERSION_REGEX)), () => VersionType.PreRelease)
+		.otherwise(() => VersionType.Release);
+
+const execute: StageExecuteFn = (context) =>
 	pipe(
 		readFile(path.resolve(__dirname, '..', '..', NPM_PROJECT_FILE)),
 		E.chain((_) => parseJson<PackageJson>(_)),
@@ -25,19 +35,23 @@ const execute: EarlyStageFunction = (context) =>
 				group,
 				name,
 				version,
-				isPreRelease: version.includes('beta')
+				versionType: getVersionType(version)
 			})
 		),
 		E.map(
-			(_): IncompleteBuildContext => ({
+			(_): BuildContext => ({
 				...context,
-				buildToolInfo: O.some(_)
+				buildToolInfo: _
 			})
 		),
 		TE.fromEither
 	);
+const commandAllowsStage: P.Predicate<BuildContext> = () => true;
+const projectAllowsStage: P.Predicate<BuildContext> = () => true;
 
-export const getBuildToolInfo: EarlyStage = {
+export const getBuildToolInfo: Stage = {
 	name: 'Get Build Tool Info',
-	execute
+	execute,
+	commandAllowsStage,
+	projectAllowsStage
 };

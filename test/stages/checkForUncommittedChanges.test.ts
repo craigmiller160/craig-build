@@ -1,13 +1,13 @@
 import { runCommandMock } from '../testutils/runCommandMock';
 import * as TE from 'fp-ts/TaskEither';
 import '@relmify/jest-fp-ts';
-import { createIncompleteBuildContext } from '../testutils/createBuildContext';
 import {
 	checkForUncommittedChanges,
 	GIT_COMMAND
 } from '../../src/stages/checkForUncommittedChanges';
+import { createBuildContext } from '../testutils/createBuildContext';
 
-const buildContext = createIncompleteBuildContext();
+const buildContext = createBuildContext();
 
 describe('checkForUncommittedChanges', () => {
 	beforeEach(() => {

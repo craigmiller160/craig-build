@@ -1,8 +1,9 @@
 import { ProjectInfo } from './ProjectInfo';
 import * as P from 'fp-ts/Predicate';
+import { VersionType } from './VersionType';
 
 export const isRelease: P.Predicate<ProjectInfo> = (projectInfo) =>
-	!projectInfo.isPreRelease;
+	VersionType.Release === projectInfo.versionType;
 
 export const isPreRelease: P.Predicate<ProjectInfo> = (projectInfo) =>
-	projectInfo.isPreRelease;
+	VersionType.PreRelease === projectInfo.versionType;

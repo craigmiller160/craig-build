@@ -1,14 +1,13 @@
 import { getCwdMock } from '../testutils/getCwdMock';
 import path from 'path';
 import { getProjectType } from '../../src/stages/getProjectType';
-import { createIncompleteBuildContext } from '../testutils/createBuildContext';
 import ProjectType from '../../old-src/types/ProjectType';
-import * as O from 'fp-ts/Option';
 import '@relmify/jest-fp-ts';
 import { baseWorkingDir } from '../testutils/baseWorkingDir';
-import { IncompleteBuildContext } from '../../src/context/IncompleteBuildContext';
+import { createBuildContext } from '../testutils/createBuildContext';
+import { BuildContext } from '../../src/context/BuildContext';
 
-const buildContext = createIncompleteBuildContext();
+const buildContext = createBuildContext();
 
 describe('getProjectType', () => {
 	beforeEach(() => {
@@ -19,9 +18,9 @@ describe('getProjectType', () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(baseWorkingDir, 'npmReleaseLibrary')
 		);
-		const expectedContext: IncompleteBuildContext = {
+		const expectedContext: BuildContext = {
 			...buildContext,
-			projectType: O.some(ProjectType.NpmLibrary)
+			projectType: ProjectType.NpmLibrary
 		};
 		const result = await getProjectType.execute(buildContext)();
 		expect(result).toEqualRight(expectedContext);
@@ -31,9 +30,9 @@ describe('getProjectType', () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(baseWorkingDir, 'mavenReleaseLibrary')
 		);
-		const expectedContext: IncompleteBuildContext = {
+		const expectedContext: BuildContext = {
 			...buildContext,
-			projectType: O.some(ProjectType.MavenLibrary)
+			projectType: ProjectType.MavenLibrary
 		};
 		const result = await getProjectType.execute(buildContext)();
 		expect(result).toEqualRight(expectedContext);
@@ -43,9 +42,9 @@ describe('getProjectType', () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(baseWorkingDir, 'npmReleaseApplication')
 		);
-		const expectedContext: IncompleteBuildContext = {
+		const expectedContext: BuildContext = {
 			...buildContext,
-			projectType: O.some(ProjectType.NpmApplication)
+			projectType: ProjectType.NpmApplication
 		};
 		const result = await getProjectType.execute(buildContext)();
 		expect(result).toEqualRight(expectedContext);
@@ -55,9 +54,9 @@ describe('getProjectType', () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(baseWorkingDir, 'mavenReleaseApplication')
 		);
-		const expectedContext: IncompleteBuildContext = {
+		const expectedContext: BuildContext = {
 			...buildContext,
-			projectType: O.some(ProjectType.MavenApplication)
+			projectType: ProjectType.MavenApplication
 		};
 		const result = await getProjectType.execute(buildContext)();
 		expect(result).toEqualRight(expectedContext);
@@ -67,9 +66,9 @@ describe('getProjectType', () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(baseWorkingDir, 'dockerReleaseApplication')
 		);
-		const expectedContext: IncompleteBuildContext = {
+		const expectedContext: BuildContext = {
 			...buildContext,
-			projectType: O.some(ProjectType.DockerApplication)
+			projectType: ProjectType.DockerApplication
 		};
 		const result = await getProjectType.execute(buildContext)();
 		expect(result).toEqualRight(expectedContext);
@@ -79,9 +78,9 @@ describe('getProjectType', () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(baseWorkingDir, 'dockerReleaseImage')
 		);
-		const expectedContext: IncompleteBuildContext = {
+		const expectedContext: BuildContext = {
 			...buildContext,
-			projectType: O.some(ProjectType.DockerImage)
+			projectType: ProjectType.DockerImage
 		};
 		const result = await getProjectType.execute(buildContext)();
 		expect(result).toEqualRight(expectedContext);

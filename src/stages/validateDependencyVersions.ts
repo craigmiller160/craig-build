@@ -1,10 +1,8 @@
-import { Stage, StageFunction } from './Stage';
 import * as E from 'fp-ts/Either';
 import { BuildContext } from '../context/BuildContext';
 import { pipe } from 'fp-ts/function';
 import { match, when } from 'ts-pattern';
-import { isMaven, isNpm } from '../context/projectTypeUtils';
-import { logger } from '../logger';
+import { isDocker, isMaven, isNpm } from '../context/projectTypeUtils';
 import * as TE from 'fp-ts/TaskEither';
 import { readFile } from '../functions/File';
 import { getCwd } from '../command/getCwd';
@@ -17,9 +15,12 @@ import { parseXml } from '../functions/Xml';
 import { MavenDependency, PomXml } from '../configFileTypes/PomXml';
 import * as A from 'fp-ts/Array';
 import * as O from 'fp-ts/Option';
+import * as P from 'fp-ts/Predicate';
 import { parseJson } from '../functions/Json';
 import { PackageJson } from '../configFileTypes/PackageJson';
 import { isRelease } from '../context/projectInfoUtils';
+import { Stage, StageExecuteFn } from './Stage';
+import { ProjectType } from '../context/ProjectType';
 
 const MAVEN_PROPERTY_REGEX = /\${.*}/;
 
@@ -133,15 +134,21 @@ const handleValidationByProject = (
 			{ projectType: when(isNpm), projectInfo: when(isRelease) },
 			validateNpmReleaseDependencies
 		)
-		.otherwise(() => {
-			logger.debug('Skipping stage');
-			return E.right(context);
-		});
+		.run();
 
-const execute: StageFunction = (context) =>
+const isNotDocker: P.Predicate<ProjectType> = P.not(isDocker);
+
+const execute: StageExecuteFn = (context) =>
 	pipe(handleValidationByProject(context), TE.fromEither);
+const commandAllowsStage: P.Predicate<BuildContext> = () => true;
+const projectAllowsStage: P.Predicate<BuildContext> = pipe(
+	(_: BuildContext) => isNotDocker(_.projectType),
+	P.and((_) => isRelease(_.projectInfo))
+);
 
 export const validateDependencyVersions: Stage = {
 	name: 'Validate Dependency Versions',
-	execute
+	execute,
+	commandAllowsStage,
+	projectAllowsStage
 };
