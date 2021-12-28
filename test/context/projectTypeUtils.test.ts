@@ -5,6 +5,7 @@ import {
 	isMaven,
 	isNpm
 } from '../../src/context/projectTypeUtils';
+import exp = require('constants');
 
 const projectTypes = Object.values(ProjectType);
 
@@ -20,49 +21,55 @@ const dockerApplication = (result: boolean[], value: boolean) =>
 	expect(result[4]).toEqual(value);
 const dockerImage = (result: boolean[], value: boolean) =>
 	expect(result[5]).toEqual(value);
+const unknownType = (result: boolean[], value: boolean) =>
+	expect(result[6]).toEqual(value);
 
 describe('projectTypeUtils', () => {
 	it('isMaven', () => {
 		const result = projectTypes.map(isMaven);
-		expect(result).toHaveLength(6);
+		expect(result).toHaveLength(7);
 		npmLibrary(result, false);
 		mavenLibrary(result, true);
 		npmApplication(result, false);
 		mavenApplication(result, true);
 		dockerApplication(result, false);
 		dockerImage(result, false);
+		unknownType(result, false);
 	});
 
 	it('isNpm', () => {
 		const result = projectTypes.map(isNpm);
-		expect(result).toHaveLength(6);
+		expect(result).toHaveLength(7);
 		npmLibrary(result, true);
 		mavenLibrary(result, false);
 		npmApplication(result, true);
 		mavenApplication(result, false);
 		dockerApplication(result, false);
 		dockerImage(result, false);
+		unknownType(result, false);
 	});
 
 	it('isDocker', () => {
 		const result = projectTypes.map(isDocker);
-		expect(result).toHaveLength(6);
+		expect(result).toHaveLength(7);
 		npmLibrary(result, false);
 		mavenLibrary(result, false);
 		npmApplication(result, false);
 		mavenApplication(result, false);
 		dockerApplication(result, true);
 		dockerImage(result, true);
+		unknownType(result, false);
 	});
 
 	it('isApplication', () => {
 		const result = projectTypes.map(isApplication);
-		expect(result).toHaveLength(6);
+		expect(result).toHaveLength(7);
 		npmLibrary(result, false);
 		mavenLibrary(result, false);
 		npmApplication(result, true);
 		mavenApplication(result, true);
 		dockerApplication(result, true);
 		dockerImage(result, false);
+		unknownType(result, false);
 	});
 });
