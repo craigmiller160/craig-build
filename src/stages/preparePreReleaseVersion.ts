@@ -18,7 +18,7 @@ import path from 'path';
 import * as P from 'fp-ts/Predicate';
 import { parseXml } from '../functions/Xml';
 import { MavenMetadataNexus } from '../configFileTypes/MavenMetadataNexus';
-import { ConditionalStage, StageExecuteFn } from './Stage';
+import { Stage, StageExecuteFn } from './Stage';
 
 const BETA_VERSION_REGEX = /^(?<version>.*-beta)\.(?<betaNumber>\d*)$/;
 
@@ -147,13 +147,13 @@ const handlePreparingPreReleaseVersionByProject = (
 		)
 		.run();
 
-const execute: StageExecuteFn<BuildContext> = (context) =>
+const execute: StageExecuteFn = (context) =>
 	handlePreparingPreReleaseVersionByProject(context);
 const commandAllowsStage: P.Predicate<BuildContext> = () => true;
 const projectAllowsStage: P.Predicate<BuildContext> = (context) =>
 	isPreRelease(context.projectInfo);
 
-export const preparePreReleaseVersion: ConditionalStage = {
+export const preparePreReleaseVersion: Stage = {
 	name: 'Prepare Pre-Release Version',
 	execute,
 	commandAllowsStage,

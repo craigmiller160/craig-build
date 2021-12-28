@@ -1,16 +1,17 @@
-import { SetupStage, StageExecuteFn } from './Stage';
+import { Stage, StageExecuteFn } from './Stage';
 import { match } from 'ts-pattern';
 import { pipe } from 'fp-ts/function';
 import { BuildToolInfo } from '../context/BuildToolInfo';
 import * as TE from 'fp-ts/TaskEither';
+import * as P from 'fp-ts/Predicate';
 import { searchForNpmReleases } from '../services/NexusRepoApi';
 import semver from 'semver';
 import { semverTrimVersion } from '../utils/semverUtils';
 import { NexusSearchResult } from '../services/NexusSearchResult';
-import { extractBuildToolInfo } from '../context/contextExtraction';
 import { readUserInput } from '../utils/readUserInput';
 import { logger } from '../logger';
-import { IncompleteBuildContext } from '../context/IncompleteBuildContext';
+import { BuildContext } from '../context/BuildContext';
+import { VersionType } from '../context/VersionType';
 
 const compareVersions = (
 	nexusItemVersion: string,
@@ -76,18 +77,23 @@ const checkBuildToolInfo = (
 	buildToolInfo: BuildToolInfo
 ): TE.TaskEither<Error, BuildToolInfo> =>
 	match(buildToolInfo)
-		.with({ isPreRelease: true }, handlePreReleaseVersionValidation)
+		.with(
+			{ versionType: VersionType.PreRelease },
+			handlePreReleaseVersionValidation
+		)
 		.otherwise(handleReleaseVersionValidation);
 
-const execute: StageExecuteFn<IncompleteBuildContext> = (context) =>
+const execute: StageExecuteFn = (context) =>
 	pipe(
-		extractBuildToolInfo(context),
-		TE.fromEither,
-		TE.chain(checkBuildToolInfo),
+		checkBuildToolInfo(context.buildToolInfo),
 		TE.map(() => context)
 	);
+const commandAllowsStage: P.Predicate<BuildContext> = () => true;
+const projectAllowsStage: P.Predicate<BuildContext> = () => true;
 
-export const validateBuildToolVersion: SetupStage = {
+export const validateBuildToolVersion: Stage = {
 	name: 'Validate Build Tool Version',
-	execute
+	execute,
+	commandAllowsStage,
+	projectAllowsStage
 };

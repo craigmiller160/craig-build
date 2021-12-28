@@ -4,7 +4,7 @@ import { match, when } from 'ts-pattern';
 import { isRelease } from '../context/projectInfoUtils';
 import { pipe } from 'fp-ts/function';
 import { runCommand } from '../command/runCommand';
-import { ConditionalStage, StageExecuteFn } from './Stage';
+import { Stage, StageExecuteFn } from './Stage';
 import * as P from 'fp-ts/Predicate';
 
 const doGitTag = (context: BuildContext): TE.TaskEither<Error, BuildContext> =>
@@ -21,13 +21,12 @@ const handleGitTagByProject = (
 		.with({ projectInfo: when(isRelease) }, doGitTag)
 		.run();
 
-const execute: StageExecuteFn<BuildContext> = (context) =>
-	handleGitTagByProject(context);
+const execute: StageExecuteFn = (context) => handleGitTagByProject(context);
 const commandAllowsStage: P.Predicate<BuildContext> = () => true;
 const projectAllowsStage: P.Predicate<BuildContext> = (context) =>
 	isRelease(context.projectInfo);
 
-export const gitTag: ConditionalStage = {
+export const gitTag: Stage = {
 	name: 'Git Tag',
 	execute,
 	commandAllowsStage,

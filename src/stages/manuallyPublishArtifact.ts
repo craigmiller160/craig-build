@@ -4,7 +4,7 @@ import { match, when } from 'ts-pattern';
 import { isNpm } from '../context/projectTypeUtils';
 import { pipe } from 'fp-ts/function';
 import { runCommand } from '../command/runCommand';
-import { ConditionalStage, StageExecuteFn } from './Stage';
+import { Stage, StageExecuteFn } from './Stage';
 import * as P from 'fp-ts/Predicate';
 
 export const NPM_PUBLISH_COMMAND =
@@ -30,13 +30,13 @@ const handlePublishByProject = (
 		.with({ projectType: when(isNpm) }, publishNpmArtifact)
 		.run();
 
-const execute: StageExecuteFn<BuildContext> = (context) =>
+const execute: StageExecuteFn = (context) =>
 	handlePublishByProject(context);
 const commandAllowsStage: P.Predicate<BuildContext> = () => true;
 const projectAllowsStage: P.Predicate<BuildContext> = (context) =>
 	isNpm(context.projectType);
 
-export const manuallyPublishArtifact: ConditionalStage = {
+export const manuallyPublishArtifact: Stage = {
 	name: 'Manually Publish Artifact',
 	execute,
 	commandAllowsStage,
