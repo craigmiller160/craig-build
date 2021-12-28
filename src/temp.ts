@@ -1,9 +1,10 @@
-import { ConditionalStage } from './stages/Stage';
+/* eslint-disable */
 import { BuildContext } from './context/BuildContext';
 import * as TE from 'fp-ts/TaskEither';
 import { createBuildContext } from '../test/testutils/createBuildContext';
 import { pipe } from 'fp-ts/function';
 import { match, when } from 'ts-pattern';
+import { Stage } from './stages/Stage';
 
 export {};
 
@@ -15,12 +16,12 @@ enum StageStatus {
 
 interface ConditionalStageExecution {
 	readonly status: StageStatus;
-	readonly stage: ConditionalStage;
+	readonly stage: Stage;
 	readonly context: BuildContext;
 }
 
 const of = (
-	stage: ConditionalStage,
+	stage: Stage,
 	context: BuildContext
 ): ConditionalStageExecution => ({
 	stage,
@@ -30,7 +31,7 @@ const of = (
 
 const theContext = createBuildContext();
 
-const stage: ConditionalStage = {
+const stage: Stage = {
 	name: '',
 	execute: () => TE.right(theContext),
 	commandAllowsStage: () => true,
@@ -38,15 +39,12 @@ const stage: ConditionalStage = {
 };
 
 interface Container {
-	stage: ConditionalStage;
+	stage: Stage;
 	context: BuildContext;
 	status: StageStatus;
 }
 
-const createContainer = (
-	stage: ConditionalStage,
-	context: BuildContext
-): Container => ({
+const createContainer = (stage: Stage, context: BuildContext): Container => ({
 	stage,
 	context,
 	status: StageStatus.PROCEED
