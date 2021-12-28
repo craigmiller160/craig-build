@@ -10,7 +10,7 @@ import { match, when } from 'ts-pattern';
 import { stages } from './stages';
 import { Stage } from './stages/Stage';
 
-const shouldStageRun = <Ctx extends Context>(
+const shouldStageRun2 = <Ctx extends Context>(
 	context: Ctx,
 	stage: BaseStage<Ctx>
 ): boolean =>
@@ -23,7 +23,7 @@ const shouldStageRun = <Ctx extends Context>(
 		)
 		.otherwise(() => true);
 
-const executeStage = <Ctx extends Context>(
+const executeStage2 = <Ctx extends Context>(
 	context: Ctx,
 	stage: BaseStage<Ctx>
 ): TE.TaskEither<Error, Ctx> =>
@@ -34,7 +34,9 @@ const executeStage = <Ctx extends Context>(
 			return TE.right(context);
 		});
 
-const verifyAndExecuteStage = (
+const conditionally
+
+const executeStage = (
 	contextTE: TE.TaskEither<Error, BuildContext>,
 	stage: Stage
 ): TE.TaskEither<Error, BuildContext> => {
@@ -47,7 +49,7 @@ const verifyAndExecuteStage = (
 	);
 };
 
-const setupAndExecuteStage = <Ctx extends Context>(
+const setupAndExecuteStage2 = <Ctx extends Context>(
 	contextTE: TE.TaskEither<Error, Ctx>,
 	stage: BaseStage<Ctx>
 ) =>
@@ -79,6 +81,6 @@ export const execute = (
 	pipe(
 		stages,
 		A.reduce(TE.right<Error, BuildContext>(context), (ctxTE, stage) =>
-			verifyAndExecuteStage(ctxTE, stage)
+			executeStage(ctxTE, stage)
 		)
 	);
