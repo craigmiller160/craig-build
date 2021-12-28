@@ -1,6 +1,5 @@
 import { OptionValues, program } from 'commander';
 import { CommandType } from '../../src/context/CommandType';
-import * as O from 'fp-ts/Option';
 import { getCommandInfo } from '../../src/stages/getCommandInfo';
 import '@relmify/jest-fp-ts';
 import { BuildContext } from '../../src/context/BuildContext';

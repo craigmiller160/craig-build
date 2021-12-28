@@ -2,7 +2,6 @@ import { getCwdMock } from '../testutils/getCwdMock';
 import path from 'path';
 import { getProjectType } from '../../src/stages/getProjectType';
 import ProjectType from '../../old-src/types/ProjectType';
-import * as O from 'fp-ts/Option';
 import '@relmify/jest-fp-ts';
 import { baseWorkingDir } from '../testutils/baseWorkingDir';
 import { createBuildContext } from '../testutils/createBuildContext';

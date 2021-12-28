@@ -5,7 +5,6 @@ import {
 	isMaven,
 	isNpm
 } from '../../src/context/projectTypeUtils';
-import exp = require('constants');
 
 const projectTypes = Object.values(ProjectType);
 
