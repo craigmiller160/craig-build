@@ -15,6 +15,7 @@ import * as TE from 'fp-ts/TaskEither';
 import { baseWorkingDir } from '../testutils/baseWorkingDir';
 import path from 'path';
 import { homedir } from 'os';
+import { VersionType } from '../../src/context/VersionType';
 
 jest.mock('../../src/services/NexusRepoApi', () => ({
 	searchForNpmBetas: jest.fn(),
@@ -59,7 +60,7 @@ describe('preparePreReleaseVersion', () => {
 				...baseBuildContext.projectInfo,
 				group: 'craigmiller160',
 				name: 'my-project',
-				isPreRelease: true,
+				versionType: VersionType.PreRelease,
 				version: '1.0.0-beta'
 			}
 		};
@@ -94,7 +95,7 @@ describe('preparePreReleaseVersion', () => {
 				...baseBuildContext.projectInfo,
 				group: 'craigmiller160',
 				name: 'my-project',
-				isPreRelease: true,
+				versionType: VersionType.PreRelease,
 				version: '1.0.0-beta'
 			}
 		};
@@ -127,7 +128,7 @@ describe('preparePreReleaseVersion', () => {
 				...baseBuildContext.projectInfo,
 				group: 'io.craigmiller160',
 				name: 'my-project',
-				isPreRelease: true,
+				versionType: VersionType.PreRelease,
 				version: '1.1.0-SNAPSHOT'
 			}
 		};
@@ -160,7 +161,7 @@ describe('preparePreReleaseVersion', () => {
 				...baseBuildContext.projectInfo,
 				group: 'craigmiller160',
 				name: 'my-project',
-				isPreRelease: true,
+				versionType: VersionType.PreRelease,
 				version: '1.0.0-beta'
 			}
 		};
@@ -194,7 +195,7 @@ describe('preparePreReleaseVersion', () => {
 				...baseBuildContext.projectInfo,
 				group: 'craigmiller160',
 				name: 'my-project',
-				isPreRelease: true,
+				versionType: VersionType.PreRelease,
 				version: '1.0.0-beta'
 			}
 		};

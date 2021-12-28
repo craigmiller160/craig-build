@@ -6,6 +6,7 @@ import { buildAndPushDocker } from '../../src/stages/buildAndPushDocker';
 import { BuildContext } from '../../src/context/BuildContext';
 import { ProjectType } from '../../src/context/ProjectType';
 import * as TE from 'fp-ts/TaskEither';
+import { VersionType } from '../../src/context/VersionType';
 
 jest.mock('shell-env', () => ({
 	sync: jest.fn()
@@ -16,7 +17,7 @@ const baseBuildContext = createBuildContext({
 		group: 'craigmiller160',
 		name: 'my-project',
 		version: '1.0.0',
-		isPreRelease: false
+		versionType: VersionType.Release
 	}
 });
 

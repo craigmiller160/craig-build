@@ -18,7 +18,10 @@ const VERSION_REGEX = /^.*-beta$/;
 
 const getVersionType = (version: string): VersionType =>
 	match(version)
-		.with(when(VERSION_REGEX.test), () => VersionType.PreRelease)
+		.with(
+			when<string>((_) => VERSION_REGEX.test(_)),
+			() => VersionType.PreRelease
+		)
 		.otherwise(() => VersionType.Release);
 
 const execute: StageExecuteFn = (context) =>
