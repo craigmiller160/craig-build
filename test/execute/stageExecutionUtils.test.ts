@@ -1,8 +1,12 @@
 import { createBuildContext } from '../testutils/createBuildContext';
 import { Stage } from '../../src/stages/Stage';
 import * as TE from 'fp-ts/TaskEither';
-import { createStageExecution } from '../../src/execute/stageExecutionUtils';
+import {
+	createStageExecution,
+	proceedIfCommandAllowed
+} from '../../src/execute/stageExecutionUtils';
 import { StageExecutionStatus } from '../../src/execute/StageExecutionStatus';
+import { StageExecution } from '../../src/execute/StageExecution';
 
 const baseContext = createBuildContext();
 const mockStage: Stage = {
@@ -27,15 +31,43 @@ describe('stageExecutionUtils', () => {
 
 	describe('proceedIfCommandAllowed', () => {
 		it('status is Proceed and commandAllowsStage returns true', () => {
-			throw new Error();
+			(mockStage.commandAllowsStage as jest.Mock).mockImplementation(
+				() => true
+			);
+			const execution: StageExecution = {
+				stage: mockStage,
+				status: StageExecutionStatus.Proceed
+			};
+			const result = proceedIfCommandAllowed(baseContext)(execution);
+			expect(result).toEqual(execution);
 		});
 
 		it('status is Proceed and commandAllowsStage returns false', () => {
-			throw new Error();
+			(mockStage.commandAllowsStage as jest.Mock).mockImplementation(
+				() => false
+			);
+			const execution: StageExecution = {
+				stage: mockStage,
+				status: StageExecutionStatus.Proceed
+			};
+			const result = proceedIfCommandAllowed(baseContext)(execution);
+			expect(result).toEqual({
+				...execution,
+				status: StageExecutionStatus.SkipForCommand
+			});
 		});
 
 		it('status is SkipForProject', () => {
-			throw new Error();
+			const execution: StageExecution = {
+				stage: mockStage,
+				status: StageExecutionStatus.SkipForProject
+			};
+			const result = proceedIfCommandAllowed(baseContext)(execution);
+			expect(result).toEqual({
+				...execution,
+				status: StageExecutionStatus.SkipForProject
+			});
+			expect(mockStage.commandAllowsStage).not.toHaveBeenCalled();
 		});
 	});
 

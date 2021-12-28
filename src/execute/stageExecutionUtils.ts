@@ -6,8 +6,6 @@ import { match, when } from 'ts-pattern';
 import * as TE from 'fp-ts/TaskEither';
 import { logger } from '../logger';
 
-// TODO write tests for these
-
 export const createStageExecution = (stage: Stage): StageExecution => ({
 	stage,
 	status: StageExecutionStatus.Proceed
