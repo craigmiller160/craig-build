@@ -17,7 +17,7 @@ import { checkForUncommittedChanges } from '../../src/stages/checkForUncommitted
 import { getProjectType } from '../../src/stages/getProjectType';
 import { getProjectInfo } from '../../src/stages/getProjectInfo';
 
-export const fullBuild_preRelease_mavenLibrary: ExpectedExecution = {
+export const kubernetesOnly_preRelease_mavenLibrary: ExpectedExecution = {
 	[getCommandInfo.name]: true,
 	[getBuildToolInfo.name]: true,
 	[validateBuildToolVersion.name]: true,
