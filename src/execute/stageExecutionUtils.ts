@@ -3,6 +3,8 @@ import { BuildContext } from '../context/BuildContext';
 import { StageExecution } from './StageExecution';
 import { StageExecutionStatus } from './StageExecutionStatus';
 import { match, when } from 'ts-pattern';
+import * as TE from 'fp-ts/TaskEither';
+import { logger } from '../logger';
 
 // TODO write tests for these
 
@@ -52,3 +54,15 @@ export const proceedIfProjectAllows = (
 			..._,
 			status: StageExecutionStatus.SkipForCommand
 		}));
+
+export const executeIfAllowed = (
+	execution: StageExecution
+): TE.TaskEither<Error, BuildContext> =>
+	match(execution)
+		.with({ status: StageExecutionStatus.Proceed }, (_) =>
+			_.stage.execute(_.context)
+		)
+		.otherwise(({ context, status }) => {
+			logger.debug(`Skipping stage. Reason: ${status}`);
+			return TE.right(context);
+		});
