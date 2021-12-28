@@ -1,12 +1,12 @@
-import { SetupStage, StageExecuteFn } from './Stage';
+import { Stage, StageExecuteFn } from './Stage';
 import { pipe } from 'fp-ts/function';
-import { extractProjectType } from '../context/contextExtraction';
 import * as E from 'fp-ts/Either';
 import { ProjectType } from '../context/ProjectType';
 import { ProjectInfo } from '../context/ProjectInfo';
 import { match, when } from 'ts-pattern';
 import * as TE from 'fp-ts/TaskEither';
 import * as O from 'fp-ts/Option';
+import * as P from 'fp-ts/Predicate';
 import { isDocker, isMaven, isNpm } from '../context/projectTypeUtils';
 import { readFile } from '../functions/File';
 import path from 'path';
@@ -22,7 +22,21 @@ import {
 	MAVEN_PROJECT_FILE,
 	NPM_PROJECT_FILE
 } from '../configFileTypes/constants';
-import { IncompleteBuildContext } from '../context/IncompleteBuildContext';
+import { BuildContext } from '../context/BuildContext';
+import { VersionType } from '../context/VersionType';
+
+const BETA_VERSION_REGEX = /^.*-beta/;
+const SNAPSHOT_VERSION_REGEX = /^.*-SNAPSHOT/;
+
+const matchesPreReleaseRegex: P.Predicate<string> = pipe(
+	BETA_VERSION_REGEX.test,
+	P.or(SNAPSHOT_VERSION_REGEX.test)
+);
+
+const getVersionType = (version: string): VersionType =>
+	match(version)
+		.with(when(matchesPreReleaseRegex), () => VersionType.PreRelease)
+		.otherwise(() => VersionType.Release);
 
 const readMavenProjectInfo = (): E.Either<Error, ProjectInfo> =>
 	pipe(
@@ -34,7 +48,7 @@ const readMavenProjectInfo = (): E.Either<Error, ProjectInfo> =>
 				group: pomXml.project.groupId[0],
 				name: pomXml.project.artifactId[0],
 				version,
-				isPreRelease: version.includes('SNAPSHOT')
+				versionType: getVersionType(version)
 			};
 		})
 	);
@@ -49,7 +63,7 @@ const readNpmProjectInfo = (): E.Either<Error, ProjectInfo> =>
 				group,
 				name,
 				version: packageJson.version,
-				isPreRelease: packageJson.version.includes('beta')
+				versionType: getVersionType(packageJson.version)
 			};
 		})
 	);
@@ -64,7 +78,7 @@ const readDockerProjectInfo = (): E.Either<Error, ProjectInfo> =>
 				group,
 				name,
 				version: dockerJson.version,
-				isPreRelease: dockerJson.version.includes('beta')
+				versionType: getVersionType(dockerJson.version)
 			};
 		})
 	);
@@ -80,18 +94,21 @@ const readProjectInfoByType = (
 			E.left(new Error(`Unsupported ProjectType: ${projectType}`))
 		);
 
-const execute: StageExecuteFn<IncompleteBuildContext> = (context) =>
+const execute: StageExecuteFn = (context) =>
 	pipe(
-		extractProjectType(context),
-		E.chain(readProjectInfoByType),
+		readProjectInfoByType(context.projectType),
 		E.map((_) => ({
 			...context,
-			projectInfo: O.some(_)
+			projectInfo: _
 		})),
 		TE.fromEither
 	);
+const commandAllowsStage: P.Predicate<BuildContext> = () => true;
+const projectAllowsStage: P.Predicate<BuildContext> = () => true;
 
-export const getProjectInfo: SetupStage = {
+export const getProjectInfo: Stage = {
 	name: 'Get Project Info',
-	execute
+	execute,
+	commandAllowsStage,
+	projectAllowsStage
 };

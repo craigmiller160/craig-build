@@ -1,12 +1,12 @@
-import { SetupStage, StageExecuteFn } from './Stage';
+import { Stage, StageExecuteFn } from './Stage';
 import { match } from 'ts-pattern';
 import { OptionValues } from 'commander';
 import { CommandInfo } from '../context/CommandInfo';
 import { CommandType } from '../context/CommandType';
 import * as TE from 'fp-ts/TaskEither';
-import * as O from 'fp-ts/Option';
+import * as P from 'fp-ts/Predicate';
 import { program } from 'commander';
-import { IncompleteBuildContext } from '../context/IncompleteBuildContext';
+import { BuildContext } from '../context/BuildContext';
 
 const constructCommandInfo = (options: OptionValues): CommandInfo =>
 	match<OptionValues, CommandInfo>(options)
@@ -17,13 +17,17 @@ const constructCommandInfo = (options: OptionValues): CommandInfo =>
 		}))
 		.run();
 
-const execute: StageExecuteFn<IncompleteBuildContext> = (context) =>
+const execute: StageExecuteFn = (context) =>
 	TE.right({
 		...context,
-		commandInfo: O.some(constructCommandInfo(program.opts()))
+		commandInfo: constructCommandInfo(program.opts())
 	});
+const commandAllowsStage: P.Predicate<BuildContext> = () => true;
+const projectAllowsStage: P.Predicate<BuildContext> = () => true;
 
-export const getCommandInfo: SetupStage = {
+export const getCommandInfo: Stage = {
 	name: 'Get Command Info',
-	execute
+	execute,
+	commandAllowsStage,
+	projectAllowsStage
 };
