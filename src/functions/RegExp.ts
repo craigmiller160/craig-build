@@ -1,8 +1,6 @@
 import * as O from 'fp-ts/Option';
 import { pipe } from 'fp-ts/function';
 
-// TODO replace all regex uses with these methods
-
 export const regexTest =
 	(regex: RegExp) =>
 	(value: string): boolean =>

@@ -45,7 +45,6 @@ const prepareStageExecutionMock = (context: BuildContext) => {
 	});
 };
 
-// TODO need type for this once interface is figured out
 const validateStages = (expected: ExpectedExecution) => {
 	expect(Object.keys(expected)).toHaveLength(stages.length);
 	stages.forEach((stage) => {
