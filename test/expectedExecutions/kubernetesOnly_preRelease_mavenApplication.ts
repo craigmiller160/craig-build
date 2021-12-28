@@ -28,11 +28,11 @@ export const kubernetesOnly_preRelease_mavenApplication: ExpectedExecution = {
 	[validateProjectVersionAllowed.name]: false,
 	[validateKubernetesConfig.name]: true,
 	[validateGitTag.name]: false,
-	[buildArtifact.name]: true,
+	[buildArtifact.name]: false,
 	[preparePreReleaseVersion.name]: true,
 	[manuallyPublishArtifact.name]: false,
 	[gitTag.name]: false,
-	[downloadArtifactForDeployment.name]: true,
-	[buildAndPushDocker.name]: true,
+	[downloadArtifactForDeployment.name]: false,
+	[buildAndPushDocker.name]: false,
 	[deployToKubernetes.name]: true
 };

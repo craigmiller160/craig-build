@@ -33,6 +33,6 @@ export const kubernetesOnly_preRelease_dockerApplication: ExpectedExecution = {
 	[manuallyPublishArtifact.name]: false,
 	[gitTag.name]: false,
 	[downloadArtifactForDeployment.name]: false,
-	[buildAndPushDocker.name]: true,
+	[buildAndPushDocker.name]: false,
 	[deployToKubernetes.name]: true
 };
