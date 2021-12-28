@@ -28,13 +28,16 @@ const BETA_VERSION_REGEX = /^.*-beta/;
 const SNAPSHOT_VERSION_REGEX = /^.*-SNAPSHOT/;
 
 const matchesPreReleaseRegex: P.Predicate<string> = pipe(
-	BETA_VERSION_REGEX.test,
-	P.or(SNAPSHOT_VERSION_REGEX.test)
+	(s: string) => BETA_VERSION_REGEX.test(s),
+	P.or((s: string) => SNAPSHOT_VERSION_REGEX.test(s))
 );
 
 const getVersionType = (version: string): VersionType =>
 	match(version)
-		.with(when(matchesPreReleaseRegex), () => VersionType.PreRelease)
+		.with(
+			when<string>((_) => matchesPreReleaseRegex(_)),
+			() => VersionType.PreRelease
+		)
 		.otherwise(() => VersionType.Release);
 
 const readMavenProjectInfo = (): E.Either<Error, ProjectInfo> =>

@@ -6,6 +6,7 @@ import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
 import { ProjectType } from '../../src/context/ProjectType';
 import { validateDependencyVersions } from '../../src/stages/validateDependencyVersions';
+import { VersionType } from '../../src/context/VersionType';
 
 const baseBuildContext = createBuildContext();
 
@@ -23,7 +24,7 @@ describe('validateDependencyVersions', () => {
 			projectType: ProjectType.MavenApplication,
 			projectInfo: {
 				...baseBuildContext.projectInfo,
-				isPreRelease: false
+				versionType: VersionType.Release
 			}
 		};
 		const result = await validateDependencyVersions.execute(buildContext)();
@@ -39,7 +40,7 @@ describe('validateDependencyVersions', () => {
 			projectType: ProjectType.NpmApplication,
 			projectInfo: {
 				...baseBuildContext.projectInfo,
-				isPreRelease: false
+				versionType: VersionType.Release
 			}
 		};
 		const result = await validateDependencyVersions.execute(buildContext)();
@@ -55,7 +56,7 @@ describe('validateDependencyVersions', () => {
 			projectType: ProjectType.MavenApplication,
 			projectInfo: {
 				...baseBuildContext.projectInfo,
-				isPreRelease: false
+				versionType: VersionType.Release
 			}
 		};
 		const result = await validateDependencyVersions.execute(buildContext)();
@@ -73,7 +74,7 @@ describe('validateDependencyVersions', () => {
 			projectType: ProjectType.NpmApplication,
 			projectInfo: {
 				...baseBuildContext.projectInfo,
-				isPreRelease: false
+				versionType: VersionType.Release
 			}
 		};
 		const result = await validateDependencyVersions.execute(buildContext)();
