@@ -22,7 +22,7 @@ import { Stage } from '../../src/stages/Stage';
 import { stages } from '../../src/stages';
 import { VersionType } from '../../src/context/VersionType';
 
-jest.mock('../src/stages', () => {
+jest.mock('../../src/stages', () => {
 	const createStageMock = (stage: Stage): Stage => ({
 		name: stage.name,
 		execute: jest.fn(),
@@ -30,7 +30,7 @@ jest.mock('../src/stages', () => {
 		projectAllowsStage: stage.projectAllowsStage
 	});
 
-	const { stages } = jest.requireActual('../src/stages');
+	const { stages } = jest.requireActual('../../src/stages');
 	return {
 		stages: stages.map(createStageMock)
 	};
