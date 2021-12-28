@@ -64,7 +64,7 @@ const validateStages = (expected: ExpectedExecution) => {
 	});
 };
 
-describe('execute', () => {
+describe('execute.fullBuild', () => {
 	beforeEach(() => {
 		jest.resetAllMocks();
 	});
