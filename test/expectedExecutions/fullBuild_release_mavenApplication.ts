@@ -13,11 +13,10 @@ import { ExpectedExecution } from './ExpectedExecution';
 import { getCommandInfo } from '../../src/stages/getCommandInfo';
 import { getBuildToolInfo } from '../../src/stages/getBuildToolInfo';
 import { validateBuildToolVersion } from '../../src/stages/validateBuildToolVersion';
-import checkForUncommittedChanges from '../../old-src/stages/identify/tasks/checkForUncommittedChanges';
+import { checkForUncommittedChanges } from '../../src/stages/checkForUncommittedChanges';
 import { getProjectType } from '../../src/stages/getProjectType';
 import { getProjectInfo } from '../../src/stages/getProjectInfo';
 
-// TODO how to make this an interface?
 export const fullBuild_release_mavenApplication: ExpectedExecution = {
 	[getCommandInfo.name]: true,
 	[getBuildToolInfo.name]: true,

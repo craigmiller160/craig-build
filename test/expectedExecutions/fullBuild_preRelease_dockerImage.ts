@@ -13,7 +13,7 @@ import { ExpectedExecution } from './ExpectedExecution';
 import { getCommandInfo } from '../../src/stages/getCommandInfo';
 import { getBuildToolInfo } from '../../src/stages/getBuildToolInfo';
 import { validateBuildToolVersion } from '../../src/stages/validateBuildToolVersion';
-import checkForUncommittedChanges from '../../old-src/stages/identify/tasks/checkForUncommittedChanges';
+import { checkForUncommittedChanges } from '../../src/stages/checkForUncommittedChanges';1
 import { getProjectType } from '../../src/stages/getProjectType';
 import { getProjectInfo } from '../../src/stages/getProjectInfo';
 
