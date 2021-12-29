@@ -52,8 +52,13 @@ const doDeploy = (
 ): TE.TaskEither<Error, BuildContext> => {
 	const deployDir = path.join(getCwd(), 'deploy');
 	return pipe(
-		findConfigmaps(deployDir),
-		TE.chain((_) => deployConfigmaps(deployDir, _)),
+		getDeploymentName(deployDir),
+		TE.fromEither,
+		TE.bindTo('deploymentName'),
+		TE.bind('configmaps', findConfigmaps(deployDir)),
+		TE.chainFirst(({ configmaps }) =>
+			deployConfigmaps(deployDir, configmaps)
+		),
 		TE.chain(() =>
 			runCommand(
 				`KUBE_IMG_VERSION=${context.projectInfo.version} envsubst < deployment.yml | kubectl apply -f -`,
