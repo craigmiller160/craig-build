@@ -2,8 +2,15 @@ import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
 import '@relmify/jest-fp-ts';
 import { preparePreReleaseVersion } from '../../src/stages/preparePreReleaseVersion';
-import { searchForDockerBetas, searchForNpmBetas } from '../../src/services/NexusRepoApi';
-import { NexusSearchResult, NexusSearchResultItem } from '../../src/services/NexusSearchResult';
+import {
+	searchForDockerBetas,
+	searchForNpmBetas,
+	searchForMavenSnapshots
+} from '../../src/services/NexusRepoApi';
+import {
+	NexusSearchResult,
+	NexusSearchResultItem
+} from '../../src/services/NexusSearchResult';
 import { ProjectType } from '../../src/context/ProjectType';
 import * as TE from 'fp-ts/TaskEither';
 import { baseWorkingDir } from '../testutils/baseWorkingDir';
@@ -11,7 +18,6 @@ import path from 'path';
 import { homedir } from 'os';
 import { VersionType } from '../../src/context/VersionType';
 import { CommandType } from '../../src/context/CommandType';
-import { searchForMavenSnapshots } from '../../old-src/common/services/NexusRepoApi';
 
 jest.mock('../../src/services/NexusRepoApi', () => ({
 	searchForNpmBetas: jest.fn(),
