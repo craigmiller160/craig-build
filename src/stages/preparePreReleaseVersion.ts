@@ -104,11 +104,23 @@ const bumpBetaVersion = (fullVersion: string): O.Option<string> =>
 		})
 	);
 
+const prepareVersionSearchParam = (version: string): string => {
+	const formattedVersion = version.replaceAll('SNAPSHOT', '');
+	return `${formattedVersion}*`;
+};
+
 const handleNpmPreReleaseVersion = (
 	context: BuildContext
-): TE.TaskEither<Error, BuildContext> =>
-	pipe(
-		searchForNpmBetas(context.projectInfo.group, context.projectInfo.name),
+): TE.TaskEither<Error, BuildContext> => {
+	const versionSearchParam = prepareVersionSearchParam(
+		context.projectInfo.version
+	);
+	return pipe(
+		searchForNpmBetas(
+			context.projectInfo.group,
+			context.projectInfo.name,
+			versionSearchParam
+		),
 		TE.map((nexusResult) =>
 			pipe(
 				findMatchingVersion(nexusResult, context.projectInfo.version),
@@ -118,12 +130,16 @@ const handleNpmPreReleaseVersion = (
 		),
 		TE.map((_) => updateProjectInfo(context, _))
 	);
+};
 
 const handleDockerPreReleaseVersion = (
 	context: BuildContext
-): TE.TaskEither<Error, BuildContext> =>
-	pipe(
-		searchForDockerBetas(context.projectInfo.name),
+): TE.TaskEither<Error, BuildContext> => {
+	const versionSearchParam = prepareVersionSearchParam(
+		context.projectInfo.version
+	);
+	return pipe(
+		searchForDockerBetas(context.projectInfo.name, versionSearchParam),
 		TE.map((nexusResult) =>
 			pipe(
 				findMatchingVersion(nexusResult, context.projectInfo.version),
@@ -133,6 +149,7 @@ const handleDockerPreReleaseVersion = (
 		),
 		TE.map((_) => updateProjectInfo(context, _))
 	);
+};
 
 const handlePreparingPreReleaseVersionByProject = (
 	context: BuildContext
