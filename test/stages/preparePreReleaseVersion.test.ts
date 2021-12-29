@@ -80,7 +80,8 @@ describe('preparePreReleaseVersion', () => {
 
 		expect(searchForNpmBetasMock).toHaveBeenCalledWith(
 			'craigmiller160',
-			'my-project'
+			'my-project',
+			'1.0.0-beta*'
 		);
 		expect(searchForDockerBetasMock).not.toHaveBeenCalled();
 		expect(homedirMock).not.toHaveBeenCalled();
@@ -116,7 +117,8 @@ describe('preparePreReleaseVersion', () => {
 
 		expect(searchForNpmBetasMock).toHaveBeenCalledWith(
 			'craigmiller160',
-			'my-project'
+			'my-project',
+			'1.0.0-beta*'
 		);
 		expect(searchForDockerBetasMock).not.toHaveBeenCalled();
 		expect(homedirMock).not.toHaveBeenCalled();
@@ -324,7 +326,10 @@ describe('preparePreReleaseVersion', () => {
 			}
 		});
 
-		expect(searchForDockerBetasMock).toHaveBeenCalledWith('my-project');
+		expect(searchForDockerBetasMock).toHaveBeenCalledWith(
+			'my-project',
+			'1.0.0-beta*'
+		);
 		expect(searchForNpmBetasMock).not.toHaveBeenCalled();
 		expect(homedirMock).not.toHaveBeenCalled();
 		expect(searchForMavenSnapshotsMock).not.toHaveBeenCalled();
@@ -359,7 +364,10 @@ describe('preparePreReleaseVersion', () => {
 			}
 		});
 
-		expect(searchForDockerBetasMock).toHaveBeenCalledWith('my-project');
+		expect(searchForDockerBetasMock).toHaveBeenCalledWith(
+			'my-project',
+			'1.0.0-beta*'
+		);
 		expect(searchForNpmBetasMock).not.toHaveBeenCalled();
 		expect(homedirMock).not.toHaveBeenCalled();
 		expect(searchForMavenSnapshotsMock).not.toHaveBeenCalled();
