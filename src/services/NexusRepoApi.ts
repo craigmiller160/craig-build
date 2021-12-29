@@ -117,7 +117,7 @@ export const searchForDockerReleases = (name: string) =>
 		extractResponseData
 	);
 
-export const searchForDockerBetas = (name: string) =>
+export const searchForDockerBetas = (name: string, version?: string) =>
 	pipe(
 		TE.tryCatch(() => {
 			const query = qs.stringify({
@@ -125,7 +125,7 @@ export const searchForDockerBetas = (name: string) =>
 				name,
 				sort,
 				direction,
-				version: '*beta*'
+				version: version ?? '*beta*'
 			});
 			return restApiInstance.get<NexusSearchResult>(`/search?${query}`);
 		}, unknownToError),
