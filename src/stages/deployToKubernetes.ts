@@ -55,11 +55,11 @@ const doDeploy = (
 		getDeploymentName(deployDir),
 		TE.fromEither,
 		TE.bindTo('deploymentName'),
-		TE.bind('configmaps', findConfigmaps(deployDir)),
+		TE.bind('configmaps', () => findConfigmaps(deployDir)),
 		TE.chainFirst(({ configmaps }) =>
 			deployConfigmaps(deployDir, configmaps)
 		),
-		TE.chain(() =>
+		TE.chainFirst(() =>
 			runCommand(
 				`KUBE_IMG_VERSION=${context.projectInfo.version} envsubst < deployment.yml | kubectl apply -f -`,
 				{
@@ -67,6 +67,12 @@ const doDeploy = (
 					cwd: deployDir
 				}
 			)
+		),
+		TE.chainFirst(({ deploymentName }) =>
+			runCommand(`kubectl rollout restart deployment ${deploymentName}`, {
+				printOutput: true,
+				cwd: deployDir
+			})
 		),
 		TE.map(() => context)
 	);
