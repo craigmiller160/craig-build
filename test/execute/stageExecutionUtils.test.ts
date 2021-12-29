@@ -4,8 +4,7 @@ import * as TE from 'fp-ts/TaskEither';
 import {
 	createStageExecution,
 	executeIfAllowed,
-	proceedIfCommandAllowed,
-	proceedIfProjectAllowed
+	shouldStageExecute
 } from '../../src/execute/stageExecutionUtils';
 import { StageExecutionStatus } from '../../src/execute/StageExecutionStatus';
 import { StageExecution } from '../../src/execute/StageExecution';
@@ -17,8 +16,7 @@ const baseContext = createBuildContext();
 const mockStage: Stage = {
 	name: 'Mock Stage',
 	execute: () => TE.right(baseContext),
-	commandAllowsStage: jest.fn(),
-	projectAllowsStage: jest.fn()
+	shouldStageExecute: jest.fn()
 };
 
 describe('stageExecutionUtils', () => {
@@ -34,84 +32,28 @@ describe('stageExecutionUtils', () => {
 		});
 	});
 
-	describe('proceedIfCommandAllowed', () => {
-		it('status is Proceed and commandAllowsStage returns true', () => {
-			(mockStage.commandAllowsStage as jest.Mock).mockImplementation(
+	describe('shouldStageExecute', () => {
+		const execution: StageExecution = {
+			status: StageExecutionStatus.Proceed,
+			stage: mockStage
+		};
+		it('stage shouldStageExecute returns true', async () => {
+			(mockStage.shouldStageExecute as jest.Mock).mockImplementation(
 				() => true
 			);
-			const execution: StageExecution = {
-				stage: mockStage,
-				status: StageExecutionStatus.Proceed
-			};
-			const result = proceedIfCommandAllowed(baseContext)(execution);
+			const result = shouldStageExecute(baseContext)(execution);
 			expect(result).toEqual(execution);
 		});
 
-		it('status is Proceed and commandAllowsStage returns false', () => {
-			(mockStage.commandAllowsStage as jest.Mock).mockImplementation(
+		it('stage shouldStageExecute returns false', async () => {
+			(mockStage.shouldStageExecute as jest.Mock).mockImplementation(
 				() => false
 			);
-			const execution: StageExecution = {
-				stage: mockStage,
-				status: StageExecutionStatus.Proceed
-			};
-			const result = proceedIfCommandAllowed(baseContext)(execution);
+			const result = shouldStageExecute(baseContext)(execution);
 			expect(result).toEqual({
 				...execution,
-				status: StageExecutionStatus.SkipForCommand
+				status: StageExecutionStatus.Skip
 			});
-		});
-
-		it('status is SkipForProject', () => {
-			const execution: StageExecution = {
-				stage: mockStage,
-				status: StageExecutionStatus.SkipForProject
-			};
-			const result = proceedIfCommandAllowed(baseContext)(execution);
-			expect(result).toEqual({
-				...execution,
-				status: StageExecutionStatus.SkipForProject
-			});
-			expect(mockStage.commandAllowsStage).not.toHaveBeenCalled();
-		});
-	});
-
-	describe('proceedIfProjectAllowed', () => {
-		it('status is Proceed and projectAllowsStage returns true', () => {
-			(mockStage.projectAllowsStage as jest.Mock).mockImplementation(
-				() => true
-			);
-			const execution: StageExecution = {
-				stage: mockStage,
-				status: StageExecutionStatus.Proceed
-			};
-			const result = proceedIfProjectAllowed(baseContext)(execution);
-			expect(result).toEqual(execution);
-		});
-
-		it('status is Proceed and projectAllowsStage returns false', () => {
-			(mockStage.projectAllowsStage as jest.Mock).mockImplementation(
-				() => false
-			);
-			const execution: StageExecution = {
-				stage: mockStage,
-				status: StageExecutionStatus.Proceed
-			};
-			const result = proceedIfProjectAllowed(baseContext)(execution);
-			expect(result).toEqual({
-				...execution,
-				status: StageExecutionStatus.SkipForProject
-			});
-		});
-
-		it('status is SkipForCommand', () => {
-			const execution: StageExecution = {
-				stage: mockStage,
-				status: StageExecutionStatus.SkipForCommand
-			};
-			const result = proceedIfProjectAllowed(baseContext)(execution);
-			expect(result).toEqual(execution);
-			expect(mockStage.projectAllowsStage).not.toHaveBeenCalled();
 		});
 	});
 
@@ -131,20 +73,10 @@ describe('stageExecutionUtils', () => {
 			expect(result).toEqualRight(baseContext);
 		});
 
-		it('status is SkipForCommand', async () => {
+		it('status is Skip', async () => {
 			const execution: StageExecution = {
 				stage: mockStage,
-				status: StageExecutionStatus.SkipForCommand
-			};
-
-			const result = await executeIfAllowed(inputContext)(execution)();
-			expect(result).toEqualRight(inputContext);
-		});
-
-		it('status is SkipForProject', async () => {
-			const execution: StageExecution = {
-				stage: mockStage,
-				status: StageExecutionStatus.SkipForProject
+				status: StageExecutionStatus.Skip
 			};
 
 			const result = await executeIfAllowed(inputContext)(execution)();

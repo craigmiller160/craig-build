@@ -5,19 +5,19 @@ import { BuildContext } from '../../src/context/BuildContext';
 import { ProjectType } from '../../src/context/ProjectType';
 import * as TE from 'fp-ts/TaskEither';
 import { execute } from '../../src/execute';
-import { fullBuild_release_mavenApplication } from '../expectedExecutions/fullBuild_release_mavenApplication';
+import { kubernetesOnly_release_mavenApplication } from '../expectedExecutions/kubernetesOnly_release_mavenApplication';
 import { ExpectedExecution } from '../expectedExecutions/ExpectedExecution';
-import { fullBuild_preRelease_mavenApplication } from '../expectedExecutions/fullBuild_preRelease_mavenApplication';
-import { fullBuild_release_mavenLibrary } from '../expectedExecutions/fullBuild_release_mavenLibrary';
-import { fullBuild_preRelease_mavenLibrary } from '../expectedExecutions/fullBuild_preRelease_mavenLibrary';
-import { fullBuild_release_npmApplication } from '../expectedExecutions/fullBuild_release_npmApplication';
-import { fullBuild_preRelease_npmApplication } from '../expectedExecutions/fullBuild_preRelease_npmApplication';
-import { fullBuild_release_npmLibrary } from '../expectedExecutions/fullBuild_release_npmLibrary';
-import { fullBuild_preRelease_npmLibrary } from '../expectedExecutions/fullBuild_preRelease_npmLibrary';
-import { fullBuild_release_dockerApplication } from '../expectedExecutions/fullBuild_release_dockerApplication';
-import { fullBuild_preRelease_dockerApplication } from '../expectedExecutions/fullBuild_preRelease_dockerApplication';
-import { fullBuild_release_dockerImage } from '../expectedExecutions/fullBuild_release_dockerImage';
-import { fullBuild_preRelease_dockerImage } from '../expectedExecutions/fullBuild_preRelease_dockerImage';
+import { kubernetesOnly_preRelease_mavenApplication } from '../expectedExecutions/kubernetesOnly_preRelease_mavenApplication';
+import { kubernetesOnly_release_mavenLibrary } from '../expectedExecutions/kubernetesOnly_release_mavenLibrary';
+import { kubernetesOnly_preRelease_mavenLibrary } from '../expectedExecutions/kubernetesOnly_preRelease_mavenLibrary';
+import { kubernetesOnly_release_npmApplication } from '../expectedExecutions/kubernetesOnly_release_npmApplication';
+import { kubernetesOnly_preRelease_npmApplication } from '../expectedExecutions/kubernetesOnly_preRelease_npmApplication';
+import { kubernetesOnly_release_npmLibrary } from '../expectedExecutions/kubernetesOnly_release_npmLibrary';
+import { kubernetesOnly_preRelease_npmLibrary } from '../expectedExecutions/kubernetesOnly_preRelease_npmLibrary';
+import { kubernetesOnly_release_dockerApplication } from '../expectedExecutions/kubernetesOnly_release_dockerApplication';
+import { kubernetesOnly_preRelease_dockerApplication } from '../expectedExecutions/kubernetesOnly_preRelease_dockerApplication';
+import { kubernetesOnly_release_dockerImage } from '../expectedExecutions/kubernetesOnly_release_dockerImage';
+import { kubernetesOnly_preRelease_dockerImage } from '../expectedExecutions/kubernetesOnly_preRelease_dockerImage';
 import { Stage } from '../../src/stages/Stage';
 import { stages } from '../../src/stages';
 import { VersionType } from '../../src/context/VersionType';
@@ -26,8 +26,7 @@ jest.mock('../../src/stages', () => {
 	const createStageMock = (stage: Stage): Stage => ({
 		name: stage.name,
 		execute: jest.fn(),
-		commandAllowsStage: stage.commandAllowsStage,
-		projectAllowsStage: stage.projectAllowsStage
+		shouldStageExecute: stage.shouldStageExecute
 	});
 
 	const { stages } = jest.requireActual('../../src/stages');
@@ -64,16 +63,16 @@ const validateStages = (expected: ExpectedExecution) => {
 	});
 };
 
-describe('execute', () => {
+describe('execute.kubernetesOnly', () => {
 	beforeEach(() => {
 		jest.resetAllMocks();
 	});
 
-	it('executes full build for release MavenApplication', async () => {
+	it('executes kubernetes only for release MavenApplication', async () => {
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
-				type: CommandType.FullBuild
+				type: CommandType.KubernetesOnly
 			},
 			projectType: ProjectType.MavenApplication,
 			projectInfo: {
@@ -86,14 +85,14 @@ describe('execute', () => {
 		const result = await execute(context)();
 		expect(result).toEqualRight(context);
 
-		validateStages(fullBuild_release_mavenApplication);
+		validateStages(kubernetesOnly_release_mavenApplication);
 	});
 
-	it('executes full build for pre-release MavenApplication', async () => {
+	it('executes kubernetes only for pre-release MavenApplication', async () => {
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
-				type: CommandType.FullBuild
+				type: CommandType.KubernetesOnly
 			},
 			projectType: ProjectType.MavenApplication,
 			projectInfo: {
@@ -106,14 +105,14 @@ describe('execute', () => {
 		const result = await execute(context)();
 		expect(result).toEqualRight(context);
 
-		validateStages(fullBuild_preRelease_mavenApplication);
+		validateStages(kubernetesOnly_preRelease_mavenApplication);
 	});
 
-	it('executes full build for release MavenLibrary', async () => {
+	it('executes kubernetes only for release MavenLibrary', async () => {
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
-				type: CommandType.FullBuild
+				type: CommandType.KubernetesOnly
 			},
 			projectType: ProjectType.MavenLibrary,
 			projectInfo: {
@@ -126,14 +125,14 @@ describe('execute', () => {
 		const result = await execute(context)();
 		expect(result).toEqualRight(context);
 
-		validateStages(fullBuild_release_mavenLibrary);
+		validateStages(kubernetesOnly_release_mavenLibrary);
 	});
 
-	it('executes full build for pre-release MavenLibrary', async () => {
+	it('executes kubernetes only for pre-release MavenLibrary', async () => {
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
-				type: CommandType.FullBuild
+				type: CommandType.KubernetesOnly
 			},
 			projectType: ProjectType.MavenLibrary,
 			projectInfo: {
@@ -146,14 +145,14 @@ describe('execute', () => {
 		const result = await execute(context)();
 		expect(result).toEqualRight(context);
 
-		validateStages(fullBuild_preRelease_mavenLibrary);
+		validateStages(kubernetesOnly_preRelease_mavenLibrary);
 	});
 
-	it('executes full build for release NpmApplication', async () => {
+	it('executes kubernetes only for release NpmApplication', async () => {
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
-				type: CommandType.FullBuild
+				type: CommandType.KubernetesOnly
 			},
 			projectType: ProjectType.NpmApplication,
 			projectInfo: {
@@ -167,14 +166,14 @@ describe('execute', () => {
 		const result = await execute(context)();
 		expect(result).toEqualRight(context);
 
-		validateStages(fullBuild_release_npmApplication);
+		validateStages(kubernetesOnly_release_npmApplication);
 	});
 
-	it('executes full build for pre-release NpmApplication', async () => {
+	it('executes kubernetes only for pre-release NpmApplication', async () => {
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
-				type: CommandType.FullBuild
+				type: CommandType.KubernetesOnly
 			},
 			projectType: ProjectType.NpmApplication,
 			projectInfo: {
@@ -188,14 +187,14 @@ describe('execute', () => {
 		const result = await execute(context)();
 		expect(result).toEqualRight(context);
 
-		validateStages(fullBuild_preRelease_npmApplication);
+		validateStages(kubernetesOnly_preRelease_npmApplication);
 	});
 
-	it('executes full build for release NpmLibrary', async () => {
+	it('executes kubernetes only for release NpmLibrary', async () => {
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
-				type: CommandType.FullBuild
+				type: CommandType.KubernetesOnly
 			},
 			projectType: ProjectType.NpmLibrary,
 			projectInfo: {
@@ -209,14 +208,14 @@ describe('execute', () => {
 		const result = await execute(context)();
 		expect(result).toEqualRight(context);
 
-		validateStages(fullBuild_release_npmLibrary);
+		validateStages(kubernetesOnly_release_npmLibrary);
 	});
 
-	it('executes full build for pre-release NpmLibrary', async () => {
+	it('executes kubernetes only for pre-release NpmLibrary', async () => {
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
-				type: CommandType.FullBuild
+				type: CommandType.KubernetesOnly
 			},
 			projectType: ProjectType.NpmLibrary,
 			projectInfo: {
@@ -230,14 +229,14 @@ describe('execute', () => {
 		const result = await execute(context)();
 		expect(result).toEqualRight(context);
 
-		validateStages(fullBuild_preRelease_npmLibrary);
+		validateStages(kubernetesOnly_preRelease_npmLibrary);
 	});
 
-	it('executes full build for release DockerApplication', async () => {
+	it('executes kubernetes only for release DockerApplication', async () => {
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
-				type: CommandType.FullBuild
+				type: CommandType.KubernetesOnly
 			},
 			projectType: ProjectType.DockerApplication,
 			projectInfo: {
@@ -251,14 +250,14 @@ describe('execute', () => {
 		const result = await execute(context)();
 		expect(result).toEqualRight(context);
 
-		validateStages(fullBuild_release_dockerApplication);
+		validateStages(kubernetesOnly_release_dockerApplication);
 	});
 
-	it('executes full build for pre-release DockerApplication', async () => {
+	it('executes kubernetes only for pre-release DockerApplication', async () => {
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
-				type: CommandType.FullBuild
+				type: CommandType.KubernetesOnly
 			},
 			projectType: ProjectType.DockerApplication,
 			projectInfo: {
@@ -272,14 +271,14 @@ describe('execute', () => {
 		const result = await execute(context)();
 		expect(result).toEqualRight(context);
 
-		validateStages(fullBuild_preRelease_dockerApplication);
+		validateStages(kubernetesOnly_preRelease_dockerApplication);
 	});
 
-	it('executes full build for release DockerImage', async () => {
+	it('executes kubernetes only for release DockerImage', async () => {
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
-				type: CommandType.FullBuild
+				type: CommandType.KubernetesOnly
 			},
 			projectType: ProjectType.DockerImage,
 			projectInfo: {
@@ -293,14 +292,14 @@ describe('execute', () => {
 		const result = await execute(context)();
 		expect(result).toEqualRight(context);
 
-		validateStages(fullBuild_release_dockerImage);
+		validateStages(kubernetesOnly_release_dockerImage);
 	});
 
-	it('executes full build for pre-release DockerImage', async () => {
+	it('executes kubernetes only for pre-release DockerImage', async () => {
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
-				type: CommandType.FullBuild
+				type: CommandType.KubernetesOnly
 			},
 			projectType: ProjectType.DockerImage,
 			projectInfo: {
@@ -314,6 +313,6 @@ describe('execute', () => {
 		const result = await execute(context)();
 		expect(result).toEqualRight(context);
 
-		validateStages(fullBuild_preRelease_dockerImage);
+		validateStages(kubernetesOnly_preRelease_dockerImage);
 	});
 });

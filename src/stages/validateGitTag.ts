@@ -7,6 +7,8 @@ import { runCommand } from '../command/runCommand';
 import * as A from 'fp-ts/Array';
 import * as P from 'fp-ts/Predicate';
 import { Stage, StageExecuteFn } from './Stage';
+import { isFullBuild, isKubernetesOnly } from '../context/commandTypeUtils';
+import { isDocker } from '../context/projectTypeUtils';
 
 const executeGitTagValidation = (
 	context: BuildContext
@@ -34,14 +36,24 @@ const handleValidationByProject = (
 		.with({ projectInfo: when(isRelease) }, executeGitTagValidation)
 		.run();
 
+const isFullBuildAndReleaseVersion: P.Predicate<BuildContext> = pipe(
+	(_: BuildContext) => isFullBuild(_.commandInfo.type),
+	P.and((_) => isRelease(_.projectInfo))
+);
+const isDockerReleaseProjectNoKubernetesOnly: P.Predicate<BuildContext> = pipe(
+	(_: BuildContext) => isDocker(_.projectType),
+	P.and((_) => isRelease(_.projectInfo)),
+	P.and(P.not((_) => isKubernetesOnly(_.commandInfo.type)))
+);
+
 const execute: StageExecuteFn = (context) => handleValidationByProject(context);
-const commandAllowsStage: P.Predicate<BuildContext> = () => true;
-const projectAllowsStage: P.Predicate<BuildContext> = (context) =>
-	isRelease(context.projectInfo);
+const shouldStageExecute: P.Predicate<BuildContext> = pipe(
+	isFullBuildAndReleaseVersion,
+	P.or(isDockerReleaseProjectNoKubernetesOnly)
+);
 
 export const validateGitTag: Stage = {
 	name: 'Validate Existing Git Tag',
 	execute,
-	commandAllowsStage,
-	projectAllowsStage
+	shouldStageExecute
 };

@@ -66,13 +66,11 @@ const handleDeployByProject = (
 		.run();
 
 const execute: StageExecuteFn = (context) => handleDeployByProject(context);
-const commandAllowsStage: P.Predicate<BuildContext> = () => true;
-const projectAllowsStage: P.Predicate<BuildContext> = (context) =>
-	isApplication(context.projectType);
+const shouldStageExecute: P.Predicate<BuildContext> = (_: BuildContext) =>
+	isApplication(_.projectType);
 
 export const deployToKubernetes: Stage = {
 	name: 'Deploy to Kubernetes',
 	execute,
-	commandAllowsStage,
-	projectAllowsStage
+	shouldStageExecute
 };

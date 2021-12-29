@@ -7,6 +7,7 @@ import { runCommand } from '../command/runCommand';
 import * as P from 'fp-ts/Predicate';
 import { ProjectType } from '../context/ProjectType';
 import { Stage, StageExecuteFn } from './Stage';
+import { isFullBuild } from '../context/commandTypeUtils';
 
 export const MAVEN_BUILD_CMD = 'mvn clean deploy -Ddependency-check.skip=true';
 export const NPM_BUILD_CMD = 'yarn build';
@@ -36,13 +37,14 @@ const isMavenOrNpm: P.Predicate<ProjectType> = pipe(isMaven, P.or(isNpm));
 
 const execute: StageExecuteFn = (context) =>
 	handleBuildingArtifactByProject(context);
-const commandAllowsStage: P.Predicate<BuildContext> = () => true;
-const projectAllowsStage: P.Predicate<BuildContext> = (context) =>
-	isMavenOrNpm(context.projectType);
+
+const shouldStageExecute: P.Predicate<BuildContext> = pipe(
+	(_: BuildContext) => isMavenOrNpm(_.projectType),
+	P.and((_) => isFullBuild(_.commandInfo.type))
+);
 
 export const buildArtifact: Stage = {
 	name: 'Build Artifact',
 	execute,
-	commandAllowsStage,
-	projectAllowsStage
+	shouldStageExecute
 };

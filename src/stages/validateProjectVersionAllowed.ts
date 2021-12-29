@@ -14,6 +14,7 @@ import * as A from 'fp-ts/Array';
 import { isRelease } from '../context/projectInfoUtils';
 import { Stage, StageExecuteFn } from './Stage';
 import * as P from 'fp-ts/Predicate';
+import { isDockerOnly, isFullBuild } from '../context/commandTypeUtils';
 
 const isReleaseVersionUnique = (
 	nexusResult: NexusSearchResult,
@@ -63,13 +64,25 @@ const execute: StageExecuteFn = (context) =>
 		handleValidationByProject(context),
 		TE.map(() => context)
 	);
-const commandAllowsStage: P.Predicate<BuildContext> = () => true;
-const projectAllowsStage: P.Predicate<BuildContext> = (context) =>
-	isRelease(context.projectInfo);
+
+const isFullBuildAndRelease: P.Predicate<BuildContext> = pipe(
+	(_: BuildContext) => isRelease(_.projectInfo),
+	P.and((_) => isFullBuild(_.commandInfo.type))
+);
+
+const isDockerOnlyAndDockerProjectAndRelease: P.Predicate<BuildContext> = pipe(
+	(_: BuildContext) => isDockerOnly(_.commandInfo.type),
+	P.and((_) => isDocker(_.projectType)),
+	P.and((_) => isRelease(_.projectInfo))
+);
+
+const shouldStageExecute: P.Predicate<BuildContext> = pipe(
+	isFullBuildAndRelease,
+	P.or(isDockerOnlyAndDockerProjectAndRelease)
+);
 
 export const validateProjectVersionAllowed: Stage = {
 	name: 'Validate Project Version Allowed',
 	execute,
-	commandAllowsStage,
-	projectAllowsStage
+	shouldStageExecute
 };

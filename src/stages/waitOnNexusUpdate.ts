@@ -36,13 +36,11 @@ const handleWaitingByProject = (
 		.run();
 
 const execute: StageExecuteFn = (context) => handleWaitingByProject(context);
-const commandAllowsStage: P.Predicate<BuildContext> = () => true;
-const projectAllowsStage: P.Predicate<BuildContext> = (context) =>
+const shouldStageExecute: P.Predicate<BuildContext> = (context) =>
 	isNonDockerApplication(context.projectType);
 
 export const waitOnNexusUpdate: Stage = {
 	name: 'Wait On Nexus Update',
 	execute,
-	commandAllowsStage,
-	projectAllowsStage
+	shouldStageExecute
 };

@@ -154,13 +154,11 @@ const handlePreparingPreReleaseVersionByProject = (
 
 const execute: StageExecuteFn = (context) =>
 	handlePreparingPreReleaseVersionByProject(context);
-const commandAllowsStage: P.Predicate<BuildContext> = () => true;
-const projectAllowsStage: P.Predicate<BuildContext> = (context) =>
+const shouldStageExecute: P.Predicate<BuildContext> = (context) =>
 	isPreRelease(context.projectInfo);
 
 export const preparePreReleaseVersion: Stage = {
 	name: 'Prepare Pre-Release Version',
 	execute,
-	commandAllowsStage,
-	projectAllowsStage
+	shouldStageExecute
 };

@@ -67,12 +67,10 @@ const execute: StageExecuteFn = (context) =>
 		})),
 		TE.fromEither
 	);
-const commandAllowsStage: P.Predicate<BuildContext> = () => true;
-const projectAllowsStage: P.Predicate<BuildContext> = () => true;
+const shouldStageExecute: P.Predicate<BuildContext> = () => true;
 
 export const getProjectType: Stage = {
 	name: 'Get Project Type',
 	execute,
-	commandAllowsStage,
-	projectAllowsStage
+	shouldStageExecute
 };

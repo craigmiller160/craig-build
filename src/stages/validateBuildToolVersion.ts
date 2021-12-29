@@ -88,12 +88,10 @@ const execute: StageExecuteFn = (context) =>
 		checkBuildToolInfo(context.buildToolInfo),
 		TE.map(() => context)
 	);
-const commandAllowsStage: P.Predicate<BuildContext> = () => true;
-const projectAllowsStage: P.Predicate<BuildContext> = () => true;
+const shouldStageExecute: P.Predicate<BuildContext> = () => true;
 
 export const validateBuildToolVersion: Stage = {
 	name: 'Validate Build Tool Version',
 	execute,
-	commandAllowsStage,
-	projectAllowsStage
+	shouldStageExecute
 };

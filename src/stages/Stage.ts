@@ -9,6 +9,5 @@ export type StageExecuteFn = (
 export interface Stage {
 	readonly name: string;
 	readonly execute: StageExecuteFn;
-	readonly commandAllowsStage: P.Predicate<BuildContext>;
-	readonly projectAllowsStage: P.Predicate<BuildContext>;
+	readonly shouldStageExecute: P.Predicate<BuildContext>;
 }

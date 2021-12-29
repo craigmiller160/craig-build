@@ -96,13 +96,11 @@ const validateConfigByProject = (
 
 const execute: StageExecuteFn = (context) =>
 	pipe(validateConfigByProject(context), TE.fromEither);
-const commandAllowsStage: P.Predicate<BuildContext> = () => true;
-const projectAllowsStage: P.Predicate<BuildContext> = (context) =>
+const shouldStageExecute: P.Predicate<BuildContext> = (context) =>
 	isApplication(context.projectType);
 
 export const validateKubernetesConfig: Stage = {
 	name: 'Validate Kubernetes Config',
 	execute,
-	commandAllowsStage,
-	projectAllowsStage
+	shouldStageExecute
 };

@@ -21,6 +21,7 @@ import { PackageJson } from '../configFileTypes/PackageJson';
 import { isRelease } from '../context/projectInfoUtils';
 import { Stage, StageExecuteFn } from './Stage';
 import { ProjectType } from '../context/ProjectType';
+import { isFullBuild } from '../context/commandTypeUtils';
 
 const MAVEN_PROPERTY_REGEX = /\${.*}/;
 
@@ -140,15 +141,17 @@ const isNotDocker: P.Predicate<ProjectType> = P.not(isDocker);
 
 const execute: StageExecuteFn = (context) =>
 	pipe(handleValidationByProject(context), TE.fromEither);
-const commandAllowsStage: P.Predicate<BuildContext> = () => true;
-const projectAllowsStage: P.Predicate<BuildContext> = pipe(
+const isNonDockerRelease: P.Predicate<BuildContext> = pipe(
 	(_: BuildContext) => isNotDocker(_.projectType),
 	P.and((_) => isRelease(_.projectInfo))
+);
+const shouldStageExecute: P.Predicate<BuildContext> = pipe(
+	isNonDockerRelease,
+	P.and((_) => isFullBuild(_.commandInfo.type))
 );
 
 export const validateDependencyVersions: Stage = {
 	name: 'Validate Dependency Versions',
 	execute,
-	commandAllowsStage,
-	projectAllowsStage
+	shouldStageExecute
 };

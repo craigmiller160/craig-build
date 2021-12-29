@@ -12,6 +12,8 @@ import { EnvironmentVariables } from '../env/EnvironmentVariables';
 import * as O from 'fp-ts/Option';
 import { runCommand } from '../command/runCommand';
 import { Stage, StageExecuteFn } from './Stage';
+import { CommandType } from '../context/CommandType';
+import { isKubernetesOnly } from '../context/commandTypeUtils';
 
 interface DockerCreds {
 	readonly userName: string;
@@ -91,9 +93,12 @@ const handleDockerBuildByProject = (
 		.with({ projectType: when(isDockerOrApplication) }, runDockerBuild)
 		.run();
 
-const commandAllowsStage: P.Predicate<BuildContext> = () => true;
-const projectAllowsStage: P.Predicate<BuildContext> = (context) =>
-	isDockerOrApplication(context.projectType);
+const isNotKubernetesOnly: P.Predicate<CommandType> = P.not(isKubernetesOnly);
+
+const shouldStageExecute: P.Predicate<BuildContext> = pipe(
+	(_: BuildContext) => isDockerOrApplication(_.projectType),
+	P.and((_) => isNotKubernetesOnly(_.commandInfo.type))
+);
 
 const execute: StageExecuteFn = (context) =>
 	handleDockerBuildByProject(context);
@@ -101,6 +106,5 @@ const execute: StageExecuteFn = (context) =>
 export const buildAndPushDocker: Stage = {
 	name: 'Build and Push Docker',
 	execute,
-	commandAllowsStage,
-	projectAllowsStage
+	shouldStageExecute
 };

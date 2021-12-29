@@ -11,38 +11,17 @@ export const createStageExecution = (stage: Stage): StageExecution => ({
 	status: StageExecutionStatus.Proceed
 });
 
-export const proceedIfCommandAllowed =
+export const shouldStageExecute =
 	(context: BuildContext) =>
 	(execution: StageExecution): StageExecution =>
 		match(execution)
 			.with(
-				{
-					status: StageExecutionStatus.Proceed,
-					stage: when((_) => _.commandAllowsStage(context))
-				},
+				{ stage: when((_) => _.shouldStageExecute(context)) },
 				(_) => _
 			)
-			.with({ status: StageExecutionStatus.SkipForProject }, (_) => _)
 			.otherwise((_) => ({
 				..._,
-				status: StageExecutionStatus.SkipForCommand
-			}));
-
-export const proceedIfProjectAllowed =
-	(context: BuildContext) =>
-	(execution: StageExecution): StageExecution =>
-		match(execution)
-			.with(
-				{
-					status: StageExecutionStatus.Proceed,
-					stage: when((_) => _.projectAllowsStage(context))
-				},
-				(_) => _
-			)
-			.with({ status: StageExecutionStatus.SkipForCommand }, (_) => _)
-			.otherwise((_) => ({
-				..._,
-				status: StageExecutionStatus.SkipForProject
+				status: StageExecutionStatus.Skip
 			}));
 
 export const executeIfAllowed =
@@ -52,7 +31,7 @@ export const executeIfAllowed =
 			.with({ status: StageExecutionStatus.Proceed }, (_) =>
 				_.stage.execute(context)
 			)
-			.otherwise(({ status }) => {
-				logger.debug(`Skipping stage. Reason: ${status}`);
+			.otherwise(() => {
+				logger.debug('Skipping stage');
 				return TE.right(context);
 			});
