@@ -21,9 +21,10 @@ import { parseXml } from '../functions/Xml';
 import { MavenMetadataNexus } from '../configFileTypes/MavenMetadataNexus';
 import { Stage, StageExecuteFn } from './Stage';
 import { regexExecGroups } from '../functions/RegExp';
-import { isFullBuild } from '../context/commandTypeUtils';
+import { isDockerOnly, isFullBuild } from '../context/commandTypeUtils';
 import { CommandType } from '../context/CommandType';
 import { isNone, isSome } from 'fp-ts/Option';
+import { Command } from 'commander';
 
 interface BetaRegexGroups {
 	version: string;
@@ -33,6 +34,12 @@ interface BetaRegexGroups {
 const BETA_VERSION_REGEX = /^(?<version>.*-beta)\.(?<betaNumber>\d*)$/;
 const betaVersionRegexExecGroups =
 	regexExecGroups<BetaRegexGroups>(BETA_VERSION_REGEX);
+
+const npmBumpBetaCommandTypePredicate: P.Predicate<CommandType> = isFullBuild;
+const dockerBumpBetaCommandTypePredicate: P.Predicate<CommandType> = pipe(
+	isFullBuild,
+	P.and(isDockerOnly)
+);
 
 const findMatchingVersion = (
 	nexusResult: NexusSearchResult,
@@ -144,15 +151,25 @@ const handleNonFullBuildMavenPreReleaseVersion = (
 };
 
 const handleBetaVersionIfFound =
-	(context: BuildContext) => (versionOption: O.Option<string>) =>
+	(
+		context: BuildContext,
+		bumpBetaCommandTypePredicate: P.Predicate<CommandType>
+	) =>
+	(versionOption: O.Option<string>) =>
 		match({ commandType: context.commandInfo.type, version: versionOption })
 			.with(
-				{ commandType: CommandType.FullBuild, version: when(isSome) },
+				{
+					commandType: when(bumpBetaCommandTypePredicate),
+					version: when(isSome)
+				},
 				({ version }) => O.chain(bumpBetaVersion)(version)
 			)
 			.with({ version: when(isSome) }, ({ version }) => version)
 			.with(
-				{ commandType: CommandType.FullBuild, version: when(isNone) },
+				{
+					commandType: when(bumpBetaCommandTypePredicate),
+					version: when(isNone)
+				},
 				() => O.some(`${context.projectInfo.version}.1`)
 			)
 			.otherwise(() => O.none);
@@ -172,8 +189,16 @@ const handleNpmPreReleaseVersion = (
 		TE.chain((nexusResult) =>
 			pipe(
 				findMatchingVersion(nexusResult, context.projectInfo.version),
-				handleBetaVersionIfFound(context),
-				TE.fromOption(() => new Error('No matching NPM pre-release versions in Nexus'))
+				handleBetaVersionIfFound(
+					context,
+					npmBumpBetaCommandTypePredicate
+				),
+				TE.fromOption(
+					() =>
+						new Error(
+							'No matching NPM pre-release versions in Nexus'
+						)
+				)
 			)
 		),
 		TE.map((_) => updateProjectInfo(context, _))
@@ -188,11 +213,19 @@ const handleDockerPreReleaseVersion = (
 	);
 	return pipe(
 		searchForDockerBetas(context.projectInfo.name, versionSearchParam),
-		TE.map((nexusResult) =>
+		TE.chain((nexusResult) =>
 			pipe(
 				findMatchingVersion(nexusResult, context.projectInfo.version),
-				O.chain(bumpBetaVersion),
-				O.getOrElse(() => `${context.projectInfo.version}.1`)
+				handleBetaVersionIfFound(
+					context,
+					dockerBumpBetaCommandTypePredicate
+				),
+				TE.fromOption(
+					() =>
+						new Error(
+							'No matching Docker pre-release versions in Nexus'
+						)
+				)
 			)
 		),
 		TE.map((_) => updateProjectInfo(context, _))
