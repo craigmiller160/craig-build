@@ -14,12 +14,7 @@ import * as A from 'fp-ts/Array';
 import { isRelease } from '../context/projectInfoUtils';
 import { Stage, StageExecuteFn } from './Stage';
 import * as P from 'fp-ts/Predicate';
-import { CommandType } from '../context/CommandType';
-import {
-	isDockerOnly,
-	isFullBuild,
-	isKubernetesOnly
-} from '../context/commandTypeUtils';
+import { isDockerOnly, isFullBuild } from '../context/commandTypeUtils';
 
 const isReleaseVersionUnique = (
 	nexusResult: NexusSearchResult,
@@ -63,8 +58,6 @@ const handleValidationByProject = (
 			(_) => validateReleaseVersion(_, searchForDockerReleases)
 		)
 		.run();
-
-const isNotKubernetesOnly: P.Predicate<CommandType> = P.not(isKubernetesOnly);
 
 const execute: StageExecuteFn = (context) =>
 	pipe(

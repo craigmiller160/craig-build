@@ -21,8 +21,7 @@ import { PackageJson } from '../configFileTypes/PackageJson';
 import { isRelease } from '../context/projectInfoUtils';
 import { Stage, StageExecuteFn } from './Stage';
 import { ProjectType } from '../context/ProjectType';
-import { CommandType } from '../context/CommandType';
-import { isFullBuild, isKubernetesOnly } from '../context/commandTypeUtils';
+import { isFullBuild } from '../context/commandTypeUtils';
 
 const MAVEN_PROPERTY_REGEX = /\${.*}/;
 

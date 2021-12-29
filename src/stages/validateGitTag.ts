@@ -8,11 +8,7 @@ import * as A from 'fp-ts/Array';
 import * as P from 'fp-ts/Predicate';
 import { Stage, StageExecuteFn } from './Stage';
 import { CommandType } from '../context/CommandType';
-import {
-	isDockerOnly,
-	isFullBuild,
-	isKubernetesOnly
-} from '../context/commandTypeUtils';
+import { isDockerOnly, isFullBuild } from '../context/commandTypeUtils';
 
 const executeGitTagValidation = (
 	context: BuildContext
