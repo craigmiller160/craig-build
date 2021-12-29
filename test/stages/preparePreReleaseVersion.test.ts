@@ -47,7 +47,7 @@ describe('preparePreReleaseVersion', () => {
 		jest.resetAllMocks();
 	});
 
-	it('prepares pre-release version for NPM project based on existing version', async () => {
+	it('full build, prepares pre-release version for NPM project based on existing version', async () => {
 		const nexusResult: NexusSearchResult = {
 			items: [createItem('1.0.0-beta.2')]
 		};
@@ -82,7 +82,7 @@ describe('preparePreReleaseVersion', () => {
 		expect(homedirMock).not.toHaveBeenCalled();
 	});
 
-	it('prepares pre-release version for NPM project with no existing version', async () => {
+	it('full build, prepares pre-release version for NPM project with no existing version', async () => {
 		const nexusResult: NexusSearchResult = {
 			items: [createItem('1.1.0-beta.2')]
 		};
@@ -117,7 +117,7 @@ describe('preparePreReleaseVersion', () => {
 		expect(homedirMock).not.toHaveBeenCalled();
 	});
 
-	it('looks up recently created maven pre-release version from .m2', async () => {
+	it('full build, looks up recently created maven pre-release version from .m2', async () => {
 		homedirMock.mockImplementation(() =>
 			path.join(baseWorkingDir, 'mavenPreReleaseInfoM2')
 		);
@@ -144,6 +144,22 @@ describe('preparePreReleaseVersion', () => {
 
 		expect(searchForNpmBetasMock).not.toHaveBeenCalled();
 		expect(searchForDockerBetasMock).not.toHaveBeenCalled();
+	});
+
+	it('not full build, grabs pre-release version for NPM project from Nexus', async () => {
+		throw new Error();
+	});
+
+	it('not full build, cannot find pre-release version for NPM project in Nexus', async () => {
+		throw new Error();
+	});
+
+	it('not full build, grabs pre-release version for Maven project from Nexus', async () => {
+		throw new Error();
+	});
+
+	it('not full build, cannot find pre-release version for Maven project in Nexus', async () => {
+		throw new Error();
 	});
 
 	it('prepares pre-release version for Docker project based on existing version', async () => {
@@ -212,5 +228,13 @@ describe('preparePreReleaseVersion', () => {
 		expect(searchForDockerBetasMock).toHaveBeenCalledWith('my-project');
 		expect(searchForNpmBetasMock).not.toHaveBeenCalled();
 		expect(homedirMock).not.toHaveBeenCalled();
+	});
+
+	it('kubernetes only, grabs existing pre-release version for Docker project from Nexus', async () => {
+		throw new Error();
+	});
+
+	it('kubernetes only, cannot find existing pre-release version for Docker project in Nexus', async () => {
+		throw new Error();
 	});
 });
