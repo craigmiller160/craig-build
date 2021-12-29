@@ -22,12 +22,10 @@ const execute: StageExecuteFn = (context) =>
 		...context,
 		commandInfo: constructCommandInfo(program.opts())
 	});
-const commandAllowsStage: P.Predicate<BuildContext> = () => true;
-const projectAllowsStage: P.Predicate<BuildContext> = () => true;
+const shouldStageExecute: P.Predicate<BuildContext> = () => true;
 
 export const getCommandInfo: Stage = {
 	name: 'Get Command Info',
 	execute,
-	commandAllowsStage,
-	projectAllowsStage
+	shouldStageExecute
 };

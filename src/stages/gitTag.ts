@@ -26,14 +26,13 @@ const handleGitTagByProject = (
 const isNotKubernetesOnly: P.Predicate<CommandType> = P.not(isKubernetesOnly);
 
 const execute: StageExecuteFn = (context) => handleGitTagByProject(context);
-const commandAllowsStage: P.Predicate<BuildContext> = (context) =>
-	isNotKubernetesOnly(context.commandInfo.type);
-const projectAllowsStage: P.Predicate<BuildContext> = (context) =>
-	isRelease(context.projectInfo);
+const shouldStageExecute: P.Predicate<BuildContext> = pipe(
+	(_: BuildContext) => isRelease(_.projectInfo),
+	P.and((_) => isNotKubernetesOnly(_.commandInfo.type))
+);
 
 export const gitTag: Stage = {
 	name: 'Git Tag',
 	execute,
-	commandAllowsStage,
-	projectAllowsStage
+	shouldStageExecute
 };
