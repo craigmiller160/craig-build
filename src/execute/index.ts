@@ -10,8 +10,7 @@ import { Stage } from '../stages/Stage';
 import {
 	createStageExecution,
 	executeIfAllowed,
-	proceedIfCommandAllowed,
-	proceedIfProjectAllowed
+	shouldStageExecute
 } from './stageExecutionUtils';
 
 const conditionallyExecuteStage = (
@@ -20,8 +19,7 @@ const conditionallyExecuteStage = (
 ): TE.TaskEither<Error, BuildContext> =>
 	pipe(
 		createStageExecution(stage),
-		proceedIfCommandAllowed(context),
-		proceedIfProjectAllowed(context),
+		shouldStageExecute(context),
 		executeIfAllowed(context)
 	);
 
