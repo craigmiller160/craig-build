@@ -24,7 +24,6 @@ import { regexExecGroups } from '../functions/RegExp';
 import { isDockerOnly, isFullBuild } from '../context/commandTypeUtils';
 import { CommandType } from '../context/CommandType';
 import { isNone, isSome } from 'fp-ts/Option';
-import { Command } from 'commander';
 
 interface BetaRegexGroups {
 	version: string;

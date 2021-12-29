@@ -2,8 +2,15 @@ import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
 import '@relmify/jest-fp-ts';
 import { preparePreReleaseVersion } from '../../src/stages/preparePreReleaseVersion';
-import { searchForDockerBetas, searchForMavenSnapshots, searchForNpmBetas } from '../../src/services/NexusRepoApi';
-import { NexusSearchResult, NexusSearchResultItem } from '../../src/services/NexusSearchResult';
+import {
+	searchForDockerBetas,
+	searchForMavenSnapshots,
+	searchForNpmBetas
+} from '../../src/services/NexusRepoApi';
+import {
+	NexusSearchResult,
+	NexusSearchResultItem
+} from '../../src/services/NexusSearchResult';
 import { ProjectType } from '../../src/context/ProjectType';
 import * as TE from 'fp-ts/TaskEither';
 import { baseWorkingDir } from '../testutils/baseWorkingDir';
@@ -210,7 +217,9 @@ describe('preparePreReleaseVersion', () => {
 		};
 
 		const result = await preparePreReleaseVersion.execute(buildContext)();
-		expect(result).toEqualLeft(new Error('No matching NPM pre-release versions in Nexus'));
+		expect(result).toEqualLeft(
+			new Error('No matching NPM pre-release versions in Nexus')
+		);
 
 		expect(searchForNpmBetasMock).toHaveBeenCalledWith(
 			'craigmiller160',
@@ -279,7 +288,9 @@ describe('preparePreReleaseVersion', () => {
 		};
 
 		const result = await preparePreReleaseVersion.execute(buildContext)();
-		expect(result).toEqualLeft(new Error('No matching Maven pre-release versions in Nexus'));
+		expect(result).toEqualLeft(
+			new Error('No matching Maven pre-release versions in Nexus')
+		);
 
 		expect(searchForNpmBetasMock).not.toHaveBeenCalled();
 		expect(searchForDockerBetasMock).not.toHaveBeenCalled();
@@ -431,7 +442,9 @@ describe('preparePreReleaseVersion', () => {
 		};
 
 		const result = await preparePreReleaseVersion.execute(buildContext)();
-		expect(result).toEqualLeft(new Error('No matching Docker pre-release versions in Nexus'));
+		expect(result).toEqualLeft(
+			new Error('No matching Docker pre-release versions in Nexus')
+		);
 
 		expect(searchForDockerBetasMock).toHaveBeenCalledWith(
 			'my-project',
