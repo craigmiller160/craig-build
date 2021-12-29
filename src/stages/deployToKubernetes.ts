@@ -3,7 +3,7 @@ import * as TE from 'fp-ts/TaskEither';
 import { match, when } from 'ts-pattern';
 import { isApplication } from '../context/projectTypeUtils';
 import { pipe } from 'fp-ts/function';
-import { listFilesInDir } from '../functions/File';
+import { listFilesInDir, readFile } from '../functions/File';
 import path from 'path';
 import { getCwd } from '../command/getCwd';
 import * as A from 'fp-ts/Array';
@@ -37,6 +37,10 @@ const deployConfigmaps = (
 			)
 		)
 	);
+
+const getDeploymentName = (deployDir: string) => {
+	readFile()
+};
 
 const doDeploy = (
 	context: BuildContext
