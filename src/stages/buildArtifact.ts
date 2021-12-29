@@ -7,8 +7,7 @@ import { runCommand } from '../command/runCommand';
 import * as P from 'fp-ts/Predicate';
 import { ProjectType } from '../context/ProjectType';
 import { Stage, StageExecuteFn } from './Stage';
-import { CommandType } from '../context/CommandType';
-import { isFullBuild, isKubernetesOnly } from '../context/commandTypeUtils';
+import { isFullBuild } from '../context/commandTypeUtils';
 
 export const MAVEN_BUILD_CMD = 'mvn clean deploy -Ddependency-check.skip=true';
 export const NPM_BUILD_CMD = 'yarn build';

@@ -7,8 +7,7 @@ import { runCommand } from '../command/runCommand';
 import * as A from 'fp-ts/Array';
 import * as P from 'fp-ts/Predicate';
 import { Stage, StageExecuteFn } from './Stage';
-import { CommandType } from '../context/CommandType';
-import { isDockerOnly, isFullBuild } from '../context/commandTypeUtils';
+import { isFullBuild } from '../context/commandTypeUtils';
 import { isDocker } from '../context/projectTypeUtils';
 
 const executeGitTagValidation = (
@@ -36,11 +35,6 @@ const handleValidationByProject = (
 	match(context)
 		.with({ projectInfo: when(isRelease) }, executeGitTagValidation)
 		.run();
-
-const isFullBuildOrDockerOnly: P.Predicate<CommandType> = pipe(
-	isFullBuild,
-	P.or(isDockerOnly)
-);
 
 const isFullBuildAndReleaseVersion: P.Predicate<BuildContext> = pipe(
 	(_: BuildContext) => isFullBuild(_.commandInfo.type),

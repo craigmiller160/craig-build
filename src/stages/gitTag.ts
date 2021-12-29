@@ -6,8 +6,7 @@ import { pipe } from 'fp-ts/function';
 import { runCommand } from '../command/runCommand';
 import { Stage, StageExecuteFn } from './Stage';
 import * as P from 'fp-ts/Predicate';
-import { CommandType } from '../context/CommandType';
-import { isFullBuild, isKubernetesOnly } from '../context/commandTypeUtils';
+import { isFullBuild } from '../context/commandTypeUtils';
 import { isDocker } from '../context/projectTypeUtils';
 
 const doGitTag = (context: BuildContext): TE.TaskEither<Error, BuildContext> =>
