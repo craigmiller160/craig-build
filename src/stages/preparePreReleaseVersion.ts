@@ -169,7 +169,7 @@ const handleNpmPreReleaseVersion = (
 			context.projectInfo.name,
 			versionSearchParam
 		),
-		TE.map((nexusResult) =>
+		TE.chain((nexusResult) =>
 			pipe(
 				findMatchingVersion(nexusResult, context.projectInfo.version),
 				handleBetaVersionIfFound(context),

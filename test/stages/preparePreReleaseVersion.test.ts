@@ -217,7 +217,7 @@ describe('preparePreReleaseVersion', () => {
 		};
 
 		const result = await preparePreReleaseVersion.execute(buildContext)();
-		expect(result).toEqualLeft(new Error());
+		expect(result).toEqualLeft(new Error('No matching NPM pre-release versions in Nexus'));
 
 		expect(searchForNpmBetasMock).toHaveBeenCalledWith(
 			'craigmiller160',
