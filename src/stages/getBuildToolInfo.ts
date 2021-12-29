@@ -46,12 +46,10 @@ const execute: StageExecuteFn = (context) =>
 		),
 		TE.fromEither
 	);
-const commandAllowsStage: P.Predicate<BuildContext> = () => true;
-const projectAllowsStage: P.Predicate<BuildContext> = () => true;
+const shouldStageExecute: P.Predicate<BuildContext> = () => true;
 
 export const getBuildToolInfo: Stage = {
 	name: 'Get Build Tool Info',
 	execute,
-	commandAllowsStage,
-	projectAllowsStage
+	shouldStageExecute
 };

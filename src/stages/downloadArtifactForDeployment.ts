@@ -134,16 +134,17 @@ const isNotDocker: P.Predicate<ProjectType> = P.not(isDocker);
 const isNotKubernetesOnly: P.Predicate<CommandType> = P.not(isKubernetesOnly);
 
 const execute: StageExecuteFn = (context) => downloadArtifactByProject(context);
-const commandAllowsStage: P.Predicate<BuildContext> = (context) =>
-	isNotKubernetesOnly(context.commandInfo.type);
-const projectAllowsStage: P.Predicate<BuildContext> = pipe(
+const isNonDockerApplication: P.Predicate<BuildContext> = pipe(
 	(_: BuildContext) => isNotDocker(_.projectType),
 	P.and((_) => isApplication(_.projectType))
+);
+const shouldStageExecute: P.Predicate<BuildContext> = pipe(
+	isNonDockerApplication,
+	P.and((_) => isNotKubernetesOnly(_.commandInfo.type))
 );
 
 export const downloadArtifactForDeployment: Stage = {
 	name: 'Download Artifact For Deployment',
 	execute,
-	commandAllowsStage,
-	projectAllowsStage
+	shouldStageExecute
 };

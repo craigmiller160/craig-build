@@ -39,14 +39,14 @@ const isNotKubernetesOnly: P.Predicate<CommandType> = P.not(isKubernetesOnly);
 
 const execute: StageExecuteFn = (context) =>
 	handleBuildingArtifactByProject(context);
-const commandAllowsStage: P.Predicate<BuildContext> = (context) =>
-	isNotKubernetesOnly(context.commandInfo.type);
-const projectAllowsStage: P.Predicate<BuildContext> = (context) =>
-	isMavenOrNpm(context.projectType);
+
+const shouldStageExecute: P.Predicate<BuildContext> = pipe(
+	(_: BuildContext) => isMavenOrNpm(_.projectType),
+	P.and((_) => isNotKubernetesOnly(_.commandInfo.type))
+);
 
 export const buildArtifact: Stage = {
 	name: 'Build Artifact',
 	execute,
-	commandAllowsStage,
-	projectAllowsStage
+	shouldStageExecute
 };

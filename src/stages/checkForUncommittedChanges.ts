@@ -25,12 +25,10 @@ const execute: StageExecuteFn = (context) =>
 		TE.chain((_) => pipe(handleCommandResult(_), TE.fromEither)),
 		TE.map(() => context)
 	);
-const commandAllowsStage: P.Predicate<BuildContext> = () => true;
-const projectAllowsStage: P.Predicate<BuildContext> = () => true;
+const shouldStageExecute: P.Predicate<BuildContext> = () => true;
 
 export const checkForUncommittedChanges: Stage = {
 	name: 'Check For Uncommitted Changes',
 	execute,
-	commandAllowsStage,
-	projectAllowsStage
+	shouldStageExecute
 };
