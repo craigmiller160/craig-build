@@ -2,14 +2,8 @@ import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
 import '@relmify/jest-fp-ts';
 import { preparePreReleaseVersion } from '../../src/stages/preparePreReleaseVersion';
-import {
-	searchForDockerBetas,
-	searchForNpmBetas
-} from '../../src/services/NexusRepoApi';
-import {
-	NexusSearchResult,
-	NexusSearchResultItem
-} from '../../src/services/NexusSearchResult';
+import { searchForDockerBetas, searchForNpmBetas } from '../../src/services/NexusRepoApi';
+import { NexusSearchResult, NexusSearchResultItem } from '../../src/services/NexusSearchResult';
 import { ProjectType } from '../../src/context/ProjectType';
 import * as TE from 'fp-ts/TaskEither';
 import { baseWorkingDir } from '../testutils/baseWorkingDir';
@@ -154,11 +148,77 @@ describe('preparePreReleaseVersion', () => {
 	});
 
 	it('not full build, grabs pre-release version for NPM project from Nexus', async () => {
-		throw new Error();
+		const nexusResult: NexusSearchResult = {
+			items: [createItem('1.0.0-beta.2')]
+		};
+		searchForNpmBetasMock.mockImplementation(() => TE.right(nexusResult));
+
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			commandInfo: {
+				type: CommandType.DockerOnly
+			},
+			projectType: ProjectType.NpmApplication,
+			projectInfo: {
+				...baseBuildContext.projectInfo,
+				group: 'craigmiller160',
+				name: 'my-project',
+				versionType: VersionType.PreRelease,
+				version: '1.0.0-beta'
+			}
+		};
+
+		const result = await preparePreReleaseVersion.execute(buildContext)();
+		expect(result).toEqualRight({
+			...buildContext,
+			projectInfo: {
+				...buildContext.projectInfo,
+				version: '1.0.0-beta.2'
+			}
+		});
+
+		expect(searchForNpmBetasMock).toHaveBeenCalledWith(
+			'craigmiller160',
+			'my-project',
+			'1.0.0-beta*'
+		);
+		expect(searchForDockerBetasMock).not.toHaveBeenCalled();
+		expect(homedirMock).not.toHaveBeenCalled();
+		expect(searchForMavenSnapshotsMock).not.toHaveBeenCalled();
 	});
 
 	it('not full build, cannot find pre-release version for NPM project in Nexus', async () => {
-		throw new Error();
+		const nexusResult: NexusSearchResult = {
+			items: []
+		};
+		searchForNpmBetasMock.mockImplementation(() => TE.right(nexusResult));
+
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			commandInfo: {
+				type: CommandType.DockerOnly
+			},
+			projectType: ProjectType.NpmApplication,
+			projectInfo: {
+				...baseBuildContext.projectInfo,
+				group: 'craigmiller160',
+				name: 'my-project',
+				versionType: VersionType.PreRelease,
+				version: '1.0.0-beta'
+			}
+		};
+
+		const result = await preparePreReleaseVersion.execute(buildContext)();
+		expect(result).toEqualLeft(new Error());
+
+		expect(searchForNpmBetasMock).toHaveBeenCalledWith(
+			'craigmiller160',
+			'my-project',
+			'1.0.0-beta*'
+		);
+		expect(searchForDockerBetasMock).not.toHaveBeenCalled();
+		expect(homedirMock).not.toHaveBeenCalled();
+		expect(searchForMavenSnapshotsMock).not.toHaveBeenCalled();
 	});
 
 	it('not full build, grabs pre-release version for Maven project from Nexus', async () => {
