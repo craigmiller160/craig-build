@@ -38,7 +38,7 @@ const betaVersionRegexExecGroups =
 const npmBumpBetaCommandTypePredicate: P.Predicate<CommandType> = isFullBuild;
 const dockerBumpBetaCommandTypePredicate: P.Predicate<CommandType> = pipe(
 	isFullBuild,
-	P.and(isDockerOnly)
+	P.or(isDockerOnly)
 );
 
 const findMatchingVersion = (
