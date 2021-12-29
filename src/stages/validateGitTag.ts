@@ -8,7 +8,11 @@ import * as A from 'fp-ts/Array';
 import * as P from 'fp-ts/Predicate';
 import { Stage, StageExecuteFn } from './Stage';
 import { CommandType } from '../context/CommandType';
-import { isKubernetesOnly } from '../context/commandTypeUtils';
+import {
+	isDockerOnly,
+	isFullBuild,
+	isKubernetesOnly
+} from '../context/commandTypeUtils';
 
 const executeGitTagValidation = (
 	context: BuildContext
@@ -36,17 +40,19 @@ const handleValidationByProject = (
 		.with({ projectInfo: when(isRelease) }, executeGitTagValidation)
 		.run();
 
-const isNotKubernetesOnly: P.Predicate<CommandType> = P.not(isKubernetesOnly);
+const isFullBuildOrDockerOnly: P.Predicate<CommandType> = pipe(
+	isFullBuild,
+	P.or(isDockerOnly)
+);
 
 const execute: StageExecuteFn = (context) => handleValidationByProject(context);
-const commandAllowsStage: P.Predicate<BuildContext> = (context) =>
-	isNotKubernetesOnly(context.commandInfo.type);
-const projectAllowsStage: P.Predicate<BuildContext> = (context) =>
-	isRelease(context.projectInfo);
+const shouldStageExecute: P.Predicate<BuildContext> = pipe(
+	(_: BuildContext) => isRelease(_.projectInfo),
+	P.and((_) => isFullBuildOrDockerOnly(_.commandInfo.type))
+);
 
 export const validateGitTag: Stage = {
 	name: 'Validate Existing Git Tag',
 	execute,
-	commandAllowsStage,
-	projectAllowsStage
+	shouldStageExecute
 };

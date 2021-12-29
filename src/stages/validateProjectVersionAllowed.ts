@@ -80,7 +80,7 @@ const isFullBuildAndRelease: P.Predicate<BuildContext> = pipe(
 const isDockerOnlyAndDockerProjectAndRelease: P.Predicate<BuildContext> = pipe(
 	(_: BuildContext) => isDockerOnly(_.commandInfo.type),
 	P.and((_) => isDocker(_.projectType)),
-	P.and((_) => isRelease(_))
+	P.and((_) => isRelease(_.projectInfo))
 );
 
 const shouldStageExecute: P.Predicate<BuildContext> = pipe(
