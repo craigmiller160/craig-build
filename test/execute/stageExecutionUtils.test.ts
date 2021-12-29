@@ -33,12 +33,27 @@ describe('stageExecutionUtils', () => {
 	});
 
 	describe('shouldStageExecute', () => {
-		it('stage shouldStageExecute returns true', () => {
-			throw new Error();
+		const execution: StageExecution = {
+			status: StageExecutionStatus.Proceed,
+			stage: mockStage
+		};
+		it('stage shouldStageExecute returns true', async () => {
+			(mockStage.shouldStageExecute as jest.Mock).mockImplementation(
+				() => true
+			);
+			const result = shouldStageExecute(baseContext)(execution);
+			expect(result).toEqual(execution);
 		});
 
-		it('stage shouldStageExecute returns false', () => {
-			throw new Error();
+		it('stage shouldStageExecute returns false', async () => {
+			(mockStage.shouldStageExecute as jest.Mock).mockImplementation(
+				() => false
+			);
+			const result = shouldStageExecute(baseContext)(execution);
+			expect(result).toEqual({
+				...execution,
+				status: StageExecutionStatus.Skip
+			});
 		});
 	});
 
