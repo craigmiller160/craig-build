@@ -11,6 +11,8 @@ import * as E from 'fp-ts/Either';
 import { runCommand } from '../command/runCommand';
 import * as P from 'fp-ts/Predicate';
 import { Stage, StageExecuteFn } from './Stage';
+import { parseYaml } from '../functions/Yaml';
+import { KubeDeployment } from '../configFileTypes/KubeDeployment';
 
 const findConfigmaps = (deployDir: string): TE.TaskEither<Error, string[]> =>
 	pipe(
@@ -38,9 +40,12 @@ const deployConfigmaps = (
 		)
 	);
 
-const getDeploymentName = (deployDir: string) => {
-	readFile()
-};
+const getDeploymentName = (deployDir: string): E.Either<Error, string> =>
+	pipe(
+		readFile(path.join(deployDir, 'deployment.yml')),
+		E.chain((_) => parseYaml<KubeDeployment>(_)),
+		E.map((_) => _.metadata.name)
+	);
 
 const doDeploy = (
 	context: BuildContext
