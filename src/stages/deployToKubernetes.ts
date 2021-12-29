@@ -43,6 +43,7 @@ const deployConfigmaps = (
 const getDeploymentName = (deployDir: string): E.Either<Error, string> =>
 	pipe(
 		readFile(path.join(deployDir, 'deployment.yml')),
+		E.map((_) => _.split('---')[0]),
 		E.chain((_) => parseYaml<KubeDeployment>(_)),
 		E.map((_) => _.metadata.name)
 	);
