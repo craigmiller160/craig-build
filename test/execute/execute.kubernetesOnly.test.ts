@@ -26,8 +26,7 @@ jest.mock('../../src/stages', () => {
 	const createStageMock = (stage: Stage): Stage => ({
 		name: stage.name,
 		execute: jest.fn(),
-		commandAllowsStage: stage.commandAllowsStage,
-		projectAllowsStage: stage.projectAllowsStage
+		shouldStageExecute: stage.shouldStageExecute
 	});
 
 	const { stages } = jest.requireActual('../../src/stages');
