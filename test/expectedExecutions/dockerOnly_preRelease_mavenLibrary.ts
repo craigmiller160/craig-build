@@ -28,7 +28,7 @@ export const dockerOnly_preRelease_mavenLibrary: ExpectedExecution = {
 	[validateProjectVersionAllowed.name]: false,
 	[validateKubernetesConfig.name]: false,
 	[validateGitTag.name]: false,
-	[buildArtifact.name]: true,
+	[buildArtifact.name]: false,
 	[preparePreReleaseVersion.name]: true,
 	[manuallyPublishArtifact.name]: false,
 	[gitTag.name]: false,
