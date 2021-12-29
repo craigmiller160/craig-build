@@ -6,6 +6,7 @@ import { isPreRelease } from '../context/projectInfoUtils';
 import { pipe } from 'fp-ts/function';
 import {
 	searchForDockerBetas,
+	searchForMavenSnapshots,
 	searchForNpmBetas
 } from '../services/NexusRepoApi';
 import { NexusSearchResult } from '../services/NexusSearchResult';
@@ -20,6 +21,9 @@ import { parseXml } from '../functions/Xml';
 import { MavenMetadataNexus } from '../configFileTypes/MavenMetadataNexus';
 import { Stage, StageExecuteFn } from './Stage';
 import { regexExecGroups } from '../functions/RegExp';
+import { isDockerOnly, isFullBuild } from '../context/commandTypeUtils';
+import { CommandType } from '../context/CommandType';
+import { isNone, isSome } from 'fp-ts/Option';
 
 interface BetaRegexGroups {
 	version: string;
@@ -29,6 +33,12 @@ interface BetaRegexGroups {
 const BETA_VERSION_REGEX = /^(?<version>.*-beta)\.(?<betaNumber>\d*)$/;
 const betaVersionRegexExecGroups =
 	regexExecGroups<BetaRegexGroups>(BETA_VERSION_REGEX);
+
+const npmBumpBetaCommandTypePredicate: P.Predicate<CommandType> = isFullBuild;
+const dockerBumpBetaCommandTypePredicate: P.Predicate<CommandType> = pipe(
+	isFullBuild,
+	P.or(isDockerOnly)
+);
 
 const findMatchingVersion = (
 	nexusResult: NexusSearchResult,
@@ -73,7 +83,7 @@ const getMavenMetadataPreReleaseVersion = (
 		O.map((_) => _.value[0])
 	);
 
-const handleMavenPreReleaseVersion = (
+const handleFullBuildMavenPreReleaseVersion = (
 	context: BuildContext
 ): TE.TaskEither<Error, BuildContext> =>
 	pipe(
@@ -104,43 +114,138 @@ const bumpBetaVersion = (fullVersion: string): O.Option<string> =>
 		})
 	);
 
-const handleNpmPreReleaseVersion = (
+const prepareVersionSearchParam = (version: string): string => {
+	const formattedVersion = version.replaceAll('SNAPSHOT', '');
+	return `${formattedVersion}*`;
+};
+
+const handleNonFullBuildMavenPreReleaseVersion = (
 	context: BuildContext
-): TE.TaskEither<Error, BuildContext> =>
-	pipe(
-		searchForNpmBetas(context.projectInfo.group, context.projectInfo.name),
-		TE.map((nexusResult) =>
+): TE.TaskEither<Error, BuildContext> => {
+	const versionSearchParam = prepareVersionSearchParam(
+		context.projectInfo.version
+	);
+	return pipe(
+		searchForMavenSnapshots(
+			context.projectInfo.group,
+			context.projectInfo.name,
+			versionSearchParam
+		),
+		TE.chain((nexusResult) =>
 			pipe(
-				findMatchingVersion(nexusResult, context.projectInfo.version),
-				O.chain(bumpBetaVersion),
-				O.getOrElse(() => `${context.projectInfo.version}.1`)
+				findMatchingVersion(
+					nexusResult,
+					context.projectInfo.version.replaceAll('SNAPSHOT', '')
+				),
+				TE.fromOption(
+					() =>
+						new Error(
+							'No matching Maven pre-release versions in Nexus'
+						)
+				)
 			)
 		),
 		TE.map((_) => updateProjectInfo(context, _))
 	);
+};
+
+const handleBetaVersionIfFound =
+	(
+		context: BuildContext,
+		bumpBetaCommandTypePredicate: P.Predicate<CommandType>
+	) =>
+	(versionOption: O.Option<string>) =>
+		match({ commandType: context.commandInfo.type, version: versionOption })
+			.with(
+				{
+					commandType: when(bumpBetaCommandTypePredicate),
+					version: when(isSome)
+				},
+				({ version }) => O.chain(bumpBetaVersion)(version)
+			)
+			.with({ version: when(isSome) }, ({ version }) => version)
+			.with(
+				{
+					commandType: when(bumpBetaCommandTypePredicate),
+					version: when(isNone)
+				},
+				() => O.some(`${context.projectInfo.version}.1`)
+			)
+			.otherwise(() => O.none);
+
+const handleNpmPreReleaseVersion = (
+	context: BuildContext
+): TE.TaskEither<Error, BuildContext> => {
+	const versionSearchParam = prepareVersionSearchParam(
+		context.projectInfo.version
+	);
+	return pipe(
+		searchForNpmBetas(
+			context.projectInfo.group,
+			context.projectInfo.name,
+			versionSearchParam
+		),
+		TE.chain((nexusResult) =>
+			pipe(
+				findMatchingVersion(nexusResult, context.projectInfo.version),
+				handleBetaVersionIfFound(
+					context,
+					npmBumpBetaCommandTypePredicate
+				),
+				TE.fromOption(
+					() =>
+						new Error(
+							'No matching NPM pre-release versions in Nexus'
+						)
+				)
+			)
+		),
+		TE.map((_) => updateProjectInfo(context, _))
+	);
+};
 
 const handleDockerPreReleaseVersion = (
 	context: BuildContext
-): TE.TaskEither<Error, BuildContext> =>
-	pipe(
-		searchForDockerBetas(context.projectInfo.name),
-		TE.map((nexusResult) =>
+): TE.TaskEither<Error, BuildContext> => {
+	const versionSearchParam = prepareVersionSearchParam(
+		context.projectInfo.version
+	);
+	return pipe(
+		searchForDockerBetas(context.projectInfo.name, versionSearchParam),
+		TE.chain((nexusResult) =>
 			pipe(
 				findMatchingVersion(nexusResult, context.projectInfo.version),
-				O.chain(bumpBetaVersion),
-				O.getOrElse(() => `${context.projectInfo.version}.1`)
+				handleBetaVersionIfFound(
+					context,
+					dockerBumpBetaCommandTypePredicate
+				),
+				TE.fromOption(
+					() =>
+						new Error(
+							'No matching Docker pre-release versions in Nexus'
+						)
+				)
 			)
 		),
 		TE.map((_) => updateProjectInfo(context, _))
 	);
+};
 
 const handlePreparingPreReleaseVersionByProject = (
 	context: BuildContext
 ): TE.TaskEither<Error, BuildContext> =>
 	match(context)
 		.with(
+			{
+				commandInfo: { type: when(isFullBuild) },
+				projectType: when(isMaven),
+				projectInfo: when(isPreRelease)
+			},
+			handleFullBuildMavenPreReleaseVersion
+		)
+		.with(
 			{ projectType: when(isMaven), projectInfo: when(isPreRelease) },
-			handleMavenPreReleaseVersion
+			handleNonFullBuildMavenPreReleaseVersion
 		)
 		.with(
 			{ projectType: when(isNpm), projectInfo: when(isPreRelease) },
