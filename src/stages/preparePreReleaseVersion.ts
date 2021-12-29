@@ -22,6 +22,8 @@ import { MavenMetadataNexus } from '../configFileTypes/MavenMetadataNexus';
 import { Stage, StageExecuteFn } from './Stage';
 import { regexExecGroups } from '../functions/RegExp';
 import { isFullBuild } from '../context/commandTypeUtils';
+import { CommandType } from '../context/CommandType';
+import { isNone, isSome } from 'fp-ts/Option';
 
 interface BetaRegexGroups {
 	version: string;
@@ -141,6 +143,20 @@ const handleNonFullBuildMavenPreReleaseVersion = (
 	);
 };
 
+const handleBetaVersionIfFound =
+	(context: BuildContext) => (versionOption: O.Option<string>) =>
+		match({ commandType: context.commandInfo.type, version: versionOption })
+			.with(
+				{ commandType: CommandType.FullBuild, version: when(isSome) },
+				({ version }) => O.chain(bumpBetaVersion)(version)
+			)
+			.with({ version: when(isSome) }, ({ version }) => version)
+			.with(
+				{ commandType: CommandType.FullBuild, version: when(isNone) },
+				() => O.some(`${context.projectInfo.version}.1`)
+			)
+			.otherwise(() => O.none);
+
 const handleNpmPreReleaseVersion = (
 	context: BuildContext
 ): TE.TaskEither<Error, BuildContext> => {
@@ -156,8 +172,8 @@ const handleNpmPreReleaseVersion = (
 		TE.map((nexusResult) =>
 			pipe(
 				findMatchingVersion(nexusResult, context.projectInfo.version),
-				O.chain(bumpBetaVersion),
-				O.getOrElse(() => `${context.projectInfo.version}.1`)
+				handleBetaVersionIfFound(context),
+				TE.fromOption(() => new Error('No matching NPM pre-release versions in Nexus'))
 			)
 		),
 		TE.map((_) => updateProjectInfo(context, _))
