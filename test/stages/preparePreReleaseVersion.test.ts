@@ -4,8 +4,8 @@ import '@relmify/jest-fp-ts';
 import { preparePreReleaseVersion } from '../../src/stages/preparePreReleaseVersion';
 import {
 	searchForDockerBetas,
-	searchForNpmBetas,
-	searchForMavenSnapshots
+	searchForMavenSnapshots,
+	searchForNpmBetas
 } from '../../src/services/NexusRepoApi';
 import {
 	NexusSearchResult,
@@ -366,10 +366,78 @@ describe('preparePreReleaseVersion', () => {
 	});
 
 	it('kubernetes only, grabs existing pre-release version for Docker project from Nexus', async () => {
-		throw new Error();
+		const nexusResult: NexusSearchResult = {
+			items: [createItem('1.0.0-beta.2')]
+		};
+		searchForDockerBetasMock.mockImplementation(() =>
+			TE.right(nexusResult)
+		);
+
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			commandInfo: {
+				type: CommandType.KubernetesOnly
+			},
+			projectType: ProjectType.DockerApplication,
+			projectInfo: {
+				...baseBuildContext.projectInfo,
+				group: 'craigmiller160',
+				name: 'my-project',
+				versionType: VersionType.PreRelease,
+				version: '1.0.0-beta'
+			}
+		};
+
+		const result = await preparePreReleaseVersion.execute(buildContext)();
+		expect(result).toEqualRight({
+			...buildContext,
+			projectInfo: {
+				...buildContext.projectInfo,
+				version: '1.0.0-beta.2'
+			}
+		});
+
+		expect(searchForDockerBetasMock).toHaveBeenCalledWith(
+			'my-project',
+			'1.0.0-beta*'
+		);
+		expect(searchForNpmBetasMock).not.toHaveBeenCalled();
+		expect(homedirMock).not.toHaveBeenCalled();
+		expect(searchForMavenSnapshotsMock).not.toHaveBeenCalled();
 	});
 
 	it('kubernetes only, cannot find existing pre-release version for Docker project in Nexus', async () => {
-		throw new Error();
+		const nexusResult: NexusSearchResult = {
+			items: []
+		};
+		searchForDockerBetasMock.mockImplementation(() =>
+			TE.right(nexusResult)
+		);
+
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			commandInfo: {
+				type: CommandType.KubernetesOnly
+			},
+			projectType: ProjectType.DockerApplication,
+			projectInfo: {
+				...baseBuildContext.projectInfo,
+				group: 'craigmiller160',
+				name: 'my-project',
+				versionType: VersionType.PreRelease,
+				version: '1.0.0-beta'
+			}
+		};
+
+		const result = await preparePreReleaseVersion.execute(buildContext)();
+		expect(result).toEqualLeft(new Error());
+
+		expect(searchForDockerBetasMock).toHaveBeenCalledWith(
+			'my-project',
+			'1.0.0-beta*'
+		);
+		expect(searchForNpmBetasMock).not.toHaveBeenCalled();
+		expect(homedirMock).not.toHaveBeenCalled();
+		expect(searchForMavenSnapshotsMock).not.toHaveBeenCalled();
 	});
 });
