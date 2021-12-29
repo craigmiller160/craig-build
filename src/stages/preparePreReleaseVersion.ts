@@ -20,6 +20,7 @@ import { parseXml } from '../functions/Xml';
 import { MavenMetadataNexus } from '../configFileTypes/MavenMetadataNexus';
 import { Stage, StageExecuteFn } from './Stage';
 import { regexExecGroups } from '../functions/RegExp';
+import { isFullBuild } from '../context/commandTypeUtils';
 
 interface BetaRegexGroups {
 	version: string;
@@ -73,7 +74,7 @@ const getMavenMetadataPreReleaseVersion = (
 		O.map((_) => _.value[0])
 	);
 
-const handleMavenPreReleaseVersion = (
+const handleFullBuildMavenPreReleaseVersion = (
 	context: BuildContext
 ): TE.TaskEither<Error, BuildContext> =>
 	pipe(
@@ -107,6 +108,12 @@ const bumpBetaVersion = (fullVersion: string): O.Option<string> =>
 const prepareVersionSearchParam = (version: string): string => {
 	const formattedVersion = version.replaceAll('SNAPSHOT', '');
 	return `${formattedVersion}*`;
+};
+
+const handleNonFullBuildMavenPreReleaseVersion = (
+	context: BuildContext
+): TE.TaskEither<Error, BuildContext> => {
+	throw new Error();
 };
 
 const handleNpmPreReleaseVersion = (
@@ -156,8 +163,16 @@ const handlePreparingPreReleaseVersionByProject = (
 ): TE.TaskEither<Error, BuildContext> =>
 	match(context)
 		.with(
+			{
+				commandInfo: { type: when(isFullBuild) },
+				projectType: when(isMaven),
+				projectInfo: when(isPreRelease)
+			},
+			handleFullBuildMavenPreReleaseVersion
+		)
+		.with(
 			{ projectType: when(isMaven), projectInfo: when(isPreRelease) },
-			handleMavenPreReleaseVersion
+			handleNonFullBuildMavenPreReleaseVersion
 		)
 		.with(
 			{ projectType: when(isNpm), projectInfo: when(isPreRelease) },
