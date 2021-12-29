@@ -35,14 +35,13 @@ const handlePublishByProject = (
 const isNotKubernetesOnly: P.Predicate<CommandType> = P.not(isKubernetesOnly);
 
 const execute: StageExecuteFn = (context) => handlePublishByProject(context);
-const commandAllowsStage: P.Predicate<BuildContext> = (context) =>
-	isNotKubernetesOnly(context.commandInfo.type);
-const projectAllowsStage: P.Predicate<BuildContext> = (context) =>
-	isNpm(context.projectType);
+const shouldStageExecute: P.Predicate<BuildContext> = pipe(
+	(_: BuildContext) => isNpm(_.projectType),
+	P.and((_) => isNotKubernetesOnly(_.commandInfo.type))
+);
 
 export const manuallyPublishArtifact: Stage = {
 	name: 'Manually Publish Artifact',
 	execute,
-	commandAllowsStage,
-	projectAllowsStage
+	shouldStageExecute
 };

@@ -22,7 +22,7 @@ import { isRelease } from '../context/projectInfoUtils';
 import { Stage, StageExecuteFn } from './Stage';
 import { ProjectType } from '../context/ProjectType';
 import { CommandType } from '../context/CommandType';
-import { isKubernetesOnly } from '../context/commandTypeUtils';
+import { isFullBuild, isKubernetesOnly } from '../context/commandTypeUtils';
 
 const MAVEN_PROPERTY_REGEX = /\${.*}/;
 
@@ -139,20 +139,20 @@ const handleValidationByProject = (
 		.run();
 
 const isNotDocker: P.Predicate<ProjectType> = P.not(isDocker);
-const isNotKubernetesOnly: P.Predicate<CommandType> = P.not(isKubernetesOnly);
 
 const execute: StageExecuteFn = (context) =>
 	pipe(handleValidationByProject(context), TE.fromEither);
-const commandAllowsStage: P.Predicate<BuildContext> = (context) =>
-	isNotKubernetesOnly(context.commandInfo.type);
-const projectAllowsStage: P.Predicate<BuildContext> = pipe(
+const isNonDockerRelease: P.Predicate<BuildContext> = pipe(
 	(_: BuildContext) => isNotDocker(_.projectType),
 	P.and((_) => isRelease(_.projectInfo))
+);
+const shouldStageExecute: P.Predicate<BuildContext> = pipe(
+	isNonDockerRelease,
+	P.and((_) => isFullBuild(_.commandInfo.type))
 );
 
 export const validateDependencyVersions: Stage = {
 	name: 'Validate Dependency Versions',
 	execute,
-	commandAllowsStage,
-	projectAllowsStage
+	shouldStageExecute
 };
