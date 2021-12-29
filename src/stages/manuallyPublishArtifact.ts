@@ -7,7 +7,7 @@ import { runCommand } from '../command/runCommand';
 import { Stage, StageExecuteFn } from './Stage';
 import * as P from 'fp-ts/Predicate';
 import { CommandType } from '../context/CommandType';
-import { isKubernetesOnly } from '../context/commandTypeUtils';
+import { isFullBuild, isKubernetesOnly } from '../context/commandTypeUtils';
 
 export const NPM_PUBLISH_COMMAND =
 	'yarn publish --no-git-tag-version --new-version';
@@ -32,12 +32,10 @@ const handlePublishByProject = (
 		.with({ projectType: when(isNpm) }, publishNpmArtifact)
 		.run();
 
-const isNotKubernetesOnly: P.Predicate<CommandType> = P.not(isKubernetesOnly);
-
 const execute: StageExecuteFn = (context) => handlePublishByProject(context);
 const shouldStageExecute: P.Predicate<BuildContext> = pipe(
 	(_: BuildContext) => isNpm(_.projectType),
-	P.and((_) => isNotKubernetesOnly(_.commandInfo.type))
+	P.and((_) => isFullBuild(_.commandInfo.type))
 );
 
 export const manuallyPublishArtifact: Stage = {

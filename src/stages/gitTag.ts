@@ -7,7 +7,8 @@ import { runCommand } from '../command/runCommand';
 import { Stage, StageExecuteFn } from './Stage';
 import * as P from 'fp-ts/Predicate';
 import { CommandType } from '../context/CommandType';
-import { isKubernetesOnly } from '../context/commandTypeUtils';
+import { isFullBuild, isKubernetesOnly } from '../context/commandTypeUtils';
+import { isDocker } from '../context/projectTypeUtils';
 
 const doGitTag = (context: BuildContext): TE.TaskEither<Error, BuildContext> =>
 	pipe(
@@ -23,12 +24,19 @@ const handleGitTagByProject = (
 		.with({ projectInfo: when(isRelease) }, doGitTag)
 		.run();
 
-const isNotKubernetesOnly: P.Predicate<CommandType> = P.not(isKubernetesOnly);
+const isFullBuildAndReleaseVersion: P.Predicate<BuildContext> = pipe(
+	(_: BuildContext) => isFullBuild(_.commandInfo.type),
+	P.and((_) => isRelease(_.projectInfo))
+);
+const isDockerReleaseProject: P.Predicate<BuildContext> = pipe(
+	(_: BuildContext) => isDocker(_.projectType),
+	P.and((_) => isRelease(_.projectInfo))
+);
 
 const execute: StageExecuteFn = (context) => handleGitTagByProject(context);
 const shouldStageExecute: P.Predicate<BuildContext> = pipe(
-	(_: BuildContext) => isRelease(_.projectInfo),
-	P.and((_) => isNotKubernetesOnly(_.commandInfo.type))
+	isFullBuildAndReleaseVersion,
+	P.or(isDockerReleaseProject)
 );
 
 export const gitTag: Stage = {

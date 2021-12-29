@@ -9,6 +9,7 @@ import * as P from 'fp-ts/Predicate';
 import { Stage, StageExecuteFn } from './Stage';
 import { CommandType } from '../context/CommandType';
 import { isDockerOnly, isFullBuild } from '../context/commandTypeUtils';
+import { isDocker } from '../context/projectTypeUtils';
 
 const executeGitTagValidation = (
 	context: BuildContext
@@ -41,10 +42,19 @@ const isFullBuildOrDockerOnly: P.Predicate<CommandType> = pipe(
 	P.or(isDockerOnly)
 );
 
+const isFullBuildAndReleaseVersion: P.Predicate<BuildContext> = pipe(
+	(_: BuildContext) => isFullBuild(_.commandInfo.type),
+	P.and((_) => isRelease(_.projectInfo))
+);
+const isDockerReleaseProject: P.Predicate<BuildContext> = pipe(
+	(_: BuildContext) => isDocker(_.projectType),
+	P.and((_) => isRelease(_.projectInfo))
+);
+
 const execute: StageExecuteFn = (context) => handleValidationByProject(context);
 const shouldStageExecute: P.Predicate<BuildContext> = pipe(
-	(_: BuildContext) => isRelease(_.projectInfo),
-	P.and((_) => isFullBuildOrDockerOnly(_.commandInfo.type))
+	isFullBuildAndReleaseVersion,
+	P.or(isDockerReleaseProject)
 );
 
 export const validateGitTag: Stage = {
