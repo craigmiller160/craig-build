@@ -8,7 +8,7 @@ import {
 	manuallyPublishArtifact
 } from '../../src/stages/manuallyPublishArtifact';
 import * as TE from 'fp-ts/TaskEither';
-import { NPM_PUBLISH_COMMAND } from '../../old-src/stages/createArtifact/tasks/publish';
+import { NPM_PUBLISH_COMMAND } from '../../src/stages/manuallyPublishArtifact';
 
 const baseBuildContext = createBuildContext();
 

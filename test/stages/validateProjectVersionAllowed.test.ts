@@ -6,7 +6,7 @@ import {
 import '@relmify/jest-fp-ts';
 import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
-import ProjectType from '../../old-src/types/ProjectType';
+import { ProjectType } from '../../src/context/ProjectType';
 import { validateProjectVersionAllowed } from '../../src/stages/validateProjectVersionAllowed';
 import { NexusSearchResultItem } from '../../src/services/NexusSearchResult';
 import * as TE from 'fp-ts/TaskEither';
