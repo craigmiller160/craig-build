@@ -125,7 +125,10 @@ const handleNonFullBuildMavenPreReleaseVersion = (
 		),
 		TE.chain((nexusResult) =>
 			pipe(
-				findMatchingVersion(nexusResult, context.projectInfo.version),
+				findMatchingVersion(
+					nexusResult,
+					context.projectInfo.version.replaceAll('SNAPSHOT', '')
+				),
 				TE.fromOption(
 					() =>
 						new Error(
