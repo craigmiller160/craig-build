@@ -6,6 +6,7 @@ import { isPreRelease } from '../context/projectInfoUtils';
 import { pipe } from 'fp-ts/function';
 import {
 	searchForDockerBetas,
+	searchForMavenSnapshots,
 	searchForNpmBetas
 } from '../services/NexusRepoApi';
 import { NexusSearchResult } from '../services/NexusSearchResult';
@@ -113,7 +114,28 @@ const prepareVersionSearchParam = (version: string): string => {
 const handleNonFullBuildMavenPreReleaseVersion = (
 	context: BuildContext
 ): TE.TaskEither<Error, BuildContext> => {
-	throw new Error();
+	const versionSearchParam = prepareVersionSearchParam(
+		context.projectInfo.version
+	);
+	return pipe(
+		searchForMavenSnapshots(
+			context.projectInfo.group,
+			context.projectInfo.name,
+			versionSearchParam
+		),
+		TE.chain((nexusResult) =>
+			pipe(
+				findMatchingVersion(nexusResult, context.projectInfo.version),
+				TE.fromOption(
+					() =>
+						new Error(
+							'No matching Maven pre-release versions in Nexus'
+						)
+				)
+			)
+		),
+		TE.map((_) => updateProjectInfo(context, _))
+	);
 };
 
 const handleNpmPreReleaseVersion = (
