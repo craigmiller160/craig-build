@@ -36,10 +36,18 @@ describe('deployToKubernetes', () => {
 		const result = await deployToKubernetes.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
 
-		expect(runCommandMock).toHaveBeenCalledTimes(1);
+		expect(runCommandMock).toHaveBeenCalledTimes(2);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			1,
 			'KUBE_IMG_VERSION=1.0.0 envsubst < deployment.yml | kubectl apply -f -',
+			{
+				cwd: path.join(baseCwd, 'deploy'),
+				printOutput: true
+			}
+		);
+		expect(runCommandMock).toHaveBeenNthCalledWith(
+			2,
+			'kubectl rollout restart deployment email-service',
 			{
 				cwd: path.join(baseCwd, 'deploy'),
 				printOutput: true
@@ -58,10 +66,18 @@ describe('deployToKubernetes', () => {
 		const result = await deployToKubernetes.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
 
-		expect(runCommandMock).toHaveBeenCalledTimes(1);
+		expect(runCommandMock).toHaveBeenCalledTimes(2);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			1,
 			'KUBE_IMG_VERSION=1.0.0 envsubst < deployment.yml | kubectl apply -f -',
+			{
+				cwd: path.join(baseCwd, 'deploy'),
+				printOutput: true
+			}
+		);
+		expect(runCommandMock).toHaveBeenNthCalledWith(
+			2,
+			'kubectl rollout restart deployment email-service',
 			{
 				cwd: path.join(baseCwd, 'deploy'),
 				printOutput: true
@@ -80,10 +96,18 @@ describe('deployToKubernetes', () => {
 		const result = await deployToKubernetes.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
 
-		expect(runCommandMock).toHaveBeenCalledTimes(1);
+		expect(runCommandMock).toHaveBeenCalledTimes(2);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			1,
 			'KUBE_IMG_VERSION=1.0.0 envsubst < deployment.yml | kubectl apply -f -',
+			{
+				cwd: path.join(baseCwd, 'deploy'),
+				printOutput: true
+			}
+		);
+		expect(runCommandMock).toHaveBeenNthCalledWith(
+			2,
+			'kubectl rollout restart deployment email-service',
 			{
 				cwd: path.join(baseCwd, 'deploy'),
 				printOutput: true
@@ -105,7 +129,7 @@ describe('deployToKubernetes', () => {
 		const result = await deployToKubernetes.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
 
-		expect(runCommandMock).toHaveBeenCalledTimes(2);
+		expect(runCommandMock).toHaveBeenCalledTimes(3);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			1,
 			'kubectl apply -f one.configmap.yml',
@@ -117,6 +141,14 @@ describe('deployToKubernetes', () => {
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			2,
 			'KUBE_IMG_VERSION=1.0.0 envsubst < deployment.yml | kubectl apply -f -',
+			{
+				cwd: path.join(baseCwd, 'deploy'),
+				printOutput: true
+			}
+		);
+		expect(runCommandMock).toHaveBeenNthCalledWith(
+			3,
+			'kubectl rollout restart deployment email-service',
 			{
 				cwd: path.join(baseCwd, 'deploy'),
 				printOutput: true
@@ -138,7 +170,7 @@ describe('deployToKubernetes', () => {
 		const result = await deployToKubernetes.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
 
-		expect(runCommandMock).toHaveBeenCalledTimes(3);
+		expect(runCommandMock).toHaveBeenCalledTimes(4);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			1,
 			'kubectl apply -f one.configmap.yml',
@@ -158,6 +190,14 @@ describe('deployToKubernetes', () => {
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			3,
 			'KUBE_IMG_VERSION=1.0.0 envsubst < deployment.yml | kubectl apply -f -',
+			{
+				cwd: path.join(baseCwd, 'deploy'),
+				printOutput: true
+			}
+		);
+		expect(runCommandMock).toHaveBeenNthCalledWith(
+			4,
+			'kubectl rollout restart deployment email-service',
 			{
 				cwd: path.join(baseCwd, 'deploy'),
 				printOutput: true
