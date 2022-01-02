@@ -20,20 +20,7 @@ const conditionallyExecuteStage = (
 	pipe(
 		createStageExecution(stage),
 		shouldStageExecute(context),
-		executeIfAllowed(context)
-	);
-
-const executeStage = (
-	contextTE: TE.TaskEither<Error, BuildContext>,
-	stage: Stage
-): TE.TaskEither<Error, BuildContext> =>
-	pipe(
-		contextTE,
-		TE.map((_) => {
-			logger.info(`Starting stage: ${stage.name}`);
-			return _;
-		}),
-		TE.chain((_) => conditionallyExecuteStage(_, stage)),
+		executeIfAllowed(context),
 		TE.map((_) => {
 			logger.info(
 				`Completed stage: ${stage.name} ${EU.getOrThrow(
@@ -47,6 +34,19 @@ const executeStage = (
 			logger.error(_);
 			return _;
 		})
+	);
+
+const executeStage = (
+	contextTE: TE.TaskEither<Error, BuildContext>,
+	stage: Stage
+): TE.TaskEither<Error, BuildContext> =>
+	pipe(
+		contextTE,
+		TE.map((_) => {
+			logger.info(`Starting stage: ${stage.name}`);
+			return _;
+		}),
+		TE.chain((_) => conditionallyExecuteStage(_, stage))
 	);
 
 export const execute = (
