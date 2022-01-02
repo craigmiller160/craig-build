@@ -46,7 +46,7 @@ describe('validateBuildToolVersion', () => {
 			}
 		});
 		const nexusResult: NexusSearchResult = {
-			items: [createNexusItem('1.0.0')]
+			items: [createNexusItem('1.0.0'), createNexusItem('1.1.0')]
 		};
 		searchForNpmReleasesMock.mockImplementation(() =>
 			TE.right(nexusResult)
@@ -71,7 +71,7 @@ describe('validateBuildToolVersion', () => {
 			}
 		});
 		const nexusResult: NexusSearchResult = {
-			items: [createNexusItem('1.2.0')]
+			items: [createNexusItem('1.2.0'), createNexusItem('1.1.0')]
 		};
 		searchForNpmReleasesMock.mockImplementation(() =>
 			TE.right(nexusResult)
