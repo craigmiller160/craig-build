@@ -1,14 +1,15 @@
 import { validateBuildToolVersion } from '../../src/stages/validateBuildToolVersion';
 import { searchForNpmReleases } from '../../src/services/NexusRepoApi';
-import NexusSearchResult, {
-	NexusSearchResultItem
-} from '../../old-src/types/NexusSearchResult';
 import * as TE from 'fp-ts/TaskEither';
 import * as T from 'fp-ts/Task';
 import '@relmify/jest-fp-ts';
 import { readUserInput } from '../../src/utils/readUserInput';
 import { createBuildContext } from '../testutils/createBuildContext';
 import { VersionType } from '../../src/context/VersionType';
+import {
+	NexusSearchResult,
+	NexusSearchResultItem
+} from '../../src/services/NexusSearchResult';
 
 jest.mock('../../src/services/NexusRepoApi', () => ({
 	searchForNpmReleases: jest.fn()
