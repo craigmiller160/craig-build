@@ -20,7 +20,7 @@ const compareVersions = (
 	semver.compare(
 		semverTrimVersion(nexusItemVersion),
 		semverTrimVersion(currentVersion)
-	) >= 0;
+	) > 0;
 
 const noMatchingReleaseVersion = (
 	result: NexusSearchResult,
