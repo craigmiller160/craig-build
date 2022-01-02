@@ -45,7 +45,22 @@ describe('getBuildToolInfo', () => {
 	});
 
 	it('gets pre-release info with beta number', async () => {
-		throw new Error();
+		readFileMock.mockImplementation(() =>
+			E.right(JSON.stringify({
+				...preReleasePackageJson,
+				version: '1.0.0-beta.1'
+			}))
+		);
+		const result = await getBuildToolInfo.execute(buildContext)();
+		expect(result).toEqualRight({
+			...buildContext,
+			buildToolInfo: {
+				group: 'craigmiller160',
+				name: 'craig-build',
+				version: '1.0.0-beta.1',
+				versionType: VersionType.PreRelease
+			}
+		});
 	})
 
 	it('get release info', async () => {
