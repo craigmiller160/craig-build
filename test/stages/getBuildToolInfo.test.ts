@@ -44,6 +44,10 @@ describe('getBuildToolInfo', () => {
 		});
 	});
 
+	it('gets pre-release info with beta number', async () => {
+		throw new Error();
+	})
+
 	it('get release info', async () => {
 		readFileMock.mockImplementation(() =>
 			E.right(JSON.stringify(releasePackageJson))

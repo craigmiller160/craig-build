@@ -15,7 +15,7 @@ import { VersionType } from '../context/VersionType';
 import { match, when } from 'ts-pattern';
 import { regexTest } from '../functions/RegExp';
 
-const VERSION_REGEX = /^.*-beta$/;
+const VERSION_REGEX = /^.*-beta.*$/;
 
 const getVersionType = (version: string): VersionType =>
 	match(version)
