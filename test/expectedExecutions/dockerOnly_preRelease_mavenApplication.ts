@@ -16,6 +16,7 @@ import { validateBuildToolVersion } from '../../src/stages/validateBuildToolVers
 import { checkForUncommittedChanges } from '../../src/stages/checkForUncommittedChanges';
 import { getProjectType } from '../../src/stages/getProjectType';
 import { getProjectInfo } from '../../src/stages/getProjectInfo';
+import {waitOnNexusUpdate} from '../../src/stages/waitOnNexusUpdate';
 
 export const dockerOnly_preRelease_mavenApplication: ExpectedExecution = {
 	[getCommandInfo.name]: true,
@@ -32,6 +33,7 @@ export const dockerOnly_preRelease_mavenApplication: ExpectedExecution = {
 	[preparePreReleaseVersion.name]: true,
 	[manuallyPublishArtifact.name]: false,
 	[gitTag.name]: false,
+	[waitOnNexusUpdate.name]: true,
 	[downloadArtifactForDeployment.name]: true,
 	[buildAndPushDocker.name]: true,
 	[deployToKubernetes.name]: true
