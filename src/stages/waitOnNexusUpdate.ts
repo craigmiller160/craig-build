@@ -7,6 +7,8 @@ import { pipe } from 'fp-ts/function';
 import { ProjectType } from '../context/ProjectType';
 import * as P from 'fp-ts/Predicate';
 import { Stage, StageExecuteFn } from './Stage';
+import { isKubernetesOnly } from '../context/commandTypeUtils';
+import { CommandType } from '../context/CommandType';
 
 const WAIT_TIME_MILLIS = 3000;
 
@@ -24,6 +26,7 @@ const isNonDockerApplication: P.Predicate<ProjectType> = pipe(
 	isApplication,
 	P.and(P.not(isDocker))
 );
+const isNotKuberntesOnly: P.Predicate<CommandType> = P.not(isKubernetesOnly);
 
 const handleWaitingByProject = (
 	context: BuildContext
@@ -36,8 +39,10 @@ const handleWaitingByProject = (
 		.run();
 
 const execute: StageExecuteFn = (context) => handleWaitingByProject(context);
-const shouldStageExecute: P.Predicate<BuildContext> = (context) =>
-	isNonDockerApplication(context.projectType);
+const shouldStageExecute: P.Predicate<BuildContext> = pipe(
+	(_: BuildContext) => isNonDockerApplication(_.projectType),
+	P.and((_) => isNotKuberntesOnly(_.commandInfo.type))
+);
 
 export const waitOnNexusUpdate: Stage = {
 	name: 'Wait On Nexus Update',
