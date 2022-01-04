@@ -16,6 +16,7 @@ import { downloadArtifactForDeployment } from './downloadArtifactForDeployment';
 import { buildAndPushDocker } from './buildAndPushDocker';
 import { deployToKubernetes } from './deployToKubernetes';
 import { Stage } from './Stage';
+import { waitOnNexusUpdate } from './waitOnNexusUpdate';
 
 export const stages: Stage[] = [
 	getCommandInfo,
@@ -32,6 +33,7 @@ export const stages: Stage[] = [
 	preparePreReleaseVersion,
 	manuallyPublishArtifact,
 	gitTag,
+	waitOnNexusUpdate,
 	downloadArtifactForDeployment,
 	buildAndPushDocker,
 	deployToKubernetes
