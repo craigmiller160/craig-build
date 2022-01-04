@@ -16,6 +16,7 @@ import { validateBuildToolVersion } from '../../src/stages/validateBuildToolVers
 import { checkForUncommittedChanges } from '../../src/stages/checkForUncommittedChanges';
 import { getProjectType } from '../../src/stages/getProjectType';
 import { getProjectInfo } from '../../src/stages/getProjectInfo';
+import {waitOnNexusUpdate} from '../../src/stages/waitOnNexusUpdate';
 
 export const fullBuild_release_npmLibrary: ExpectedExecution = {
 	[getCommandInfo.name]: true,
@@ -32,6 +33,7 @@ export const fullBuild_release_npmLibrary: ExpectedExecution = {
 	[preparePreReleaseVersion.name]: false,
 	[manuallyPublishArtifact.name]: true,
 	[gitTag.name]: true,
+	[waitOnNexusUpdate.name]: false,
 	[downloadArtifactForDeployment.name]: false,
 	[buildAndPushDocker.name]: false,
 	[deployToKubernetes.name]: false
