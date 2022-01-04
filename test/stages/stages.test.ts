@@ -16,7 +16,7 @@ import { gitTag } from '../../src/stages/gitTag';
 import { downloadArtifactForDeployment } from '../../src/stages/downloadArtifactForDeployment';
 import { buildAndPushDocker } from '../../src/stages/buildAndPushDocker';
 import { deployToKubernetes } from '../../src/stages/deployToKubernetes';
-import {waitOnNexusUpdate} from '../../src/stages/waitOnNexusUpdate';
+import { waitOnNexusUpdate } from '../../src/stages/waitOnNexusUpdate';
 
 describe('stages', () => {
 	it('all stages are added in the correct order', () => {

@@ -16,7 +16,7 @@ import { validateBuildToolVersion } from '../../src/stages/validateBuildToolVers
 import { checkForUncommittedChanges } from '../../src/stages/checkForUncommittedChanges';
 import { getProjectType } from '../../src/stages/getProjectType';
 import { getProjectInfo } from '../../src/stages/getProjectInfo';
-import {waitOnNexusUpdate} from '../../src/stages/waitOnNexusUpdate';
+import { waitOnNexusUpdate } from '../../src/stages/waitOnNexusUpdate';
 
 export const fullBuild_preRelease_mavenLibrary: ExpectedExecution = {
 	[getCommandInfo.name]: true,
