@@ -3,6 +3,7 @@ import * as TE from 'fp-ts/TaskEither';
 import { getCwd } from './getCwd';
 import { match } from 'ts-pattern';
 import { unknownToError } from '../functions/unknownToError';
+import { logger } from '../logger';
 
 export interface CommandOptions {
 	readonly printOutput: boolean;
@@ -17,6 +18,8 @@ export const runCommand = (
 	const printOutput = options?.printOutput ?? false;
 	const cwd = options?.cwd ?? getCwd();
 	const env = options?.env ?? process.env;
+
+	logger.debug(`Command: {${command}}`);
 
 	return TE.tryCatch(
 		() =>
