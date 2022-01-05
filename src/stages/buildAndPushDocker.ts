@@ -51,15 +51,16 @@ const runDockerBuild = (
 	const dockerTag = createDockerTag(context.projectInfo);
 	return pipe(
 		getAndValidateDockerEnvVariables(),
-		TE.chain((_) =>
-			runCommand('sudo docker login -u $USER_NAME -p $PASSWORD', {
+		TE.chain((_) => {
+			console.log('Creds', _);
+			return runCommand('sudo docker login -u $USER_NAME -p $PASSWORD', {
 				env: {
 					USER_NAME: _.userName,
 					PASSWORD: _.password
 				},
 				printOutput: true
 			})
-		),
+		}),
 		TE.chain(() =>
 			runCommand(
 				[
