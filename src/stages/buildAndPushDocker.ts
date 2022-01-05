@@ -109,7 +109,7 @@ const runDockerBuild = (
 		TE.chain(() => checkForExistingImages(context)),
 		TE.chain((_) => removeExistingImagesIfExist(_, context)),
 		TE.chain(() =>
-			runCommand(`sudo docker build --network=host -t ${dockerTag}`, {
+			runCommand(`sudo docker build --network=host -t ${dockerTag} .`, {
 				printOutput: true
 			})
 		),
