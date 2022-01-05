@@ -45,38 +45,69 @@ const getAndValidateDockerEnvVariables = (): TE.TaskEither<
 			() => new Error('Missing Docker credential environment variables')
 		)
 	);
+
+const loginToNexusDocker = (creds: DockerCreds): TE.TaskEither<Error, string> =>
+	runCommand(
+		`sudo docker login ${DOCKER_REPO_PREFIX} -u \${user} -p \${password}`,
+		{
+			printOutput: true,
+			variables: {
+				user: creds.userName,
+				password: creds.password
+			}
+		}
+	);
+
+const checkForExistingImages = (
+	context: BuildContext
+): TE.TaskEither<Error, string> =>
+	runCommand(
+		[
+			'sudo docker image ls',
+			`grep ${context.projectInfo.name}`,
+			`grep ${context.projectInfo.version}`
+		].join(' | '),
+		{
+			printOutput: true
+		}
+	);
+
+const removeExistingImages = (
+	context: BuildContext
+): TE.TaskEither<Error, string> =>
+	runCommand(
+		[
+			'sudo docker image ls',
+			`grep ${context.projectInfo.name}`,
+			`grep ${context.projectInfo.version}`,
+			"awk '{ print $3 }'",
+			'xargs sudo docker image rm -f'
+		].join(' | '),
+		{
+			printOutput: true
+		}
+	);
+
+const removeExistingImagesIfExist = (
+	existingImages: string,
+	context: BuildContext
+): TE.TaskEither<Error, string> =>
+	match(existingImages)
+		.with(
+			when<string>((_) => _.length > 0),
+			() => removeExistingImages(context)
+		)
+		.otherwise(() => TE.right(''));
+
 const runDockerBuild = (
 	context: BuildContext
 ): TE.TaskEither<Error, BuildContext> => {
 	const dockerTag = createDockerTag(context.projectInfo);
 	return pipe(
 		getAndValidateDockerEnvVariables(),
-		TE.chain((_) =>
-			runCommand(
-				`sudo docker login ${DOCKER_REPO_PREFIX} -u \${user} -p \${password}`,
-				{
-					printOutput: true,
-					variables: {
-						user: _.userName,
-						password: _.password
-					}
-				}
-			)
-		),
-		TE.chain(() =>
-			runCommand(
-				[
-					'sudo docker image ls',
-					`grep ${context.projectInfo.name}`,
-					`grep ${context.projectInfo.version}`,
-					"awk '{ print $3 }'",
-					'xargs sudo docker image rm -f'
-				].join(' | '),
-				{
-					printOutput: true
-				}
-			)
-		),
+		TE.chain(loginToNexusDocker),
+		TE.chain(() => checkForExistingImages(context)),
+		TE.chain((_) => removeExistingImagesIfExist(_, context)),
 		TE.chain(() =>
 			runCommand(`sudo docker build --network=host -t ${dockerTag}`, {
 				printOutput: true
