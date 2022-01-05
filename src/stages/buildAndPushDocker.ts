@@ -99,6 +99,14 @@ const removeExistingImagesIfExist = (
 		)
 		.otherwise(() => TE.right(''));
 
+const buildDockerImage = (dockerTag: string): TE.TaskEither<Error, string> =>
+	runCommand(`sudo docker build --network=host -t ${dockerTag} .`, {
+		printOutput: true
+	});
+
+const pushDockerImage = (dockerTag: string): TE.TaskEither<Error, string> =>
+	runCommand(`sudo docker push ${dockerTag}`, { printOutput: true });
+
 const runDockerBuild = (
 	context: BuildContext
 ): TE.TaskEither<Error, BuildContext> => {
@@ -108,14 +116,8 @@ const runDockerBuild = (
 		TE.chain(loginToNexusDocker),
 		TE.chain(() => checkForExistingImages(context)),
 		TE.chain((_) => removeExistingImagesIfExist(_, context)),
-		TE.chain(() =>
-			runCommand(`sudo docker build --network=host -t ${dockerTag} .`, {
-				printOutput: true
-			})
-		),
-		TE.chain(() =>
-			runCommand(`sudo docker push ${dockerTag}`, { printOutput: true })
-		),
+		TE.chain(() => buildDockerImage(dockerTag)),
+		TE.chain(() => pushDockerImage(dockerTag)),
 		TE.map(() => context)
 	);
 };
