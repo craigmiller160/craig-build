@@ -58,20 +58,19 @@ const loginToNexusDocker = (creds: DockerCreds): TE.TaskEither<Error, string> =>
 		}
 	);
 
-// TODO if no images, this returns an error
 const checkForExistingImages = (
 	context: BuildContext
-): TE.TaskEither<Error, string> =>
-	runCommand(
-		[
-			'sudo docker image ls',
-			`grep ${context.projectInfo.name}`,
-			`grep ${context.projectInfo.version}`
-		].join(' | '),
-		{
-			printOutput: true
-		}
-	);
+): TE.TaskEither<Error, string> => {
+	const baseCommand = [
+		'sudo docker image ls',
+		`grep ${context.projectInfo.name}`,
+		`grep ${context.projectInfo.version}`
+	].join(' | ');
+	const fullCommand = `${baseCommand} || true`;
+	return runCommand(fullCommand, {
+		printOutput: true
+	});
+};
 
 const removeExistingImages = (
 	context: BuildContext
