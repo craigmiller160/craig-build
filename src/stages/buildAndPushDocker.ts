@@ -52,13 +52,16 @@ const runDockerBuild = (
 	return pipe(
 		getAndValidateDockerEnvVariables(),
 		TE.chain((_) =>
-			runCommand('sudo docker login -u ${user} -p ${password}', {
-				printOutput: true,
-				variables: {
-					user: _.userName,
-					password: _.password
+			runCommand(
+				`sudo docker login ${DOCKER_REPO_PREFIX} -u \${user} -p \${password}`,
+				{
+					printOutput: true,
+					variables: {
+						user: _.userName,
+						password: _.password
+					}
 				}
-			})
+			)
 		),
 		TE.chain(() =>
 			runCommand(

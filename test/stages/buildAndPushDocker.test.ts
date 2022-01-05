@@ -33,7 +33,7 @@ const validateCommands = () => {
 	expect(runCommandMock).toHaveBeenCalledTimes(4);
 	expect(runCommandMock).toHaveBeenNthCalledWith(
 		1,
-		'sudo docker login -u ${user} -p ${password}',
+		'sudo docker login craigmiller160.ddns.net:30004 -u ${user} -p ${password}',
 		{ printOutput: true, variables: { user: 'user', password: 'password' } }
 	);
 	expect(runCommandMock).toHaveBeenNthCalledWith(
