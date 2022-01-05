@@ -58,6 +58,7 @@ const loginToNexusDocker = (creds: DockerCreds): TE.TaskEither<Error, string> =>
 		}
 	);
 
+// TODO if no images, this returns an error
 const checkForExistingImages = (
 	context: BuildContext
 ): TE.TaskEither<Error, string> =>
