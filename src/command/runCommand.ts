@@ -19,7 +19,7 @@ export const runCommand = (
 	const cwd = options?.cwd ?? getCwd();
 	const env = options?.env ?? process.env;
 
-	logger.debug(`Command: {${command}}`);
+	logger.debug(`Command: ${command}`);
 
 	return TE.tryCatch(
 		() =>
