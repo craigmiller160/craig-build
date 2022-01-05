@@ -8,7 +8,7 @@ import { logger } from '../logger';
 export interface CommandOptions {
 	readonly printOutput: boolean;
 	readonly cwd: string;
-	readonly env: { [key: string]: string };
+	readonly variables: { [key: string]: string };
 }
 
 export const runCommand = (
@@ -17,7 +17,7 @@ export const runCommand = (
 ): TE.TaskEither<Error, string> => {
 	const printOutput = options?.printOutput ?? false;
 	const cwd = options?.cwd ?? getCwd();
-	const env = options?.env ?? process.env;
+	const variables = options?.variables ?? {};
 
 	logger.debug(`Command: ${command}`);
 
@@ -25,8 +25,7 @@ export const runCommand = (
 		() =>
 			new Promise((resolve, reject) => {
 				const childProcess = spawn('bash', ['-c', command], {
-					cwd,
-					env
+					cwd
 				});
 				let fullOutput = '';
 				childProcess.stdout?.on('data', (data) => {

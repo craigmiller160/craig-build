@@ -51,7 +51,7 @@ const runDockerBuild = (
 	const dockerTag = createDockerTag(context.projectInfo);
 	return pipe(
 		getAndValidateDockerEnvVariables(),
-		TE.chain(() => {
+		TE.chain((_) => {
 			return runCommand(
 				'sudo docker login -u $NEXUS_DOCKER_USER -p $NEXUS_DOCKER_PASSWORD',
 				{
