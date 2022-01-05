@@ -54,7 +54,7 @@ const validateCommands = (numCommands = 5) => {
 	}
 	expect(runCommandMock).toHaveBeenNthCalledWith(
 		callCount,
-		'sudo docker build --network=host -t craigmiller160.ddns.net:30004/my-project:1.0.0',
+		'sudo docker build --network=host -t craigmiller160.ddns.net:30004/my-project:1.0.0 .',
 		{ printOutput: true }
 	);
 	callCount++;
