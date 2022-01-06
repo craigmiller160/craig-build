@@ -71,7 +71,7 @@ describe('buildAndPushDocker', () => {
 	beforeEach(() => {
 		jest.resetAllMocks();
 		runCommandMock.mockImplementation(() => TE.right('a'));
-		getCwdMock.mockImplementation(() => '/root')
+		getCwdMock.mockImplementation(() => '/root');
 	});
 
 	it('no docker username environment variable', async () => {

@@ -15,7 +15,7 @@ import { Stage, StageExecuteFn } from './Stage';
 import { CommandType } from '../context/CommandType';
 import { isKubernetesOnly } from '../context/commandTypeUtils';
 import path from 'path';
-import {getCwd} from '../command/getCwd';
+import { getCwd } from '../command/getCwd';
 
 interface DockerCreds {
 	readonly userName: string;
