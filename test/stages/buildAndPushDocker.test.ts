@@ -1,5 +1,6 @@
 import shellEnv from 'shell-env';
 import { runCommandMock } from '../testutils/runCommandMock';
+import { getCwdMock } from '../testutils/getCwdMock';
 import { createBuildContext } from '../testutils/createBuildContext';
 import '@relmify/jest-fp-ts';
 import { buildAndPushDocker } from '../../src/stages/buildAndPushDocker';
@@ -7,6 +8,7 @@ import { BuildContext } from '../../src/context/BuildContext';
 import { ProjectType } from '../../src/context/ProjectType';
 import * as TE from 'fp-ts/TaskEither';
 import { VersionType } from '../../src/context/VersionType';
+import path from 'path';
 
 jest.mock('shell-env', () => ({
 	sync: jest.fn()
@@ -55,7 +57,7 @@ const validateCommands = (numCommands = 5) => {
 	expect(runCommandMock).toHaveBeenNthCalledWith(
 		callCount,
 		'sudo docker build --network=host -t craigmiller160.ddns.net:30004/my-project:1.0.0 .',
-		{ printOutput: true }
+		{ printOutput: true, cwd: path.join('/root', 'deploy') }
 	);
 	callCount++;
 	expect(runCommandMock).toHaveBeenNthCalledWith(
@@ -69,6 +71,7 @@ describe('buildAndPushDocker', () => {
 	beforeEach(() => {
 		jest.resetAllMocks();
 		runCommandMock.mockImplementation(() => TE.right('a'));
+		getCwdMock.mockImplementation(() => '/root')
 	});
 
 	it('no docker username environment variable', async () => {

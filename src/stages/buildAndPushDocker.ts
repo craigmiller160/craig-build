@@ -15,6 +15,7 @@ import { Stage, StageExecuteFn } from './Stage';
 import { CommandType } from '../context/CommandType';
 import { isKubernetesOnly } from '../context/commandTypeUtils';
 import path from 'path';
+import {getCwd} from '../command/getCwd';
 
 interface DockerCreds {
 	readonly userName: string;
@@ -103,7 +104,7 @@ const removeExistingImagesIfExist = (
 const buildDockerImage = (dockerTag: string): TE.TaskEither<Error, string> =>
 	runCommand(`sudo docker build --network=host -t ${dockerTag} .`, {
 		printOutput: true,
-		cwd: path.join(process.cwd(), 'deploy')
+		cwd: path.join(getCwd(), 'deploy')
 	});
 
 const pushDockerImage = (dockerTag: string): TE.TaskEither<Error, string> =>
