@@ -5,11 +5,19 @@ import { match } from 'ts-pattern';
 import { unknownToError } from '../functions/unknownToError';
 import { logger } from '../logger';
 
+type Variables = { [key: string]: string };
+
 export interface CommandOptions {
 	readonly printOutput: boolean;
 	readonly cwd: string;
-	readonly env: { [key: string]: string };
+	readonly variables: Variables;
 }
+
+const formatCommand = (command: string, variables: Variables): string =>
+	Object.entries(variables).reduce(
+		(newCmd, [key, value]) => newCmd.replaceAll(`\${${key}}`, value),
+		command
+	);
 
 export const runCommand = (
 	command: string,
@@ -17,16 +25,16 @@ export const runCommand = (
 ): TE.TaskEither<Error, string> => {
 	const printOutput = options?.printOutput ?? false;
 	const cwd = options?.cwd ?? getCwd();
-	const env = options?.env ?? process.env;
+	const variables = options?.variables ?? {};
 
 	logger.debug(`Command: ${command}`);
+	const formattedCommand = formatCommand(command, variables);
 
 	return TE.tryCatch(
 		() =>
 			new Promise((resolve, reject) => {
-				const childProcess = spawn('bash', ['-c', command], {
-					cwd,
-					env
+				const childProcess = spawn('bash', ['-c', formattedCommand], {
+					cwd
 				});
 				let fullOutput = '';
 				childProcess.stdout?.on('data', (data) => {

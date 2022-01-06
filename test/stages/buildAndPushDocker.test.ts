@@ -1,5 +1,6 @@
 import shellEnv from 'shell-env';
 import { runCommandMock } from '../testutils/runCommandMock';
+import { getCwdMock } from '../testutils/getCwdMock';
 import { createBuildContext } from '../testutils/createBuildContext';
 import '@relmify/jest-fp-ts';
 import { buildAndPushDocker } from '../../src/stages/buildAndPushDocker';
@@ -7,6 +8,7 @@ import { BuildContext } from '../../src/context/BuildContext';
 import { ProjectType } from '../../src/context/ProjectType';
 import * as TE from 'fp-ts/TaskEither';
 import { VersionType } from '../../src/context/VersionType';
+import path from 'path';
 
 jest.mock('shell-env', () => ({
 	sync: jest.fn()
@@ -29,25 +31,37 @@ const prepareEnvMock = () =>
 		NEXUS_DOCKER_PASSWORD: 'password'
 	}));
 
-const validateCommands = () => {
-	expect(runCommandMock).toHaveBeenCalledTimes(4);
+const validateCommands = (numCommands = 5) => {
+	expect(runCommandMock).toHaveBeenCalledTimes(numCommands);
+	let callCount = 1;
 	expect(runCommandMock).toHaveBeenNthCalledWith(
-		1,
-		'sudo docker login -u $USER_NAME -p $PASSWORD',
-		{ env: { USER_NAME: 'user', PASSWORD: 'password' }, printOutput: true }
+		callCount,
+		'sudo docker login craigmiller160.ddns.net:30004 -u ${user} -p ${password}',
+		{ printOutput: true, variables: { user: 'user', password: 'password' } }
 	);
+	callCount++;
 	expect(runCommandMock).toHaveBeenNthCalledWith(
-		2,
-		"sudo docker image ls | grep my-project | grep 1.0.0 | awk '{ print $3 }' | xargs sudo docker image rm -f",
+		callCount,
+		'sudo docker image ls | grep my-project | grep 1.0.0 || true',
 		{ printOutput: true }
 	);
+	callCount++;
+	if (numCommands === 5) {
+		expect(runCommandMock).toHaveBeenNthCalledWith(
+			3,
+			"sudo docker image ls | grep my-project | grep 1.0.0 | awk '{ print $3 }' | xargs sudo docker image rm -f",
+			{ printOutput: true }
+		);
+		callCount++;
+	}
 	expect(runCommandMock).toHaveBeenNthCalledWith(
-		3,
-		'sudo docker build --network=host -t craigmiller160.ddns.net:30004/my-project:1.0.0',
-		{ printOutput: true }
+		callCount,
+		'sudo docker build --network=host -t craigmiller160.ddns.net:30004/my-project:1.0.0 .',
+		{ printOutput: true, cwd: path.join('/root', 'deploy') }
 	);
+	callCount++;
 	expect(runCommandMock).toHaveBeenNthCalledWith(
-		4,
+		callCount,
 		'sudo docker push craigmiller160.ddns.net:30004/my-project:1.0.0',
 		{ printOutput: true }
 	);
@@ -56,7 +70,8 @@ const validateCommands = () => {
 describe('buildAndPushDocker', () => {
 	beforeEach(() => {
 		jest.resetAllMocks();
-		runCommandMock.mockImplementation(() => TE.right(''));
+		runCommandMock.mockImplementation(() => TE.right('a'));
+		getCwdMock.mockImplementation(() => '/root');
 	});
 
 	it('no docker username environment variable', async () => {
@@ -105,6 +120,22 @@ describe('buildAndPushDocker', () => {
 		expect(result).toEqualRight(buildContext);
 
 		validateCommands();
+	});
+
+	it('builds and pushes docker image for maven application, with no existing images', async () => {
+		runCommandMock.mockReset();
+		runCommandMock.mockImplementation(() => TE.right(''));
+		prepareEnvMock();
+
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.MavenApplication
+		};
+
+		const result = await buildAndPushDocker.execute(buildContext)();
+		expect(result).toEqualRight(buildContext);
+
+		validateCommands(4);
 	});
 
 	it('builds and pushes docker image for npm application', async () => {
