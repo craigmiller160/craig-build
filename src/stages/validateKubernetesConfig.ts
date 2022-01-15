@@ -17,6 +17,7 @@ import { KubeDeployment } from '../configFileTypes/KubeDeployment';
 import { stringifyJson } from '../functions/Json';
 import * as P from 'fp-ts/Predicate';
 import { Stage, StageExecuteFn } from './Stage';
+import {logger} from '../logger';
 
 const KUBE_IMAGE_REGEX =
 	/^(?<repoPrefix>.*:\d*)\/(?<imageName>.*):(?<imageVersion>.*)$/;
@@ -79,13 +80,15 @@ const validateConfig = (
 
 const readAndValidateConfig = (
 	context: BuildContext
-): E.Either<Error, BuildContext> =>
-	pipe(
+): E.Either<Error, BuildContext> => {
+	logger.debug(`Kubernetes configuration should have image environment variable: ${IMAGE_VERSION_ENV}`);
+	return pipe(
 		readFile(path.join(getCwd(), KUBERNETES_DEPLOY_FILE)),
 		E.map((_) => _.split('---')[0]),
 		E.chain((_) => parseYaml<KubeDeployment>(_)),
 		E.chain((_) => validateConfig(context, _))
 	);
+}
 
 const validateConfigByProject = (
 	context: BuildContext
