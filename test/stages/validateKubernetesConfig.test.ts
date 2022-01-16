@@ -16,6 +16,7 @@ import {
 } from '../../src/configFileTypes/constants';
 import { stringifyJson } from '../../src/functions/Json';
 import { VersionType } from '../../src/context/VersionType';
+import * as EU from '../../src/functions/EitherUtils';
 
 const baseBuildContext = createBuildContext();
 const projectInfo: ProjectInfo = {
@@ -65,7 +66,9 @@ describe('validateKubernetesConfig', () => {
 		const result = await validateKubernetesConfig.execute(buildContext)();
 		expect(result).toEqualLeft(
 			new Error(
-				`Kubernetes image is invalid: ${stringifyJson(kubeValues, 2)}`
+				`Kubernetes image is invalid: ${EU.getOrThrow(
+					stringifyJson(kubeValues, 2)
+				)}`
 			)
 		);
 	});
@@ -73,7 +76,7 @@ describe('validateKubernetesConfig', () => {
 	it('kubernetes config has wrong image name', async () => {
 		const kubeValues: KubeValues = {
 			repoPrefix: DOCKER_REPO_PREFIX,
-			imageName: 'foo',
+			imageName: 'other-image',
 			imageVersion: IMAGE_VERSION_ENV
 		};
 		getCwdMock.mockImplementation(() =>
@@ -91,14 +94,16 @@ describe('validateKubernetesConfig', () => {
 		const result = await validateKubernetesConfig.execute(buildContext)();
 		expect(result).toEqualLeft(
 			new Error(
-				`Kubernetes image is invalid: ${stringifyJson(kubeValues, 2)}`
+				`Kubernetes image is invalid: ${EU.getOrThrow(
+					stringifyJson(kubeValues, 2)
+				)}`
 			)
 		);
 	});
 
 	it('kubernetes config has wrong repo prefix', async () => {
 		const kubeValues: KubeValues = {
-			repoPrefix: 'abc',
+			repoPrefix: 'foobar.ddns.net:30004',
 			imageName: 'email-service',
 			imageVersion: IMAGE_VERSION_ENV
 		};
@@ -117,7 +122,9 @@ describe('validateKubernetesConfig', () => {
 		const result = await validateKubernetesConfig.execute(buildContext)();
 		expect(result).toEqualLeft(
 			new Error(
-				`Kubernetes image is invalid: ${stringifyJson(kubeValues, 2)}`
+				`Kubernetes image is invalid: ${EU.getOrThrow(
+					stringifyJson(kubeValues, 2)
+				)}`
 			)
 		);
 	});
