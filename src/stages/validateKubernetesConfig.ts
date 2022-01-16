@@ -18,6 +18,7 @@ import { stringifyJson } from '../functions/Json';
 import * as P from 'fp-ts/Predicate';
 import { Stage, StageExecuteFn } from './Stage';
 import { logger } from '../logger';
+import * as EU from '../functions/EitherUtils';
 
 const KUBE_IMAGE_REGEX =
 	/^(?<repoPrefix>.*:\d*)\/(?<imageName>.*):(?<imageVersion>.*)$/;
@@ -58,9 +59,8 @@ const validateKubeValues = (
 		.otherwise(() =>
 			E.left(
 				new Error(
-					`Kubernetes image is invalid: ${stringifyJson(
-						kubeValues,
-						2
+					`Kubernetes image is invalid: ${EU.getOrThrow(
+						stringifyJson(kubeValues, 2)
 					)}`
 				)
 			)
