@@ -1,6 +1,6 @@
 {
   "name": "@craigmiller160/craig-build",
-  "version": "2.0.6",
+  "version": "2.0.6-beta",
   "author": "craigmiller160",
   "bin": {
     "craig-build": "build/index.js"
