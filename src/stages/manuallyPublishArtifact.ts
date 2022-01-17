@@ -40,6 +40,9 @@ const publishNpmArtifact = (
 ): TE.TaskEither<Error, BuildContext> => {
 	const publishDir = getPublishDir();
 	logger.debug(`NPM artifact publish directory: ${publishDir}`);
+	logger.debug(
+		'To change publish directory, set the "publishDirectory" property in the package.json'
+	);
 	return pipe(
 		runCommand(`${NPM_PUBLISH_COMMAND} ${context.projectInfo.version}`, {
 			printOutput: true,
