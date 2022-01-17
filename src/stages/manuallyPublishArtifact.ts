@@ -15,6 +15,7 @@ import * as O from 'fp-ts/Option';
 import { parseJson } from '../functions/Json';
 import { PackageJson } from '../configFileTypes/PackageJson';
 import { NPM_PROJECT_FILE } from '../configFileTypes/constants';
+import { logger } from '../logger';
 
 export const NPM_PUBLISH_COMMAND =
 	'yarn publish --no-git-tag-version --new-version';
@@ -38,6 +39,7 @@ const publishNpmArtifact = (
 	context: BuildContext
 ): TE.TaskEither<Error, BuildContext> => {
 	const publishDir = getPublishDir();
+	logger.debug(`NPM artifact publish directory: ${publishDir}`);
 	return pipe(
 		runCommand(`${NPM_PUBLISH_COMMAND} ${context.projectInfo.version}`, {
 			printOutput: true,
