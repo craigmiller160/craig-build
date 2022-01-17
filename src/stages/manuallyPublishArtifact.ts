@@ -14,6 +14,7 @@ import * as E from 'fp-ts/Either';
 import * as O from 'fp-ts/Option';
 import { parseJson } from '../functions/Json';
 import { PackageJson } from '../configFileTypes/PackageJson';
+import { NPM_PROJECT_FILE } from '../configFileTypes/constants';
 
 export const NPM_PUBLISH_COMMAND =
 	'yarn publish --no-git-tag-version --new-version';
@@ -22,7 +23,7 @@ export const CLEAR_FILES_COMMAND = 'git checkout .';
 
 const getPublishDir = (): string =>
 	pipe(
-		readFile(path.resolve(getCwd())),
+		readFile(path.resolve(getCwd(), NPM_PROJECT_FILE)),
 		E.chain((_) => parseJson<PackageJson>(_)),
 		E.map((_) => O.fromNullable(_.publishDirectory)),
 		O.fromEither,
