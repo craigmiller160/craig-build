@@ -48,10 +48,11 @@ describe('manuallyPublishArtifact', () => {
 	});
 
 	it('publishes NPM project with publishDirectory', async () => {
-		const projectPath = path.join(baseWorkingDir, 'npmReleaseApplicationWithPublishDir');
-		getCwdMock.mockImplementation(() =>
-			projectPath
+		const projectPath = path.join(
+			baseWorkingDir,
+			'npmReleaseApplicationWithPublishDir'
 		);
+		getCwdMock.mockImplementation(() => projectPath);
 		runCommandMock.mockImplementation(() => TE.right(''));
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -71,10 +72,7 @@ describe('manuallyPublishArtifact', () => {
 			`${NPM_PUBLISH_COMMAND} 1.0.0`,
 			{
 				printOutput: true,
-				cwd: path.join(
-					projectPath,
-					'lib'
-				)
+				cwd: path.join(projectPath, 'lib')
 			}
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(2, CLEAR_FILES_COMMAND);
