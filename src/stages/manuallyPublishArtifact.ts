@@ -7,13 +7,13 @@ import { runCommand } from '../command/runCommand';
 import { Stage, StageExecuteFn } from './Stage';
 import * as P from 'fp-ts/Predicate';
 import { isFullBuild } from '../context/commandTypeUtils';
-import {readFile} from '../functions/File';
-import {getCwd} from '../command/getCwd';
+import { readFile } from '../functions/File';
+import { getCwd } from '../command/getCwd';
 import path from 'path';
 import * as E from 'fp-ts/Either';
 import * as O from 'fp-ts/Option';
-import {parseJson} from '../functions/Json';
-import {PackageJson} from '../configFileTypes/PackageJson';
+import { parseJson } from '../functions/Json';
+import { PackageJson } from '../configFileTypes/PackageJson';
 
 export const NPM_PUBLISH_COMMAND =
 	'yarn publish --no-git-tag-version --new-version';
@@ -45,7 +45,7 @@ const publishNpmArtifact = (
 		TE.chain(() => runCommand(CLEAR_FILES_COMMAND)),
 		TE.map(() => context)
 	);
-}
+};
 
 const handlePublishByProject = (
 	context: BuildContext
