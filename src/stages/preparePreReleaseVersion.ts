@@ -24,10 +24,20 @@ import { regexExecGroups } from '../functions/RegExp';
 import { isDockerOnly, isFullBuild } from '../context/commandTypeUtils';
 import { CommandType } from '../context/CommandType';
 import { isNone, isSome } from 'fp-ts/Option';
+import { ProjectInfo } from '../context/ProjectInfo';
+import { logger } from '../logger';
+import { stringifyJson } from '../functions/Json';
 
 interface BetaRegexGroups {
-	version: string;
-	betaNumber: string;
+	readonly version: string;
+	readonly betaNumber: string;
+}
+
+interface NpmBetaSearchInfo {
+	readonly name: string;
+	readonly group: string;
+	readonly version: string;
+	readonly nexusVersions: ReadonlyArray<string>;
 }
 
 const BETA_VERSION_REGEX = /^(?<version>.*-beta)\.(?<betaNumber>\d*)$/;
@@ -173,6 +183,32 @@ const handleBetaVersionIfFound =
 			)
 			.otherwise(() => O.none);
 
+const logNpmBetaSearch = (
+	projectInfo: ProjectInfo,
+	versionSearchParam: string,
+	nexusResult: NexusSearchResult
+): NexusSearchResult => {
+	const searchInfo: NpmBetaSearchInfo = {
+		name: projectInfo.name,
+		group: projectInfo.group,
+		version: versionSearchParam,
+		nexusVersions: nexusResult.items.map((item) => item.version)
+	};
+	pipe(
+		stringifyJson(searchInfo, 2),
+		E.fold(
+			(ex) => {
+				logger.error('Error logging NPM Beta Search Info');
+				logger.error(ex);
+			},
+			(json) => {
+				logger.debug(`NPM Beta Search Info: ${json}`);
+			}
+		)
+	);
+	return nexusResult;
+};
+
 const handleNpmPreReleaseVersion = (
 	context: BuildContext
 ): TE.TaskEither<Error, BuildContext> => {
@@ -184,6 +220,13 @@ const handleNpmPreReleaseVersion = (
 			context.projectInfo.group,
 			context.projectInfo.name,
 			versionSearchParam
+		),
+		TE.map((nexusResult) =>
+			logNpmBetaSearch(
+				context.projectInfo,
+				versionSearchParam,
+				nexusResult
+			)
 		),
 		TE.chain((nexusResult) =>
 			pipe(
