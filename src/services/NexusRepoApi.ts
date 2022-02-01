@@ -7,12 +7,18 @@ import { extractResponseData } from './apiUtils';
 import fs from 'fs';
 import { unknownToError } from '../functions/unknownToError';
 import { streamTask } from '../utils/streamTask';
+import { logger } from '../logger';
 
 const sort = 'version';
 const direction = 'desc';
 
 export const restApiInstance = axios.create({
 	baseURL: 'https://craigmiller160.ddns.net:30003/service/rest/v1'
+});
+restApiInstance.interceptors.request.use((config) => {
+	const request = `${config.method} ${config.url}`;
+	logger.debug(`Nexus Request: ${request}`);
+	return config;
 });
 
 export type NexusRepoGroupSearchFn = (
