@@ -47,6 +47,26 @@ export const searchForMavenSnapshots: NexusRepoGroupSearchFn = (
 		extractResponseData
 	);
 
+export const searchForMavenSnapshotsExplicit: NexusRepoGroupSearchFn = (
+	groupId: string,
+	artifactId: string,
+	version?: string
+) =>
+	pipe(
+		TE.tryCatch(() => {
+			const query = qs.stringify({
+				repository: 'maven-snapshots',
+				'maven.groupId': groupId,
+				'maven.artifactId': artifactId,
+				sort,
+				direction,
+				version: version
+			});
+			return restApiInstance.get<NexusSearchResult>(`/search?${query}`);
+		}, unknownToError),
+		extractResponseData
+	);
+
 export const searchForMavenReleases: NexusRepoGroupSearchFn = (
 	groupId: string,
 	artifactId: string,
