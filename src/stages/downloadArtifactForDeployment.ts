@@ -5,7 +5,7 @@ import {
 	downloadArtifact,
 	NexusRepoGroupSearchFn,
 	searchForMavenReleases,
-	searchForMavenSnapshots,
+	searchForMavenSnapshotsExplicit,
 	searchForNpmBetas,
 	searchForNpmReleases
 } from '../services/NexusRepoApi';
@@ -81,6 +81,8 @@ const createTargetFilePath = (
 		TE.right
 	);
 
+// TODO baseVersion does not work for maven, version does
+
 const doDownloadArtifact = (
 	context: BuildContext,
 	searchFn: NexusRepoGroupSearchFn
@@ -115,7 +117,7 @@ const downloadArtifactByProject = (
 	match(context)
 		.with(
 			{ projectType: when(isMaven), projectInfo: when(isPreRelease) },
-			(_) => doDownloadArtifact(_, searchForMavenSnapshots)
+			(_) => doDownloadArtifact(_, searchForMavenSnapshotsExplicit)
 		)
 		.with(
 			{ projectType: when(isMaven), projectInfo: when(isRelease) },

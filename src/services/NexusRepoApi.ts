@@ -7,12 +7,18 @@ import { extractResponseData } from './apiUtils';
 import fs from 'fs';
 import { unknownToError } from '../functions/unknownToError';
 import { streamTask } from '../utils/streamTask';
+import { logger } from '../logger';
 
 const sort = 'version';
 const direction = 'desc';
 
 export const restApiInstance = axios.create({
 	baseURL: 'https://craigmiller160.ddns.net:30003/service/rest/v1'
+});
+restApiInstance.interceptors.request.use((config) => {
+	const request = `${config.method?.toUpperCase()} ${config.url}`;
+	logger.debug(`Nexus Request: ${request}`);
+	return config;
 });
 
 export type NexusRepoGroupSearchFn = (
@@ -35,6 +41,26 @@ export const searchForMavenSnapshots: NexusRepoGroupSearchFn = (
 				sort,
 				direction,
 				'maven.baseVersion': version
+			});
+			return restApiInstance.get<NexusSearchResult>(`/search?${query}`);
+		}, unknownToError),
+		extractResponseData
+	);
+
+export const searchForMavenSnapshotsExplicit: NexusRepoGroupSearchFn = (
+	groupId: string,
+	artifactId: string,
+	version?: string
+) =>
+	pipe(
+		TE.tryCatch(() => {
+			const query = qs.stringify({
+				repository: 'maven-snapshots',
+				'maven.groupId': groupId,
+				'maven.artifactId': artifactId,
+				sort,
+				direction,
+				version
 			});
 			return restApiInstance.get<NexusSearchResult>(`/search?${query}`);
 		}, unknownToError),

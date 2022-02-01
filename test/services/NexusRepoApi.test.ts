@@ -5,6 +5,7 @@ import {
 	searchForDockerReleases,
 	searchForMavenReleases,
 	searchForMavenSnapshots,
+	searchForMavenSnapshotsExplicit,
 	searchForNpmBetas,
 	searchForNpmReleases
 } from '../../src/services/NexusRepoApi';
@@ -46,6 +47,33 @@ describe('NexusRepoApi', () => {
 		const actualResult = await searchForMavenSnapshots(
 			'io.craigmiller160',
 			'My Name'
+		)();
+		expect(actualResult).toEqualRight(expectedResult);
+	});
+
+	it('searchForMavenSnapshotsExplicit', async () => {
+		mockRestApi
+			.onGet(
+				'/search?repository=maven-snapshots&maven.groupId=io.craigmiller160&maven.artifactId=My%20Name&sort=version&direction=desc'
+			)
+			.reply(200, expectedResult);
+		const actualResult = await searchForMavenSnapshotsExplicit(
+			'io.craigmiller160',
+			'My Name'
+		)();
+		expect(actualResult).toEqualRight(expectedResult);
+	});
+
+	it('searchForMavenSnapshotsExplicit with version', async () => {
+		mockRestApi
+			.onGet(
+				'/search?repository=maven-snapshots&maven.groupId=io.craigmiller160&maven.artifactId=My%20Name&sort=version&direction=desc&version=1'
+			)
+			.reply(200, expectedResult);
+		const actualResult = await searchForMavenSnapshotsExplicit(
+			'io.craigmiller160',
+			'My Name',
+			'1'
 		)();
 		expect(actualResult).toEqualRight(expectedResult);
 	});
