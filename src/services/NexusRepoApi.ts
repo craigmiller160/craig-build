@@ -47,6 +47,7 @@ export const searchForMavenSnapshots: NexusRepoGroupSearchFn = (
 		extractResponseData
 	);
 
+// TODO write test
 export const searchForMavenSnapshotsExplicit: NexusRepoGroupSearchFn = (
 	groupId: string,
 	artifactId: string,
