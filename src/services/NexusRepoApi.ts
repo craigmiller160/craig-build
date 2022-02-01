@@ -16,7 +16,7 @@ export const restApiInstance = axios.create({
 	baseURL: 'https://craigmiller160.ddns.net:30003/service/rest/v1'
 });
 restApiInstance.interceptors.request.use((config) => {
-	const request = `${config.method} ${config.url}`;
+	const request = `${config.method?.toUpperCase()} ${config.url}`;
 	logger.debug(`Nexus Request: ${request}`);
 	return config;
 });
