@@ -81,6 +81,8 @@ const createTargetFilePath = (
 		TE.right
 	);
 
+// TODO baseVersion does not work for maven, version does
+
 const doDownloadArtifact = (
 	context: BuildContext,
 	searchFn: NexusRepoGroupSearchFn
