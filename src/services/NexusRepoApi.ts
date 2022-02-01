@@ -47,7 +47,6 @@ export const searchForMavenSnapshots: NexusRepoGroupSearchFn = (
 		extractResponseData
 	);
 
-// TODO write test
 export const searchForMavenSnapshotsExplicit: NexusRepoGroupSearchFn = (
 	groupId: string,
 	artifactId: string,
@@ -61,7 +60,7 @@ export const searchForMavenSnapshotsExplicit: NexusRepoGroupSearchFn = (
 				'maven.artifactId': artifactId,
 				sort,
 				direction,
-				version: version
+				version
 			});
 			return restApiInstance.get<NexusSearchResult>(`/search?${query}`);
 		}, unknownToError),
