@@ -59,7 +59,7 @@
     "qs": "^6.9.6",
     "semver": "^7.3.4",
     "shell-env": "^3.0.1",
-    "simple-git": "^2.35.1",
+    "simple-git": "^3.3.0",
     "sync-env": "^1.0.5",
     "ts-custom-error": "^3.2.0",
     "ts-pattern": "^3.3.4",
