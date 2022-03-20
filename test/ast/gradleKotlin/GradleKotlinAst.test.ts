@@ -24,7 +24,7 @@ describe('GradleKotlin AST parser', () => {
 			rootProperties: [
 				{
 					key: 'rootProject.name',
-					value: 'pring-gradle-playground'
+					value: 'spring-gradle-playground'
 				},
 				{
 					key: 'rootProject.buildFileName',

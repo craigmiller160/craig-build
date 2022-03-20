@@ -10,7 +10,7 @@ import * as Regex from '../../functions/RegExp';
 import produce from 'immer';
 
 const COMMENT_REGEX = /^\/\/.*$/;
-const PROPERTY_REGEX = /^(.*)\s*=\s*["']?(.*)["']?$/;
+const PROPERTY_REGEX = /^(?<key>.*?)\s*=\s*["']?(?<value>.*?)["']?$/;
 const testCommentRegex = Regex.regexTest(COMMENT_REGEX);
 const testPropertyRegex = Regex.regexTest(PROPERTY_REGEX);
 
@@ -20,6 +20,11 @@ enum LineType {
 }
 
 type LineAndType = [line: string, type: LineType];
+
+interface PropertyGroups {
+	readonly key: string;
+	readonly value: string;
+}
 
 interface Property {
 	readonly key: string;
@@ -46,18 +51,31 @@ const getLineType = (line: string): Option.Option<LineAndType> =>
 		)
 		.otherwise(() => Option.none);
 
-const handleProperty = (context: Context, line: string): Context => {
-	const [key, value] = line.split('=');
-	const property: Property = {
-		key: key.trim(),
-		value: value.trim()
-	};
-	return produce(context, (draft) => {
-		draft.rootProperties.push(property);
-	});
+// TODO what to do if None is returned here? Probably need some kind of hard error?
+const handleProperty = (
+	context: Context,
+	line: string
+): Option.Option<Context> => {
+	return pipe(
+		Regex.regexExecGroups<PropertyGroups>(PROPERTY_REGEX)(line),
+		Option.map(
+			({ key, value }): Property => ({
+				key: key.trim(),
+				value: value.trim()
+			})
+		),
+		Option.map((property) =>
+			produce(context, (draft) => {
+				draft.rootProperties.push(property);
+			})
+		)
+	);
 };
 
-const handleLineType = (context: Context, lineAndType: LineAndType): Context =>
+const handleLineType = (
+	context: Context,
+	lineAndType: LineAndType
+): Option.Option<Context> =>
 	match(lineAndType)
 		.with([__.string, LineType.PROPERTY], ([line]) =>
 			handleProperty(context, line)
@@ -68,7 +86,7 @@ const parse = (context: Context, lines: ReadonlyArray<string>): Context => {
 	const { newContext, newLines } = pipe(
 		RArray.head(lines),
 		Option.chain(getLineType),
-		Option.map((_) => handleLineType(context, _)),
+		Option.chain((_) => handleLineType(context, _)),
 		Option.bindTo('newContext'),
 		Option.bind('newLines', () => RArray.tail(lines)),
 		Option.getOrElse(() => ({
