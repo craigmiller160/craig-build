@@ -1,3 +1,5 @@
+// TODO delete this whole thing if unused
+
 export interface GradleDependency {
 	readonly group: string;
 	readonly name: string;
