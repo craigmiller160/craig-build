@@ -41,18 +41,18 @@ const getLineType = (line: string): Option.Option<LineAndType> =>
 		)
 		.otherwise(() => Option.none);
 
-const handleProperty = (context: Context, line: string) => {
+const handleProperty = (context: Context, line: string): Context => {
 	const [key, value] = line.split('=');
 	const property: Property = {
 		key: key.trim(),
 		value: value.trim()
 	};
-	const newContext = produce(context, (draft) => {
+	return produce(context, (draft) => {
 		draft.rootProperties.push(property);
 	});
 };
 
-const handleLineType = (context: Context, lineAndType: LineAndType) =>
+const handleLineType = (context: Context, lineAndType: LineAndType): Context =>
 	match(lineAndType)
 		.with([__.string, LineType.PROPERTY], ([line]) =>
 			handleProperty(context, line)
@@ -60,7 +60,13 @@ const handleLineType = (context: Context, lineAndType: LineAndType) =>
 		.run(); // TODO figure out otherwise
 
 const parse = (context: Context, lines: ReadonlyArray<string>) => {
-	pipe(RArray.head(lines), Option.chain(getLineType));
+	pipe(
+		RArray.head(lines),
+		Option.chain(getLineType),
+		Option.map((_) => handleLineType(context, _)),
+		Option.bindTo('newContext'),
+		Option.bind('newLines', () => RArray.tail(lines))
+	);
 };
 
 const parseSettingsGradle = () => {
