@@ -31,6 +31,11 @@ interface Context {
 	readonly rootProperties: ReadonlyArray<Property>;
 }
 
+const newContext = (): Context => ({
+	sectionName: '',
+	rootProperties: []
+});
+
 const getLineType = (line: string): Option.Option<LineAndType> =>
 	match(line.trim())
 		.with(when(testCommentRegex), () =>
@@ -59,24 +64,36 @@ const handleLineType = (context: Context, lineAndType: LineAndType): Context =>
 		)
 		.run(); // TODO figure out otherwise
 
-const parse = (context: Context, lines: ReadonlyArray<string>) => {
-	pipe(
+const parse = (context: Context, lines: ReadonlyArray<string>): Context => {
+	const { newContext, newLines } = pipe(
 		RArray.head(lines),
 		Option.chain(getLineType),
 		Option.map((_) => handleLineType(context, _)),
 		Option.bindTo('newContext'),
-		Option.bind('newLines', () => RArray.tail(lines))
+		Option.bind('newLines', () => RArray.tail(lines)),
+		Option.getOrElse(() => ({
+			newContext: context,
+			newLines: [] as ReadonlyArray<string>
+		}))
 	);
+	if (newLines.length > 0) {
+		return parse(newContext, newLines);
+	}
+	return newContext;
 };
 
-const parseSettingsGradle = () => {
+const parseGradleFile = (
+	context: Context,
+	fileName: string
+): Either.Either<Error, Context> =>
 	pipe(
-		File.readFile(path.join(getCwd(), 'settings.gradle.kts')),
+		File.readFile(path.join(getCwd(), fileName)),
 		Either.map((content) => content.split('\n')),
-		Either.map((lines) => parse({ sectionName: '' }, lines))
+		Either.map((lines) => parse(context, lines))
 	);
-};
 
-export const parseGradleConfig = () => {
-	parseSettingsGradle();
-};
+export const parseGradleConfig = (): Either.Either<Error, Context> =>
+	pipe(
+		parseGradleFile(newContext(), 'settings.gradle.kts'),
+		Either.chain((context) => parseGradleFile(context, 'build.gradle.kts'))
+	);
