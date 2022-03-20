@@ -51,12 +51,8 @@ const getLineType = (line: string): Option.Option<LineAndType> =>
 		)
 		.otherwise(() => Option.none);
 
-// TODO what to do if None is returned here? Probably need some kind of hard error?
-const handleProperty = (
-	context: Context,
-	line: string
-): Option.Option<Context> => {
-	return pipe(
+const handleProperty = (context: Context, line: string): Context =>
+	pipe(
 		Regex.regexExecGroups<PropertyGroups>(PROPERTY_REGEX)(line),
 		Option.map(
 			({ key, value }): Property => ({
@@ -68,14 +64,14 @@ const handleProperty = (
 			produce(context, (draft) => {
 				draft.rootProperties.push(property);
 			})
-		)
+		),
+		Option.getOrElse(() => {
+			// TODO log the fact this shouldn't happen
+			return context;
+		})
 	);
-};
 
-const handleLineType = (
-	context: Context,
-	lineAndType: LineAndType
-): Option.Option<Context> =>
+const handleLineType = (context: Context, lineAndType: LineAndType): Context =>
 	match(lineAndType)
 		.with([__.string, LineType.PROPERTY], ([line]) =>
 			handleProperty(context, line)
@@ -86,7 +82,7 @@ const parse = (context: Context, lines: ReadonlyArray<string>): Context => {
 	const { newContext, newLines } = pipe(
 		RArray.head(lines),
 		Option.chain(getLineType),
-		Option.chain((_) => handleLineType(context, _)),
+		Option.map((_) => handleLineType(context, _)),
 		Option.bindTo('newContext'),
 		Option.bind('newLines', () => RArray.tail(lines)),
 		Option.getOrElse(() => ({
