@@ -54,7 +54,9 @@ const handleProperty = (context: Context, line: string) => {
 
 const handleLineType = (context: Context, lineAndType: LineAndType) =>
 	match(lineAndType)
-		.with([__.string, LineType.PROPERTY], ([line]) => handleProperty(context, line))
+		.with([__.string, LineType.PROPERTY], ([line]) =>
+			handleProperty(context, line)
+		)
 		.run(); // TODO figure out otherwise
 
 const parse = (context: Context, lines: ReadonlyArray<string>) => {
