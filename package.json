@@ -20,7 +20,7 @@
     "prepare": "husky install"
   },
   "lint-staged": {
-    "*.{ts,tsx}": "yarn lint"
+    "*.{ts,tsx}": "eslint --fix --max-warnings=0"
   },
   "devDependencies": {
     "@relmify/jest-fp-ts": "^1.1.1",
