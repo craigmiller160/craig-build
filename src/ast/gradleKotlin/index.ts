@@ -76,7 +76,7 @@ const handleLineType = (context: Context, lineAndType: LineAndType): Context =>
 		.with([__.string, LineType.PROPERTY], ([line]) =>
 			handleProperty(context, line)
 		)
-		.run(); // TODO figure out otherwise
+		.otherwise(() => context);
 
 const parse = (context: Context, lines: ReadonlyArray<string>): Context => {
 	const { newContext, newLines } = pipe(
