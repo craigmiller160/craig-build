@@ -92,7 +92,7 @@ const parseGradleFile = (
 		Either.map((lines) => parse(context, lines))
 	);
 
-export const parseGradleConfig = (): Either.Either<Error, Context> =>
+export const parseGradleAst = (): Either.Either<Error, Context> =>
 	pipe(
 		parseGradleFile(newContext(), 'settings.gradle.kts'),
 		Either.chain((context) => parseGradleFile(context, 'build.gradle.kts'))
