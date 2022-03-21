@@ -14,16 +14,19 @@ const COMMENT_REGEX = /^\/\/.*$/;
 const PROPERTY_REGEX = /^(?<key>.*?)\s*=\s*["']?(?<value>.*?)["']?$/;
 const SECTION_START_REGEX = /^(?<sectionName>.*?)\s?{$/;
 const SECTION_END_REGEX = /^}$/;
+const FUNCTION_REGEX = /^(?<name>.*)\((?<args>.*)\).*$/;
 const testCommentRegex = Regex.regexTest(COMMENT_REGEX);
 const testPropertyRegex = Regex.regexTest(PROPERTY_REGEX);
 const testSectionStartRegex = Regex.regexTest(SECTION_START_REGEX);
 const testSectionEndRegex = Regex.regexTest(SECTION_END_REGEX);
+const testFunctionRegex = Regex.regexTest(FUNCTION_REGEX);
 
 enum LineType {
-	COMMENT,
-	PROPERTY,
-	SECTION_START,
-	SECTION_END
+	COMMENT = 'COMMENT',
+	PROPERTY = 'PROPERTY',
+	SECTION_START = 'SECTION_START',
+	SECTION_END = 'SECTION_END',
+	FUNCTION = 'FUNCTION'
 }
 
 type LineAndType = [line: string, type: LineType];
@@ -41,15 +44,27 @@ interface PropertyGroups {
 	readonly value: string;
 }
 
+interface FunctionGroups {
+	readonly name: string;
+	readonly args: string;
+}
+
+interface GFunction {
+	readonly name: string;
+	readonly args: ReadonlyArray<string>;
+}
+
 interface Context {
 	readonly name: string;
 	readonly properties: Record<string, string>;
+	readonly functions: ReadonlyArray<GFunction>;
 	readonly children: ReadonlyArray<Context>;
 }
 
 const createContext = (name: string): Context => ({
 	name,
 	properties: {},
+	functions: [],
 	children: []
 });
 
@@ -66,6 +81,9 @@ const getLineType = (line: string): Option.Option<LineAndType> =>
 		)
 		.with(when(testSectionEndRegex), () =>
 			Option.some<LineAndType>([line, LineType.SECTION_END])
+		)
+		.with(when(testFunctionRegex), () =>
+			Option.some<LineAndType>([line, LineType.FUNCTION])
 		)
 		.otherwise(() => Option.none);
 
@@ -99,6 +117,34 @@ const handleSectionStart = (context: Context, line: string): Context => {
 	});
 };
 
+const formatArgs = (args: string): ReadonlyArray<string> =>
+	pipe(
+		args.split(','),
+		RArray.map((arg) => arg.trim().replace(/['"]/g, ''))
+	);
+
+const handleFunction = (context: Context, line: string): Context => {
+	const func = pipe(
+		Regex.regexExecGroups<FunctionGroups>(FUNCTION_REGEX)(line),
+		Option.map(
+			({ name, args }): GFunction => ({
+				name,
+				args: formatArgs(args)
+			})
+		),
+		Option.getOrElse((): GFunction => {
+			logger.error(`Function regex groups should not be null: ${line}`);
+			return {
+				name: '',
+				args: []
+			};
+		})
+	);
+	return produce(context, (draft) => {
+		draft.functions.push(castDraft(func));
+	});
+};
+
 const handleLineType = (
 	context: Context,
 	lineAndType: LineAndType
@@ -109,6 +155,9 @@ const handleLineType = (
 		)
 		.with([__.string, LineType.SECTION_START], ([line]) =>
 			handleSectionStart(context, line)
+		)
+		.with([__.string, LineType.FUNCTION], ([line]) =>
+			handleFunction(context, line)
 		)
 		.otherwise(() => context);
 	return [newContext, lineAndType[1]];
