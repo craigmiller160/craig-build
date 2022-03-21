@@ -30,6 +30,8 @@ type LineAndType = [line: string, type: LineType];
 type ContextAndLineType = [context: Context, lineType: LineType];
 type ContextAndLines = [context: Context, lines: ReadonlyArray<string>];
 
+// TODO replace error logs with real errors
+
 interface SectionStartGroups {
 	readonly sectionName: string;
 }
