@@ -12,15 +12,22 @@ import { logger } from '../../logger';
 
 const COMMENT_REGEX = /^\/\/.*$/;
 const PROPERTY_REGEX = /^(?<key>.*?)\s*=\s*["']?(?<value>.*?)["']?$/;
+const SECTION_START_REGEX = /^(?<sectionName>.*?)\s?{$/;
+const SECTION_END_REGEX = /^}.*$/;
 const testCommentRegex = Regex.regexTest(COMMENT_REGEX);
 const testPropertyRegex = Regex.regexTest(PROPERTY_REGEX);
+const testSectionStartRegex = Regex.regexTest(SECTION_START_REGEX);
+const testSectionEndRegex = Regex.regexTest(SECTION_END_REGEX);
 
 enum LineType {
 	COMMENT,
-	PROPERTY
+	PROPERTY,
+	SECTION_START,
+	SECTION_END
 }
 
 type LineAndType = [line: string, type: LineType];
+type ContextAndLines = [context: Context, lines: ReadonlyArray<string>];
 
 interface PropertyGroups {
 	readonly key: string;
@@ -30,11 +37,13 @@ interface PropertyGroups {
 interface Context {
 	readonly name: string;
 	readonly properties: Record<string, string>;
+	readonly children: ReadonlyArray<Context>;
 }
 
 const newContext = (): Context => ({
 	name: 'ROOT',
-	properties: {}
+	properties: {},
+	children: []
 });
 
 const getLineType = (line: string): Option.Option<LineAndType> =>
@@ -45,6 +54,12 @@ const getLineType = (line: string): Option.Option<LineAndType> =>
 		.with(when(testPropertyRegex), () =>
 			Option.some<LineAndType>([line, LineType.PROPERTY])
 		)
+		.with(when(testSectionStartRegex), () =>
+			Option.some<LineAndType>([line, LineType.SECTION_START])
+		)
+		.with(when(testSectionEndRegex), () =>
+			Option.some<LineAndType>([line, LineType.SECTION_END])
+		)
 		.otherwise(() => Option.none);
 
 const handleProperty = (context: Context, line: string): Context =>
@@ -52,12 +67,11 @@ const handleProperty = (context: Context, line: string): Context =>
 		Regex.regexExecGroups<PropertyGroups>(PROPERTY_REGEX)(line),
 		Option.map(({ key, value }) =>
 			produce(context, (draft) => {
-				draft.rootProperties[key.trim()] = value.trim();
+				draft.properties[key.trim()] = value.trim();
 			})
 		),
 		Option.getOrElse(() => {
-			// TODO log the fact this shouldn't happen
-			logger.error('SHOULD NOT HAPPEN');
+			logger.error('REGEX GROUPS SHOULD NOT BE NULL');
 			return context;
 		})
 	);
