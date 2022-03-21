@@ -37,6 +37,14 @@ describe('GradleKotlin AST parser', () => {
 				{
 					key: 'version',
 					value: '1.0.0'
+				},
+				{
+					key: 'sourceCompatibility',
+					value: 'JavaVersion.VERSION_17'
+				},
+				{
+					key: 'targetCompatibility',
+					value: 'JavaVersion.VERSION_17'
 				}
 			]
 		});

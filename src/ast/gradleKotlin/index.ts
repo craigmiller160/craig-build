@@ -67,6 +67,7 @@ const handleProperty = (context: Context, line: string): Context =>
 		),
 		Option.getOrElse(() => {
 			// TODO log the fact this shouldn't happen
+			console.error('SHOULD NOT HAPPEN');
 			return context;
 		})
 	);
@@ -78,20 +79,22 @@ const handleLineType = (context: Context, lineAndType: LineAndType): Context =>
 		)
 		.otherwise(() => context);
 
+const getTailLines = (lines: ReadonlyArray<string>): ReadonlyArray<string> =>
+	pipe(
+		RArray.tail(lines),
+		Option.getOrElse((): ReadonlyArray<string> => [])
+	);
+
 const parse = (context: Context, lines: ReadonlyArray<string>): Context => {
-	const { newContext, newLines } = pipe(
+	const newContext = pipe(
 		RArray.head(lines),
 		Option.chain(getLineType),
 		Option.map((_) => handleLineType(context, _)),
-		Option.bindTo('newContext'),
-		Option.bind('newLines', () => RArray.tail(lines)),
-		Option.getOrElse(() => ({
-			newContext: context,
-			newLines: [] as ReadonlyArray<string>
-		}))
+		Option.getOrElse(() => context)
 	);
-	if (newLines.length > 0) {
-		return parse(newContext, newLines);
+	const remainingLines = getTailLines(lines);
+	if (remainingLines.length > 0) {
+		return parse(newContext, remainingLines);
 	}
 	return newContext;
 };
