@@ -7,7 +7,7 @@ import { match, when, __ } from 'ts-pattern';
 import * as RArray from 'fp-ts/ReadonlyArray';
 import * as Option from 'fp-ts/Option';
 import * as Regex from '../../functions/RegExp';
-import produce from 'immer';
+import produce, { castDraft } from 'immer';
 import { logger } from '../../logger';
 
 const COMMENT_REGEX = /^\/\/.*$/;
@@ -27,6 +27,7 @@ enum LineType {
 }
 
 type LineAndType = [line: string, type: LineType];
+type ContextAndLineType = [context: Context, lineType: LineType];
 type ContextAndLines = [context: Context, lines: ReadonlyArray<string>];
 
 interface PropertyGroups {
@@ -40,7 +41,7 @@ interface Context {
 	readonly children: ReadonlyArray<Context>;
 }
 
-const newContext = (): Context => ({
+const createContext = (): Context => ({
 	name: 'ROOT',
 	properties: {},
 	children: []
@@ -76,12 +77,17 @@ const handleProperty = (context: Context, line: string): Context =>
 		})
 	);
 
-const handleLineType = (context: Context, lineAndType: LineAndType): Context =>
-	match(lineAndType)
+const handleLineType = (
+	context: Context,
+	lineAndType: LineAndType
+): ContextAndLineType => {
+	const newContext = match(lineAndType)
 		.with([__.string, LineType.PROPERTY], ([line]) =>
 			handleProperty(context, line)
 		)
 		.otherwise(() => context);
+	return [newContext, lineAndType[1]];
+};
 
 const getTailLines = (lines: ReadonlyArray<string>): ReadonlyArray<string> =>
 	pipe(
@@ -89,18 +95,41 @@ const getTailLines = (lines: ReadonlyArray<string>): ReadonlyArray<string> =>
 		Option.getOrElse((): ReadonlyArray<string> => [])
 	);
 
-const parse = (context: Context, lines: ReadonlyArray<string>): Context => {
-	const newContext = pipe(
+const isNotEmpty = (lines: ReadonlyArray<string>): boolean => lines.length > 0;
+
+const parse = (
+	context: Context,
+	lines: ReadonlyArray<string>
+): ContextAndLines => {
+	const [newContext, lineType] = pipe(
 		RArray.head(lines),
 		Option.chain(getLineType),
 		Option.map((_) => handleLineType(context, _)),
-		Option.getOrElse(() => context)
+		Option.getOrElse((): ContextAndLineType => [context, LineType.COMMENT])
 	);
+
 	const remainingLines = getTailLines(lines);
-	if (remainingLines.length > 0) {
-		return parse(newContext, remainingLines);
-	}
-	return newContext;
+
+	return match({ lineType, remainingLines })
+		.with({ lineType: LineType.SECTION_START }, (): ContextAndLines => {
+			const [childContext, newRemainingLines] = parse(
+				createContext(),
+				remainingLines
+			);
+			const combinedContext = produce(newContext, (draft) => {
+				draft.children.push(castDraft(childContext));
+			});
+			return [combinedContext, newRemainingLines];
+		})
+		.with({ lineType: LineType.SECTION_END }, (): ContextAndLines => {
+			return [newContext, remainingLines];
+		})
+		.with({ remainingLines: when(isNotEmpty) }, (): ContextAndLines => {
+			return parse(newContext, remainingLines);
+		})
+		.otherwise((): ContextAndLines => {
+			return [newContext, []];
+		});
 };
 
 const parseGradleFile = (
@@ -112,7 +141,8 @@ const parseGradleFile = (
 		return pipe(
 			File.readFile(filePath),
 			Either.map((content) => content.split('\n')),
-			Either.map((lines) => parse(context, lines))
+			Either.map((lines) => parse(context, lines)),
+			Either.map(([context]) => context)
 		);
 	} else {
 		logger.warn(`Gradle file path does not exist: ${filePath}`);
@@ -122,6 +152,6 @@ const parseGradleFile = (
 
 export const parseGradleAst = (): Either.Either<Error, Context> =>
 	pipe(
-		parseGradleFile(newContext(), 'settings.gradle.kts'),
+		parseGradleFile(createContext(), 'settings.gradle.kts'),
 		Either.chain((context) => parseGradleFile(context, 'build.gradle.kts'))
 	);
