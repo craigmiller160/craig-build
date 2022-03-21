@@ -8,6 +8,7 @@ import * as RArray from 'fp-ts/ReadonlyArray';
 import * as Option from 'fp-ts/Option';
 import * as Regex from '../../functions/RegExp';
 import produce from 'immer';
+import { logger } from '../../logger';
 
 const COMMENT_REGEX = /^\/\/.*$/;
 const PROPERTY_REGEX = /^(?<key>.*?)\s*=\s*["']?(?<value>.*?)["']?$/;
@@ -67,7 +68,7 @@ const handleProperty = (context: Context, line: string): Context =>
 		),
 		Option.getOrElse(() => {
 			// TODO log the fact this shouldn't happen
-			console.error('SHOULD NOT HAPPEN');
+			logger.error('SHOULD NOT HAPPEN');
 			return context;
 		})
 	);
@@ -111,7 +112,7 @@ const parseGradleFile = (
 			Either.map((lines) => parse(context, lines))
 		);
 	} else {
-		console.error(`File path does not exist: ${filePath}`);
+		logger.warn(`Gradle file path does not exist: ${filePath}`);
 		return Either.right(context);
 	}
 };
