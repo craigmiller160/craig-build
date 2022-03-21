@@ -20,33 +20,15 @@ describe('GradleKotlin AST parser', () => {
 
 		const result = parseGradleAst();
 		expect(result).toEqualRight({
-			sectionName: '',
-			rootProperties: [
-				{
-					key: 'rootProject.name',
-					value: 'spring-gradle-playground'
-				},
-				{
-					key: 'rootProject.buildFileName',
-					value: 'foobar'
-				},
-				{
-					key: 'group',
-					value: 'io.craigmiller160'
-				},
-				{
-					key: 'version',
-					value: '1.0.0'
-				},
-				{
-					key: 'sourceCompatibility',
-					value: 'JavaVersion.VERSION_17'
-				},
-				{
-					key: 'targetCompatibility',
-					value: 'JavaVersion.VERSION_17'
-				}
-			]
+			currentSectionName: '',
+			rootProperties: {
+				'rootProject.name': 'spring-gradle-playground',
+				'rootProject.buildFileName': 'foobar',
+				group: 'io.craigmiller160',
+				version: '1.0.0',
+				sourceCompatibility: 'JavaVersion.VERSION_17',
+				targetCompatibility: 'JavaVersion.VERSION_17'
+			}
 		});
 	});
 });

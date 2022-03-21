@@ -27,19 +27,14 @@ interface PropertyGroups {
 	readonly value: string;
 }
 
-interface Property {
-	readonly key: string;
-	readonly value: string;
-}
-
 interface Context {
-	readonly sectionName: string;
-	readonly rootProperties: ReadonlyArray<Property>;
+	readonly currentSectionName: string;
+	readonly rootProperties: Record<string, string>;
 }
 
 const newContext = (): Context => ({
-	sectionName: '',
-	rootProperties: []
+	currentSectionName: '',
+	rootProperties: {}
 });
 
 const getLineType = (line: string): Option.Option<LineAndType> =>
@@ -55,15 +50,9 @@ const getLineType = (line: string): Option.Option<LineAndType> =>
 const handleProperty = (context: Context, line: string): Context =>
 	pipe(
 		Regex.regexExecGroups<PropertyGroups>(PROPERTY_REGEX)(line),
-		Option.map(
-			({ key, value }): Property => ({
-				key: key.trim(),
-				value: value.trim()
-			})
-		),
-		Option.map((property) =>
+		Option.map(({ key, value }) =>
 			produce(context, (draft) => {
-				draft.rootProperties.push(property);
+				draft.rootProperties[key.trim()] = value.trim();
 			})
 		),
 		Option.getOrElse(() => {
