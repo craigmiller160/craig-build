@@ -13,7 +13,7 @@ import { logger } from '../../logger';
 const COMMENT_REGEX = /^\/\/.*$/;
 const PROPERTY_REGEX = /^(?<key>.*?)\s*=\s*["']?(?<value>.*?)["']?$/;
 const SECTION_START_REGEX = /^(?<sectionName>.*?)\s?{$/;
-const SECTION_END_REGEX = /^}.*$/;
+const SECTION_END_REGEX = /^}$/;
 const testCommentRegex = Regex.regexTest(COMMENT_REGEX);
 const testPropertyRegex = Regex.regexTest(PROPERTY_REGEX);
 const testSectionStartRegex = Regex.regexTest(SECTION_START_REGEX);
@@ -41,8 +41,8 @@ interface Context {
 	readonly children: ReadonlyArray<Context>;
 }
 
-const createContext = (): Context => ({
-	name: 'ROOT',
+const createContext = (name: string): Context => ({
+	name,
 	properties: {},
 	children: []
 });
@@ -113,7 +113,7 @@ const parse = (
 	return match({ lineType, remainingLines })
 		.with({ lineType: LineType.SECTION_START }, (): ContextAndLines => {
 			const [childContext, newRemainingLines] = parse(
-				createContext(),
+				createContext('child'), // TODO figure out how to name this
 				remainingLines
 			);
 			const combinedContext = produce(newContext, (draft) => {
@@ -152,6 +152,6 @@ const parseGradleFile = (
 
 export const parseGradleAst = (): Either.Either<Error, Context> =>
 	pipe(
-		parseGradleFile(createContext(), 'settings.gradle.kts'),
+		parseGradleFile(createContext('ROOT'), 'settings.gradle.kts'),
 		Either.chain((context) => parseGradleFile(context, 'build.gradle.kts'))
 	);
