@@ -102,12 +102,19 @@ const parse = (context: Context, lines: ReadonlyArray<string>): Context => {
 const parseGradleFile = (
 	context: Context,
 	fileName: string
-): Either.Either<Error, Context> =>
-	pipe(
-		File.readFile(path.join(getCwd(), fileName)),
-		Either.map((content) => content.split('\n')),
-		Either.map((lines) => parse(context, lines))
-	);
+): Either.Either<Error, Context> => {
+	const filePath = path.join(getCwd(), fileName);
+	if (File.exists(filePath)) {
+		return pipe(
+			File.readFile(filePath),
+			Either.map((content) => content.split('\n')),
+			Either.map((lines) => parse(context, lines))
+		);
+	} else {
+		console.error(`File path does not exist: ${filePath}`);
+		return Either.right(context);
+	}
+}
 
 export const parseGradleAst = (): Either.Either<Error, Context> =>
 	pipe(
