@@ -114,7 +114,7 @@ const parseGradleFile = (
 		console.error(`File path does not exist: ${filePath}`);
 		return Either.right(context);
 	}
-}
+};
 
 export const parseGradleAst = (): Either.Either<Error, Context> =>
 	pipe(
