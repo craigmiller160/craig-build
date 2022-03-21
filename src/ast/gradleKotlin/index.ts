@@ -14,7 +14,7 @@ const COMMENT_REGEX = /^\/\/.*$/;
 const PROPERTY_REGEX = /^(?<key>.*?)\s*=\s*["']?(?<value>.*?)["']?$/;
 const SECTION_START_REGEX = /^(?<sectionName>.*?)\s?{$/;
 const SECTION_END_REGEX = /^}$/;
-const FUNCTION_REGEX = /^(?<name>.*)\((?<args>.*)\).*$/;
+const FUNCTION_REGEX = /^(?<name>.*?)\((?<args>.*?)\).*$/;
 const testCommentRegex = Regex.regexTest(COMMENT_REGEX);
 const testPropertyRegex = Regex.regexTest(PROPERTY_REGEX);
 const testSectionStartRegex = Regex.regexTest(SECTION_START_REGEX);

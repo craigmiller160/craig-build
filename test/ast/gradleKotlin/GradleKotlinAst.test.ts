@@ -36,7 +36,21 @@ describe('GradleKotlin AST parser', () => {
 			},
 			functions: [],
 			children: [
-				emptyChild('plugins'),
+				{
+					name: 'plugins',
+					properties: {},
+					functions: [
+						{
+							name: 'id',
+							args: ['org.springframework.boot']
+						},
+						{
+							name: 'id',
+							args: ['io.spring.dependency-management']
+						}
+					],
+					children: []
+				},
 				{
 					name: 'java',
 					properties: {
