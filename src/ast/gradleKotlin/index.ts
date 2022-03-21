@@ -120,6 +120,7 @@ const handleSectionStart = (context: Context, line: string): Context => {
 const formatArgs = (args: string): ReadonlyArray<string> =>
 	pipe(
 		args.split(','),
+		RArray.filter((arg) => arg.trim().length > 0),
 		RArray.map((arg) => arg.trim().replace(/['"]/g, ''))
 	);
 
@@ -128,7 +129,7 @@ const handleFunction = (context: Context, line: string): Context => {
 		Regex.regexExecGroups<FunctionGroups>(FUNCTION_REGEX)(line),
 		Option.map(
 			({ name, args }): GFunction => ({
-				name,
+				name: name.trim(),
 				args: formatArgs(args)
 			})
 		),

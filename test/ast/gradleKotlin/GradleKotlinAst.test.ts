@@ -6,7 +6,8 @@ import '@relmify/jest-fp-ts';
 const emptyChild = (name: string) => ({
 	name,
 	properties: {},
-	children: []
+	children: [],
+	functions: []
 });
 
 describe('GradleKotlin AST parser', () => {
@@ -33,6 +34,7 @@ describe('GradleKotlin AST parser', () => {
 				group: 'io.craigmiller160',
 				version: '1.0.0'
 			},
+			functions: [],
 			children: [
 				emptyChild('plugins'),
 				{
@@ -41,13 +43,43 @@ describe('GradleKotlin AST parser', () => {
 						sourceCompatibility: 'JavaVersion.VERSION_17',
 						targetCompatibility: 'JavaVersion.VERSION_17'
 					},
+					functions: [],
 					children: []
 				},
-				emptyChild('repositories'),
-				emptyChild('dependencies'),
+				{
+					name: 'repositories',
+					properties: {},
+					functions: [
+						{
+							name: 'mavenCentral',
+							args: []
+						}
+					],
+					children: []
+				},
+				{
+					name: 'dependencies',
+					properties: {},
+					functions: [
+						{
+							name: 'implementation',
+							args: [
+								'org.springframework.boot:spring-boot-starter-web'
+							]
+						},
+						{
+							name: 'testImplementation',
+							args: [
+								'org.springframework.boot:spring-boot-starter-test'
+							]
+						}
+					],
+					children: []
+				},
 				{
 					name: 'tasks',
 					properties: {},
+					functions: [],
 					children: [emptyChild('named("test")')]
 				}
 			]
