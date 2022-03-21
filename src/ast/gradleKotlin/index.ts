@@ -187,6 +187,7 @@ const parse = (
 					parse(childContext, remainingLines)
 				),
 				Option.getOrElse(() => {
+					// TODO figure out solution here
 					logger.error('Should not have null last child');
 					return [newContext, remainingLines];
 				})
