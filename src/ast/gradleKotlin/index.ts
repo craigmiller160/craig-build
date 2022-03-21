@@ -1,0 +1,239 @@
+import * as File from '../../functions/File';
+import * as Either from 'fp-ts/Either';
+import path from 'path';
+import { getCwd } from '../../command/getCwd';
+import { pipe } from 'fp-ts/function';
+import { match, when, __ } from 'ts-pattern';
+import * as RArray from 'fp-ts/ReadonlyArray';
+import * as Option from 'fp-ts/Option';
+import * as Regex from '../../functions/RegExp';
+import produce, { castDraft } from 'immer';
+import { logger } from '../../logger';
+
+const COMMENT_REGEX = /^\/\/.*$/;
+const PROPERTY_REGEX = /^(?<key>.*?)\s*=\s*["']?(?<value>.*?)["']?$/;
+const SECTION_START_REGEX = /^(?<sectionName>.*?)\s?{$/;
+const SECTION_END_REGEX = /^}$/;
+const FUNCTION_REGEX = /^(?<name>.*?)\((?<args>.*?)\).*$/;
+const testCommentRegex = Regex.regexTest(COMMENT_REGEX);
+const testPropertyRegex = Regex.regexTest(PROPERTY_REGEX);
+const testSectionStartRegex = Regex.regexTest(SECTION_START_REGEX);
+const testSectionEndRegex = Regex.regexTest(SECTION_END_REGEX);
+const testFunctionRegex = Regex.regexTest(FUNCTION_REGEX);
+
+enum LineType {
+	COMMENT = 'COMMENT',
+	PROPERTY = 'PROPERTY',
+	SECTION_START = 'SECTION_START',
+	SECTION_END = 'SECTION_END',
+	FUNCTION = 'FUNCTION'
+}
+
+type LineAndType = [line: string, type: LineType];
+type ContextAndLineType = [context: Context, lineType: LineType];
+type ContextAndLines = [context: Context, lines: ReadonlyArray<string>];
+
+// TODO replace error logs with real errors
+
+interface SectionStartGroups {
+	readonly sectionName: string;
+}
+
+interface PropertyGroups {
+	readonly key: string;
+	readonly value: string;
+}
+
+interface FunctionGroups {
+	readonly name: string;
+	readonly args: string;
+}
+
+interface GFunction {
+	readonly name: string;
+	readonly args: ReadonlyArray<string>;
+}
+
+interface Context {
+	readonly name: string;
+	readonly properties: Record<string, string>;
+	readonly functions: ReadonlyArray<GFunction>;
+	readonly children: ReadonlyArray<Context>;
+}
+
+const createContext = (name: string): Context => ({
+	name,
+	properties: {},
+	functions: [],
+	children: []
+});
+
+const getLineType = (line: string): Option.Option<LineAndType> =>
+	match(line.trim())
+		.with(when(testCommentRegex), () =>
+			Option.some<LineAndType>([line, LineType.COMMENT])
+		)
+		.with(when(testPropertyRegex), () =>
+			Option.some<LineAndType>([line, LineType.PROPERTY])
+		)
+		.with(when(testSectionStartRegex), () =>
+			Option.some<LineAndType>([line, LineType.SECTION_START])
+		)
+		.with(when(testSectionEndRegex), () =>
+			Option.some<LineAndType>([line, LineType.SECTION_END])
+		)
+		.with(when(testFunctionRegex), () =>
+			Option.some<LineAndType>([line, LineType.FUNCTION])
+		)
+		.otherwise(() => Option.none);
+
+const handleProperty = (context: Context, line: string): Context =>
+	pipe(
+		Regex.regexExecGroups<PropertyGroups>(PROPERTY_REGEX)(line),
+		Option.map(({ key, value }) =>
+			produce(context, (draft) => {
+				draft.properties[key.trim()] = value.trim();
+			})
+		),
+		Option.getOrElse(() => {
+			logger.error(`Property regex groups should not be null: ${line}`);
+			return context;
+		})
+	);
+
+const handleSectionStart = (context: Context, line: string): Context => {
+	const childContext = pipe(
+		Regex.regexExecGroups<SectionStartGroups>(SECTION_START_REGEX)(line),
+		Option.map(({ sectionName }) => createContext(sectionName.trim())),
+		Option.getOrElse(() => {
+			logger.error(
+				`Section Start regex groups should not be null: ${line}`
+			);
+			return createContext('child');
+		})
+	);
+	return produce(context, (draft) => {
+		draft.children.push(castDraft(childContext));
+	});
+};
+
+const formatArgs = (args: string): ReadonlyArray<string> =>
+	pipe(
+		args.split(','),
+		RArray.filter((arg) => arg.trim().length > 0),
+		RArray.map((arg) => arg.trim().replace(/['"]/g, ''))
+	);
+
+const handleFunction = (context: Context, line: string): Context => {
+	const func = pipe(
+		Regex.regexExecGroups<FunctionGroups>(FUNCTION_REGEX)(line),
+		Option.map(
+			({ name, args }): GFunction => ({
+				name: name.trim(),
+				args: formatArgs(args)
+			})
+		),
+		Option.getOrElse((): GFunction => {
+			logger.error(`Function regex groups should not be null: ${line}`);
+			return {
+				name: '',
+				args: []
+			};
+		})
+	);
+	return produce(context, (draft) => {
+		draft.functions.push(castDraft(func));
+	});
+};
+
+const handleLineType = (
+	context: Context,
+	lineAndType: LineAndType
+): ContextAndLineType => {
+	const newContext = match(lineAndType)
+		.with([__.string, LineType.PROPERTY], ([line]) =>
+			handleProperty(context, line)
+		)
+		.with([__.string, LineType.SECTION_START], ([line]) =>
+			handleSectionStart(context, line)
+		)
+		.with([__.string, LineType.FUNCTION], ([line]) =>
+			handleFunction(context, line)
+		)
+		.otherwise(() => context);
+	return [newContext, lineAndType[1]];
+};
+
+const getTailLines = (lines: ReadonlyArray<string>): ReadonlyArray<string> =>
+	pipe(
+		RArray.tail(lines),
+		Option.getOrElse((): ReadonlyArray<string> => [])
+	);
+
+const isNotEmpty = (lines: ReadonlyArray<string>): boolean => lines.length > 0;
+
+const parse = (
+	context: Context,
+	lines: ReadonlyArray<string>
+): ContextAndLines => {
+	const [newContext, lineType] = pipe(
+		RArray.head(lines),
+		Option.chain(getLineType),
+		Option.map((_) => handleLineType(context, _)),
+		Option.getOrElse((): ContextAndLineType => [context, LineType.COMMENT])
+	);
+
+	const remainingLines = getTailLines(lines);
+
+	return match({ lineType, remainingLines })
+		.with({ lineType: LineType.SECTION_START }, (): ContextAndLines => {
+			const [completeChildContext, newRemainingLines] = pipe(
+				RArray.last(newContext.children),
+				Option.map((childContext) =>
+					parse(childContext, remainingLines)
+				),
+				Option.getOrElse(() => {
+					logger.error('Should not have null last child');
+					return [newContext, remainingLines];
+				})
+			);
+			const combinedContext = produce(newContext, (draft) => {
+				draft.children[newContext.children.length - 1] =
+					castDraft(completeChildContext);
+			});
+			return parse(combinedContext, newRemainingLines);
+		})
+		.with({ lineType: LineType.SECTION_END }, (): ContextAndLines => {
+			return [newContext, remainingLines];
+		})
+		.with({ remainingLines: when(isNotEmpty) }, (): ContextAndLines => {
+			return parse(newContext, remainingLines);
+		})
+		.otherwise((): ContextAndLines => {
+			return [newContext, []];
+		});
+};
+
+const parseGradleFile = (
+	context: Context,
+	fileName: string
+): Either.Either<Error, Context> => {
+	const filePath = path.join(getCwd(), fileName);
+	if (File.exists(filePath)) {
+		return pipe(
+			File.readFile(filePath),
+			Either.map((content) => content.split('\n')),
+			Either.map((lines) => parse(context, lines)),
+			Either.map(([context]) => context)
+		);
+	} else {
+		logger.warn(`Gradle file path does not exist: ${filePath}`);
+		return Either.right(context);
+	}
+};
+
+export const parseGradleAst = (): Either.Either<Error, Context> =>
+	pipe(
+		parseGradleFile(createContext('ROOT'), 'settings.gradle.kts'),
+		Either.chain((context) => parseGradleFile(context, 'build.gradle.kts'))
+	);
