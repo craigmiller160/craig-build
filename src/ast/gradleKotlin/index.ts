@@ -9,17 +9,11 @@ import * as Option from 'fp-ts/Option';
 import * as Regex from '../../functions/RegExp';
 import produce, { castDraft } from 'immer';
 import { logger } from '../../logger';
+import { RegexTest } from './regex';
 
-const COMMENT_REGEX = /^\/\/.*$/;
 const PROPERTY_REGEX = /^(?<key>.*?)\s*=\s*["']?(?<value>.*?)["']?$/;
 const SECTION_START_REGEX = /^(?<sectionName>.*?)\s?{$/;
-const SECTION_END_REGEX = /^}$/;
 const FUNCTION_REGEX = /^(?<name>.*?)\((?<args>.*?)\).*$/;
-const testCommentRegex = Regex.regexTest(COMMENT_REGEX);
-const testPropertyRegex = Regex.regexTest(PROPERTY_REGEX);
-const testSectionStartRegex = Regex.regexTest(SECTION_START_REGEX);
-const testSectionEndRegex = Regex.regexTest(SECTION_END_REGEX);
-const testFunctionRegex = Regex.regexTest(FUNCTION_REGEX);
 
 enum LineType {
 	COMMENT = 'COMMENT',
@@ -70,19 +64,19 @@ const createContext = (name: string): Context => ({
 
 const getLineType = (line: string): Option.Option<LineAndType> =>
 	match(line.trim())
-		.with(when(testCommentRegex), () =>
+		.with(when(RegexTest.comment), () =>
 			Option.some<LineAndType>([line, LineType.COMMENT])
 		)
-		.with(when(testPropertyRegex), () =>
+		.with(when(RegexTest.property), () =>
 			Option.some<LineAndType>([line, LineType.PROPERTY])
 		)
-		.with(when(testSectionStartRegex), () =>
+		.with(when(RegexTest.sectionStart), () =>
 			Option.some<LineAndType>([line, LineType.SECTION_START])
 		)
-		.with(when(testSectionEndRegex), () =>
+		.with(when(RegexTest.sectionEnd), () =>
 			Option.some<LineAndType>([line, LineType.SECTION_END])
 		)
-		.with(when(testFunctionRegex), () =>
+		.with(when(RegexTest.function), () =>
 			Option.some<LineAndType>([line, LineType.FUNCTION])
 		)
 		.otherwise(() => Option.none);
