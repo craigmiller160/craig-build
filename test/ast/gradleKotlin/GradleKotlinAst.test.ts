@@ -28,7 +28,8 @@ describe('GradleKotlin AST parser', () => {
 				version: '1.0.0',
 				sourceCompatibility: 'JavaVersion.VERSION_17',
 				targetCompatibility: 'JavaVersion.VERSION_17'
-			}
+			},
+			children: []
 		});
 	});
 });
