@@ -119,7 +119,7 @@ const parse = (
 			const combinedContext = produce(newContext, (draft) => {
 				draft.children.push(castDraft(childContext));
 			});
-			return [combinedContext, newRemainingLines];
+			return parse(combinedContext, newRemainingLines);
 		})
 		.with({ lineType: LineType.SECTION_END }, (): ContextAndLines => {
 			return [newContext, remainingLines];
