@@ -28,13 +28,13 @@ interface PropertyGroups {
 }
 
 interface Context {
-	readonly currentSectionName: string;
-	readonly rootProperties: Record<string, string>;
+	readonly name: string;
+	readonly properties: Record<string, string>;
 }
 
 const newContext = (): Context => ({
-	currentSectionName: '',
-	rootProperties: {}
+	name: 'ROOT',
+	properties: {}
 });
 
 const getLineType = (line: string): Option.Option<LineAndType> =>

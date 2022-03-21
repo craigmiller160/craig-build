@@ -20,8 +20,8 @@ describe('GradleKotlin AST parser', () => {
 
 		const result = parseGradleAst();
 		expect(result).toEqualRight({
-			currentSectionName: '',
-			rootProperties: {
+			name: 'ROOT',
+			properties: {
 				'rootProject.name': 'spring-gradle-playground',
 				'rootProject.buildFileName': 'foobar',
 				group: 'io.craigmiller160',
