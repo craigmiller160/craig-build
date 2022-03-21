@@ -30,6 +30,10 @@ type LineAndType = [line: string, type: LineType];
 type ContextAndLineType = [context: Context, lineType: LineType];
 type ContextAndLines = [context: Context, lines: ReadonlyArray<string>];
 
+interface SectionStartGroups {
+	readonly sectionName: string;
+}
+
 interface PropertyGroups {
 	readonly key: string;
 	readonly value: string;
@@ -72,10 +76,26 @@ const handleProperty = (context: Context, line: string): Context =>
 			})
 		),
 		Option.getOrElse(() => {
-			logger.error('REGEX GROUPS SHOULD NOT BE NULL');
+			logger.error(`Property regex groups should not be null: ${line}`);
 			return context;
 		})
 	);
+
+const handleSectionStart = (context: Context, line: string): Context => {
+	const childContext = pipe(
+		Regex.regexExecGroups<SectionStartGroups>(SECTION_START_REGEX)(line),
+		Option.map(({ sectionName }) => createContext(sectionName.trim())),
+		Option.getOrElse(() => {
+			logger.error(
+				`Section Start regex groups should not be null: ${line}`
+			);
+			return createContext('child');
+		})
+	);
+	return produce(context, (draft) => {
+		draft.children.push(castDraft(childContext));
+	});
+};
 
 const handleLineType = (
 	context: Context,
@@ -84,6 +104,9 @@ const handleLineType = (
 	const newContext = match(lineAndType)
 		.with([__.string, LineType.PROPERTY], ([line]) =>
 			handleProperty(context, line)
+		)
+		.with([__.string, LineType.SECTION_START], ([line]) =>
+			handleSectionStart(context, line)
 		)
 		.otherwise(() => context);
 	return [newContext, lineAndType[1]];
@@ -112,12 +135,19 @@ const parse = (
 
 	return match({ lineType, remainingLines })
 		.with({ lineType: LineType.SECTION_START }, (): ContextAndLines => {
-			const [childContext, newRemainingLines] = parse(
-				createContext('child'), // TODO figure out how to name this
-				remainingLines
+			const [completeChildContext, newRemainingLines] = pipe(
+				RArray.last(newContext.children),
+				Option.map((childContext) =>
+					parse(childContext, remainingLines)
+				),
+				Option.getOrElse(() => {
+					logger.error('Should not have null last child');
+					return [newContext, remainingLines];
+				})
 			);
 			const combinedContext = produce(newContext, (draft) => {
-				draft.children.push(castDraft(childContext));
+				draft.children[newContext.children.length - 1] =
+					castDraft(completeChildContext);
 			});
 			return parse(combinedContext, newRemainingLines);
 		})

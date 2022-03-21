@@ -3,11 +3,11 @@ import path from 'path';
 import { parseGradleAst } from '../../../src/ast/gradleKotlin';
 import '@relmify/jest-fp-ts';
 
-const emptyChild = {
-	name: 'child',
+const emptyChild = (name: string) => ({
+	name,
 	properties: {},
 	children: []
-};
+});
 
 describe('GradleKotlin AST parser', () => {
 	beforeEach(() => {
@@ -34,21 +34,21 @@ describe('GradleKotlin AST parser', () => {
 				version: '1.0.0'
 			},
 			children: [
-				emptyChild,
+				emptyChild('plugins'),
 				{
-					name: 'child',
+					name: 'java',
 					properties: {
 						sourceCompatibility: 'JavaVersion.VERSION_17',
 						targetCompatibility: 'JavaVersion.VERSION_17'
 					},
 					children: []
 				},
-				emptyChild,
-				emptyChild,
+				emptyChild('repositories'),
+				emptyChild('dependencies'),
 				{
-					name: 'child',
+					name: 'tasks',
 					properties: {},
-					children: [emptyChild]
+					children: [emptyChild('named("test")')]
 				}
 			]
 		});
