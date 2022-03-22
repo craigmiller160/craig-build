@@ -94,7 +94,7 @@ const handleProperty = (
 		)
 	);
 
-const handleSectionStart = (context: Context, line: string): Context => {
+const handleSectionStart = (context: Context, line: string): Either.Either<Error, Context> => {
 	pipe(
 		RegexGroups.sectionStart(line),
 		Either.map(({ sectionName }) => createContext(sectionName.trim())),
@@ -135,8 +135,8 @@ const handleFunction = (
 const handleLineType = (
 	context: Context,
 	lineAndType: LineAndType
-): ContextAndLineType => {
-	const newContext = match(lineAndType)
+): Either.Either<Error, ContextAndLineType> => {
+	const newContextEither = match(lineAndType)
 		.with([__.string, LineType.PROPERTY], ([line]) =>
 			handleProperty(context, line)
 		)
@@ -146,8 +146,13 @@ const handleLineType = (
 		.with([__.string, LineType.FUNCTION], ([line]) =>
 			handleFunction(context, line)
 		)
-		.otherwise(() => context);
-	return [newContext, lineAndType[1]];
+		.otherwise(() => Either.right(context));
+	return pipe(
+		newContextEither,
+		Either.map(
+			(newContext): ContextAndLineType => [newContext, lineAndType[1]]
+		)
+	);
 };
 
 const getTailLines = (lines: ReadonlyArray<string>): ReadonlyArray<string> =>
@@ -162,12 +167,13 @@ const parse = (
 	context: Context,
 	lines: ReadonlyArray<string>
 ): ContextAndLines => {
-	const [newContext, lineType] = pipe(
+	const lineAndType = pipe(
 		RArray.head(lines),
 		Option.chain(getLineType),
-		Option.map((_) => handleLineType(context, _)),
-		Option.getOrElse((): ContextAndLineType => [context, LineType.COMMENT])
+		Option.getOrElse((): LineAndType => ['', LineType.COMMENT])
 	);
+
+	handleLineType(context, lineAndType);
 
 	const remainingLines = getTailLines(lines);
 
