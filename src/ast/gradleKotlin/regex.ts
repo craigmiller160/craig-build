@@ -9,6 +9,20 @@ const SECTION_START_REGEX = /^(?<sectionName>.*?)\s?{$/;
 const SECTION_END_REGEX = /^}$/;
 const FUNCTION_REGEX = /^(?<name>.*?)\((?<args>.*?)\).*$/;
 
+interface SectionStartGroups {
+	readonly sectionName: string;
+}
+
+interface PropertyGroups {
+	readonly key: string;
+	readonly value: string;
+}
+
+interface FunctionGroups {
+	readonly name: string;
+	readonly args: string;
+}
+
 export const RegexTest = {
 	comment: Regex.regexTest(COMMENT_REGEX),
 	property: Regex.regexTest(PROPERTY_REGEX),
@@ -33,12 +47,15 @@ const toRegexEither =
 		);
 
 const extractGroups =
-	(regex: RegExp, type: string) =>
-	<T extends object>(text: string): Either.Either<Error, T> =>
+	<T extends object>(regex: RegExp, type: string) =>
+	(text: string): Either.Either<Error, T> =>
 		pipe(Regex.regexExecGroups<T>(regex)(text), toRegexEither(type));
 
 export const RegexGroups = {
-	property: extractGroups(PROPERTY_REGEX, 'Property'),
-	sectionStart: extractGroups(SECTION_START_REGEX, 'Section Start'),
-	function: extractGroups(FUNCTION_REGEX, 'Function')
+	property: extractGroups<PropertyGroups>(PROPERTY_REGEX, 'Property'),
+	sectionStart: extractGroups<SectionStartGroups>(
+		SECTION_START_REGEX,
+		'Section Start'
+	),
+	function: extractGroups<FunctionGroups>(FUNCTION_REGEX, 'Function')
 };

@@ -9,7 +9,7 @@ import * as Option from 'fp-ts/Option';
 import * as Regex from '../../functions/RegExp';
 import produce, { castDraft } from 'immer';
 import { logger } from '../../logger';
-import { RegexTest } from './regex';
+import { RegexTest, RegexGroups } from './regex';
 
 const PROPERTY_REGEX = /^(?<key>.*?)\s*=\s*["']?(?<value>.*?)["']?$/;
 const SECTION_START_REGEX = /^(?<sectionName>.*?)\s?{$/;
@@ -81,34 +81,29 @@ const getLineType = (line: string): Option.Option<LineAndType> =>
 		)
 		.otherwise(() => Option.none);
 
-const handleProperty = (context: Context, line: string): Context =>
+const handleProperty = (
+	context: Context,
+	line: string
+): Either.Either<Error, Context> =>
 	pipe(
-		Regex.regexExecGroups<PropertyGroups>(PROPERTY_REGEX)(line),
-		Option.map(({ key, value }) =>
+		RegexGroups.property(line),
+		Either.map(({ key, value }) =>
 			produce(context, (draft) => {
 				draft.properties[key.trim()] = value.trim();
 			})
-		),
-		Option.getOrElse(() => {
-			logger.error(`Property regex groups should not be null: ${line}`);
-			return context;
-		})
+		)
 	);
 
 const handleSectionStart = (context: Context, line: string): Context => {
-	const childContext = pipe(
-		Regex.regexExecGroups<SectionStartGroups>(SECTION_START_REGEX)(line),
-		Option.map(({ sectionName }) => createContext(sectionName.trim())),
-		Option.getOrElse(() => {
-			logger.error(
-				`Section Start regex groups should not be null: ${line}`
-			);
-			return createContext('child');
-		})
+	pipe(
+		RegexGroups.sectionStart(line),
+		Either.map(({ sectionName }) => createContext(sectionName.trim())),
+		Either.map((childContext) =>
+			produce(context, (draft) => {
+				draft.children.push(castDraft(childContext));
+			})
+		)
 	);
-	return produce(context, (draft) => {
-		draft.children.push(castDraft(childContext));
-	});
 };
 
 const formatArgs = (args: string): ReadonlyArray<string> =>
@@ -118,27 +113,24 @@ const formatArgs = (args: string): ReadonlyArray<string> =>
 		RArray.map((arg) => arg.trim().replace(/['"]/g, ''))
 	);
 
-const handleFunction = (context: Context, line: string): Context => {
-	const func = pipe(
-		Regex.regexExecGroups<FunctionGroups>(FUNCTION_REGEX)(line),
-		Option.map(
+const handleFunction = (
+	context: Context,
+	line: string
+): Either.Either<Error, Context> =>
+	pipe(
+		RegexGroups.function(line),
+		Either.map(
 			({ name, args }): GFunction => ({
 				name: name.trim(),
 				args: formatArgs(args)
 			})
 		),
-		Option.getOrElse((): GFunction => {
-			logger.error(`Function regex groups should not be null: ${line}`);
-			return {
-				name: '',
-				args: []
-			};
-		})
+		Either.map((func) =>
+			produce(context, (draft) => {
+				draft.functions.push(castDraft(func));
+			})
+		)
 	);
-	return produce(context, (draft) => {
-		draft.functions.push(castDraft(func));
-	});
-};
 
 const handleLineType = (
 	context: Context,
