@@ -97,7 +97,7 @@ const handleProperty = (
 const handleSectionStart = (
 	context: Context,
 	line: string
-): Either.Either<Error, Context> => {
+): Either.Either<Error, Context> =>
 	pipe(
 		RegexGroups.sectionStart(line),
 		Either.map(({ sectionName }) => createContext(sectionName.trim())),
@@ -107,7 +107,6 @@ const handleSectionStart = (
 			})
 		)
 	);
-};
 
 const formatArgs = (args: string): ReadonlyArray<string> =>
 	pipe(
@@ -183,23 +182,38 @@ const handleSectionStartParsingEnd = (
 		})
 	);
 
+const handleSectionEndParsingEnd = (
+	context: Context,
+	remainingLines: ReadonlyArray<string>
+): Either.Either<Error, ContextAndLines> =>
+	Either.right([context, remainingLines]);
+
+const handleRemainingLinesNotEmptyParsingEnd = (
+	context: Context,
+	remainingLines: ReadonlyArray<string>
+): Either.Either<Error, ContextAndLines> => parse(context, remainingLines);
+
+const handleOtherwiseParsingEnd = (
+	context: Context
+): Either.Either<Error, ContextAndLines> => Either.right([context, []]);
+
 const handleParsingStepEnd =
 	(remainingLines: ReadonlyArray<string>) =>
-	(ctxAndLineType: ContextAndLineType) => {
+	(
+		ctxAndLineType: ContextAndLineType
+	): Either.Either<Error, ContextAndLines> => {
 		const [context, lineType] = ctxAndLineType;
-		match({ lineType, remainingLines })
+		return match({ lineType, remainingLines })
 			.with({ lineType: LineType.SECTION_START }, () =>
 				handleSectionStartParsingEnd(context, remainingLines)
 			)
-			.with({ lineType: LineType.SECTION_END }, (): ContextAndLines => {
-				return [newContext, remainingLines];
-			})
-			.with({ remainingLines: when(isNotEmpty) }, (): ContextAndLines => {
-				return parse(newContext, remainingLines);
-			})
-			.otherwise((): ContextAndLines => {
-				return [newContext, []];
-			});
+			.with({ lineType: LineType.SECTION_END }, () =>
+				handleSectionEndParsingEnd(context, remainingLines)
+			)
+			.with({ remainingLines: when(isNotEmpty) }, () =>
+				handleRemainingLinesNotEmptyParsingEnd(context, remainingLines)
+			)
+			.otherwise(() => handleOtherwiseParsingEnd(context));
 	};
 
 const parse = (
@@ -214,39 +228,10 @@ const parse = (
 
 	const remainingLines = getTailLines(lines);
 
-	pipe(
+	return pipe(
 		handleLineType(context, lineAndType),
-		Either.map(([newCtx, lineType]) => {})
+		Either.chain(handleParsingStepEnd(remainingLines))
 	);
-
-	return match({ lineType, remainingLines })
-		.with({ lineType: LineType.SECTION_START }, (): ContextAndLines => {
-			const [completeChildContext, newRemainingLines] = pipe(
-				RArray.last(newContext.children),
-				Option.map((childContext) =>
-					parse(childContext, remainingLines)
-				),
-				Option.getOrElse(() => {
-					// TODO figure out solution here
-					logger.error('Should not have null last child');
-					return [newContext, remainingLines];
-				})
-			);
-			const combinedContext = produce(newContext, (draft) => {
-				draft.children[newContext.children.length - 1] =
-					castDraft(completeChildContext);
-			});
-			return parse(combinedContext, newRemainingLines);
-		})
-		.with({ lineType: LineType.SECTION_END }, (): ContextAndLines => {
-			return [newContext, remainingLines];
-		})
-		.with({ remainingLines: when(isNotEmpty) }, (): ContextAndLines => {
-			return parse(newContext, remainingLines);
-		})
-		.otherwise((): ContextAndLines => {
-			return [newContext, []];
-		});
 };
 
 const parseGradleFile = (
@@ -258,7 +243,7 @@ const parseGradleFile = (
 		return pipe(
 			File.readFile(filePath),
 			Either.map((content) => content.split('\n')),
-			Either.map((lines) => parse(context, lines)),
+			Either.chain((lines) => parse(context, lines)),
 			Either.map(([context]) => context)
 		);
 	} else {
