@@ -6,14 +6,9 @@ import { pipe } from 'fp-ts/function';
 import { match, when, __ } from 'ts-pattern';
 import * as RArray from 'fp-ts/ReadonlyArray';
 import * as Option from 'fp-ts/Option';
-import * as Regex from '../../functions/RegExp';
 import produce, { castDraft } from 'immer';
 import { logger } from '../../logger';
 import { RegexTest, RegexGroups } from './regex';
-
-const PROPERTY_REGEX = /^(?<key>.*?)\s*=\s*["']?(?<value>.*?)["']?$/;
-const SECTION_START_REGEX = /^(?<sectionName>.*?)\s?{$/;
-const FUNCTION_REGEX = /^(?<name>.*?)\((?<args>.*?)\).*$/;
 
 enum LineType {
 	COMMENT = 'COMMENT',
@@ -26,22 +21,6 @@ enum LineType {
 type LineAndType = [line: string, type: LineType];
 type ContextAndLineType = [context: Context, lineType: LineType];
 type ContextAndLines = [context: Context, lines: ReadonlyArray<string>];
-
-// TODO replace error logs with real errors
-
-interface SectionStartGroups {
-	readonly sectionName: string;
-}
-
-interface PropertyGroups {
-	readonly key: string;
-	readonly value: string;
-}
-
-interface FunctionGroups {
-	readonly name: string;
-	readonly args: string;
-}
 
 interface GFunction {
 	readonly name: string;
