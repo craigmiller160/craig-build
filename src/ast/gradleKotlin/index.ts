@@ -94,7 +94,10 @@ const handleProperty = (
 		)
 	);
 
-const handleSectionStart = (context: Context, line: string): Either.Either<Error, Context> => {
+const handleSectionStart = (
+	context: Context,
+	line: string
+): Either.Either<Error, Context> => {
 	pipe(
 		RegexGroups.sectionStart(line),
 		Either.map(({ sectionName }) => createContext(sectionName.trim())),
@@ -163,19 +166,58 @@ const getTailLines = (lines: ReadonlyArray<string>): ReadonlyArray<string> =>
 
 const isNotEmpty = (lines: ReadonlyArray<string>): boolean => lines.length > 0;
 
+const handleSectionStartParsingEnd = (
+	context: Context,
+	remainingLines: ReadonlyArray<string>
+): Either.Either<Error, ContextAndLines> =>
+	pipe(
+		RArray.last(context.children),
+		Either.fromOption(() => new Error('Context should have last child')),
+		Either.chain((childContext) => parse(childContext, remainingLines)),
+		Either.chain(([completeChildContext, newRemainingLines]) => {
+			const combinedContext = produce(context, (draft) => {
+				draft.children[draft.children.length - 1] =
+					castDraft(completeChildContext);
+			});
+			return parse(combinedContext, newRemainingLines);
+		})
+	);
+
+const handleParsingStepEnd =
+	(remainingLines: ReadonlyArray<string>) =>
+	(ctxAndLineType: ContextAndLineType) => {
+		const [context, lineType] = ctxAndLineType;
+		match({ lineType, remainingLines })
+			.with({ lineType: LineType.SECTION_START }, () =>
+				handleSectionStartParsingEnd(context, remainingLines)
+			)
+			.with({ lineType: LineType.SECTION_END }, (): ContextAndLines => {
+				return [newContext, remainingLines];
+			})
+			.with({ remainingLines: when(isNotEmpty) }, (): ContextAndLines => {
+				return parse(newContext, remainingLines);
+			})
+			.otherwise((): ContextAndLines => {
+				return [newContext, []];
+			});
+	};
+
 const parse = (
 	context: Context,
 	lines: ReadonlyArray<string>
-): ContextAndLines => {
+): Either.Either<Error, ContextAndLines> => {
 	const lineAndType = pipe(
 		RArray.head(lines),
 		Option.chain(getLineType),
 		Option.getOrElse((): LineAndType => ['', LineType.COMMENT])
 	);
 
-	handleLineType(context, lineAndType);
-
 	const remainingLines = getTailLines(lines);
+
+	pipe(
+		handleLineType(context, lineAndType),
+		Either.map(([newCtx, lineType]) => {})
+	);
 
 	return match({ lineType, remainingLines })
 		.with({ lineType: LineType.SECTION_START }, (): ContextAndLines => {
