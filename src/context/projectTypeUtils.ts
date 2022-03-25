@@ -2,11 +2,9 @@ import { ProjectType } from './ProjectType';
 import * as P from 'fp-ts/Predicate';
 
 export const isMaven: P.Predicate<ProjectType> = (projectType) =>
-	[
-		ProjectType.MavenApplication,
-		ProjectType.MavenLibrary,
-		ProjectType.GradleKotlinLibrary
-	].includes(projectType);
+	[ProjectType.MavenApplication, ProjectType.MavenLibrary].includes(
+		projectType
+	);
 
 export const isNpm: P.Predicate<ProjectType> = (projectType) =>
 	[ProjectType.NpmApplication, ProjectType.NpmLibrary].includes(projectType);
