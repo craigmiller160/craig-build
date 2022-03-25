@@ -6,20 +6,9 @@ import { pipe } from 'fp-ts/function';
 import { match, when, __ } from 'ts-pattern';
 import * as RArray from 'fp-ts/ReadonlyArray';
 import * as Option from 'fp-ts/Option';
-import * as Regex from '../../functions/RegExp';
 import produce, { castDraft } from 'immer';
 import { logger } from '../../logger';
-
-const COMMENT_REGEX = /^\/\/.*$/;
-const PROPERTY_REGEX = /^(?<key>.*?)\s*=\s*["']?(?<value>.*?)["']?$/;
-const SECTION_START_REGEX = /^(?<sectionName>.*?)\s?{$/;
-const SECTION_END_REGEX = /^}$/;
-const FUNCTION_REGEX = /^(?<name>.*?)\((?<args>.*?)\).*$/;
-const testCommentRegex = Regex.regexTest(COMMENT_REGEX);
-const testPropertyRegex = Regex.regexTest(PROPERTY_REGEX);
-const testSectionStartRegex = Regex.regexTest(SECTION_START_REGEX);
-const testSectionEndRegex = Regex.regexTest(SECTION_END_REGEX);
-const testFunctionRegex = Regex.regexTest(FUNCTION_REGEX);
+import { RegexTest, RegexGroups } from './regex';
 
 enum LineType {
 	COMMENT = 'COMMENT',
@@ -32,22 +21,6 @@ enum LineType {
 type LineAndType = [line: string, type: LineType];
 type ContextAndLineType = [context: Context, lineType: LineType];
 type ContextAndLines = [context: Context, lines: ReadonlyArray<string>];
-
-// TODO replace error logs with real errors
-
-interface SectionStartGroups {
-	readonly sectionName: string;
-}
-
-interface PropertyGroups {
-	readonly key: string;
-	readonly value: string;
-}
-
-interface FunctionGroups {
-	readonly name: string;
-	readonly args: string;
-}
 
 interface GFunction {
 	readonly name: string;
@@ -70,52 +43,49 @@ const createContext = (name: string): Context => ({
 
 const getLineType = (line: string): Option.Option<LineAndType> =>
 	match(line.trim())
-		.with(when(testCommentRegex), () =>
+		.with(when(RegexTest.comment), () =>
 			Option.some<LineAndType>([line, LineType.COMMENT])
 		)
-		.with(when(testPropertyRegex), () =>
+		.with(when(RegexTest.property), () =>
 			Option.some<LineAndType>([line, LineType.PROPERTY])
 		)
-		.with(when(testSectionStartRegex), () =>
+		.with(when(RegexTest.sectionStart), () =>
 			Option.some<LineAndType>([line, LineType.SECTION_START])
 		)
-		.with(when(testSectionEndRegex), () =>
+		.with(when(RegexTest.sectionEnd), () =>
 			Option.some<LineAndType>([line, LineType.SECTION_END])
 		)
-		.with(when(testFunctionRegex), () =>
+		.with(when(RegexTest.function), () =>
 			Option.some<LineAndType>([line, LineType.FUNCTION])
 		)
 		.otherwise(() => Option.none);
 
-const handleProperty = (context: Context, line: string): Context =>
+const handleProperty = (
+	context: Context,
+	line: string
+): Either.Either<Error, Context> =>
 	pipe(
-		Regex.regexExecGroups<PropertyGroups>(PROPERTY_REGEX)(line),
-		Option.map(({ key, value }) =>
+		RegexGroups.property(line),
+		Either.map(({ key, value }) =>
 			produce(context, (draft) => {
 				draft.properties[key.trim()] = value.trim();
 			})
-		),
-		Option.getOrElse(() => {
-			logger.error(`Property regex groups should not be null: ${line}`);
-			return context;
-		})
+		)
 	);
 
-const handleSectionStart = (context: Context, line: string): Context => {
-	const childContext = pipe(
-		Regex.regexExecGroups<SectionStartGroups>(SECTION_START_REGEX)(line),
-		Option.map(({ sectionName }) => createContext(sectionName.trim())),
-		Option.getOrElse(() => {
-			logger.error(
-				`Section Start regex groups should not be null: ${line}`
-			);
-			return createContext('child');
-		})
+const handleSectionStart = (
+	context: Context,
+	line: string
+): Either.Either<Error, Context> =>
+	pipe(
+		RegexGroups.sectionStart(line),
+		Either.map(({ sectionName }) => createContext(sectionName.trim())),
+		Either.map((childContext) =>
+			produce(context, (draft) => {
+				draft.children.push(castDraft(childContext));
+			})
+		)
 	);
-	return produce(context, (draft) => {
-		draft.children.push(castDraft(childContext));
-	});
-};
 
 const formatArgs = (args: string): ReadonlyArray<string> =>
 	pipe(
@@ -124,33 +94,30 @@ const formatArgs = (args: string): ReadonlyArray<string> =>
 		RArray.map((arg) => arg.trim().replace(/['"]/g, ''))
 	);
 
-const handleFunction = (context: Context, line: string): Context => {
-	const func = pipe(
-		Regex.regexExecGroups<FunctionGroups>(FUNCTION_REGEX)(line),
-		Option.map(
+const handleFunction = (
+	context: Context,
+	line: string
+): Either.Either<Error, Context> =>
+	pipe(
+		RegexGroups.function(line),
+		Either.map(
 			({ name, args }): GFunction => ({
 				name: name.trim(),
 				args: formatArgs(args)
 			})
 		),
-		Option.getOrElse((): GFunction => {
-			logger.error(`Function regex groups should not be null: ${line}`);
-			return {
-				name: '',
-				args: []
-			};
-		})
+		Either.map((func) =>
+			produce(context, (draft) => {
+				draft.functions.push(castDraft(func));
+			})
+		)
 	);
-	return produce(context, (draft) => {
-		draft.functions.push(castDraft(func));
-	});
-};
 
 const handleLineType = (
 	context: Context,
 	lineAndType: LineAndType
-): ContextAndLineType => {
-	const newContext = match(lineAndType)
+): Either.Either<Error, ContextAndLineType> => {
+	const newContextEither = match(lineAndType)
 		.with([__.string, LineType.PROPERTY], ([line]) =>
 			handleProperty(context, line)
 		)
@@ -160,8 +127,13 @@ const handleLineType = (
 		.with([__.string, LineType.FUNCTION], ([line]) =>
 			handleFunction(context, line)
 		)
-		.otherwise(() => context);
-	return [newContext, lineAndType[1]];
+		.otherwise(() => Either.right(context));
+	return pipe(
+		newContextEither,
+		Either.map(
+			(newContext): ContextAndLineType => [newContext, lineAndType[1]]
+		)
+	);
 };
 
 const getTailLines = (lines: ReadonlyArray<string>): ReadonlyArray<string> =>
@@ -172,46 +144,73 @@ const getTailLines = (lines: ReadonlyArray<string>): ReadonlyArray<string> =>
 
 const isNotEmpty = (lines: ReadonlyArray<string>): boolean => lines.length > 0;
 
-const parse = (
+const handleSectionStartParsingEnd = (
 	context: Context,
-	lines: ReadonlyArray<string>
-): ContextAndLines => {
-	const [newContext, lineType] = pipe(
-		RArray.head(lines),
-		Option.chain(getLineType),
-		Option.map((_) => handleLineType(context, _)),
-		Option.getOrElse((): ContextAndLineType => [context, LineType.COMMENT])
-	);
-
-	const remainingLines = getTailLines(lines);
-
-	return match({ lineType, remainingLines })
-		.with({ lineType: LineType.SECTION_START }, (): ContextAndLines => {
-			const [completeChildContext, newRemainingLines] = pipe(
-				RArray.last(newContext.children),
-				Option.map((childContext) =>
-					parse(childContext, remainingLines)
-				),
-				Option.getOrElse(() => {
-					logger.error('Should not have null last child');
-					return [newContext, remainingLines];
-				})
-			);
-			const combinedContext = produce(newContext, (draft) => {
-				draft.children[newContext.children.length - 1] =
+	remainingLines: ReadonlyArray<string>
+): Either.Either<Error, ContextAndLines> =>
+	pipe(
+		RArray.last(context.children),
+		Either.fromOption(() => new Error('Context should have last child')),
+		Either.chain((childContext) => parse(childContext, remainingLines)),
+		Either.chain(([completeChildContext, newRemainingLines]) => {
+			const combinedContext = produce(context, (draft) => {
+				draft.children[draft.children.length - 1] =
 					castDraft(completeChildContext);
 			});
 			return parse(combinedContext, newRemainingLines);
 		})
-		.with({ lineType: LineType.SECTION_END }, (): ContextAndLines => {
-			return [newContext, remainingLines];
-		})
-		.with({ remainingLines: when(isNotEmpty) }, (): ContextAndLines => {
-			return parse(newContext, remainingLines);
-		})
-		.otherwise((): ContextAndLines => {
-			return [newContext, []];
-		});
+	);
+
+const handleSectionEndParsingEnd = (
+	context: Context,
+	remainingLines: ReadonlyArray<string>
+): Either.Either<Error, ContextAndLines> =>
+	Either.right([context, remainingLines]);
+
+const handleRemainingLinesNotEmptyParsingEnd = (
+	context: Context,
+	remainingLines: ReadonlyArray<string>
+): Either.Either<Error, ContextAndLines> => parse(context, remainingLines);
+
+const handleOtherwiseParsingEnd = (
+	context: Context
+): Either.Either<Error, ContextAndLines> => Either.right([context, []]);
+
+const handleParsingStepEnd =
+	(remainingLines: ReadonlyArray<string>) =>
+	(
+		ctxAndLineType: ContextAndLineType
+	): Either.Either<Error, ContextAndLines> => {
+		const [context, lineType] = ctxAndLineType;
+		return match({ lineType, remainingLines })
+			.with({ lineType: LineType.SECTION_START }, () =>
+				handleSectionStartParsingEnd(context, remainingLines)
+			)
+			.with({ lineType: LineType.SECTION_END }, () =>
+				handleSectionEndParsingEnd(context, remainingLines)
+			)
+			.with({ remainingLines: when(isNotEmpty) }, () =>
+				handleRemainingLinesNotEmptyParsingEnd(context, remainingLines)
+			)
+			.otherwise(() => handleOtherwiseParsingEnd(context));
+	};
+
+const parse = (
+	context: Context,
+	lines: ReadonlyArray<string>
+): Either.Either<Error, ContextAndLines> => {
+	const lineAndType = pipe(
+		RArray.head(lines),
+		Option.chain(getLineType),
+		Option.getOrElse((): LineAndType => ['', LineType.COMMENT])
+	);
+
+	const remainingLines = getTailLines(lines);
+
+	return pipe(
+		handleLineType(context, lineAndType),
+		Either.chain(handleParsingStepEnd(remainingLines))
+	);
 };
 
 const parseGradleFile = (
@@ -223,7 +222,7 @@ const parseGradleFile = (
 		return pipe(
 			File.readFile(filePath),
 			Either.map((content) => content.split('\n')),
-			Either.map((lines) => parse(context, lines)),
+			Either.chain((lines) => parse(context, lines)),
 			Either.map(([context]) => context)
 		);
 	} else {
