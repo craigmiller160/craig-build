@@ -6,7 +6,12 @@ import { ProjectInfo } from '../context/ProjectInfo';
 import { match, when } from 'ts-pattern';
 import * as TE from 'fp-ts/TaskEither';
 import * as P from 'fp-ts/Predicate';
-import { isDocker, isMaven, isNpm } from '../context/projectTypeUtils';
+import {
+	isDocker,
+	isGradleKotlin,
+	isMaven,
+	isNpm
+} from '../context/projectTypeUtils';
 import { readFile } from '../functions/File';
 import path from 'path';
 import { getCwd } from '../command/getCwd';
@@ -86,6 +91,10 @@ const readDockerProjectInfo = (): E.Either<Error, ProjectInfo> =>
 		})
 	);
 
+const readGradleKotlinProjectInfo = (): E.Either<Error, ProjectInfo> => {
+	throw new Error();
+};
+
 const readProjectInfoByType = (
 	projectType: ProjectType
 ): E.Either<Error, ProjectInfo> =>
@@ -93,6 +102,7 @@ const readProjectInfoByType = (
 		.with(when(isMaven), readMavenProjectInfo)
 		.with(when(isNpm), readNpmProjectInfo)
 		.with(when(isDocker), readDockerProjectInfo)
+		.with(when(isGradleKotlin), readGradleKotlinProjectInfo)
 		.otherwise(() =>
 			E.left(new Error(`Unsupported ProjectType: ${projectType}`))
 		);
