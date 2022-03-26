@@ -15,11 +15,27 @@ describe('getProjectType', () => {
 	});
 
 	it('is GradleKotlinLibrary', async () => {
-		throw new Error();
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDir, 'gradleKotlinReleaseLibrary')
+		);
+		const expectedContext: BuildContext = {
+			...buildContext,
+			projectType: ProjectType.GradleKotlinLibrary
+		};
+		const result = await getProjectType.execute(buildContext)();
+		expect(result).toEqualRight(expectedContext);
 	});
 
 	it('is GradleKotlinApplication', async () => {
-		throw new Error();
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDir, 'gradleKotlinReleaseApplication')
+		);
+		const expectedContext: BuildContext = {
+			...buildContext,
+			projectType: ProjectType.GradleKotlinApplication
+		};
+		const result = await getProjectType.execute(buildContext)();
+		expect(result).toEqualRight(expectedContext);
 	});
 
 	it('is NpmLibrary', async () => {
