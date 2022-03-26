@@ -29,6 +29,7 @@ import {
 import { BuildContext } from '../context/BuildContext';
 import { VersionType } from '../context/VersionType';
 import { regexTest } from '../functions/RegExp';
+import { parseGradleAst } from '../ast/gradleKotlin';
 
 const BETA_VERSION_REGEX = /^.*-beta/;
 const SNAPSHOT_VERSION_REGEX = /^.*-SNAPSHOT/;
@@ -91,9 +92,16 @@ const readDockerProjectInfo = (): E.Either<Error, ProjectInfo> =>
 		})
 	);
 
-const readGradleKotlinProjectInfo = (): E.Either<Error, ProjectInfo> => {
-	throw new Error();
-};
+const readGradleKotlinProjectInfo = (): E.Either<Error, ProjectInfo> =>
+	pipe(
+		parseGradleAst(),
+		E.map((context) => ({
+			group: context.properties.group,
+			name: context.properties['rootProject.name'],
+			version: context.properties.version,
+			versionType: getVersionType(context.properties.version)
+		}))
+	);
 
 const readProjectInfoByType = (
 	projectType: ProjectType

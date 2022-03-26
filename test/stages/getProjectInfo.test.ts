@@ -176,7 +176,7 @@ describe('getProjectInfo', () => {
 				group: 'io.craigmiller160',
 				name: 'spring-gradle-playground',
 				version: '1.0.0',
-				versionType: VersionType.PreRelease
+				versionType: VersionType.Release
 			}
 		};
 		const result = await getProjectInfo.execute(buildContext)();
