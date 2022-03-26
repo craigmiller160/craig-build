@@ -140,4 +140,12 @@ describe('getProjectInfo', () => {
 		const result = await getProjectInfo.execute(buildContext)();
 		expect(result).toEqualRight(expectedContext);
 	});
+
+	it('GradleKotlin pre-release project', async () => {
+		throw new Error();
+	});
+
+	it('GradleKotlin release project', async () => {
+		throw new Error();
+	});
 });
