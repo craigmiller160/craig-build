@@ -21,7 +21,7 @@ describe('GradleKotlin AST parser', () => {
 				process.cwd(),
 				'test',
 				'__working-dirs__',
-				'gradleReleaseApplication'
+				'gradleKotlinReleaseApplication'
 			)
 		);
 
