@@ -14,6 +14,30 @@ describe('getProjectType', () => {
 		jest.resetAllMocks();
 	});
 
+	it('is GradleKotlinLibrary', async () => {
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDir, 'gradleKotlinReleaseLibrary')
+		);
+		const expectedContext: BuildContext = {
+			...buildContext,
+			projectType: ProjectType.GradleKotlinLibrary
+		};
+		const result = await getProjectType.execute(buildContext)();
+		expect(result).toEqualRight(expectedContext);
+	});
+
+	it('is GradleKotlinApplication', async () => {
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDir, 'gradleKotlinReleaseApplication')
+		);
+		const expectedContext: BuildContext = {
+			...buildContext,
+			projectType: ProjectType.GradleKotlinApplication
+		};
+		const result = await getProjectType.execute(buildContext)();
+		expect(result).toEqualRight(expectedContext);
+	});
+
 	it('is NpmLibrary', async () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(baseWorkingDir, 'npmReleaseLibrary')

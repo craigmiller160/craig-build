@@ -14,9 +14,16 @@ export const isDocker: P.Predicate<ProjectType> = (projectType) =>
 		projectType
 	);
 
+export const isGradleKotlin: P.Predicate<ProjectType> = (projectType) =>
+	[
+		ProjectType.GradleKotlinApplication,
+		ProjectType.GradleKotlinLibrary
+	].includes(projectType);
+
 export const isApplication: P.Predicate<ProjectType> = (projectType) =>
 	[
 		ProjectType.DockerApplication,
 		ProjectType.MavenApplication,
-		ProjectType.NpmApplication
+		ProjectType.NpmApplication,
+		ProjectType.GradleKotlinApplication
 	].includes(projectType);
