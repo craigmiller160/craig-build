@@ -6,7 +6,12 @@ import { ProjectInfo } from '../context/ProjectInfo';
 import { match, when } from 'ts-pattern';
 import * as TE from 'fp-ts/TaskEither';
 import * as P from 'fp-ts/Predicate';
-import { isDocker, isMaven, isNpm } from '../context/projectTypeUtils';
+import {
+	isDocker,
+	isGradleKotlin,
+	isMaven,
+	isNpm
+} from '../context/projectTypeUtils';
 import { readFile } from '../functions/File';
 import path from 'path';
 import { getCwd } from '../command/getCwd';
@@ -24,6 +29,7 @@ import {
 import { BuildContext } from '../context/BuildContext';
 import { VersionType } from '../context/VersionType';
 import { regexTest } from '../functions/RegExp';
+import { parseGradleAst } from '../ast/gradleKotlin';
 
 const BETA_VERSION_REGEX = /^.*-beta/;
 const SNAPSHOT_VERSION_REGEX = /^.*-SNAPSHOT/;
@@ -86,6 +92,17 @@ const readDockerProjectInfo = (): E.Either<Error, ProjectInfo> =>
 		})
 	);
 
+const readGradleKotlinProjectInfo = (): E.Either<Error, ProjectInfo> =>
+	pipe(
+		parseGradleAst(),
+		E.map((context) => ({
+			group: context.properties.group,
+			name: context.properties['rootProject.name'],
+			version: context.properties.version,
+			versionType: getVersionType(context.properties.version)
+		}))
+	);
+
 const readProjectInfoByType = (
 	projectType: ProjectType
 ): E.Either<Error, ProjectInfo> =>
@@ -93,6 +110,7 @@ const readProjectInfoByType = (
 		.with(when(isMaven), readMavenProjectInfo)
 		.with(when(isNpm), readNpmProjectInfo)
 		.with(when(isDocker), readDockerProjectInfo)
+		.with(when(isGradleKotlin), readGradleKotlinProjectInfo)
 		.otherwise(() =>
 			E.left(new Error(`Unsupported ProjectType: ${projectType}`))
 		);

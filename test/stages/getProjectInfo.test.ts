@@ -140,4 +140,46 @@ describe('getProjectInfo', () => {
 		const result = await getProjectInfo.execute(buildContext)();
 		expect(result).toEqualRight(expectedContext);
 	});
+
+	it('GradleKotlin pre-release project', async () => {
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDir, 'gradleKotlinPreReleaseLibrary')
+		);
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.GradleKotlinLibrary
+		};
+		const expectedContext: BuildContext = {
+			...buildContext,
+			projectInfo: {
+				group: 'io.craigmiller160',
+				name: 'spring-gradle-playground',
+				version: '1.0.0-SNAPSHOT',
+				versionType: VersionType.PreRelease
+			}
+		};
+		const result = await getProjectInfo.execute(buildContext)();
+		expect(result).toEqualRight(expectedContext);
+	});
+
+	it('GradleKotlin release project', async () => {
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDir, 'gradleKotlinReleaseLibrary')
+		);
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.GradleKotlinLibrary
+		};
+		const expectedContext: BuildContext = {
+			...buildContext,
+			projectInfo: {
+				group: 'io.craigmiller160',
+				name: 'spring-gradle-playground',
+				version: '1.0.0',
+				versionType: VersionType.Release
+			}
+		};
+		const result = await getProjectInfo.execute(buildContext)();
+		expect(result).toEqualRight(expectedContext);
+	});
 });
