@@ -14,6 +14,14 @@ describe('getProjectType', () => {
 		jest.resetAllMocks();
 	});
 
+	it('is GradleKotlinLibrary', async () => {
+		throw new Error();
+	});
+
+	it('is GradleKotlinApplication', async () => {
+		throw new Error();
+	});
+
 	it('is NpmLibrary', async () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(baseWorkingDir, 'npmReleaseLibrary')
