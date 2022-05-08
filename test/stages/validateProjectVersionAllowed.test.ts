@@ -77,6 +77,10 @@ describe('validateProjectVersionAllowed', () => {
 		expect(result).toEqualRight(buildContext);
 	});
 
+	it('allows gradle kotlin release version with no conflicts', async () => {
+		throw new Error();
+	});
+
 	it('allows docker release version with no conflicts', async () => {
 		searchForDockerReleasesMock.mockImplementation(() =>
 			TE.right({ items: [] })
@@ -136,6 +140,10 @@ describe('validateProjectVersionAllowed', () => {
 		expect(result).toEqualLeft(
 			new Error('Project release version is not unique')
 		);
+	});
+
+	it('rejects gradle kotlin release version with conflicts', async () => {
+		throw new Error();
 	});
 
 	it('rejects docker release version with conflicts', async () => {
