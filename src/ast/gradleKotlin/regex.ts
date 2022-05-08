@@ -5,7 +5,8 @@ import { pipe } from 'fp-ts/function';
 
 const COMMENT_REGEX = /^\/\/.*$/;
 const PROPERTY_REGEX = /^(?!var|val)(?<key>.*?)\s*=\s*["']?(?<value>.*?)["']?$/;
-const VARIABLE_REGEX = /^(var|val) (?<name>.*?)\s*=\s*["']?(?<value>.*?)["']?$/;
+const VARIABLE_REGEX =
+	/^\s*(var|val) (?<name>.*?)\s*=\s*["']?(?<value>.*?)["']?$/;
 const SECTION_START_REGEX = /^(?<sectionName>.*?)\s?{$/;
 const SECTION_END_REGEX = /^}$/;
 const FUNCTION_REGEX = /^(?<name>.*?)\((?<args>.*?)\).*$/;

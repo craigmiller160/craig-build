@@ -132,7 +132,7 @@ const handleVariable = (
 		RegexGroups.variable(line),
 		Either.map(({ name, value }) =>
 			produce(context, (draft) => {
-				draft.variables[name] = value;
+				draft.variables[name.trim()] = value.trim();
 			})
 		)
 	);
