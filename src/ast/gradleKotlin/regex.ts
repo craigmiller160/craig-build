@@ -5,6 +5,7 @@ import { pipe } from 'fp-ts/function';
 
 const COMMENT_REGEX = /^\/\/.*$/;
 const PROPERTY_REGEX = /^(?<key>.*?)\s*=\s*["']?(?<value>.*?)["']?$/;
+const VARIABLE_REGEX = /^(var|val) (?<name>.*?)\s*=\s*["']?(?<value>.*?)["']?$/;
 const SECTION_START_REGEX = /^(?<sectionName>.*?)\s?{$/;
 const SECTION_END_REGEX = /^}$/;
 const FUNCTION_REGEX = /^(?<name>.*?)\((?<args>.*?)\).*$/;
@@ -26,6 +27,7 @@ interface FunctionGroups {
 export const RegexTest = {
 	comment: Regex.regexTest(COMMENT_REGEX),
 	property: Regex.regexTest(PROPERTY_REGEX),
+	variable: Regex.regexTest(VARIABLE_REGEX),
 	sectionStart: Regex.regexTest(SECTION_START_REGEX),
 	sectionEnd: Regex.regexTest(SECTION_END_REGEX),
 	function: Regex.regexTest(FUNCTION_REGEX)

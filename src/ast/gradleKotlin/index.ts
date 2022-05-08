@@ -13,6 +13,7 @@ import { RegexTest, RegexGroups } from './regex';
 enum LineType {
 	COMMENT = 'COMMENT',
 	PROPERTY = 'PROPERTY',
+	VARIABLE = 'VARIABLE',
 	SECTION_START = 'SECTION_START',
 	SECTION_END = 'SECTION_END',
 	FUNCTION = 'FUNCTION'
@@ -52,6 +53,9 @@ const getLineType = (line: string): Option.Option<LineAndType> =>
 	match(line.trim())
 		.with(when(RegexTest.comment), () =>
 			Option.some<LineAndType>([line, LineType.COMMENT])
+		)
+		.with(when(RegexTest.variable), () =>
+			Option.some<LineAndType>([line, LineType.VARIABLE])
 		)
 		.with(when(RegexTest.property), () =>
 			Option.some<LineAndType>([line, LineType.PROPERTY])
