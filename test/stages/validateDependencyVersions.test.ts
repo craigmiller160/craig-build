@@ -31,6 +31,10 @@ describe('validateDependencyVersions', () => {
 		expect(result).toEqualRight(buildContext);
 	});
 
+	it('all release dependencies are valid for gradle kotlin project', async () => {
+		throw new Error();
+	});
+
 	it('all release dependencies are valid for npm project', async () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(baseWorkingDir, 'npmReleaseApplication')
@@ -63,6 +67,10 @@ describe('validateDependencyVersions', () => {
 		expect(result).toEqualLeft(
 			new Error('Cannot have SNAPSHOT dependencies in Maven release')
 		);
+	});
+
+	it('invalid release dependencies for gradle kotlin project', async () => {
+		throw new Error();
 	});
 
 	it('invalid release dependencies for npm project', async () => {
