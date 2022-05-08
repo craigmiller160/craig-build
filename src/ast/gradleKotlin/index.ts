@@ -19,24 +19,26 @@ enum LineType {
 }
 
 type LineAndType = [line: string, type: LineType];
-type ContextAndLineType = [context: Context, lineType: LineType];
-type ContextAndLines = [context: Context, lines: ReadonlyArray<string>];
+type ContextAndLineType = [context: GradleContext, lineType: LineType];
+type ContextAndLines = [context: GradleContext, lines: ReadonlyArray<string>];
 
 interface GFunction {
 	readonly name: string;
 	readonly args: ReadonlyArray<string>;
 }
 
-interface Context {
+export interface GradleContext {
 	readonly name: string;
 	readonly properties: Record<string, string>;
+	readonly variables: Record<string, string>;
 	readonly functions: ReadonlyArray<GFunction>;
-	readonly children: ReadonlyArray<Context>;
+	readonly children: ReadonlyArray<GradleContext>;
 }
 
-const createContext = (name: string): Context => ({
+const createContext = (name: string): GradleContext => ({
 	name,
 	properties: {},
+	variables: {},
 	functions: [],
 	children: []
 });
@@ -61,9 +63,9 @@ const getLineType = (line: string): Option.Option<LineAndType> =>
 		.otherwise(() => Option.none);
 
 const handleProperty = (
-	context: Context,
+	context: GradleContext,
 	line: string
-): Either.Either<Error, Context> =>
+): Either.Either<Error, GradleContext> =>
 	pipe(
 		RegexGroups.property(line),
 		Either.map(({ key, value }) =>
@@ -74,9 +76,9 @@ const handleProperty = (
 	);
 
 const handleSectionStart = (
-	context: Context,
+	context: GradleContext,
 	line: string
-): Either.Either<Error, Context> =>
+): Either.Either<Error, GradleContext> =>
 	pipe(
 		RegexGroups.sectionStart(line),
 		Either.map(({ sectionName }) => createContext(sectionName.trim())),
@@ -95,9 +97,9 @@ const formatArgs = (args: string): ReadonlyArray<string> =>
 	);
 
 const handleFunction = (
-	context: Context,
+	context: GradleContext,
 	line: string
-): Either.Either<Error, Context> =>
+): Either.Either<Error, GradleContext> =>
 	pipe(
 		RegexGroups.function(line),
 		Either.map(
@@ -114,7 +116,7 @@ const handleFunction = (
 	);
 
 const handleLineType = (
-	context: Context,
+	context: GradleContext,
 	lineAndType: LineAndType
 ): Either.Either<Error, ContextAndLineType> => {
 	const newContextEither = match(lineAndType)
@@ -145,7 +147,7 @@ const getTailLines = (lines: ReadonlyArray<string>): ReadonlyArray<string> =>
 const isNotEmpty = (lines: ReadonlyArray<string>): boolean => lines.length > 0;
 
 const handleSectionStartParsingEnd = (
-	context: Context,
+	context: GradleContext,
 	remainingLines: ReadonlyArray<string>
 ): Either.Either<Error, ContextAndLines> =>
 	pipe(
@@ -162,18 +164,18 @@ const handleSectionStartParsingEnd = (
 	);
 
 const handleSectionEndParsingEnd = (
-	context: Context,
+	context: GradleContext,
 	remainingLines: ReadonlyArray<string>
 ): Either.Either<Error, ContextAndLines> =>
 	Either.right([context, remainingLines]);
 
 const handleRemainingLinesNotEmptyParsingEnd = (
-	context: Context,
+	context: GradleContext,
 	remainingLines: ReadonlyArray<string>
 ): Either.Either<Error, ContextAndLines> => parse(context, remainingLines);
 
 const handleOtherwiseParsingEnd = (
-	context: Context
+	context: GradleContext
 ): Either.Either<Error, ContextAndLines> => Either.right([context, []]);
 
 const handleParsingStepEnd =
@@ -196,7 +198,7 @@ const handleParsingStepEnd =
 	};
 
 const parse = (
-	context: Context,
+	context: GradleContext,
 	lines: ReadonlyArray<string>
 ): Either.Either<Error, ContextAndLines> => {
 	const lineAndType = pipe(
@@ -214,9 +216,9 @@ const parse = (
 };
 
 const parseGradleFile = (
-	context: Context,
+	context: GradleContext,
 	fileName: string
-): Either.Either<Error, Context> => {
+): Either.Either<Error, GradleContext> => {
 	const filePath = path.join(getCwd(), fileName);
 	if (File.exists(filePath)) {
 		return pipe(
@@ -231,7 +233,7 @@ const parseGradleFile = (
 	}
 };
 
-export const parseGradleAst = (): Either.Either<Error, Context> =>
+export const parseGradleAst = (): Either.Either<Error, GradleContext> =>
 	pipe(
 		parseGradleFile(createContext('ROOT'), 'settings.gradle.kts'),
 		Either.chain((context) => parseGradleFile(context, 'build.gradle.kts'))
