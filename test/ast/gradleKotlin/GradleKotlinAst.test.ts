@@ -11,6 +11,8 @@ const emptyChild = (name: string) => ({
 	functions: []
 });
 
+// TODO now need to do interpolation of variable references
+
 describe('GradleKotlin AST parser', () => {
 	beforeEach(() => {
 		jest.resetAllMocks();
