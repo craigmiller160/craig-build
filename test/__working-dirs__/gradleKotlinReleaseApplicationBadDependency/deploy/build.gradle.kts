@@ -17,7 +17,7 @@ repositories {
 }
 
 dependencies {
-    val postgresVersion = "42.2.18-SNAPSHOT"
+    val postgresVersion = "42.2.18"
     val webUtilsVersion = "1.1.0-SNAPSHOT"
 
     implementation("org.springframework.boot:spring-boot-starter-web")
