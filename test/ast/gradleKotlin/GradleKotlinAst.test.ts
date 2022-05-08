@@ -11,6 +11,9 @@ const emptyChild = (name: string) => ({
 	functions: []
 });
 
+// TODO need to check string values for interpolated variables
+// TODO they are evaluated hierarchically
+
 describe('GradleKotlin AST parser', () => {
 	beforeEach(() => {
 		jest.resetAllMocks();
