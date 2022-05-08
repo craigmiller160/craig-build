@@ -6,6 +6,7 @@ import '@relmify/jest-fp-ts';
 const emptyChild = (name: string) => ({
 	name,
 	properties: {},
+	variables: {},
 	children: [],
 	functions: []
 });
@@ -35,10 +36,12 @@ describe('GradleKotlin AST parser', () => {
 				version: '1.0.0'
 			},
 			functions: [],
+			variables: {},
 			children: [
 				{
 					name: 'plugins',
 					properties: {},
+					variables: {},
 					functions: [
 						{
 							name: 'id',
@@ -57,12 +60,14 @@ describe('GradleKotlin AST parser', () => {
 						sourceCompatibility: 'JavaVersion.VERSION_17',
 						targetCompatibility: 'JavaVersion.VERSION_17'
 					},
+					variables: {},
 					functions: [],
 					children: []
 				},
 				{
 					name: 'repositories',
 					properties: {},
+					variables: {},
 					functions: [
 						{
 							name: 'mavenCentral',
@@ -74,6 +79,7 @@ describe('GradleKotlin AST parser', () => {
 				{
 					name: 'dependencies',
 					properties: {},
+					variables: {},
 					functions: [
 						{
 							name: 'implementation',
@@ -93,6 +99,7 @@ describe('GradleKotlin AST parser', () => {
 				{
 					name: 'tasks',
 					properties: {},
+					variables: {},
 					functions: [],
 					children: [emptyChild('named("test")')]
 				}
