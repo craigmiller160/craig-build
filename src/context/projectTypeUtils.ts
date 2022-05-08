@@ -23,7 +23,7 @@ export const isGradleKotlin: P.Predicate<ProjectType> = (projectType) =>
 
 export const isJvm: P.Predicate<ProjectType> = pipe(
 	isMaven,
-	P.and(isGradleKotlin)
+	P.or(isGradleKotlin)
 );
 
 export const isApplication: P.Predicate<ProjectType> = (projectType) =>

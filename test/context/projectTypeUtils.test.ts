@@ -3,6 +3,7 @@ import {
 	isApplication,
 	isDocker,
 	isGradleKotlin,
+	isJvm,
 	isMaven,
 	isNpm
 } from '../../src/context/projectTypeUtils';
@@ -95,6 +96,20 @@ describe('projectTypeUtils', () => {
 		mavenLibrary(result, false);
 		npmApplication(result, false);
 		mavenApplication(result, false);
+		dockerApplication(result, false);
+		dockerImage(result, false);
+		unknownType(result, false);
+	});
+
+	it('isJvm', () => {
+		const result = projectTypes.map(isJvm);
+		expect(result).toHaveLength(NUM_PROJECT_TYPES);
+		npmLibrary(result, false);
+		gradleLibrary(result, true);
+		gradleApplication(result, true);
+		mavenLibrary(result, true);
+		npmApplication(result, false);
+		mavenApplication(result, true);
 		dockerApplication(result, false);
 		dockerImage(result, false);
 		unknownType(result, false);
