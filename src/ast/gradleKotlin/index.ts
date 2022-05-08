@@ -35,10 +35,15 @@ export interface GradleContext {
 	readonly children: ReadonlyArray<GradleContext>;
 }
 
-const createContext = (name: string): GradleContext => ({
+const createContext = (
+	name: string,
+	parentVariables: Record<string, string> = {}
+): GradleContext => ({
 	name,
 	properties: {},
-	variables: {},
+	variables: {
+		...parentVariables
+	},
 	functions: [],
 	children: []
 });

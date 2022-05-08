@@ -16,9 +16,12 @@ repositories {
     mavenCentral()
 }
 
+val springBootWeb = "1.0"
+
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    var springTest = "2.0"
+    implementation("org.springframework.boot:spring-boot-starter-web:$springBootWeb")
+    testImplementation("org.springframework.boot:spring-boot-starter-test:$springTest")
 }
 
 tasks {
