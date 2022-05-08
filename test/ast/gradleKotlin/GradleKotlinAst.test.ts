@@ -30,7 +30,6 @@ describe('GradleKotlin AST parser', () => {
 		);
 
 		const result = parseGradleAst();
-		console.log(result); // TODO delete this
 		expect(result).toEqualRight({
 			name: 'ROOT',
 			properties: {
@@ -40,7 +39,9 @@ describe('GradleKotlin AST parser', () => {
 				version: '1.0.0'
 			},
 			functions: [],
-			variables: {},
+			variables: {
+				springBootWeb: '1.0'
+			},
 			children: [
 				{
 					name: 'plugins',
@@ -83,7 +84,10 @@ describe('GradleKotlin AST parser', () => {
 				{
 					name: 'dependencies',
 					properties: {},
-					variables: {},
+					variables: {
+						springBootWeb: '1.0',
+						springTest: '2.0'
+					},
 					functions: [
 						{
 							name: 'implementation',
