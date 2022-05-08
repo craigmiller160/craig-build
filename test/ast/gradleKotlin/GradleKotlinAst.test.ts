@@ -87,13 +87,13 @@ describe('GradleKotlin AST parser', () => {
 						{
 							name: 'implementation',
 							args: [
-								'org.springframework.boot:spring-boot-starter-web'
+								'org.springframework.boot:spring-boot-starter-web:$springBootWeb'
 							]
 						},
 						{
 							name: 'testImplementation',
 							args: [
-								'org.springframework.boot:spring-boot-starter-test'
+								'org.springframework.boot:spring-boot-starter-test:$springTest'
 							]
 						}
 					],
