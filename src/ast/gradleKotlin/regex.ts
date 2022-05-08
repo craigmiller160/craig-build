@@ -49,7 +49,7 @@ const toRegexEither =
 			Either.fromOption(
 				() =>
 					new Error(
-						`Error extracting regex groups. Regex Type: ${type}`
+						`Failed to extract regex groups. Regex Type: ${type}`
 					)
 			)
 		);
