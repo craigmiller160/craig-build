@@ -90,7 +90,9 @@ const handleSectionStart = (
 ): Either.Either<Error, GradleContext> =>
 	pipe(
 		RegexGroups.sectionStart(line),
-		Either.map(({ sectionName }) => createContext(sectionName.trim())),
+		Either.map(({ sectionName }) =>
+			createContext(sectionName.trim(), context.variables)
+		),
 		Either.map((childContext) =>
 			produce(context, (draft) => {
 				draft.children.push(castDraft(childContext));

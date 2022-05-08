@@ -11,9 +11,6 @@ const emptyChild = (name: string) => ({
 	functions: []
 });
 
-// TODO need to check string values for interpolated variables
-// TODO they are evaluated hierarchically
-
 describe('GradleKotlin AST parser', () => {
 	beforeEach(() => {
 		jest.resetAllMocks();
@@ -107,9 +104,18 @@ describe('GradleKotlin AST parser', () => {
 				{
 					name: 'tasks',
 					properties: {},
-					variables: {},
+					variables: {
+						springBootWeb: '1.0'
+					},
 					functions: [],
-					children: [emptyChild('named("test")')]
+					children: [
+						{
+							...emptyChild('named("test")'),
+							variables: {
+								springBootWeb: '1.0'
+							}
+						}
+					]
 				}
 			]
 		});
