@@ -30,6 +30,7 @@ describe('GradleKotlin AST parser', () => {
 		);
 
 		const result = parseGradleAst();
+		console.log(result); // TODO delete this
 		expect(result).toEqualRight({
 			name: 'ROOT',
 			properties: {

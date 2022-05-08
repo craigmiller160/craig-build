@@ -24,6 +24,11 @@ interface FunctionGroups {
 	readonly args: string;
 }
 
+interface VariableGroups {
+	readonly name: string;
+	readonly value: string;
+}
+
 export const RegexTest = {
 	comment: Regex.regexTest(COMMENT_REGEX),
 	property: Regex.regexTest(PROPERTY_REGEX),
@@ -55,6 +60,7 @@ const extractGroups =
 
 export const RegexGroups = {
 	property: extractGroups<PropertyGroups>(PROPERTY_REGEX, 'Property'),
+	variable: extractGroups<VariableGroups>(VARIABLE_REGEX, 'Variable'),
 	sectionStart: extractGroups<SectionStartGroups>(
 		SECTION_START_REGEX,
 		'Section Start'

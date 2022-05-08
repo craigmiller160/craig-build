@@ -124,6 +124,19 @@ const handleFunction = (
 		)
 	);
 
+const handleVariable = (
+	context: GradleContext,
+	line: string
+): Either.Either<Error, GradleContext> =>
+	pipe(
+		RegexGroups.variable(line),
+		Either.map(({ name, value }) =>
+			produce(context, (draft) => {
+				draft.variables[name] = value;
+			})
+		)
+	);
+
 const handleLineType = (
 	context: GradleContext,
 	lineAndType: LineAndType
@@ -131,6 +144,9 @@ const handleLineType = (
 	const newContextEither = match(lineAndType)
 		.with([__.string, LineType.PROPERTY], ([line]) =>
 			handleProperty(context, line)
+		)
+		.with([__.string, LineType.VARIABLE], ([line]) =>
+			handleVariable(context, line)
 		)
 		.with([__.string, LineType.SECTION_START], ([line]) =>
 			handleSectionStart(context, line)
