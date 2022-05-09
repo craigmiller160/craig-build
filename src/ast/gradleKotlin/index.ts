@@ -260,8 +260,11 @@ const parseGradleFile = (
 	}
 };
 
+const interpolateVariables = (context: GradleContext): GradleContext => context;
+
 export const parseGradleAst = (): Either.Either<Error, GradleContext> =>
 	pipe(
 		parseGradleFile(createContext('ROOT'), 'settings.gradle.kts'),
-		Either.chain((context) => parseGradleFile(context, 'build.gradle.kts'))
+		Either.chain((context) => parseGradleFile(context, 'build.gradle.kts')),
+		Either.map(interpolateVariables)
 	);
