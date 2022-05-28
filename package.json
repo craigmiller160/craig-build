@@ -9,7 +9,8 @@
     "registry": "https://craigmiller160.ddns.net:30003/repository/npm-private/"
   },
   "files": [
-    "build"
+    "build",
+    "experiment.js"
   ],
   "scripts": {
     "lint": "eslint . --fix --max-warnings=0",
