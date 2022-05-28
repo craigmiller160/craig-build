@@ -1,4 +1,6 @@
 /* eslint-disable */
-export {};
+import fs from 'fs';
+import path from 'path';
 
-console.log('This is working');
+const thePath = path.join('/Users', 'craigmiller', 'hello.txt');
+fs.writeFileSync(thePath, 'Hello World');
