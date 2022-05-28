@@ -23,7 +23,7 @@
     "install": "node libScripts/gradle-install.js"
   },
   "lint-staged": {
-    "*.{ts,tsx}": "eslint --fix --max-warnings=0"
+    "*.{js,ts,tsx}": "eslint --fix --max-warnings=0"
   },
   "devDependencies": {
     "@relmify/jest-fp-ts": "^1.1.1",
