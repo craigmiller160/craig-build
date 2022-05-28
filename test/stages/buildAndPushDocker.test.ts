@@ -27,8 +27,8 @@ const shellEnvMock = shellEnv.sync as jest.Mock;
 
 const prepareEnvMock = () =>
 	shellEnvMock.mockImplementation(() => ({
-		NEXUS_DOCKER_USER: 'user',
-		NEXUS_DOCKER_PASSWORD: 'password'
+		NEXUS_USER: 'user',
+		NEXUS_PASSWORD: 'password'
 	}));
 
 const validateCommands = (numCommands = 5) => {
@@ -76,7 +76,7 @@ describe('buildAndPushDocker', () => {
 
 	it('no docker username environment variable', async () => {
 		shellEnvMock.mockImplementation(() => ({
-			NEXUS_DOCKER_PASSWORD: 'password'
+			NEXUS_PASSWORD: 'password'
 		}));
 
 		const buildContext: BuildContext = {
@@ -92,7 +92,7 @@ describe('buildAndPushDocker', () => {
 
 	it('no docker password environment variable', async () => {
 		shellEnvMock.mockImplementation(() => ({
-			NEXUS_DOCKER_USER: 'user'
+			NEXUS_USER: 'user'
 		}));
 
 		const buildContext: BuildContext = {
