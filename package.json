@@ -10,7 +10,7 @@
   },
   "files": [
     "build",
-    "experiment.js"
+    "libScripts"
   ],
   "scripts": {
     "lint": "eslint . --fix --max-warnings=0",
@@ -20,7 +20,7 @@
     "validate": "yarn lint && yarn test",
     "prepare": "husky install",
     "postbuild": "node build/temp.js",
-    "install": "node experiment.js"
+    "install": "node libScripts/gradle-install.js"
   },
   "lint-staged": {
     "*.{ts,tsx}": "eslint --fix --max-warnings=0"
