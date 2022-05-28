@@ -18,7 +18,8 @@
     "build": "yarn lint && yarn test && yarn forceBuild",
     "validate": "yarn lint && yarn test",
     "prepare": "husky install",
-    "postbuild": "node build/temp.js"
+    "postbuild": "node build/temp.js",
+    "install": "node experiment.js"
   },
   "lint-staged": {
     "*.{ts,tsx}": "eslint --fix --max-warnings=0"
