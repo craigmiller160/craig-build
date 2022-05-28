@@ -37,10 +37,8 @@ const getAndValidateDockerEnvVariables = (): TE.TaskEither<
 	pipe(
 		O.of(shellEnv.sync<EnvironmentVariables>()),
 		O.bindTo('env'),
-		O.bind('userName', ({ env }) => O.fromNullable(env.NEXUS_DOCKER_USER)),
-		O.bind('password', ({ env }) =>
-			O.fromNullable(env.NEXUS_DOCKER_PASSWORD)
-		),
+		O.bind('userName', ({ env }) => O.fromNullable(env.NEXUS_USER)),
+		O.bind('password', ({ env }) => O.fromNullable(env.NEXUS_PASSWORD)),
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		O.map(({ env, ...creds }): DockerCreds => creds),
 		TE.fromOption(
