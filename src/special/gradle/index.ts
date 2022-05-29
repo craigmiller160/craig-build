@@ -4,7 +4,7 @@ import { runCommand } from '../../command/runCommand';
 import { pipe } from 'fp-ts/function';
 import { parseJson } from '../../functions/Json';
 
-interface GradleItem {
+export interface GradleItem {
 	readonly group: string;
 	readonly name: string;
 	readonly version: string;

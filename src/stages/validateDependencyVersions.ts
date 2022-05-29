@@ -2,7 +2,12 @@ import * as E from 'fp-ts/Either';
 import { BuildContext } from '../context/BuildContext';
 import { pipe } from 'fp-ts/function';
 import { match, when } from 'ts-pattern';
-import { isDocker, isMaven, isNpm } from '../context/projectTypeUtils';
+import {
+	isDocker,
+	isGradleKotlin,
+	isMaven,
+	isNpm
+} from '../context/projectTypeUtils';
 import * as TE from 'fp-ts/TaskEither';
 import { readFile } from '../functions/File';
 import { getCwd } from '../command/getCwd';
@@ -22,6 +27,7 @@ import { isRelease } from '../context/projectInfoUtils';
 import { Stage, StageExecuteFn } from './Stage';
 import { ProjectType } from '../context/ProjectType';
 import { isFullBuild } from '../context/commandTypeUtils';
+import { GradleItem, readGradleProject } from '../special/gradle';
 
 const MAVEN_PROPERTY_REGEX = /\${.*}/;
 
@@ -101,7 +107,7 @@ const entries = (obj?: { [key: string]: string }): JsEntries =>
 		O.getOrElse((): JsEntries => [])
 	);
 
-const npmHasBetaDependencies = (dependencyEntries: JsEntries): boolean =>
+const npmHasNoBetaDependencies = (dependencyEntries: JsEntries): boolean =>
 	pipe(
 		dependencyEntries,
 		A.filter(([, value]) => value.includes('beta'))
@@ -117,30 +123,51 @@ const validateNpmReleaseDependencies = (
 			entries(_.dependencies).concat(entries(_.devDependencies))
 		),
 		E.filterOrElse(
-			npmHasBetaDependencies,
+			npmHasNoBetaDependencies,
 			() => new Error('Cannot have beta dependencies in NPM release')
 		),
 		E.map(() => context)
 	);
 
+const gradleHasNoSnapshotDependencies = (
+	dependencies: ReadonlyArray<GradleItem>
+): boolean =>
+	dependencies.filter((item) => item.version.includes('SNAPSHOT')).length ===
+	0;
+
+const validateGradleReleaseDependencies = (
+	context: BuildContext
+): TE.TaskEither<Error, BuildContext> =>
+	pipe(
+		readGradleProject(getCwd()),
+		TE.filterOrElse(
+			(_) => gradleHasNoSnapshotDependencies(_.dependencies),
+			() =>
+				new Error('Cannot have SNAPSHOT dependencies in Gradle release')
+		),
+		TE.map(() => context)
+	);
+
 const handleValidationByProject = (
 	context: BuildContext
-): E.Either<Error, BuildContext> =>
+): TE.TaskEither<Error, BuildContext> =>
 	match(context)
 		.with(
 			{ projectType: when(isMaven), projectInfo: when(isRelease) },
-			validateMavenReleaseDependencies
+			(_) => TE.fromEither(validateMavenReleaseDependencies(_))
+		)
+		.with({ projectType: when(isNpm), projectInfo: when(isRelease) }, (_) =>
+			TE.fromEither(validateNpmReleaseDependencies(_))
 		)
 		.with(
-			{ projectType: when(isNpm), projectInfo: when(isRelease) },
-			validateNpmReleaseDependencies
+			{ projectType: when(isGradleKotlin), projectInfo: when(isRelease) },
+			validateGradleReleaseDependencies
 		)
 		.run();
 
 const isNotDocker: P.Predicate<ProjectType> = P.not(isDocker);
 
-const execute: StageExecuteFn = (context) =>
-	pipe(handleValidationByProject(context), TE.fromEither);
+const execute: StageExecuteFn = (context) => handleValidationByProject(context);
 const isNonDockerRelease: P.Predicate<BuildContext> = pipe(
 	(_: BuildContext) => isNotDocker(_.projectType),
 	P.and((_) => isRelease(_.projectInfo))

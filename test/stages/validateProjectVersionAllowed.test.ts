@@ -77,6 +77,25 @@ describe('validateProjectVersionAllowed', () => {
 		expect(result).toEqualRight(buildContext);
 	});
 
+	it('allows gradle kotlin release version with no conflicts', async () => {
+		searchForMavenReleasesMock.mockImplementation(() =>
+			TE.right({ items: [] })
+		);
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.GradleKotlinApplication,
+			projectInfo: {
+				...baseBuildContext.projectInfo,
+				versionType: VersionType.Release
+			}
+		};
+
+		const result = await validateProjectVersionAllowed.execute(
+			buildContext
+		)();
+		expect(result).toEqualRight(buildContext);
+	});
+
 	it('allows docker release version with no conflicts', async () => {
 		searchForDockerReleasesMock.mockImplementation(() =>
 			TE.right({ items: [] })
@@ -124,6 +143,27 @@ describe('validateProjectVersionAllowed', () => {
 		const buildContext: BuildContext = {
 			...baseBuildContext,
 			projectType: ProjectType.MavenApplication,
+			projectInfo: {
+				...baseBuildContext.projectInfo,
+				versionType: VersionType.Release
+			}
+		};
+
+		const result = await validateProjectVersionAllowed.execute(
+			buildContext
+		)();
+		expect(result).toEqualLeft(
+			new Error('Project release version is not unique')
+		);
+	});
+
+	it('rejects gradle kotlin release version with conflicts', async () => {
+		searchForMavenReleasesMock.mockImplementation(() =>
+			TE.right({ items: [invalidItem] })
+		);
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.GradleKotlinApplication,
 			projectInfo: {
 				...baseBuildContext.projectInfo,
 				versionType: VersionType.Release

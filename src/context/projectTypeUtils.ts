@@ -1,5 +1,6 @@
 import { ProjectType } from './ProjectType';
 import * as P from 'fp-ts/Predicate';
+import { pipe } from 'fp-ts/function';
 
 export const isMaven: P.Predicate<ProjectType> = (projectType) =>
 	[ProjectType.MavenApplication, ProjectType.MavenLibrary].includes(
@@ -19,6 +20,11 @@ export const isGradleKotlin: P.Predicate<ProjectType> = (projectType) =>
 		ProjectType.GradleKotlinApplication,
 		ProjectType.GradleKotlinLibrary
 	].includes(projectType);
+
+export const isJvm: P.Predicate<ProjectType> = pipe(
+	isMaven,
+	P.or(isGradleKotlin)
+);
 
 export const isApplication: P.Predicate<ProjectType> = (projectType) =>
 	[

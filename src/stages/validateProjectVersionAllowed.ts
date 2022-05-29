@@ -2,7 +2,7 @@ import { BuildContext } from '../context/BuildContext';
 import { pipe } from 'fp-ts/function';
 import * as TE from 'fp-ts/TaskEither';
 import { match, when } from 'ts-pattern';
-import { isDocker, isMaven, isNpm } from '../context/projectTypeUtils';
+import { isDocker, isJvm, isNpm } from '../context/projectTypeUtils';
 import {
 	NexusRepoGroupSearchFn,
 	searchForDockerReleases,
@@ -46,9 +46,8 @@ const handleValidationByProject = (
 	context: BuildContext
 ): TE.TaskEither<Error, BuildContext> =>
 	match(context)
-		.with(
-			{ projectType: when(isMaven), projectInfo: when(isRelease) },
-			(_) => validateReleaseVersion(_, searchForMavenReleases)
+		.with({ projectType: when(isJvm), projectInfo: when(isRelease) }, (_) =>
+			validateReleaseVersion(_, searchForMavenReleases)
 		)
 		.with({ projectType: when(isNpm), projectInfo: when(isRelease) }, (_) =>
 			validateReleaseVersion(_, searchForNpmReleases)
