@@ -45,7 +45,6 @@ describe('validateDependencyVersions', () => {
 			}
 		};
 		const result = await validateDependencyVersions.execute(buildContext)();
-		console.log(result);
 		expect(result).toEqualRight(buildContext);
 	});
 
@@ -98,6 +97,7 @@ describe('validateDependencyVersions', () => {
 				versionType: VersionType.Release
 			}
 		};
+		// TODO the problem here is that my own, custom dependency is not being recognized... this is an issue
 		const result = await validateDependencyVersions.execute(buildContext)();
 		expect(result).toEqualLeft(
 			new Error('Cannot have SNAPSHOT dependencies in Gradle release')
