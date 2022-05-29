@@ -104,7 +104,25 @@ describe('validateDependencyVersions', () => {
 	});
 
 	it('unresolved dependency for gradle kotlin project', async () => {
-		throw new Error();
+		getCwdMock.mockImplementation(() =>
+			path.resolve(
+				baseWorkingDir,
+				'gradleKotlinReleaseApplicationUnresolvedDependency'
+			)
+		);
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.GradleKotlinApplication,
+			projectInfo: {
+				...baseBuildContext.projectInfo,
+				versionType: VersionType.Release
+			}
+		};
+		const result = await validateDependencyVersions.execute(buildContext)();
+		console.log(result);
+		expect(result).toEqualLeft(
+			new Error('Cannot have SNAPSHOT dependencies in Gradle release')
+		);
 	});
 
 	it('invalid release dependencies for npm project', async () => {
