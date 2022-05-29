@@ -17,6 +17,12 @@ const targetFile = path.join(
 	`craig-build-gradle-tool-${LIB_VERSION}.jar`
 );
 
+const streamPromise = (stream) =>
+	new Promise((resolve, reject) => {
+		stream.on('finish', resolve);
+		stream.on('error', reject);
+	});
+
 const prepareDirectory = () => {
 	if (fs.existsSync(targetDirectory)) {
 		fs.rmSync(targetDirectory, {
@@ -46,10 +52,17 @@ const getDownloadUrl = (result) =>
 		asset.downloadUrl.endsWith('jar')
 	).downloadUrl;
 
+const downloadFile = (downloadUrl) =>
+	axios
+		.get(downloadUrl)
+		.then((res) =>
+			streamPromise(res.data.pipe(fs.createWriteStream(targetFile)))
+		);
+
 const handleError = (error) => {
 	console.error('Error while installing gradle lib', error);
 	process.exit(1);
 };
 
 prepareDirectory();
-searchForLib().then(getDownloadUrl).catch(handleError);
+searchForLib().then(getDownloadUrl).then(downloadFile).catch(handleError);
