@@ -54,7 +54,9 @@ const getDownloadUrl = (result) =>
 
 const downloadFile = (downloadUrl) =>
 	axios
-		.get(downloadUrl)
+		.get(downloadUrl, {
+			responseType: 'stream'
+		})
 		.then((res) =>
 			streamPromise(res.data.pipe(fs.createWriteStream(targetFile)))
 		);
