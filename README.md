@@ -7,8 +7,8 @@ A special, lightweight build utility designed to build and deploy any project of
 These environment variables must exist on the host system:
 
 ```
-NEXUS_DOCKER_USER
-NEXUS_DOCKER_PASSWORD
+NEXUS_USER
+NEXUS_PASSWORD
 ```
 
 ## How to Use
