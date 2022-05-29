@@ -97,11 +97,14 @@ describe('validateDependencyVersions', () => {
 				versionType: VersionType.Release
 			}
 		};
-		// TODO the problem here is that my own, custom dependency is not being recognized... this is an issue
 		const result = await validateDependencyVersions.execute(buildContext)();
 		expect(result).toEqualLeft(
 			new Error('Cannot have SNAPSHOT dependencies in Gradle release')
 		);
+	});
+
+	it('unresolved dependency for gradle kotlin project', async () => {
+		throw new Error();
 	});
 
 	it('invalid release dependencies for npm project', async () => {
