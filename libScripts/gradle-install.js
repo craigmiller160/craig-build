@@ -6,6 +6,10 @@ const qs = require('qs');
 
 const LIB_VERSION = '1.0.0';
 
+const restApiInstance = axios.create({
+	baseURL: 'https://craigmiller160.ddns.net:30003/service/rest/v1'
+});
+
 const searchForLib = () => {
 	const queryObj = {
 		'maven.groupId': 'io.craigmiller160',
@@ -15,7 +19,7 @@ const searchForLib = () => {
 		direction: 'desc',
 		version: LIB_VERSION
 	};
-	return axios.get(`/search?${qs.stringify(queryObj)}`);
+	return restApiInstance.get(`/search?${qs.stringify(queryObj)}`);
 };
 
 const getDownloadUrl = (result) =>
