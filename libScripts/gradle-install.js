@@ -23,14 +23,13 @@ const searchForLib = () => {
 };
 
 const getDownloadUrl = (result) =>
-	result.items[0].assets.find((asset) => asset.downloadUrl.endsWith('jar'))
-		.downloadUrl;
+	result.data.items[0].assets.find((asset) =>
+		asset.downloadUrl.endsWith('jar')
+	).downloadUrl;
 
 const handleError = (error) => {
 	console.error('Error while installing gradle lib', error);
 	process.exit(1);
 };
 
-searchForLib()
-	.then(getDownloadUrl)
-	.catch(handleError);
+searchForLib().then(getDownloadUrl).catch(handleError);
