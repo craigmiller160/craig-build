@@ -16,10 +16,10 @@ repositories {
     mavenCentral()
 }
 
-val springBootWeb = "1.0"
+val springBootWeb = "2.7.0"
 
 dependencies {
-    var springTest = "2.0"
+    var springTest = "2.6.8"
     implementation("org.springframework.boot:spring-boot-starter-web:$springBootWeb")
     testImplementation("org.springframework.boot:spring-boot-starter-test:$springTest")
 }
