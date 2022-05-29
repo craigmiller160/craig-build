@@ -107,7 +107,7 @@ const entries = (obj?: { [key: string]: string }): JsEntries =>
 		O.getOrElse((): JsEntries => [])
 	);
 
-const npmHasBetaDependencies = (dependencyEntries: JsEntries): boolean =>
+const npmHasNoBetaDependencies = (dependencyEntries: JsEntries): boolean =>
 	pipe(
 		dependencyEntries,
 		A.filter(([, value]) => value.includes('beta'))
@@ -123,16 +123,17 @@ const validateNpmReleaseDependencies = (
 			entries(_.dependencies).concat(entries(_.devDependencies))
 		),
 		E.filterOrElse(
-			npmHasBetaDependencies,
+			npmHasNoBetaDependencies,
 			() => new Error('Cannot have beta dependencies in NPM release')
 		),
 		E.map(() => context)
 	);
 
-const gradleHasSnapshotDependencies = (
+const gradleHasNoSnapshotDependencies = (
 	dependencies: ReadonlyArray<GradleItem>
 ): boolean =>
-	dependencies.filter((item) => item.version.includes('SNAPSHOT')).length > 0;
+	dependencies.filter((item) => item.version.includes('SNAPSHOT')).length ===
+	0;
 
 const validateGradleReleaseDependencies = (
 	context: BuildContext
@@ -140,7 +141,7 @@ const validateGradleReleaseDependencies = (
 	pipe(
 		readGradleProject(getCwd()),
 		TE.filterOrElse(
-			(_) => gradleHasSnapshotDependencies(_.dependencies),
+			(_) => gradleHasNoSnapshotDependencies(_.dependencies),
 			() =>
 				new Error('Cannot have SNAPSHOT dependencies in Gradle release')
 		),
