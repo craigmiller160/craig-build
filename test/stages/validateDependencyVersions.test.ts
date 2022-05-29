@@ -32,7 +32,19 @@ describe('validateDependencyVersions', () => {
 	});
 
 	it('all release dependencies are valid for gradle kotlin project', async () => {
-		throw new Error();
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDir, 'gradleKotlinReleaseApplication')
+		);
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.GradleKotlinApplication,
+			projectInfo: {
+				...baseBuildContext.projectInfo,
+				versionType: VersionType.Release
+			}
+		};
+		const result = await validateDependencyVersions.execute(buildContext)();
+		expect(result).toEqualRight(buildContext);
 	});
 
 	it('all release dependencies are valid for npm project', async () => {
@@ -70,7 +82,24 @@ describe('validateDependencyVersions', () => {
 	});
 
 	it('invalid release dependencies for gradle kotlin project', async () => {
-		throw new Error();
+		getCwdMock.mockImplementation(() =>
+			path.resolve(
+				baseWorkingDir,
+				'gradleKotlinReleaseApplicationBadDependency'
+			)
+		);
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.GradleKotlinApplication,
+			projectInfo: {
+				...baseBuildContext.projectInfo,
+				versionType: VersionType.Release
+			}
+		};
+		const result = await validateDependencyVersions.execute(buildContext)();
+		expect(result).toEqualLeft(
+			new Error('Cannot have SNAPSHOT dependencies in Gradle release')
+		);
 	});
 
 	it('invalid release dependencies for npm project', async () => {
