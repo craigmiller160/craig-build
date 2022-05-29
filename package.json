@@ -1,6 +1,6 @@
 {
   "name": "@craigmiller160/craig-build",
-  "version": "2.1.0-beta",
+  "version": "2.1.0-beta.2",
   "author": "craigmiller160",
   "bin": {
     "craig-build": "build/index.js"
@@ -9,7 +9,8 @@
     "registry": "https://craigmiller160.ddns.net:30003/repository/npm-private/"
   },
   "files": [
-    "build"
+    "build",
+    "libScripts"
   ],
   "scripts": {
     "lint": "eslint . --fix --max-warnings=0",
@@ -17,10 +18,12 @@
     "test": "jest",
     "build": "yarn lint && yarn test && yarn forceBuild",
     "validate": "yarn lint && yarn test",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "postbuild": "node build/temp.js",
+    "install": "node libScripts/gradle-install.js"
   },
   "lint-staged": {
-    "*.{ts,tsx}": "eslint --fix --max-warnings=0"
+    "*.{js,ts,tsx}": "eslint --fix --max-warnings=0"
   },
   "devDependencies": {
     "@relmify/jest-fp-ts": "^1.1.1",
