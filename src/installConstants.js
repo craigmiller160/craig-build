@@ -1,7 +1,7 @@
 const path = require('path');
 const os = require('os');
 
-const GRADLE_TOOL_VERSION = '1.0.1';
+const GRADLE_TOOL_VERSION = '1.0.2';
 const CRAIG_BUILD_DIR = path.join(os.homedir(), '.craig-build');
 const CRAIG_BUILD_GRADLE_DIR = path.join(CRAIG_BUILD_DIR, 'gradle');
 const GRADLE_TOOL_FILE = path.join(
