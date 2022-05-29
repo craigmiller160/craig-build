@@ -6,7 +6,7 @@ const {
 	GRADLE_TOOL_VERSION,
 	CRAIG_BUILD_GRADLE_DIR,
 	GRADLE_TOOL_FILE
-} = require('src/installConstants');
+} = require('../src/installConstants');
 
 const restApiInstance = axios.create({
 	baseURL: 'https://craigmiller160.ddns.net:30003/service/rest/v1'
