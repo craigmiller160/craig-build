@@ -10,6 +10,7 @@ const LIB_VERSION = '1.0.0';
 const restApiInstance = axios.create({
 	baseURL: 'https://craigmiller160.ddns.net:30003/service/rest/v1'
 });
+// TODO need these to be constants accessible to this script and other code
 const targetDirectory = path.join(os.homedir(), '.craig-build', 'gradle');
 const targetFile = path.join(
 	targetDirectory,
