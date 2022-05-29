@@ -14,6 +14,9 @@ java {
 
 repositories {
     mavenCentral()
+    maven {
+        url = uri("https://craigmiller160.ddns.net:30003/repository/maven-public")
+    }
 }
 
 dependencies {
