@@ -27,6 +27,7 @@ import { isRelease } from '../context/projectInfoUtils';
 import { Stage, StageExecuteFn } from './Stage';
 import { ProjectType } from '../context/ProjectType';
 import { isFullBuild } from '../context/commandTypeUtils';
+import { GradleItem, readGradleProject } from '../special/gradle';
 
 const MAVEN_PROPERTY_REGEX = /\${.*}/;
 
@@ -128,11 +129,23 @@ const validateNpmReleaseDependencies = (
 		E.map(() => context)
 	);
 
+const gradleHasSnapshotDependencies = (
+	dependencies: ReadonlyArray<GradleItem>
+): boolean =>
+	dependencies.filter((item) => item.version.includes('SNAPSHOT')).length > 0;
+
 const validateGradleReleaseDependencies = (
 	context: BuildContext
-): TE.TaskEither<Error, BuildContext> => {
-	throw new Error();
-};
+): TE.TaskEither<Error, BuildContext> =>
+	pipe(
+		readGradleProject(getCwd()),
+		TE.filterOrElse(
+			(_) => gradleHasSnapshotDependencies(_.dependencies),
+			() =>
+				new Error('Cannot have SNAPSHOT dependencies in Gradle release')
+		),
+		TE.map(() => context)
+	);
 
 const handleValidationByProject = (
 	context: BuildContext

@@ -7,6 +7,7 @@ import { BuildContext } from '../../src/context/BuildContext';
 import { ProjectType } from '../../src/context/ProjectType';
 import { validateDependencyVersions } from '../../src/stages/validateDependencyVersions';
 import { VersionType } from '../../src/context/VersionType';
+import '../testutils/readGradleProjectUnmock';
 
 const baseBuildContext = createBuildContext();
 
