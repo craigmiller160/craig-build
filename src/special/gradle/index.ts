@@ -1,5 +1,8 @@
 import { GRADLE_TOOL_FILE } from '../../installConstants';
-import * as E from 'fp-ts/Either';
+import * as TE from 'fp-ts/TaskEither';
+import { runCommand } from '../../command/runCommand';
+import { pipe } from 'fp-ts/function';
+import { parseJson } from '../../functions/Json';
 
 interface GradleItem {
 	readonly group: string;
@@ -12,6 +15,13 @@ export interface GradleProject {
 	readonly dependencies: ReadonlyArray<GradleItem>;
 }
 
+const createCommand = (projectDirectory: string): string =>
+	`java -jar ${GRADLE_TOOL_FILE} ${projectDirectory}`;
+
 export const readGradleProject = (
 	projectDirectory: string
-): E.Either<Error, GradleProject> => {};
+): TE.TaskEither<Error, GradleProject> =>
+	pipe(
+		runCommand(createCommand(projectDirectory)),
+		TE.chainEitherK((_) => parseJson<GradleProject>(_))
+	);
