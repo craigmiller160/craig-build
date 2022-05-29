@@ -8,6 +8,7 @@ import { ProjectType } from '../../src/context/ProjectType';
 import { validateDependencyVersions } from '../../src/stages/validateDependencyVersions';
 import { VersionType } from '../../src/context/VersionType';
 import '../testutils/readGradleProjectUnmock';
+import * as E from 'fp-ts/Either';
 
 const baseBuildContext = createBuildContext();
 
@@ -119,9 +120,10 @@ describe('validateDependencyVersions', () => {
 			}
 		};
 		const result = await validateDependencyVersions.execute(buildContext)();
-		console.log(result);
-		expect(result).toEqualLeft(
-			new Error('Cannot have SNAPSHOT dependencies in Gradle release')
+		expect(result).toBeLeft();
+		const error = (result as E.Left<Error>).left;
+		expect(error.message).toMatch(
+			/UnresolvedDependencyException.*spring-web-utils/
 		);
 	});
 
