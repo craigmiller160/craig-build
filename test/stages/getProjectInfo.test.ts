@@ -7,6 +7,7 @@ import { baseWorkingDir } from '../testutils/baseWorkingDir';
 import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
 import { VersionType } from '../../src/context/VersionType';
+import '../testutils/readGradleProjectUnmock';
 
 const baseBuildContext = createBuildContext();
 
