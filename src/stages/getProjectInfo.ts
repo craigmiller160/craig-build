@@ -29,7 +29,7 @@ import {
 import { BuildContext } from '../context/BuildContext';
 import { VersionType } from '../context/VersionType';
 import { regexTest } from '../functions/RegExp';
-import { parseGradleAst } from '../ast/gradleKotlin';
+import { readGradleProject } from '../special/gradle';
 
 const BETA_VERSION_REGEX = /^.*-beta/;
 const SNAPSHOT_VERSION_REGEX = /^.*-SNAPSHOT/;
@@ -92,37 +92,36 @@ const readDockerProjectInfo = (): E.Either<Error, ProjectInfo> =>
 		})
 	);
 
-const readGradleKotlinProjectInfo = (): E.Either<Error, ProjectInfo> =>
+const readGradleProjectInfo = (): TE.TaskEither<Error, ProjectInfo> =>
 	pipe(
-		parseGradleAst(),
-		E.map((context) => ({
-			group: context.properties.group,
-			name: context.properties['rootProject.name'],
-			version: context.properties.version,
-			versionType: getVersionType(context.properties.version)
+		readGradleProject(getCwd()),
+		TE.map((buildGradle) => ({
+			group: buildGradle.info.group,
+			name: buildGradle.info.name,
+			version: buildGradle.info.version,
+			versionType: getVersionType(buildGradle.info.version)
 		}))
 	);
 
 const readProjectInfoByType = (
 	projectType: ProjectType
-): E.Either<Error, ProjectInfo> =>
+): TE.TaskEither<Error, ProjectInfo> =>
 	match(projectType)
-		.with(when(isMaven), readMavenProjectInfo)
-		.with(when(isNpm), readNpmProjectInfo)
-		.with(when(isDocker), readDockerProjectInfo)
-		.with(when(isGradleKotlin), readGradleKotlinProjectInfo)
+		.with(when(isMaven), () => TE.fromEither(readMavenProjectInfo()))
+		.with(when(isNpm), () => TE.fromEither(readNpmProjectInfo()))
+		.with(when(isDocker), () => TE.fromEither(readDockerProjectInfo()))
+		.with(when(isGradleKotlin), readGradleProjectInfo)
 		.otherwise(() =>
-			E.left(new Error(`Unsupported ProjectType: ${projectType}`))
+			TE.left(new Error(`Unsupported ProjectType: ${projectType}`))
 		);
 
 const execute: StageExecuteFn = (context) =>
 	pipe(
 		readProjectInfoByType(context.projectType),
-		E.map((_) => ({
+		TE.map((_) => ({
 			...context,
 			projectInfo: _
-		})),
-		TE.fromEither
+		}))
 	);
 const shouldStageExecute: P.Predicate<BuildContext> = () => true;
 
