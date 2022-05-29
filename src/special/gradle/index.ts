@@ -18,10 +18,14 @@ export interface GradleProject {
 const createCommand = (projectDirectory: string): string =>
 	`java -jar ${GRADLE_TOOL_FILE} ${projectDirectory}`;
 
-export const readGradleProject = (
-	projectDirectory: string
-): TE.TaskEither<Error, GradleProject> =>
-	pipe(
-		runCommand(createCommand(projectDirectory)),
-		TE.chainEitherK((_) => parseJson<GradleProject>(_))
-	);
+type RunCommandType = typeof runCommand;
+
+export const createReadGradleProject =
+	(doRunCommand: RunCommandType) =>
+	(projectDirectory: string): TE.TaskEither<Error, GradleProject> =>
+		pipe(
+			doRunCommand(createCommand(projectDirectory)),
+			TE.chainEitherK((_) => parseJson<GradleProject>(_))
+		);
+
+export const readGradleProject = createReadGradleProject(runCommand);
