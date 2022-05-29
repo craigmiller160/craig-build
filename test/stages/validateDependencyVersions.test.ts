@@ -45,6 +45,7 @@ describe('validateDependencyVersions', () => {
 			}
 		};
 		const result = await validateDependencyVersions.execute(buildContext)();
+		console.log(result);
 		expect(result).toEqualRight(buildContext);
 	});
 
