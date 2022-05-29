@@ -2,11 +2,9 @@
 const fs = require('fs');
 const axios = require('axios');
 const qs = require('qs');
-const {
-	GRADLE_TOOL_VERSION,
-	CRAIG_BUILD_GRADLE_DIR,
-	GRADLE_TOOL_FILE
-} = require('../src/installConstants'); // TODO this may not work during install... src vs build
+const { getConstants } = require('./getConstants');
+const { GRADLE_TOOL_VERSION, CRAIG_BUILD_GRADLE_DIR, GRADLE_TOOL_FILE } =
+	getConstants();
 
 const restApiInstance = axios.create({
 	baseURL: 'https://craigmiller160.ddns.net:30003/service/rest/v1'
@@ -62,6 +60,7 @@ const handleError = (error) => {
 };
 
 prepareDirectory();
+console.log('Downloading craig-build-gradle-tool');
 searchForGradleTool()
 	.then(getDownloadUrl)
 	.then(downloadFile)
