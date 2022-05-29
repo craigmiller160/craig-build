@@ -1,21 +1,16 @@
 /* eslint-disable no-console */
 const fs = require('fs');
-const path = require('path');
 const axios = require('axios');
 const qs = require('qs');
-const os = require('os');
-
-const LIB_VERSION = '1.0.0';
+const {
+	GRADLE_TOOL_VERSION,
+	CRAIG_BUILD_GRADLE_DIR,
+	GRADLE_TOOL_FILE
+} = require('src/installConstants');
 
 const restApiInstance = axios.create({
 	baseURL: 'https://craigmiller160.ddns.net:30003/service/rest/v1'
 });
-// TODO need these to be constants accessible to this script and other code
-const targetDirectory = path.join(os.homedir(), '.craig-build', 'gradle');
-const targetFile = path.join(
-	targetDirectory,
-	`craig-build-gradle-tool-${LIB_VERSION}.jar`
-);
 
 const streamPromise = (stream) =>
 	new Promise((resolve, reject) => {
@@ -24,25 +19,25 @@ const streamPromise = (stream) =>
 	});
 
 const prepareDirectory = () => {
-	if (fs.existsSync(targetDirectory)) {
-		fs.rmSync(targetDirectory, {
+	if (fs.existsSync(CRAIG_BUILD_GRADLE_DIR)) {
+		fs.rmSync(CRAIG_BUILD_GRADLE_DIR, {
 			force: true,
 			recursive: true
 		});
 	}
-	fs.mkdirSync(targetDirectory, {
+	fs.mkdirSync(CRAIG_BUILD_GRADLE_DIR, {
 		recursive: true
 	});
 };
 
-const searchForLib = () => {
+const searchForGradleTool = () => {
 	const queryObj = {
 		'maven.groupId': 'io.craigmiller160',
 		'maven.artifactId': 'craig-build-gradle-tool',
 		repository: 'maven-releases',
 		sort: 'version',
 		direction: 'desc',
-		version: LIB_VERSION
+		version: GRADLE_TOOL_VERSION
 	};
 	return restApiInstance.get(`/search?${qs.stringify(queryObj)}`);
 };
@@ -58,7 +53,7 @@ const downloadFile = (downloadUrl) =>
 			responseType: 'stream'
 		})
 		.then((res) =>
-			streamPromise(res.data.pipe(fs.createWriteStream(targetFile)))
+			streamPromise(res.data.pipe(fs.createWriteStream(GRADLE_TOOL_FILE)))
 		);
 
 const handleError = (error) => {
@@ -67,4 +62,7 @@ const handleError = (error) => {
 };
 
 prepareDirectory();
-searchForLib().then(getDownloadUrl).then(downloadFile).catch(handleError);
+searchForGradleTool()
+	.then(getDownloadUrl)
+	.then(downloadFile)
+	.catch(handleError);
