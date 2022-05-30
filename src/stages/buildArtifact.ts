@@ -2,7 +2,7 @@ import { BuildContext } from '../context/BuildContext';
 import * as TE from 'fp-ts/TaskEither';
 import { pipe } from 'fp-ts/function';
 import { match, P } from 'ts-pattern';
-import { isMaven, isNpm } from '../context/projectTypeUtils';
+import { isGradle, isMaven, isNpm } from '../context/projectTypeUtils';
 import { runCommand } from '../command/runCommand';
 import * as Pred from 'fp-ts/Predicate';
 import { ProjectType } from '../context/ProjectType';
@@ -32,15 +32,22 @@ const handleBuildingArtifactByProject = (
 		.with({ projectType: P.when(isNpm) }, (_) =>
 			runBuildCommand(_, NPM_BUILD_CMD)
 		)
+		.with({ projectType: P.when(isGradle) }, (_) =>
+			runBuildCommand(_, GRADLE_BUILD_COMMAND)
+		)
 		.run();
 
-const isMavenOrNpm: Pred.Predicate<ProjectType> = pipe(isMaven, Pred.or(isNpm));
+const isMavenGradleNpm: Pred.Predicate<ProjectType> = pipe(
+	isMaven,
+	Pred.or(isNpm),
+	Pred.or(isGradle)
+);
 
 const execute: StageExecuteFn = (context) =>
 	handleBuildingArtifactByProject(context);
 
 const shouldStageExecute: Pred.Predicate<BuildContext> = pipe(
-	(_: BuildContext) => isMavenOrNpm(_.projectType),
+	(_: BuildContext) => isMavenGradleNpm(_.projectType),
 	Pred.and((_) => isFullBuild(_.commandInfo.type))
 );
 
