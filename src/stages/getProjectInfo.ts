@@ -7,7 +7,7 @@ import * as TE from 'fp-ts/TaskEither';
 import * as P from 'fp-ts/Predicate';
 import {
 	isDocker,
-	isGradleKotlin,
+	isGradle,
 	isMaven,
 	isNpm
 } from '../context/projectTypeUtils';
@@ -105,7 +105,7 @@ const readProjectInfoByType = (
 		.with(when(isMaven), readMavenProjectInfo)
 		.with(when(isNpm), readNpmProjectInfo)
 		.with(when(isDocker), readDockerProjectInfo)
-		.with(when(isGradleKotlin), readGradleProjectInfo)
+		.with(when(isGradle), readGradleProjectInfo)
 		.otherwise(() =>
 			TE.left(new Error(`Unsupported ProjectType: ${projectType}`))
 		);

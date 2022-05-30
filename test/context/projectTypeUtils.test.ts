@@ -2,7 +2,7 @@ import { ProjectType } from '../../src/context/ProjectType';
 import {
 	isApplication,
 	isDocker,
-	isGradleKotlin,
+	isGradle,
 	isJvm,
 	isMaven,
 	isNpm
@@ -87,8 +87,8 @@ describe('projectTypeUtils', () => {
 		unknownType(result, false);
 	});
 
-	it('isGradleKotlin', () => {
-		const result = projectTypes.map(isGradleKotlin);
+	it('isGradle', () => {
+		const result = projectTypes.map(isGradle);
 		expect(result).toHaveLength(NUM_PROJECT_TYPES);
 		npmLibrary(result, false);
 		gradleLibrary(result, true);

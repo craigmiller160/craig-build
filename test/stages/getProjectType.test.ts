@@ -14,25 +14,49 @@ describe('getProjectType', () => {
 		jest.resetAllMocks();
 	});
 
-	it('is GradleKotlinLibrary', async () => {
+	it('is GradleLibrary (Kotlin)', async () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(baseWorkingDir, 'gradleKotlinReleaseLibrary')
 		);
 		const expectedContext: BuildContext = {
 			...buildContext,
-			projectType: ProjectType.GradleKotlinLibrary
+			projectType: ProjectType.GradleLibrary
 		};
 		const result = await getProjectType.execute(buildContext)();
 		expect(result).toEqualRight(expectedContext);
 	});
 
-	it('is GradleKotlinApplication', async () => {
+	it('is GradleLibrary (Groovy)', async () => {
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDir, 'gradleGroovyReleaseLibrary')
+		);
+		const expectedContext: BuildContext = {
+			...buildContext,
+			projectType: ProjectType.GradleLibrary
+		};
+		const result = await getProjectType.execute(buildContext)();
+		expect(result).toEqualRight(expectedContext);
+	});
+
+	it('is GradleApplication (Kotlin)', async () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(baseWorkingDir, 'gradleKotlinReleaseApplication')
 		);
 		const expectedContext: BuildContext = {
 			...buildContext,
-			projectType: ProjectType.GradleKotlinApplication
+			projectType: ProjectType.GradleApplication
+		};
+		const result = await getProjectType.execute(buildContext)();
+		expect(result).toEqualRight(expectedContext);
+	});
+
+	it('is GradleApplication (Groovy)', async () => {
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDir, 'gradleGroovyReleaseApplication')
+		);
+		const expectedContext: BuildContext = {
+			...buildContext,
+			projectType: ProjectType.GradleApplication
 		};
 		const result = await getProjectType.execute(buildContext)();
 		expect(result).toEqualRight(expectedContext);

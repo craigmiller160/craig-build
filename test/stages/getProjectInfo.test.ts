@@ -148,7 +148,7 @@ describe('getProjectInfo', () => {
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
-			projectType: ProjectType.GradleKotlinLibrary
+			projectType: ProjectType.GradleLibrary
 		};
 		const expectedContext: BuildContext = {
 			...buildContext,
@@ -169,7 +169,7 @@ describe('getProjectInfo', () => {
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
-			projectType: ProjectType.GradleKotlinLibrary
+			projectType: ProjectType.GradleLibrary
 		};
 		const expectedContext: BuildContext = {
 			...buildContext,
