@@ -109,6 +109,10 @@ describe('downloadArtifactForDeployment', () => {
 		expect(rmDirIfExistsMock).toHaveBeenCalledWith('/foo/deploy/build');
 	});
 
+	it('downloads gradle release artifact', async () => {
+		throw new Error();
+	});
+
 	it('downloads maven pre-release artifact', async () => {
 		getCwdMock.mockImplementation(() => '/foo');
 		searchForMavenSnapshotsExplicitMock.mockImplementation(() =>
@@ -143,6 +147,10 @@ describe('downloadArtifactForDeployment', () => {
 		expect(searchForNpmReleasesMock).not.toHaveBeenCalled();
 		expect(mkdirMock).toHaveBeenCalledWith('/foo/deploy/build');
 		expect(rmDirIfExistsMock).toHaveBeenCalledWith('/foo/deploy/build');
+	});
+
+	it('downloads gradle pre-release artifact', async () => {
+		throw new Error();
 	});
 
 	it('downloads npm release artifact', async () => {
