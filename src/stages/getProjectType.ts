@@ -13,6 +13,7 @@ import { BuildContext } from '../context/BuildContext';
 const NPM_PROJECT_FILE = 'package.json';
 const MVN_PROJECT_FILE = 'pom.xml';
 const GRADLE_KOTLIN_PROJECT_FILE = 'build.gradle.kts';
+const GRADLE_GROOVY_PROJECT_FILE = 'build.gradle';
 const DOCKER_PROJECT_FILE = 'docker.json';
 const DEPLOY_PATH = path.join('deploy', 'deployment.yml');
 
@@ -36,13 +37,18 @@ const checkProjectFilesForType = (): E.Either<Error, ProjectType> =>
 		.with(
 			when<string>(
 				(_) =>
-					fileExists(_, GRADLE_KOTLIN_PROJECT_FILE) &&
+					(fileExists(_, GRADLE_KOTLIN_PROJECT_FILE) ||
+						fileExists(_, GRADLE_GROOVY_PROJECT_FILE)) &&
 					fileExists(_, DEPLOY_PATH)
 			),
 			() => E.right(ProjectType.GradleApplication)
 		)
 		.with(
-			when<string>((_) => fileExists(_, GRADLE_KOTLIN_PROJECT_FILE)),
+			when<string>(
+				(_) =>
+					fileExists(_, GRADLE_KOTLIN_PROJECT_FILE) ||
+					fileExists(_, GRADLE_GROOVY_PROJECT_FILE)
+			),
 			() => E.right(ProjectType.GradleLibrary)
 		)
 		.with(
