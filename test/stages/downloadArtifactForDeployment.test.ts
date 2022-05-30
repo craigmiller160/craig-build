@@ -110,7 +110,39 @@ describe('downloadArtifactForDeployment', () => {
 	});
 
 	it('downloads gradle release artifact', async () => {
-		throw new Error();
+		getCwdMock.mockImplementation(() => '/foo');
+		searchForMavenReleasesMock.mockImplementation(() =>
+			TE.right({ items: [createItem('1.0.0', 'jar')] })
+		);
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.GradleApplication,
+			projectInfo: {
+				...baseBuildContext.projectInfo,
+				version: '1.0.0',
+				versionType: VersionType.Release
+			}
+		};
+
+		const result = await downloadArtifactForDeployment.execute(
+			buildContext
+		)();
+		expect(result).toEqualRight(buildContext);
+
+		expect(downloadArtifactMock).toHaveBeenCalledWith(
+			'downloadUrl.jar',
+			'/foo/deploy/build/my-project-1.0.0.jar'
+		);
+		expect(searchForMavenSnapshotsExplicitMock).not.toHaveBeenCalled();
+		expect(searchForMavenReleasesMock).toHaveBeenCalledWith(
+			'craigmiller160',
+			'my-project',
+			'1.0.0'
+		);
+		expect(searchForNpmBetasMock).not.toHaveBeenCalled();
+		expect(searchForNpmReleasesMock).not.toHaveBeenCalled();
+		expect(mkdirMock).toHaveBeenCalledWith('/foo/deploy/build');
+		expect(rmDirIfExistsMock).toHaveBeenCalledWith('/foo/deploy/build');
 	});
 
 	it('downloads maven pre-release artifact', async () => {
@@ -150,7 +182,39 @@ describe('downloadArtifactForDeployment', () => {
 	});
 
 	it('downloads gradle pre-release artifact', async () => {
-		throw new Error();
+		getCwdMock.mockImplementation(() => '/foo');
+		searchForMavenSnapshotsExplicitMock.mockImplementation(() =>
+			TE.right({ items: [createItem('1.1.0-20211225.003019-1', 'jar')] })
+		);
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.GradleApplication,
+			projectInfo: {
+				...baseBuildContext.projectInfo,
+				version: '1.1.0-20211225.003019-1',
+				versionType: VersionType.PreRelease
+			}
+		};
+
+		const result = await downloadArtifactForDeployment.execute(
+			buildContext
+		)();
+		expect(result).toEqualRight(buildContext);
+
+		expect(downloadArtifactMock).toHaveBeenCalledWith(
+			'downloadUrl.jar',
+			'/foo/deploy/build/my-project-1.1.0-20211225.003019-1.jar'
+		);
+		expect(searchForMavenReleasesMock).not.toHaveBeenCalled();
+		expect(searchForMavenSnapshotsExplicit).toHaveBeenCalledWith(
+			'craigmiller160',
+			'my-project',
+			'1.1.0-20211225.003019-1'
+		);
+		expect(searchForNpmBetasMock).not.toHaveBeenCalled();
+		expect(searchForNpmReleasesMock).not.toHaveBeenCalled();
+		expect(mkdirMock).toHaveBeenCalledWith('/foo/deploy/build');
+		expect(rmDirIfExistsMock).toHaveBeenCalledWith('/foo/deploy/build');
 	});
 
 	it('downloads npm release artifact', async () => {
