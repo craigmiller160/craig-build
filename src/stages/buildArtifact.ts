@@ -1,10 +1,10 @@
 import { BuildContext } from '../context/BuildContext';
 import * as TE from 'fp-ts/TaskEither';
 import { pipe } from 'fp-ts/function';
-import { match, when } from 'ts-pattern';
+import { match, P } from 'ts-pattern';
 import { isMaven, isNpm } from '../context/projectTypeUtils';
 import { runCommand } from '../command/runCommand';
-import * as P from 'fp-ts/Predicate';
+import * as Pred from 'fp-ts/Predicate';
 import { ProjectType } from '../context/ProjectType';
 import { Stage, StageExecuteFn } from './Stage';
 import { isFullBuild } from '../context/commandTypeUtils';
@@ -25,22 +25,22 @@ const handleBuildingArtifactByProject = (
 	context: BuildContext
 ): TE.TaskEither<Error, BuildContext> =>
 	match(context)
-		.with({ projectType: when(isMaven) }, (_) =>
+		.with({ projectType: P.when(isMaven) }, (_) =>
 			runBuildCommand(_, MAVEN_BUILD_CMD)
 		)
-		.with({ projectType: when(isNpm) }, (_) =>
+		.with({ projectType: P.when(isNpm) }, (_) =>
 			runBuildCommand(_, NPM_BUILD_CMD)
 		)
 		.run();
 
-const isMavenOrNpm: P.Predicate<ProjectType> = pipe(isMaven, P.or(isNpm));
+const isMavenOrNpm: Pred.Predicate<ProjectType> = pipe(isMaven, Pred.or(isNpm));
 
 const execute: StageExecuteFn = (context) =>
 	handleBuildingArtifactByProject(context);
 
-const shouldStageExecute: P.Predicate<BuildContext> = pipe(
+const shouldStageExecute: Pred.Predicate<BuildContext> = pipe(
 	(_: BuildContext) => isMavenOrNpm(_.projectType),
-	P.and((_) => isFullBuild(_.commandInfo.type))
+	Pred.and((_) => isFullBuild(_.commandInfo.type))
 );
 
 export const buildArtifact: Stage = {

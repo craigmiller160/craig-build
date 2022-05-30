@@ -1,7 +1,7 @@
 import { BuildContext } from '../context/BuildContext';
 import * as TE from 'fp-ts/TaskEither';
-import * as P from 'fp-ts/Predicate';
-import { match, when } from 'ts-pattern';
+import * as Pred from 'fp-ts/Predicate';
+import { match, P } from 'ts-pattern';
 import { ProjectType } from '../context/ProjectType';
 import { pipe } from 'fp-ts/function';
 import { isApplication, isDocker } from '../context/projectTypeUtils';
@@ -22,9 +22,9 @@ interface DockerCreds {
 	readonly password: string;
 }
 
-const isDockerOrApplication: P.Predicate<ProjectType> = pipe(
+const isDockerOrApplication: Pred.Predicate<ProjectType> = pipe(
 	isApplication,
-	P.or(isDocker)
+	Pred.or(isDocker)
 );
 
 const createDockerTag = (projectInfo: ProjectInfo): string =>
@@ -93,8 +93,8 @@ const removeExistingImagesIfExist = (
 	context: BuildContext
 ): TE.TaskEither<Error, string> =>
 	match(existingImages)
-		.with(
-			when<string>((_) => _.length > 0),
+		.when(
+			(_) => _.length > 0,
 			() => removeExistingImages(context)
 		)
 		.otherwise(() => TE.right(''));
@@ -130,14 +130,15 @@ const handleDockerBuildByProject = (
 	context: BuildContext
 ): TE.TaskEither<Error, BuildContext> =>
 	match(context)
-		.with({ projectType: when(isDockerOrApplication) }, runDockerBuild)
+		.with({ projectType: P.when(isDockerOrApplication) }, runDockerBuild)
 		.run();
 
-const isNotKubernetesOnly: P.Predicate<CommandType> = P.not(isKubernetesOnly);
+const isNotKubernetesOnly: Pred.Predicate<CommandType> =
+	Pred.not(isKubernetesOnly);
 
-const shouldStageExecute: P.Predicate<BuildContext> = pipe(
+const shouldStageExecute: Pred.Predicate<BuildContext> = pipe(
 	(_: BuildContext) => isDockerOrApplication(_.projectType),
-	P.and((_) => isNotKubernetesOnly(_.commandInfo.type))
+	Pred.and((_) => isNotKubernetesOnly(_.commandInfo.type))
 );
 
 const execute: StageExecuteFn = (context) =>

@@ -2,7 +2,7 @@ import { Stage } from '../stages/Stage';
 import { BuildContext } from '../context/BuildContext';
 import { StageExecution } from './StageExecution';
 import { StageExecutionStatus } from './StageExecutionStatus';
-import { match, when } from 'ts-pattern';
+import { match, P } from 'ts-pattern';
 import * as TE from 'fp-ts/TaskEither';
 import { logger } from '../logger';
 
@@ -16,7 +16,7 @@ export const shouldStageExecute =
 	(execution: StageExecution): StageExecution =>
 		match(execution)
 			.with(
-				{ stage: when((_) => _.shouldStageExecute(context)) },
+				{ stage: P.when((_) => _.shouldStageExecute(context)) },
 				(_) => _
 			)
 			.otherwise((_) => ({
