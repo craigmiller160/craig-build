@@ -269,11 +269,71 @@ describe('preparePreReleaseVersion', () => {
 	});
 
 	it('not full build, grabs pre-release version for Gradle project in Nexus', async () => {
-		throw new Error();
+		searchForMavenSnapshotsMock.mockImplementation(() =>
+			TE.right({ items: [createItem('1.1.0-20211225.003019-1')] })
+		);
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			commandInfo: {
+				type: CommandType.DockerOnly
+			},
+			projectType: ProjectType.GradleApplication,
+			projectInfo: {
+				...baseBuildContext.projectInfo,
+				group: 'io.craigmiller160',
+				name: 'my-project',
+				versionType: VersionType.PreRelease,
+				version: '1.1.0-SNAPSHOT'
+			}
+		};
+
+		const result = await preparePreReleaseVersion.execute(buildContext)();
+		expect(result).toEqualRight({
+			...buildContext,
+			projectInfo: {
+				...buildContext.projectInfo,
+				version: '1.1.0-20211225.003019-1'
+			}
+		});
+
+		expect(searchForNpmBetasMock).not.toHaveBeenCalled();
+		expect(searchForDockerBetasMock).not.toHaveBeenCalled();
+		expect(searchForMavenSnapshotsMock).toHaveBeenCalledWith(
+			'io.craigmiller160',
+			'my-project',
+			'1.1.0-*'
+		);
 	});
 
 	it('is full build, grabs pre-release version for Gradle project in Nexus', async () => {
-		throw new Error();
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.GradleApplication,
+			projectInfo: {
+				...baseBuildContext.projectInfo,
+				group: 'io.craigmiller160',
+				name: 'my-project',
+				versionType: VersionType.PreRelease,
+				version: '1.1.0-SNAPSHOT'
+			}
+		};
+
+		const result = await preparePreReleaseVersion.execute(buildContext)();
+		expect(result).toEqualRight({
+			...buildContext,
+			projectInfo: {
+				...buildContext.projectInfo,
+				version: '1.1.0-20211225.003019-1'
+			}
+		});
+
+		expect(searchForNpmBetasMock).not.toHaveBeenCalled();
+		expect(searchForDockerBetasMock).not.toHaveBeenCalled();
+		expect(searchForMavenSnapshotsMock).toHaveBeenCalledWith(
+			'io.craigmiller160',
+			'my-project',
+			'1.1.0-*'
+		);
 	});
 
 	it('not full build, cannot find pre-release version for Maven project in Nexus', async () => {
