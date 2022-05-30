@@ -1,7 +1,12 @@
 import * as TE from 'fp-ts/TaskEither';
 import { BuildContext } from '../context/BuildContext';
 import { match, P } from 'ts-pattern';
-import { isDocker, isMaven, isNpm } from '../context/projectTypeUtils';
+import {
+	isDocker,
+	isGradle,
+	isMaven,
+	isNpm
+} from '../context/projectTypeUtils';
 import { isPreRelease } from '../context/projectInfoUtils';
 import { pipe } from 'fp-ts/function';
 import {
@@ -156,7 +161,11 @@ const handleNonFullBuildMavenPreReleaseVersion = (
 				)
 			)
 		),
-		TE.map((_) => updateProjectInfo(context, _))
+		TE.map((_) => updateProjectInfo(context, _)),
+		TE.chain((ctx) => {
+			console.log('Context', ctx); // eslint-disable-line
+			return TE.left(new Error('Stopping build here'));
+		}) // TODO delete this
 	);
 };
 
@@ -286,6 +295,14 @@ const handlePreparingPreReleaseVersionByProject = (
 				projectInfo: P.when(isPreRelease)
 			},
 			handleFullBuildMavenPreReleaseVersion
+		)
+		// TODO rename callback function
+		.with(
+			{
+				projectType: P.when(isGradle),
+				projectInfo: P.when(isPreRelease)
+			},
+			handleNonFullBuildMavenPreReleaseVersion
 		)
 		.with(
 			{ projectType: P.when(isMaven), projectInfo: P.when(isPreRelease) },
