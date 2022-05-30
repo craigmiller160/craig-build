@@ -1,4 +1,3 @@
-import * as E from 'fp-ts/Either';
 import { BuildContext } from '../context/BuildContext';
 import { pipe } from 'fp-ts/function';
 import { match, when } from 'ts-pattern';
@@ -9,25 +8,18 @@ import {
 	isNpm
 } from '../context/projectTypeUtils';
 import * as TE from 'fp-ts/TaskEither';
-import { readFile } from '../functions/File';
 import { getCwd } from '../command/getCwd';
-import path from 'path';
-import {
-	MAVEN_PROJECT_FILE,
-	NPM_PROJECT_FILE
-} from '../configFileTypes/constants';
-import { parseXml } from '../functions/Xml';
 import { MavenDependency, PomXml } from '../configFileTypes/PomXml';
 import * as A from 'fp-ts/Array';
 import * as O from 'fp-ts/Option';
 import * as P from 'fp-ts/Predicate';
-import { parseJson } from '../functions/Json';
 import { PackageJson } from '../configFileTypes/PackageJson';
 import { isRelease } from '../context/projectInfoUtils';
 import { Stage, StageExecuteFn } from './Stage';
 import { ProjectType } from '../context/ProjectType';
 import { isFullBuild } from '../context/commandTypeUtils';
 import { GradleItem, readGradleProject } from '../special/gradle';
+import { getRawProjectData } from '../projectCache';
 
 const MAVEN_PROPERTY_REGEX = /\${.*}/;
 
@@ -87,17 +79,16 @@ const mavenHasSnapshotDependencies = ([
 
 const validateMavenReleaseDependencies = (
 	context: BuildContext
-): E.Either<Error, BuildContext> =>
+): TE.TaskEither<Error, BuildContext> =>
 	pipe(
-		readFile(path.resolve(getCwd(), MAVEN_PROJECT_FILE)),
-		E.chain((_) => parseXml<PomXml>(_)),
-		E.map((pomXml): PomAndProps => [pomXml, getMavenProperties(pomXml)]),
-		E.filterOrElse(
+		getRawProjectData<PomXml>(context.projectType),
+		TE.map((pomXml): PomAndProps => [pomXml, getMavenProperties(pomXml)]),
+		TE.filterOrElse(
 			mavenHasSnapshotDependencies,
 			() =>
 				new Error('Cannot have SNAPSHOT dependencies in Maven release')
 		),
-		E.map(() => context)
+		TE.map(() => context)
 	);
 
 const entries = (obj?: { [key: string]: string }): JsEntries =>
@@ -115,18 +106,17 @@ const npmHasNoBetaDependencies = (dependencyEntries: JsEntries): boolean =>
 
 const validateNpmReleaseDependencies = (
 	context: BuildContext
-): E.Either<Error, BuildContext> =>
+): TE.TaskEither<Error, BuildContext> =>
 	pipe(
-		readFile(path.resolve(getCwd(), NPM_PROJECT_FILE)),
-		E.chain((_) => parseJson<PackageJson>(_)),
-		E.map((_) =>
+		getRawProjectData<PackageJson>(context.projectType),
+		TE.map((_) =>
 			entries(_.dependencies).concat(entries(_.devDependencies))
 		),
-		E.filterOrElse(
+		TE.filterOrElse(
 			npmHasNoBetaDependencies,
 			() => new Error('Cannot have beta dependencies in NPM release')
 		),
-		E.map(() => context)
+		TE.map(() => context)
 	);
 
 const gradleHasNoSnapshotDependencies = (
@@ -154,10 +144,11 @@ const handleValidationByProject = (
 	match(context)
 		.with(
 			{ projectType: when(isMaven), projectInfo: when(isRelease) },
-			(_) => TE.fromEither(validateMavenReleaseDependencies(_))
+			validateMavenReleaseDependencies
 		)
-		.with({ projectType: when(isNpm), projectInfo: when(isRelease) }, (_) =>
-			TE.fromEither(validateNpmReleaseDependencies(_))
+		.with(
+			{ projectType: when(isNpm), projectInfo: when(isRelease) },
+			validateNpmReleaseDependencies
 		)
 		.with(
 			{ projectType: when(isGradleKotlin), projectInfo: when(isRelease) },
