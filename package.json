@@ -19,7 +19,6 @@
     "build": "yarn lint && yarn test && yarn forceBuild",
     "validate": "yarn lint && yarn test",
     "prepare": "husky install",
-    "postbuild": "node build/temp.js",
     "install": "node libScripts/gradle-install.js"
   },
   "lint-staged": {
