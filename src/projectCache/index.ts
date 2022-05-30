@@ -65,11 +65,16 @@ const readAndCacheRawProjectData = <T>(
 
 export const getRawProjectData = <T>(
 	projectType: ProjectType
-): TE.TaskEither<Error, T> =>
-	pipe(
+): TE.TaskEither<Error, T> => {
+	if (process.env.NODE_ENV === 'test') {
+		return readAndCacheRawProjectData<T>(projectType);
+	}
+
+	return pipe(
 		project,
 		O.fold(
 			() => readAndCacheRawProjectData<T>(projectType),
 			(_) => TE.right(_ as T)
 		)
 	);
+};
