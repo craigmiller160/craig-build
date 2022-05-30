@@ -135,7 +135,7 @@ const prepareVersionSearchParam = (version: string): string => {
 	return `${formattedVersion}*`;
 };
 
-const handleNonFullBuildMavenPreReleaseVersion = (
+const handleMavenPreReleaseVersionFromNexus = (
 	context: BuildContext
 ): TE.TaskEither<Error, BuildContext> => {
 	const versionSearchParam = prepareVersionSearchParam(
@@ -161,11 +161,7 @@ const handleNonFullBuildMavenPreReleaseVersion = (
 				)
 			)
 		),
-		TE.map((_) => updateProjectInfo(context, _)),
-		TE.chain((ctx) => {
-			console.log('Context', ctx); // eslint-disable-line
-			return TE.left(new Error('Stopping build here'));
-		}) // TODO delete this
+		TE.map((_) => updateProjectInfo(context, _))
 	);
 };
 
@@ -296,17 +292,16 @@ const handlePreparingPreReleaseVersionByProject = (
 			},
 			handleFullBuildMavenPreReleaseVersion
 		)
-		// TODO rename callback function
+		.with(
+			{ projectType: P.when(isMaven), projectInfo: P.when(isPreRelease) },
+			handleMavenPreReleaseVersionFromNexus
+		)
 		.with(
 			{
 				projectType: P.when(isGradle),
 				projectInfo: P.when(isPreRelease)
 			},
-			handleNonFullBuildMavenPreReleaseVersion
-		)
-		.with(
-			{ projectType: P.when(isMaven), projectInfo: P.when(isPreRelease) },
-			handleNonFullBuildMavenPreReleaseVersion
+			handleMavenPreReleaseVersionFromNexus
 		)
 		.with(
 			{ projectType: P.when(isNpm), projectInfo: P.when(isPreRelease) },
