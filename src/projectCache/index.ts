@@ -1,8 +1,23 @@
 import * as O from 'fp-ts/Option';
+import * as TE from 'fp-ts/TaskEither';
 import { ProjectType } from '../context/ProjectType';
+import { pipe } from 'fp-ts/function';
 
-let project: O.Option<object> = O.none;
+const project: O.Option<unknown> = O.none;
 
-export const getRawProjectData = <T extends object>(projectType: ProjectType): T => {
-
+const readAndCacheRawProjectData = <T>(
+	projectType: ProjectType
+): TE.TaskEither<Error, T> => {
+	throw new Error();
 };
+
+export const getRawProjectData = <T>(
+	projectType: ProjectType
+): TE.TaskEither<Error, T> =>
+	pipe(
+		project,
+		O.fold(
+			() => readAndCacheRawProjectData<T>(projectType),
+			(_) => TE.right(_ as T)
+		)
+	);
