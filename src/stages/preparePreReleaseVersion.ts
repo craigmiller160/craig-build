@@ -1,6 +1,6 @@
 import * as TE from 'fp-ts/TaskEither';
 import { BuildContext } from '../context/BuildContext';
-import { match, when } from 'ts-pattern';
+import { match, P } from 'ts-pattern';
 import { isDocker, isMaven, isNpm } from '../context/projectTypeUtils';
 import { isPreRelease } from '../context/projectInfoUtils';
 import { pipe } from 'fp-ts/function';
@@ -16,7 +16,7 @@ import { readFile } from '../functions/File';
 import { homedir } from 'os';
 import * as E from 'fp-ts/Either';
 import path from 'path';
-import * as P from 'fp-ts/Predicate';
+import * as Pred from 'fp-ts/Predicate';
 import { parseXml } from '../functions/Xml';
 import { MavenMetadataNexus } from '../configFileTypes/MavenMetadataNexus';
 import { Stage, StageExecuteFn } from './Stage';
@@ -44,10 +44,11 @@ const BETA_VERSION_REGEX = /^(?<version>.*-beta)\.(?<betaNumber>\d*)$/;
 const betaVersionRegexExecGroups =
 	regexExecGroups<BetaRegexGroups>(BETA_VERSION_REGEX);
 
-const npmBumpBetaCommandTypePredicate: P.Predicate<CommandType> = isFullBuild;
-const dockerBumpBetaCommandTypePredicate: P.Predicate<CommandType> = pipe(
+const npmBumpBetaCommandTypePredicate: Pred.Predicate<CommandType> =
+	isFullBuild;
+const dockerBumpBetaCommandTypePredicate: Pred.Predicate<CommandType> = pipe(
 	isFullBuild,
-	P.or(isDockerOnly)
+	Pred.or(isDockerOnly)
 );
 
 const findMatchingVersion = (
@@ -162,22 +163,22 @@ const handleNonFullBuildMavenPreReleaseVersion = (
 const handleBetaVersionIfFound =
 	(
 		context: BuildContext,
-		bumpBetaCommandTypePredicate: P.Predicate<CommandType>
+		bumpBetaCommandTypePredicate: Pred.Predicate<CommandType>
 	) =>
 	(versionOption: O.Option<string>) =>
 		match({ commandType: context.commandInfo.type, version: versionOption })
 			.with(
 				{
-					commandType: when(bumpBetaCommandTypePredicate),
-					version: when(isSome)
+					commandType: P.when(bumpBetaCommandTypePredicate),
+					version: P.when(isSome)
 				},
 				({ version }) => O.chain(bumpBetaVersion)(version)
 			)
-			.with({ version: when(isSome) }, ({ version }) => version)
+			.with({ version: P.when(isSome) }, ({ version }) => version)
 			.with(
 				{
-					commandType: when(bumpBetaCommandTypePredicate),
-					version: when(isNone)
+					commandType: P.when(bumpBetaCommandTypePredicate),
+					version: P.when(isNone)
 				},
 				() => O.some(`${context.projectInfo.version}.1`)
 			)
@@ -280,29 +281,32 @@ const handlePreparingPreReleaseVersionByProject = (
 	match(context)
 		.with(
 			{
-				commandInfo: { type: when(isFullBuild) },
-				projectType: when(isMaven),
-				projectInfo: when(isPreRelease)
+				commandInfo: { type: P.when(isFullBuild) },
+				projectType: P.when(isMaven),
+				projectInfo: P.when(isPreRelease)
 			},
 			handleFullBuildMavenPreReleaseVersion
 		)
 		.with(
-			{ projectType: when(isMaven), projectInfo: when(isPreRelease) },
+			{ projectType: P.when(isMaven), projectInfo: P.when(isPreRelease) },
 			handleNonFullBuildMavenPreReleaseVersion
 		)
 		.with(
-			{ projectType: when(isNpm), projectInfo: when(isPreRelease) },
+			{ projectType: P.when(isNpm), projectInfo: P.when(isPreRelease) },
 			handleNpmPreReleaseVersion
 		)
 		.with(
-			{ projectType: when(isDocker), projectInfo: when(isPreRelease) },
+			{
+				projectType: P.when(isDocker),
+				projectInfo: P.when(isPreRelease)
+			},
 			handleDockerPreReleaseVersion
 		)
 		.run();
 
 const execute: StageExecuteFn = (context) =>
 	handlePreparingPreReleaseVersionByProject(context);
-const shouldStageExecute: P.Predicate<BuildContext> = (context) =>
+const shouldStageExecute: Pred.Predicate<BuildContext> = (context) =>
 	isPreRelease(context.projectInfo);
 
 export const preparePreReleaseVersion: Stage = {

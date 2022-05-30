@@ -1,11 +1,11 @@
 import { BuildContext } from '../context/BuildContext';
 import * as TE from 'fp-ts/TaskEither';
-import { match, when } from 'ts-pattern';
+import { match, P } from 'ts-pattern';
 import { isNpm } from '../context/projectTypeUtils';
 import { pipe } from 'fp-ts/function';
 import { runCommand } from '../command/runCommand';
 import { Stage, StageExecuteFn } from './Stage';
-import * as P from 'fp-ts/Predicate';
+import * as Pred from 'fp-ts/Predicate';
 import { isFullBuild } from '../context/commandTypeUtils';
 import { readFile } from '../functions/File';
 import { getCwd } from '../command/getCwd';
@@ -57,13 +57,13 @@ const handlePublishByProject = (
 	context: BuildContext
 ): TE.TaskEither<Error, BuildContext> =>
 	match(context)
-		.with({ projectType: when(isNpm) }, publishNpmArtifact)
+		.with({ projectType: P.when(isNpm) }, publishNpmArtifact)
 		.run();
 
 const execute: StageExecuteFn = (context) => handlePublishByProject(context);
-const shouldStageExecute: P.Predicate<BuildContext> = pipe(
+const shouldStageExecute: Pred.Predicate<BuildContext> = pipe(
 	(_: BuildContext) => isNpm(_.projectType),
-	P.and((_) => isFullBuild(_.commandInfo.type))
+	Pred.and((_) => isFullBuild(_.commandInfo.type))
 );
 
 export const manuallyPublishArtifact: Stage = {
