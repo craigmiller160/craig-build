@@ -12,6 +12,7 @@ import {
 import {
 	isApplication,
 	isDocker,
+	isGradle,
 	isMaven,
 	isNpm
 } from '../context/projectTypeUtils';
@@ -111,16 +112,27 @@ const doDownloadArtifact = (
 		TE.map(() => context)
 	);
 
+const isMavenOrGradle: Pred.Predicate<ProjectType> = pipe(
+	isMaven,
+	Pred.or(isGradle)
+);
+
 const downloadArtifactByProject = (
 	context: BuildContext
 ): TE.TaskEither<Error, BuildContext> =>
 	match(context)
 		.with(
-			{ projectType: P.when(isMaven), projectInfo: P.when(isPreRelease) },
+			{
+				projectType: P.when(isMavenOrGradle),
+				projectInfo: P.when(isPreRelease)
+			},
 			(_) => doDownloadArtifact(_, searchForMavenSnapshotsExplicit)
 		)
 		.with(
-			{ projectType: P.when(isMaven), projectInfo: P.when(isRelease) },
+			{
+				projectType: P.when(isMavenOrGradle),
+				projectInfo: P.when(isRelease)
+			},
 			(_) => doDownloadArtifact(_, searchForMavenReleases)
 		)
 		.with(
