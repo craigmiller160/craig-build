@@ -2,9 +2,9 @@ import { Stage, StageExecuteFn } from './Stage';
 import { pipe } from 'fp-ts/function';
 import { ProjectType } from '../context/ProjectType';
 import { ProjectInfo } from '../context/ProjectInfo';
-import { match, when } from 'ts-pattern';
+import { match } from 'ts-pattern';
 import * as TE from 'fp-ts/TaskEither';
-import * as P from 'fp-ts/Predicate';
+import * as Pred from 'fp-ts/Predicate';
 import {
 	isDocker,
 	isGradle,
@@ -24,15 +24,15 @@ import { getRawProjectData } from '../projectCache';
 const BETA_VERSION_REGEX = /^.*-beta/;
 const SNAPSHOT_VERSION_REGEX = /^.*-SNAPSHOT/;
 
-const matchesPreReleaseRegex: P.Predicate<string> = pipe(
+const matchesPreReleaseRegex: Pred.Predicate<string> = pipe(
 	regexTest(BETA_VERSION_REGEX),
-	P.or(regexTest(SNAPSHOT_VERSION_REGEX))
+	Pred.or(regexTest(SNAPSHOT_VERSION_REGEX))
 );
 
 const getVersionType = (version: string): VersionType =>
 	match(version)
-		.with(
-			when<string>((_) => matchesPreReleaseRegex(_)),
+		.when(
+			(_) => matchesPreReleaseRegex(_),
 			() => VersionType.PreRelease
 		)
 		.otherwise(() => VersionType.Release);
@@ -102,10 +102,10 @@ const readProjectInfoByType = (
 	projectType: ProjectType
 ): TE.TaskEither<Error, ProjectInfo> =>
 	match(projectType)
-		.with(when(isMaven), readMavenProjectInfo)
-		.with(when(isNpm), readNpmProjectInfo)
-		.with(when(isDocker), readDockerProjectInfo)
-		.with(when(isGradle), readGradleProjectInfo)
+		.when(isMaven, readMavenProjectInfo)
+		.when(isNpm, readNpmProjectInfo)
+		.when(isDocker, readDockerProjectInfo)
+		.when(isGradle, readGradleProjectInfo)
 		.otherwise(() =>
 			TE.left(new Error(`Unsupported ProjectType: ${projectType}`))
 		);
@@ -118,7 +118,7 @@ const execute: StageExecuteFn = (context) =>
 			projectInfo: _
 		}))
 	);
-const shouldStageExecute: P.Predicate<BuildContext> = () => true;
+const shouldStageExecute: Pred.Predicate<BuildContext> = () => true;
 
 export const getProjectInfo: Stage = {
 	name: 'Get Project Info',
