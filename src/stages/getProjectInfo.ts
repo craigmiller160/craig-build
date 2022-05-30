@@ -1,6 +1,5 @@
 import { Stage, StageExecuteFn } from './Stage';
 import { pipe } from 'fp-ts/function';
-import * as E from 'fp-ts/Either';
 import { ProjectType } from '../context/ProjectType';
 import { ProjectInfo } from '../context/ProjectInfo';
 import { match, when } from 'ts-pattern';
@@ -12,24 +11,15 @@ import {
 	isMaven,
 	isNpm
 } from '../context/projectTypeUtils';
-import { readFile } from '../functions/File';
-import path from 'path';
-import { getCwd } from '../command/getCwd';
 import { npmSeparateGroupAndName } from '../utils/npmSeparateGroupAndName';
-import { parseJson } from '../functions/Json';
 import { PackageJson } from '../configFileTypes/PackageJson';
 import { DockerJson } from '../configFileTypes/DockerJson';
-import { parseXml } from '../functions/Xml';
 import { PomXml } from '../configFileTypes/PomXml';
-import {
-	DOCKER_PROJECT_FILE,
-	MAVEN_PROJECT_FILE,
-	NPM_PROJECT_FILE
-} from '../configFileTypes/constants';
 import { BuildContext } from '../context/BuildContext';
 import { VersionType } from '../context/VersionType';
 import { regexTest } from '../functions/RegExp';
-import { readGradleProject } from '../special/gradle';
+import { GradleProject } from '../special/gradle';
+import { getRawProjectData } from '../projectCache';
 
 const BETA_VERSION_REGEX = /^.*-beta/;
 const SNAPSHOT_VERSION_REGEX = /^.*-SNAPSHOT/;
@@ -47,11 +37,12 @@ const getVersionType = (version: string): VersionType =>
 		)
 		.otherwise(() => VersionType.Release);
 
-const readMavenProjectInfo = (): E.Either<Error, ProjectInfo> =>
+const readMavenProjectInfo = (
+	projectType: ProjectType
+): TE.TaskEither<Error, ProjectInfo> =>
 	pipe(
-		readFile(path.resolve(getCwd(), MAVEN_PROJECT_FILE)),
-		E.chain((_) => parseXml<PomXml>(_)),
-		E.map((pomXml): ProjectInfo => {
+		getRawProjectData<PomXml>(projectType),
+		TE.map((pomXml): ProjectInfo => {
 			const version = pomXml.project.version[0];
 			return {
 				group: pomXml.project.groupId[0],
@@ -62,11 +53,12 @@ const readMavenProjectInfo = (): E.Either<Error, ProjectInfo> =>
 		})
 	);
 
-const readNpmProjectInfo = (): E.Either<Error, ProjectInfo> =>
+const readNpmProjectInfo = (
+	projectType: ProjectType
+): TE.TaskEither<Error, ProjectInfo> =>
 	pipe(
-		readFile(path.resolve(getCwd(), NPM_PROJECT_FILE)),
-		E.chain((_) => parseJson<PackageJson>(_)),
-		E.map((packageJson): ProjectInfo => {
+		getRawProjectData<PackageJson>(projectType),
+		TE.map((packageJson): ProjectInfo => {
 			const [group, name] = npmSeparateGroupAndName(packageJson.name);
 			return {
 				group,
@@ -77,11 +69,12 @@ const readNpmProjectInfo = (): E.Either<Error, ProjectInfo> =>
 		})
 	);
 
-const readDockerProjectInfo = (): E.Either<Error, ProjectInfo> =>
+const readDockerProjectInfo = (
+	projectType: ProjectType
+): TE.TaskEither<Error, ProjectInfo> =>
 	pipe(
-		readFile(path.resolve(getCwd(), DOCKER_PROJECT_FILE)),
-		E.chain((_) => parseJson<DockerJson>(_)),
-		E.map((dockerJson): ProjectInfo => {
+		getRawProjectData<DockerJson>(projectType),
+		TE.map((dockerJson): ProjectInfo => {
 			const [group, name] = npmSeparateGroupAndName(dockerJson.name);
 			return {
 				group,
@@ -92,9 +85,11 @@ const readDockerProjectInfo = (): E.Either<Error, ProjectInfo> =>
 		})
 	);
 
-const readGradleProjectInfo = (): TE.TaskEither<Error, ProjectInfo> =>
+const readGradleProjectInfo = (
+	projectType: ProjectType
+): TE.TaskEither<Error, ProjectInfo> =>
 	pipe(
-		readGradleProject(getCwd()),
+		getRawProjectData<GradleProject>(projectType),
 		TE.map((buildGradle) => ({
 			group: buildGradle.info.group,
 			name: buildGradle.info.name,
@@ -107,9 +102,9 @@ const readProjectInfoByType = (
 	projectType: ProjectType
 ): TE.TaskEither<Error, ProjectInfo> =>
 	match(projectType)
-		.with(when(isMaven), () => TE.fromEither(readMavenProjectInfo()))
-		.with(when(isNpm), () => TE.fromEither(readNpmProjectInfo()))
-		.with(when(isDocker), () => TE.fromEither(readDockerProjectInfo()))
+		.with(when(isMaven), readMavenProjectInfo)
+		.with(when(isNpm), readNpmProjectInfo)
+		.with(when(isDocker), readDockerProjectInfo)
 		.with(when(isGradleKotlin), readGradleProjectInfo)
 		.otherwise(() =>
 			TE.left(new Error(`Unsupported ProjectType: ${projectType}`))
