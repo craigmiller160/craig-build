@@ -7,15 +7,23 @@ import path from 'path';
 import { readFile } from '../functions/File';
 import { getCwd } from '../command/getCwd';
 import {
+	DOCKER_PROJECT_FILE,
 	MAVEN_PROJECT_FILE,
 	NPM_PROJECT_FILE
 } from '../configFileTypes/constants';
 import { PomXml } from '../configFileTypes/PomXml';
 import { parseXml } from '../functions/Xml';
 import { match, when } from 'ts-pattern';
-import { isMaven, isNpm } from '../context/projectTypeUtils';
+import {
+	isDocker,
+	isGradleKotlin,
+	isMaven,
+	isNpm
+} from '../context/projectTypeUtils';
 import { PackageJson } from '../configFileTypes/PackageJson';
 import { parseJson } from '../functions/Json';
+import { DockerJson } from '../configFileTypes/DockerJson';
+import { readGradleProject } from '../special/gradle';
 
 let project: O.Option<unknown> = O.none;
 
@@ -31,12 +39,20 @@ const readNpmProject = (): E.Either<Error, PackageJson> =>
 		E.chain((_) => parseJson<PackageJson>(_))
 	);
 
+const readDockerProject = (): E.Either<Error, DockerJson> =>
+	pipe(
+		readFile(path.join(getCwd(), DOCKER_PROJECT_FILE)),
+		E.chain((_) => parseJson<DockerJson>(_))
+	);
+
 const readAndCacheRawProjectData = <T>(
 	projectType: ProjectType
 ): TE.TaskEither<Error, T> => {
 	const rawProjectTE: TE.TaskEither<Error, unknown> = match(projectType)
 		.with(when(isMaven), () => TE.fromEither(readMavenProject()))
 		.with(when(isNpm), () => TE.fromEither(readNpmProject()))
+		.with(when(isDocker), () => TE.fromEither(readDockerProject()))
+		.with(when(isGradleKotlin), () => readGradleProject(getCwd()))
 		.run();
 	return pipe(
 		rawProjectTE,
