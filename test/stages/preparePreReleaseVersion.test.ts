@@ -268,6 +268,14 @@ describe('preparePreReleaseVersion', () => {
 		);
 	});
 
+	it('not full build, grabs pre-release version for Gradle project in Nexus', async () => {
+		throw new Error();
+	});
+
+	it('is full build, grabs pre-release version for Gradle project in Nexus', async () => {
+		throw new Error();
+	});
+
 	it('not full build, cannot find pre-release version for Maven project in Nexus', async () => {
 		searchForMavenSnapshotsMock.mockImplementation(() =>
 			TE.right({ items: [] })
