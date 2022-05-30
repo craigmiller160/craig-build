@@ -306,6 +306,9 @@ describe('preparePreReleaseVersion', () => {
 	});
 
 	it('is full build, grabs pre-release version for Gradle project in Nexus', async () => {
+		searchForMavenSnapshotsMock.mockImplementation(() =>
+			TE.right({ items: [createItem('1.1.0-20211225.003019-1')] })
+		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
 			projectType: ProjectType.GradleApplication,
