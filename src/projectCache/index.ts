@@ -16,7 +16,7 @@ import { parseXml } from '../functions/Xml';
 import { match, when } from 'ts-pattern';
 import {
 	isDocker,
-	isGradleKotlin,
+	isGradle,
 	isMaven,
 	isNpm
 } from '../context/projectTypeUtils';
@@ -52,7 +52,7 @@ const readAndCacheRawProjectData = <T>(
 		.with(when(isMaven), () => TE.fromEither(readMavenProject()))
 		.with(when(isNpm), () => TE.fromEither(readNpmProject()))
 		.with(when(isDocker), () => TE.fromEither(readDockerProject()))
-		.with(when(isGradleKotlin), () => readGradleProject(getCwd()))
+		.with(when(isGradle), () => readGradleProject(getCwd()))
 		.run();
 	return pipe(
 		rawProjectTE,

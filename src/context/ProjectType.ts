@@ -1,8 +1,8 @@
 export enum ProjectType {
 	NpmLibrary = 'NpmLibrary',
 	MavenLibrary = 'MavenLibrary',
-	GradleKotlinLibrary = 'GradleKotlinLibrary',
-	GradleKotlinApplication = 'GradleKotlinApplication',
+	GradleLibrary = 'GradleLibrary',
+	GradleApplication = 'GradleApplication',
 	NpmApplication = 'NpmApplication',
 	MavenApplication = 'MavenApplication',
 	DockerApplication = 'DockerApplication',

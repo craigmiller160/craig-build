@@ -39,7 +39,7 @@ describe('validateDependencyVersions', () => {
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
-			projectType: ProjectType.GradleKotlinApplication,
+			projectType: ProjectType.GradleApplication,
 			projectInfo: {
 				...baseBuildContext.projectInfo,
 				versionType: VersionType.Release
@@ -92,7 +92,7 @@ describe('validateDependencyVersions', () => {
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
-			projectType: ProjectType.GradleKotlinApplication,
+			projectType: ProjectType.GradleApplication,
 			projectInfo: {
 				...baseBuildContext.projectInfo,
 				versionType: VersionType.Release
@@ -113,7 +113,7 @@ describe('validateDependencyVersions', () => {
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
-			projectType: ProjectType.GradleKotlinApplication,
+			projectType: ProjectType.GradleApplication,
 			projectInfo: {
 				...baseBuildContext.projectInfo,
 				versionType: VersionType.Release

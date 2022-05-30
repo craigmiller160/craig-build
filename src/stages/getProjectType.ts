@@ -39,11 +39,11 @@ const checkProjectFilesForType = (): E.Either<Error, ProjectType> =>
 					fileExists(_, GRADLE_KOTLIN_PROJECT_FILE) &&
 					fileExists(_, DEPLOY_PATH)
 			),
-			() => E.right(ProjectType.GradleKotlinApplication)
+			() => E.right(ProjectType.GradleApplication)
 		)
 		.with(
 			when<string>((_) => fileExists(_, GRADLE_KOTLIN_PROJECT_FILE)),
-			() => E.right(ProjectType.GradleKotlinLibrary)
+			() => E.right(ProjectType.GradleLibrary)
 		)
 		.with(
 			when<string>(

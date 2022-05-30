@@ -20,7 +20,7 @@ describe('getProjectType', () => {
 		);
 		const expectedContext: BuildContext = {
 			...buildContext,
-			projectType: ProjectType.GradleKotlinLibrary
+			projectType: ProjectType.GradleLibrary
 		};
 		const result = await getProjectType.execute(buildContext)();
 		expect(result).toEqualRight(expectedContext);
@@ -32,7 +32,7 @@ describe('getProjectType', () => {
 		);
 		const expectedContext: BuildContext = {
 			...buildContext,
-			projectType: ProjectType.GradleKotlinApplication
+			projectType: ProjectType.GradleApplication
 		};
 		const result = await getProjectType.execute(buildContext)();
 		expect(result).toEqualRight(expectedContext);

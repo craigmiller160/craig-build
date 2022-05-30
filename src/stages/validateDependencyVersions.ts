@@ -3,7 +3,7 @@ import { pipe } from 'fp-ts/function';
 import { match, when } from 'ts-pattern';
 import {
 	isDocker,
-	isGradleKotlin,
+	isGradle,
 	isMaven,
 	isNpm
 } from '../context/projectTypeUtils';
@@ -151,7 +151,7 @@ const handleValidationByProject = (
 			validateNpmReleaseDependencies
 		)
 		.with(
-			{ projectType: when(isGradleKotlin), projectInfo: when(isRelease) },
+			{ projectType: when(isGradle), projectInfo: when(isRelease) },
 			validateGradleReleaseDependencies
 		)
 		.run();

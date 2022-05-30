@@ -83,7 +83,7 @@ describe('validateProjectVersionAllowed', () => {
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
-			projectType: ProjectType.GradleKotlinApplication,
+			projectType: ProjectType.GradleApplication,
 			projectInfo: {
 				...baseBuildContext.projectInfo,
 				versionType: VersionType.Release
@@ -163,7 +163,7 @@ describe('validateProjectVersionAllowed', () => {
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
-			projectType: ProjectType.GradleKotlinApplication,
+			projectType: ProjectType.GradleApplication,
 			projectInfo: {
 				...baseBuildContext.projectInfo,
 				versionType: VersionType.Release
