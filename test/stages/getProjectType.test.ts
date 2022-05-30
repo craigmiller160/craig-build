@@ -27,7 +27,15 @@ describe('getProjectType', () => {
 	});
 
 	it('is GradleLibrary (Groovy)', async () => {
-		throw new Error();
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDir, 'gradleGroovyReleaseLibrary')
+		);
+		const expectedContext: BuildContext = {
+			...buildContext,
+			projectType: ProjectType.GradleLibrary
+		};
+		const result = await getProjectType.execute(buildContext)();
+		expect(result).toEqualRight(expectedContext);
 	});
 
 	it('is GradleApplication (Kotlin)', async () => {
@@ -43,7 +51,15 @@ describe('getProjectType', () => {
 	});
 
 	it('is GradleApplication (Groovy)', async () => {
-		throw new Error();
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDir, 'gradleGroovyReleaseApplication')
+		);
+		const expectedContext: BuildContext = {
+			...buildContext,
+			projectType: ProjectType.GradleApplication
+		};
+		const result = await getProjectType.execute(buildContext)();
+		expect(result).toEqualRight(expectedContext);
 	});
 
 	it('is NpmLibrary', async () => {
