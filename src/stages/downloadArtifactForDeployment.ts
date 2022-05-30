@@ -12,6 +12,7 @@ import {
 import {
 	isApplication,
 	isDocker,
+	isGradle,
 	isMaven,
 	isNpm
 } from '../context/projectTypeUtils';
@@ -34,9 +35,14 @@ import { Stage, StageExecuteFn } from './Stage';
 import { CommandType } from '../context/CommandType';
 import { isKubernetesOnly } from '../context/commandTypeUtils';
 
+const isMavenOrGradle: Pred.Predicate<ProjectType> = pipe(
+	isMaven,
+	Pred.or(isGradle)
+);
+
 const getExtension = (projectType: ProjectType): TE.TaskEither<Error, string> =>
 	match(projectType)
-		.when(isMaven, () => TE.right('jar'))
+		.when(isMavenOrGradle, () => TE.right('jar'))
 		.when(isNpm, () => TE.right('tgz'))
 		.otherwise(() =>
 			TE.left(new Error(`No extension for ProjectType: ${projectType}`))
@@ -116,11 +122,17 @@ const downloadArtifactByProject = (
 ): TE.TaskEither<Error, BuildContext> =>
 	match(context)
 		.with(
-			{ projectType: P.when(isMaven), projectInfo: P.when(isPreRelease) },
+			{
+				projectType: P.when(isMavenOrGradle),
+				projectInfo: P.when(isPreRelease)
+			},
 			(_) => doDownloadArtifact(_, searchForMavenSnapshotsExplicit)
 		)
 		.with(
-			{ projectType: P.when(isMaven), projectInfo: P.when(isRelease) },
+			{
+				projectType: P.when(isMavenOrGradle),
+				projectInfo: P.when(isRelease)
+			},
 			(_) => doDownloadArtifact(_, searchForMavenReleases)
 		)
 		.with(
