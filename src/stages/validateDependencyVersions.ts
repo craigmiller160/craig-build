@@ -1,6 +1,6 @@
 import { BuildContext } from '../context/BuildContext';
 import { pipe } from 'fp-ts/function';
-import { match, when } from 'ts-pattern';
+import { match, P } from 'ts-pattern';
 import {
 	isDocker,
 	isGradle,
@@ -12,7 +12,7 @@ import { getCwd } from '../command/getCwd';
 import { MavenDependency, PomXml } from '../configFileTypes/PomXml';
 import * as A from 'fp-ts/Array';
 import * as O from 'fp-ts/Option';
-import * as P from 'fp-ts/Predicate';
+import * as Pred from 'fp-ts/Predicate';
 import { PackageJson } from '../configFileTypes/PackageJson';
 import { isRelease } from '../context/projectInfoUtils';
 import { Stage, StageExecuteFn } from './Stage';
@@ -59,8 +59,8 @@ const mavenReplaceVersionProperty = (
 	version: string
 ): string =>
 	match(version)
-		.with(
-			when<string>((_) => MAVEN_PROPERTY_REGEX.test(_)),
+		.when(
+			(_) => MAVEN_PROPERTY_REGEX.test(_),
 			(_) => mvnProps[_.replace(/^\${/, '').replace(/}$/, '')]
 		)
 		.otherwise(() => version);
@@ -143,29 +143,29 @@ const handleValidationByProject = (
 ): TE.TaskEither<Error, BuildContext> =>
 	match(context)
 		.with(
-			{ projectType: when(isMaven), projectInfo: when(isRelease) },
+			{ projectType: P.when(isMaven), projectInfo: P.when(isRelease) },
 			validateMavenReleaseDependencies
 		)
 		.with(
-			{ projectType: when(isNpm), projectInfo: when(isRelease) },
+			{ projectType: P.when(isNpm), projectInfo: P.when(isRelease) },
 			validateNpmReleaseDependencies
 		)
 		.with(
-			{ projectType: when(isGradle), projectInfo: when(isRelease) },
+			{ projectType: P.when(isGradle), projectInfo: P.when(isRelease) },
 			validateGradleReleaseDependencies
 		)
 		.run();
 
-const isNotDocker: P.Predicate<ProjectType> = P.not(isDocker);
+const isNotDocker: Pred.Predicate<ProjectType> = Pred.not(isDocker);
 
 const execute: StageExecuteFn = (context) => handleValidationByProject(context);
-const isNonDockerRelease: P.Predicate<BuildContext> = pipe(
+const isNonDockerRelease: Pred.Predicate<BuildContext> = pipe(
 	(_: BuildContext) => isNotDocker(_.projectType),
-	P.and((_) => isRelease(_.projectInfo))
+	Pred.and((_) => isRelease(_.projectInfo))
 );
-const shouldStageExecute: P.Predicate<BuildContext> = pipe(
+const shouldStageExecute: Pred.Predicate<BuildContext> = pipe(
 	isNonDockerRelease,
-	P.and((_) => isFullBuild(_.commandInfo.type))
+	Pred.and((_) => isFullBuild(_.commandInfo.type))
 );
 
 export const validateDependencyVersions: Stage = {
