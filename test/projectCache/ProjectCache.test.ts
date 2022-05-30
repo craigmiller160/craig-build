@@ -42,12 +42,12 @@ describe('caching raw project data', () => {
 		expect(result).toEqualRight(expectedContext);
 
 		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDir, 'MavenReleaseLibrary')
+			path.resolve(baseWorkingDir, 'npmPreReleaseLibrary')
 		);
 
 		const differentBuildContext: BuildContext = {
 			...baseBuildContext,
-			projectType: ProjectType.MavenLibrary
+			projectType: ProjectType.NpmLibrary
 		};
 		// Re-uses the same project file from cache despite args being different
 		const result2 = await getProjectInfo.execute(differentBuildContext)();
