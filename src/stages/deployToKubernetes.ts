@@ -1,6 +1,6 @@
 import { BuildContext } from '../context/BuildContext';
 import * as TE from 'fp-ts/TaskEither';
-import { match, when } from 'ts-pattern';
+import { match, P } from 'ts-pattern';
 import { isApplication } from '../context/projectTypeUtils';
 import { pipe } from 'fp-ts/function';
 import { listFilesInDir, readFile } from '../functions/File';
@@ -9,7 +9,7 @@ import { getCwd } from '../command/getCwd';
 import * as A from 'fp-ts/Array';
 import * as E from 'fp-ts/Either';
 import { runCommand } from '../command/runCommand';
-import * as P from 'fp-ts/Predicate';
+import * as Pred from 'fp-ts/Predicate';
 import { Stage, StageExecuteFn } from './Stage';
 import { parseYaml } from '../functions/Yaml';
 import { KubeDeployment } from '../configFileTypes/KubeDeployment';
@@ -83,11 +83,11 @@ const handleDeployByProject = (
 	context: BuildContext
 ): TE.TaskEither<Error, BuildContext> =>
 	match(context)
-		.with({ projectType: when(isApplication) }, doDeploy)
+		.with({ projectType: P.when(isApplication) }, doDeploy)
 		.run();
 
 const execute: StageExecuteFn = (context) => handleDeployByProject(context);
-const shouldStageExecute: P.Predicate<BuildContext> = (_: BuildContext) =>
+const shouldStageExecute: Pred.Predicate<BuildContext> = (_: BuildContext) =>
 	isApplication(_.projectType);
 
 export const deployToKubernetes: Stage = {

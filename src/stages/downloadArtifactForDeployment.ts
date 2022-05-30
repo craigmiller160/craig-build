@@ -1,6 +1,6 @@
 import { BuildContext } from '../context/BuildContext';
 import * as TE from 'fp-ts/TaskEither';
-import { match, when } from 'ts-pattern';
+import { match, P } from 'ts-pattern';
 import {
 	downloadArtifact,
 	NexusRepoGroupSearchFn,
@@ -29,15 +29,15 @@ import * as O from 'fp-ts/Option';
 import { getCwd } from '../command/getCwd';
 import { mkdir, rmDirIfExists } from '../functions/File';
 import * as E from 'fp-ts/Either';
-import * as P from 'fp-ts/Predicate';
+import * as Pred from 'fp-ts/Predicate';
 import { Stage, StageExecuteFn } from './Stage';
 import { CommandType } from '../context/CommandType';
 import { isKubernetesOnly } from '../context/commandTypeUtils';
 
 const getExtension = (projectType: ProjectType): TE.TaskEither<Error, string> =>
 	match(projectType)
-		.with(when(isMaven), () => TE.right('jar'))
-		.with(when(isNpm), () => TE.right('tgz'))
+		.when(isMaven, () => TE.right('jar'))
+		.when(isNpm, () => TE.right('tgz'))
 		.otherwise(() =>
 			TE.left(new Error(`No extension for ProjectType: ${projectType}`))
 		);
@@ -116,33 +116,35 @@ const downloadArtifactByProject = (
 ): TE.TaskEither<Error, BuildContext> =>
 	match(context)
 		.with(
-			{ projectType: when(isMaven), projectInfo: when(isPreRelease) },
+			{ projectType: P.when(isMaven), projectInfo: P.when(isPreRelease) },
 			(_) => doDownloadArtifact(_, searchForMavenSnapshotsExplicit)
 		)
 		.with(
-			{ projectType: when(isMaven), projectInfo: when(isRelease) },
+			{ projectType: P.when(isMaven), projectInfo: P.when(isRelease) },
 			(_) => doDownloadArtifact(_, searchForMavenReleases)
 		)
 		.with(
-			{ projectType: when(isNpm), projectInfo: when(isPreRelease) },
+			{ projectType: P.when(isNpm), projectInfo: P.when(isPreRelease) },
 			(_) => doDownloadArtifact(_, searchForNpmBetas)
 		)
-		.with({ projectType: when(isNpm), projectInfo: when(isRelease) }, (_) =>
-			doDownloadArtifact(_, searchForNpmReleases)
+		.with(
+			{ projectType: P.when(isNpm), projectInfo: P.when(isRelease) },
+			(_) => doDownloadArtifact(_, searchForNpmReleases)
 		)
 		.run();
 
-const isNotDocker: P.Predicate<ProjectType> = P.not(isDocker);
-const isNotKubernetesOnly: P.Predicate<CommandType> = P.not(isKubernetesOnly);
+const isNotDocker: Pred.Predicate<ProjectType> = Pred.not(isDocker);
+const isNotKubernetesOnly: Pred.Predicate<CommandType> =
+	Pred.not(isKubernetesOnly);
 
 const execute: StageExecuteFn = (context) => downloadArtifactByProject(context);
-const isNonDockerApplication: P.Predicate<BuildContext> = pipe(
+const isNonDockerApplication: Pred.Predicate<BuildContext> = pipe(
 	(_: BuildContext) => isNotDocker(_.projectType),
-	P.and((_) => isApplication(_.projectType))
+	Pred.and((_) => isApplication(_.projectType))
 );
-const shouldStageExecute: P.Predicate<BuildContext> = pipe(
+const shouldStageExecute: Pred.Predicate<BuildContext> = pipe(
 	isNonDockerApplication,
-	P.and((_) => isNotKubernetesOnly(_.commandInfo.type))
+	Pred.and((_) => isNotKubernetesOnly(_.commandInfo.type))
 );
 
 export const downloadArtifactForDeployment: Stage = {

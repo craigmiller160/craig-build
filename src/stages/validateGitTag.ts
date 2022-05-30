@@ -1,11 +1,11 @@
 import { BuildContext } from '../context/BuildContext';
 import * as TE from 'fp-ts/TaskEither';
 import { pipe } from 'fp-ts/function';
-import { match, when } from 'ts-pattern';
+import { match, P } from 'ts-pattern';
 import { isRelease } from '../context/projectInfoUtils';
 import { runCommand } from '../command/runCommand';
 import * as A from 'fp-ts/Array';
-import * as P from 'fp-ts/Predicate';
+import * as Pred from 'fp-ts/Predicate';
 import { Stage, StageExecuteFn } from './Stage';
 import { isFullBuild, isKubernetesOnly } from '../context/commandTypeUtils';
 import { isDocker } from '../context/projectTypeUtils';
@@ -33,23 +33,24 @@ const handleValidationByProject = (
 	context: BuildContext
 ): TE.TaskEither<Error, BuildContext> =>
 	match(context)
-		.with({ projectInfo: when(isRelease) }, executeGitTagValidation)
+		.with({ projectInfo: P.when(isRelease) }, executeGitTagValidation)
 		.run();
 
-const isFullBuildAndReleaseVersion: P.Predicate<BuildContext> = pipe(
+const isFullBuildAndReleaseVersion: Pred.Predicate<BuildContext> = pipe(
 	(_: BuildContext) => isFullBuild(_.commandInfo.type),
-	P.and((_) => isRelease(_.projectInfo))
+	Pred.and((_) => isRelease(_.projectInfo))
 );
-const isDockerReleaseProjectNoKubernetesOnly: P.Predicate<BuildContext> = pipe(
-	(_: BuildContext) => isDocker(_.projectType),
-	P.and((_) => isRelease(_.projectInfo)),
-	P.and(P.not((_) => isKubernetesOnly(_.commandInfo.type)))
-);
+const isDockerReleaseProjectNoKubernetesOnly: Pred.Predicate<BuildContext> =
+	pipe(
+		(_: BuildContext) => isDocker(_.projectType),
+		Pred.and((_) => isRelease(_.projectInfo)),
+		Pred.and(Pred.not((_) => isKubernetesOnly(_.commandInfo.type)))
+	);
 
 const execute: StageExecuteFn = (context) => handleValidationByProject(context);
-const shouldStageExecute: P.Predicate<BuildContext> = pipe(
+const shouldStageExecute: Pred.Predicate<BuildContext> = pipe(
 	isFullBuildAndReleaseVersion,
-	P.or(isDockerReleaseProjectNoKubernetesOnly)
+	Pred.or(isDockerReleaseProjectNoKubernetesOnly)
 );
 
 export const validateGitTag: Stage = {

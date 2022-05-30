@@ -1,7 +1,7 @@
 import { BuildContext } from '../context/BuildContext';
 import { pipe } from 'fp-ts/function';
 import * as TE from 'fp-ts/TaskEither';
-import { match, when } from 'ts-pattern';
+import { match, P } from 'ts-pattern';
 import { isDocker, isJvm, isNpm } from '../context/projectTypeUtils';
 import {
 	NexusRepoGroupSearchFn,
@@ -13,7 +13,7 @@ import { NexusSearchResult } from '../services/NexusSearchResult';
 import * as A from 'fp-ts/Array';
 import { isRelease } from '../context/projectInfoUtils';
 import { Stage, StageExecuteFn } from './Stage';
-import * as P from 'fp-ts/Predicate';
+import * as Pred from 'fp-ts/Predicate';
 import { isDockerOnly, isFullBuild } from '../context/commandTypeUtils';
 
 const isReleaseVersionUnique = (
@@ -46,14 +46,16 @@ const handleValidationByProject = (
 	context: BuildContext
 ): TE.TaskEither<Error, BuildContext> =>
 	match(context)
-		.with({ projectType: when(isJvm), projectInfo: when(isRelease) }, (_) =>
-			validateReleaseVersion(_, searchForMavenReleases)
-		)
-		.with({ projectType: when(isNpm), projectInfo: when(isRelease) }, (_) =>
-			validateReleaseVersion(_, searchForNpmReleases)
+		.with(
+			{ projectType: P.when(isJvm), projectInfo: P.when(isRelease) },
+			(_) => validateReleaseVersion(_, searchForMavenReleases)
 		)
 		.with(
-			{ projectType: when(isDocker), projectInfo: when(isRelease) },
+			{ projectType: P.when(isNpm), projectInfo: P.when(isRelease) },
+			(_) => validateReleaseVersion(_, searchForNpmReleases)
+		)
+		.with(
+			{ projectType: P.when(isDocker), projectInfo: P.when(isRelease) },
 			(_) => validateReleaseVersion(_, searchForDockerReleases)
 		)
 		.run();
@@ -64,20 +66,21 @@ const execute: StageExecuteFn = (context) =>
 		TE.map(() => context)
 	);
 
-const isFullBuildAndRelease: P.Predicate<BuildContext> = pipe(
+const isFullBuildAndRelease: Pred.Predicate<BuildContext> = pipe(
 	(_: BuildContext) => isRelease(_.projectInfo),
-	P.and((_) => isFullBuild(_.commandInfo.type))
+	Pred.and((_) => isFullBuild(_.commandInfo.type))
 );
 
-const isDockerOnlyAndDockerProjectAndRelease: P.Predicate<BuildContext> = pipe(
-	(_: BuildContext) => isDockerOnly(_.commandInfo.type),
-	P.and((_) => isDocker(_.projectType)),
-	P.and((_) => isRelease(_.projectInfo))
-);
+const isDockerOnlyAndDockerProjectAndRelease: Pred.Predicate<BuildContext> =
+	pipe(
+		(_: BuildContext) => isDockerOnly(_.commandInfo.type),
+		Pred.and((_) => isDocker(_.projectType)),
+		Pred.and((_) => isRelease(_.projectInfo))
+	);
 
-const shouldStageExecute: P.Predicate<BuildContext> = pipe(
+const shouldStageExecute: Pred.Predicate<BuildContext> = pipe(
 	isFullBuildAndRelease,
-	P.or(isDockerOnlyAndDockerProjectAndRelease)
+	Pred.or(isDockerOnlyAndDockerProjectAndRelease)
 );
 
 export const validateProjectVersionAllowed: Stage = {

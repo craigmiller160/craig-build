@@ -1,11 +1,11 @@
 import { BuildContext } from '../context/BuildContext';
 import * as TE from 'fp-ts/TaskEither';
-import { match, when } from 'ts-pattern';
+import { match, P } from 'ts-pattern';
 import { wait } from '../utils/wait';
 import { isApplication, isDocker } from '../context/projectTypeUtils';
 import { pipe } from 'fp-ts/function';
 import { ProjectType } from '../context/ProjectType';
-import * as P from 'fp-ts/Predicate';
+import * as Pred from 'fp-ts/Predicate';
 import { Stage, StageExecuteFn } from './Stage';
 import { isKubernetesOnly } from '../context/commandTypeUtils';
 import { CommandType } from '../context/CommandType';
@@ -22,26 +22,27 @@ const waitForNonDockerApplication = (
 		TE.mapLeft(() => new Error('Error waiting on Nexus'))
 	);
 
-const isNonDockerApplication: P.Predicate<ProjectType> = pipe(
+const isNonDockerApplication: Pred.Predicate<ProjectType> = pipe(
 	isApplication,
-	P.and(P.not(isDocker))
+	Pred.and(Pred.not(isDocker))
 );
-const isNotKuberntesOnly: P.Predicate<CommandType> = P.not(isKubernetesOnly);
+const isNotKuberntesOnly: Pred.Predicate<CommandType> =
+	Pred.not(isKubernetesOnly);
 
 const handleWaitingByProject = (
 	context: BuildContext
 ): TE.TaskEither<Error, BuildContext> =>
 	match(context)
 		.with(
-			{ projectType: when(isNonDockerApplication) },
+			{ projectType: P.when(isNonDockerApplication) },
 			waitForNonDockerApplication
 		)
 		.run();
 
 const execute: StageExecuteFn = (context) => handleWaitingByProject(context);
-const shouldStageExecute: P.Predicate<BuildContext> = pipe(
+const shouldStageExecute: Pred.Predicate<BuildContext> = pipe(
 	(_: BuildContext) => isNonDockerApplication(_.projectType),
-	P.and((_) => isNotKuberntesOnly(_.commandInfo.type))
+	Pred.and((_) => isNotKuberntesOnly(_.commandInfo.type))
 );
 
 export const waitOnNexusUpdate: Stage = {

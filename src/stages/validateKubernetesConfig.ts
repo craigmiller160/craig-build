@@ -1,5 +1,5 @@
 import { BuildContext } from '../context/BuildContext';
-import { match, when } from 'ts-pattern';
+import { match, P } from 'ts-pattern';
 import { isApplication } from '../context/projectTypeUtils';
 import * as E from 'fp-ts/Either';
 import { pipe } from 'fp-ts/function';
@@ -15,7 +15,7 @@ import {
 import { parseYaml } from '../functions/Yaml';
 import { KubeDeployment } from '../configFileTypes/KubeDeployment';
 import { stringifyJson } from '../functions/Json';
-import * as P from 'fp-ts/Predicate';
+import * as Pred from 'fp-ts/Predicate';
 import { Stage, StageExecuteFn } from './Stage';
 import { logger } from '../logger';
 import * as EU from '../functions/EitherUtils';
@@ -32,8 +32,8 @@ export interface KubeValues {
 const evaluateImageRegex = (image?: string): E.Either<Error, KubeValues> =>
 	match(image ?? '')
 		.with('', () => E.left(new Error('Kubernetes config is missing image')))
-		.with(
-			when<string>((_) => KUBE_IMAGE_REGEX.test(_)),
+		.when(
+			(_) => KUBE_IMAGE_REGEX.test(_),
 			(_) =>
 				E.right(
 					KUBE_IMAGE_REGEX.exec(_)?.groups as unknown as KubeValues
@@ -96,12 +96,12 @@ const validateConfigByProject = (
 	context: BuildContext
 ): E.Either<Error, BuildContext> =>
 	match(context)
-		.with({ projectType: when(isApplication) }, readAndValidateConfig)
+		.with({ projectType: P.when(isApplication) }, readAndValidateConfig)
 		.run();
 
 const execute: StageExecuteFn = (context) =>
 	pipe(validateConfigByProject(context), TE.fromEither);
-const shouldStageExecute: P.Predicate<BuildContext> = (context) =>
+const shouldStageExecute: Pred.Predicate<BuildContext> = (context) =>
 	isApplication(context.projectType);
 
 export const validateKubernetesConfig: Stage = {

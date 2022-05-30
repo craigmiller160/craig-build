@@ -13,7 +13,7 @@ import {
 } from '../configFileTypes/constants';
 import { PomXml } from '../configFileTypes/PomXml';
 import { parseXml } from '../functions/Xml';
-import { match, when } from 'ts-pattern';
+import { match } from 'ts-pattern';
 import {
 	isDocker,
 	isGradle,
@@ -49,10 +49,10 @@ const readAndCacheRawProjectData = <T>(
 	projectType: ProjectType
 ): TE.TaskEither<Error, T> => {
 	const rawProjectTE: TE.TaskEither<Error, unknown> = match(projectType)
-		.with(when(isMaven), () => TE.fromEither(readMavenProject()))
-		.with(when(isNpm), () => TE.fromEither(readNpmProject()))
-		.with(when(isDocker), () => TE.fromEither(readDockerProject()))
-		.with(when(isGradle), () => readGradleProject(getCwd()))
+		.when(isMaven, () => TE.fromEither(readMavenProject()))
+		.when(isNpm, () => TE.fromEither(readNpmProject()))
+		.when(isDocker, () => TE.fromEither(readDockerProject()))
+		.when(isGradle, () => readGradleProject(getCwd()))
 		.run();
 	return pipe(
 		rawProjectTE,
