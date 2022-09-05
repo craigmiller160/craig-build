@@ -6,7 +6,7 @@
     "craig-build": "build/index.js"
   },
   "publishConfig": {
-    "registry": "https://craigmiller160.ddns.net:30003/repository/npm-private/"
+    "registry": "https://nexus-craigmiller160.ddns.net/repository/npm-private/"
   },
   "files": [
     "build",

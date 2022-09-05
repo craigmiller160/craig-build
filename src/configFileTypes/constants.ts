@@ -8,5 +8,5 @@ export const KUBERNETES_DEPLOY_FILE = path.join(
 	DEPLOY_DIRECTORY,
 	'deployment.yml'
 );
-export const DOCKER_REPO_PREFIX = 'craigmiller160.ddns.net:30004';
+export const DOCKER_REPO_PREFIX = 'nexus-docker-craigmiller160.ddns.net';
 export const IMAGE_VERSION_ENV = '${KUBE_IMG_VERSION}';

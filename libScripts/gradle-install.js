@@ -7,7 +7,7 @@ const { GRADLE_TOOL_VERSION, CRAIG_BUILD_GRADLE_DIR, GRADLE_TOOL_FILE } =
 	getConstants();
 
 const restApiInstance = axios.create({
-	baseURL: 'https://craigmiller160.ddns.net:30003/service/rest/v1'
+	baseURL: 'https://nexus-craigmiller160.ddns.net/service/rest/v1'
 });
 
 const streamPromise = (stream) =>
