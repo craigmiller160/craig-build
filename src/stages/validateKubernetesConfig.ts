@@ -21,7 +21,7 @@ import { logger } from '../logger';
 import * as EU from '../functions/EitherUtils';
 
 const KUBE_IMAGE_REGEX =
-	/^(?<repoPrefix>.*:\d*)\/(?<imageName>.*):(?<imageVersion>.*)$/;
+	/^(?<repoPrefix>.*)\/(?<imageName>.*):(?<imageVersion>.*)$/;
 
 export interface KubeValues {
 	repoPrefix: string;
