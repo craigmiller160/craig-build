@@ -36,7 +36,7 @@ const validateCommands = (numCommands = 5) => {
 	let callCount = 1;
 	expect(runCommandMock).toHaveBeenNthCalledWith(
 		callCount,
-		'sudo docker login craigmiller160.ddns.net:30004 -u ${user} -p ${password}',
+		'sudo docker login nexus-docker-craigmiller160.ddns.net -u ${user} -p ${password}',
 		{ printOutput: true, variables: { user: 'user', password: 'password' } }
 	);
 	callCount++;
@@ -56,13 +56,13 @@ const validateCommands = (numCommands = 5) => {
 	}
 	expect(runCommandMock).toHaveBeenNthCalledWith(
 		callCount,
-		'sudo docker build --platform amd64 --network=host -t craigmiller160.ddns.net:30004/my-project:1.0.0 .',
+		'sudo docker build --platform amd64 --network=host -t nexus-docker-craigmiller160.ddns.net/my-project:1.0.0 .',
 		{ printOutput: true, cwd: path.join('/root', 'deploy') }
 	);
 	callCount++;
 	expect(runCommandMock).toHaveBeenNthCalledWith(
 		callCount,
-		'sudo docker push craigmiller160.ddns.net:30004/my-project:1.0.0',
+		'sudo docker push nexus-docker-craigmiller160.ddns.net/my-project:1.0.0',
 		{ printOutput: true }
 	);
 };

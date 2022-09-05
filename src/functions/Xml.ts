@@ -9,7 +9,7 @@ export const parseXml = <T>(xml: string): E.Either<Error, T> =>
 		E.tryCatch(() => {
 			let parsed: O.Option<T> = O.none;
 			const parser = new Parser();
-			parser.parseString(xml, (error: Error, result: T) => {
+			parser.parseString(xml, (error: Error | null, result: T) => {
 				if (error) {
 					throw error;
 				}

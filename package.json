@@ -6,7 +6,7 @@
     "craig-build": "build/index.js"
   },
   "publishConfig": {
-    "registry": "https://craigmiller160.ddns.net:30003/repository/npm-private/"
+    "registry": "https://nexus-craigmiller160.ddns.net/repository/npm-private/"
   },
   "files": [
     "build",
@@ -33,10 +33,10 @@
     "@types/semver": "^7.3.4",
     "@types/tmp": "^0.2.0",
     "@types/xml2js": "^0.4.8",
-    "@typescript-eslint/eslint-plugin": "^5.7.0",
-    "@typescript-eslint/parser": "^5.7.0",
+    "@typescript-eslint/eslint-plugin": "^5.36.2",
+    "@typescript-eslint/parser": "^5.36.2",
     "axios-mock-adapter": "^1.19.0",
-    "eslint": "^8.5.0",
+    "eslint": "8.22.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
     "husky": "^7.0.4",
@@ -49,7 +49,7 @@
     "tmp": "^0.2.1",
     "ts-jest": "^26.5.0",
     "ts-node": "^9.1.1",
-    "typescript": "^4.1.3"
+    "typescript": "^4.8.2"
   },
   "dependencies": {
     "axios": "^0.21.1",
