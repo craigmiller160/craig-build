@@ -16,6 +16,7 @@ import { CommandType } from '../context/CommandType';
 import { isKubernetesOnly } from '../context/commandTypeUtils';
 import path from 'path';
 import { getCwd } from '../command/getCwd';
+import { createDockerImageTag } from '../utils/dockerUtils';
 
 interface DockerCreds {
 	readonly userName: string;
@@ -26,9 +27,6 @@ const isDockerOrApplication: Pred.Predicate<ProjectType> = pipe(
 	isApplication,
 	Pred.or(isDocker)
 );
-
-const createDockerTag = (projectInfo: ProjectInfo): string =>
-	`${DOCKER_REPO_PREFIX}/${projectInfo.name}:${projectInfo.version}`;
 
 const getAndValidateDockerEnvVariables = (): TE.TaskEither<
 	Error,
@@ -114,7 +112,7 @@ const pushDockerImage = (dockerTag: string): TE.TaskEither<Error, string> =>
 const runDockerBuild = (
 	context: BuildContext
 ): TE.TaskEither<Error, BuildContext> => {
-	const dockerTag = createDockerTag(context.projectInfo);
+	const dockerTag = createDockerImageTag(context.projectInfo);
 	return pipe(
 		getAndValidateDockerEnvVariables(),
 		TE.chain(loginToNexusDocker),

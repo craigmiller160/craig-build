@@ -14,6 +14,7 @@ import { Stage, StageExecuteFn } from './Stage';
 import { parseYaml } from '../functions/Yaml';
 import { KubeDeployment } from '../configFileTypes/KubeDeployment';
 import { DeploymentValues } from '../configFileTypes/DeploymentValues';
+import { createDockerImageTag } from '../utils/dockerUtils';
 
 const findConfigmaps = (deployDir: string): TE.TaskEither<Error, string[]> =>
 	pipe(
@@ -58,28 +59,43 @@ const getDeploymentName = (deployDir: string): E.Either<Error, string> =>
  * 5) Run command to wait on deployment
  */
 
+// TODO how to handle install vs upgrade?
 const doDeploy = (
 	context: BuildContext
 ): TE.TaskEither<Error, BuildContext> => {
 	const deployDir = path.join(getCwd(), 'deploy');
+	const image = createDockerImageTag(context.projectInfo);
 	return pipe(
 		getDeploymentName(deployDir),
 		TE.fromEither,
-		TE.bindTo('deploymentName'),
-		TE.chainFirst(() =>
+		// TODO may not need binding here
+		// TODO move some values in command to constants
+		TE.chainFirst((deploymentName) =>
 			runCommand(
-				`KUBE_IMG_VERSION=${context.projectInfo.version} envsubst < deployment.yml | kubectl apply -f -`,
+				`helm install ${deploymentName} ./chart --kube-context=microk8s-prod --namespace apps-prod --values ./chart/values.yml --set deployment.image ${image}`,
 				{
 					printOutput: true,
 					cwd: deployDir
 				}
 			)
 		),
-		TE.chainFirst(({ deploymentName }) =>
-			runCommand(`kubectl rollout restart deployment ${deploymentName}`, {
-				printOutput: true,
-				cwd: deployDir
-			})
+		TE.chainFirst((deploymentName) =>
+			runCommand(
+				`kubectl rollout restart deployment ${deploymentName} -n apps-prod`,
+				{
+					printOutput: true,
+					cwd: deployDir
+				}
+			)
+		),
+		TE.chainFirst((deploymentName) =>
+			runCommand(
+				`kubectl rollout status deployment ${deploymentName} -n apps-prod`,
+				{
+					printOutput: true,
+					cwd: deployDir
+				}
+			)
 		),
 		TE.map(() => context)
 	);
