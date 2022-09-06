@@ -1,5 +1,6 @@
 import fs from 'fs';
 import * as E from 'fp-ts/Either';
+import * as O from 'fp-ts/Option';
 import { unknownToError } from './unknownToError';
 import { pipe } from 'fp-ts/function';
 import { identity } from 'fp-ts/function';
@@ -21,9 +22,15 @@ export const rmDirIfExists = (dirPath: string): E.Either<Error, void> =>
 	}, unknownToError);
 
 export const mkdir = (dirPath: string): E.Either<Error, string> =>
-	E.tryCatch(
-		() => fs.mkdirSync(dirPath, { recursive: true }),
-		unknownToError
+	pipe(
+		E.tryCatch(
+			() => fs.mkdirSync(dirPath, { recursive: true }),
+			unknownToError
+		),
+		E.map(O.fromNullable),
+		E.chain(
+			O.fold(() => E.left(new Error('mkdir returned undefined')), E.right)
+		)
 	);
 
 export const listFilesInDir = (dirPath: string): E.Either<Error, string[]> =>
