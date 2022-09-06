@@ -31,7 +31,7 @@ describe('validateKubernetesConfig', () => {
 		jest.resetAllMocks();
 	});
 
-	it('kubernetes config is valid', async () => {
+	it.skip('kubernetes config is valid', async () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(baseWorkingDir, 'mavenReleaseApplication')
 		);
@@ -45,7 +45,7 @@ describe('validateKubernetesConfig', () => {
 		expect(result).toEqualRight(buildContext);
 	});
 
-	it('kubernetes config does not have version placeholder', async () => {
+	it.skip('kubernetes config does not have version placeholder', async () => {
 		const kubeValues: KubeValues = {
 			repoPrefix: DOCKER_REPO_PREFIX,
 			imageName: 'email-service',
@@ -73,7 +73,7 @@ describe('validateKubernetesConfig', () => {
 		);
 	});
 
-	it('kubernetes config has wrong image name', async () => {
+	it.skip('kubernetes config has wrong image name', async () => {
 		const kubeValues: KubeValues = {
 			repoPrefix: DOCKER_REPO_PREFIX,
 			imageName: 'other-image',
@@ -101,7 +101,7 @@ describe('validateKubernetesConfig', () => {
 		);
 	});
 
-	it('kubernetes config has wrong repo prefix', async () => {
+	it.skip('kubernetes config has wrong repo prefix', async () => {
 		const kubeValues: KubeValues = {
 			repoPrefix: 'foobar.ddns.net:30004',
 			imageName: 'email-service',
@@ -129,7 +129,7 @@ describe('validateKubernetesConfig', () => {
 		);
 	});
 
-	it('kubernetes config has totally image not matching regex', async () => {
+	it.skip('kubernetes config has totally image not matching regex', async () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(baseWorkingDir, 'mavenReleaseApplicationInvalidImage')
 		);
@@ -145,7 +145,7 @@ describe('validateKubernetesConfig', () => {
 		);
 	});
 
-	it('kubernetes config has no image', async () => {
+	it.skip('kubernetes config has no image', async () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(baseWorkingDir, 'mavenReleaseApplicationNoImage')
 		);
