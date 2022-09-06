@@ -36,7 +36,7 @@ const isDeploymentInstalled =
 
 const getHelmInstallOrUpgrade = (
 	deploymentName: string
-): TE.TaskEither<Error, string> => {
+): TE.TaskEither<Error, string> =>
 	pipe(
 		runCommand(
 			`helm list --kube-context=${K8S_CTX} --namespace ${K8S_NS}`,
@@ -44,11 +44,10 @@ const getHelmInstallOrUpgrade = (
 				printOutput: true
 			}
 		),
-		TE.map(isDeploymentInstalled(deploymentName))
+		TE.map(isDeploymentInstalled(deploymentName)),
+		TE.map((isInstalled) => (isInstalled ? 'upgrade' : 'install'))
 	);
-};
 
-// TODO how to handle install vs upgrade?
 const doDeploy = (
 	context: BuildContext
 ): TE.TaskEither<Error, BuildContext> => {
@@ -57,22 +56,26 @@ const doDeploy = (
 	return pipe(
 		getDeploymentName(deployDir),
 		TE.fromEither,
+		TE.bindTo('deploymentName'),
+		TE.bind('helmCommand', ({ deploymentName }) =>
+			getHelmInstallOrUpgrade(deploymentName)
+		),
 		TE.chainFirst(() =>
 			runCommand(`kubectl config use-context ${K8S_CTX}`, {
 				printOutput: true,
 				cwd: deployDir
 			})
 		),
-		TE.chainFirst((deploymentName) =>
+		TE.chainFirst(({ deploymentName, helmCommand }) =>
 			runCommand(
-				`helm install ${deploymentName} ./chart --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml --set app_deployment.deployment.image ${image}`,
+				`helm ${helmCommand} ${deploymentName} ./chart --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml --set app_deployment.deployment.image ${image}`,
 				{
 					printOutput: true,
 					cwd: deployDir
 				}
 			)
 		),
-		TE.chainFirst((deploymentName) =>
+		TE.chainFirst(({ deploymentName }) =>
 			runCommand(
 				`kubectl rollout restart deployment ${deploymentName} -n ${K8S_NS}`,
 				{
@@ -81,7 +84,7 @@ const doDeploy = (
 				}
 			)
 		),
-		TE.chainFirst((deploymentName) =>
+		TE.chainFirst(({ deploymentName }) =>
 			runCommand(
 				`kubectl rollout status deployment ${deploymentName} -n ${K8S_NS}`,
 				{
