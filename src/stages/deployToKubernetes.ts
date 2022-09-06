@@ -3,44 +3,19 @@ import * as TE from 'fp-ts/TaskEither';
 import { match, P } from 'ts-pattern';
 import { isApplication } from '../context/projectTypeUtils';
 import { pipe } from 'fp-ts/function';
-import { listFilesInDir, readFile } from '../functions/File';
+import { readFile } from '../functions/File';
 import path from 'path';
 import { getCwd } from '../command/getCwd';
-import * as A from 'fp-ts/Array';
 import * as E from 'fp-ts/Either';
 import { runCommand } from '../command/runCommand';
 import * as Pred from 'fp-ts/Predicate';
 import { Stage, StageExecuteFn } from './Stage';
 import { parseYaml } from '../functions/Yaml';
-import { KubeDeployment } from '../configFileTypes/KubeDeployment';
 import { DeploymentValues } from '../configFileTypes/DeploymentValues';
 import { createDockerImageTag } from '../utils/dockerUtils';
 
-const findConfigmaps = (deployDir: string): TE.TaskEither<Error, string[]> =>
-	pipe(
-		listFilesInDir(deployDir),
-		E.map(A.filter((_) => _.endsWith('configmap.yml'))),
-		TE.fromEither
-	);
-
-const deployConfigmaps = (
-	deployDir: string,
-	configmapFiles: string[]
-): TE.TaskEither<Error, string> =>
-	pipe(
-		configmapFiles,
-		A.reduce(TE.right<Error, string>(''), (result, file) =>
-			pipe(
-				result,
-				TE.chain(() =>
-					runCommand(`kubectl apply -f ${file}`, {
-						printOutput: true,
-						cwd: deployDir
-					})
-				)
-			)
-		)
-	);
+const K8S_CTX = 'microk8s-prod';
+const K8S_NS = 'apps-prod';
 
 const getDeploymentName = (deployDir: string): E.Either<Error, string> =>
 	pipe(
@@ -48,16 +23,6 @@ const getDeploymentName = (deployDir: string): E.Either<Error, string> =>
 		E.chain((_) => parseYaml<DeploymentValues>(_)),
 		E.map((_) => _.appName)
 	);
-
-/*
- * TODO steps needed for refactor
- *
- * 1) Get deployment name from values.yml file appName property **DONE**
- * 2) Construct imageName property using repo prefix, plus image tag from docker build or other previous stage
- * 3) Run helm command
- * 4) Run restart command
- * 5) Run command to wait on deployment
- */
 
 // TODO how to handle install vs upgrade?
 const doDeploy = (
@@ -68,11 +33,15 @@ const doDeploy = (
 	return pipe(
 		getDeploymentName(deployDir),
 		TE.fromEither,
-		// TODO may not need binding here
-		// TODO move some values in command to constants
+		TE.chainFirst(() =>
+			runCommand(`kubectl config use-context ${K8S_CTX}`, {
+				printOutput: true,
+				cwd: deployDir
+			})
+		),
 		TE.chainFirst((deploymentName) =>
 			runCommand(
-				`helm install ${deploymentName} ./chart --kube-context=microk8s-prod --namespace apps-prod --values ./chart/values.yml --set deployment.image ${image}`,
+				`helm install ${deploymentName} ./chart --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml --set app_deployment.deployment.image ${image}`,
 				{
 					printOutput: true,
 					cwd: deployDir
@@ -81,7 +50,7 @@ const doDeploy = (
 		),
 		TE.chainFirst((deploymentName) =>
 			runCommand(
-				`kubectl rollout restart deployment ${deploymentName} -n apps-prod`,
+				`kubectl rollout restart deployment ${deploymentName} -n ${K8S_NS}`,
 				{
 					printOutput: true,
 					cwd: deployDir
@@ -90,7 +59,7 @@ const doDeploy = (
 		),
 		TE.chainFirst((deploymentName) =>
 			runCommand(
-				`kubectl rollout status deployment ${deploymentName} -n apps-prod`,
+				`kubectl rollout status deployment ${deploymentName} -n ${K8S_NS}`,
 				{
 					printOutput: true,
 					cwd: deployDir
