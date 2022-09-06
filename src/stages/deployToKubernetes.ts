@@ -93,6 +93,7 @@ const doDeploy = (
 				}
 			)
 		),
+		// TODO this should fail if deployment fails
 		TE.chainFirst(({ deploymentName }) =>
 			runCommand(
 				`kubectl rollout status deployment ${deploymentName} -n ${K8S_NS}`,
