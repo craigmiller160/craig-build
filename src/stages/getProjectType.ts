@@ -15,7 +15,7 @@ const MVN_PROJECT_FILE = 'pom.xml';
 const GRADLE_KOTLIN_PROJECT_FILE = 'build.gradle.kts';
 const GRADLE_GROOVY_PROJECT_FILE = 'build.gradle';
 const DOCKER_PROJECT_FILE = 'docker.json';
-const DEPLOY_PATH = path.join('deploy', 'deployment.yml');
+const DEPLOY_PATH = path.join('deploy', 'chart', 'Chart.yaml');
 
 const fileExists = (cwd: string, file: string): boolean =>
 	fs.existsSync(path.resolve(cwd, file));
