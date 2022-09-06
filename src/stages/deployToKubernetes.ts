@@ -13,6 +13,7 @@ import * as Pred from 'fp-ts/Predicate';
 import { Stage, StageExecuteFn } from './Stage';
 import { parseYaml } from '../functions/Yaml';
 import { KubeDeployment } from '../configFileTypes/KubeDeployment';
+import { DeploymentValues } from '../configFileTypes/DeploymentValues';
 
 const findConfigmaps = (deployDir: string): TE.TaskEither<Error, string[]> =>
 	pipe(
@@ -42,16 +43,15 @@ const deployConfigmaps = (
 
 const getDeploymentName = (deployDir: string): E.Either<Error, string> =>
 	pipe(
-		readFile(path.join(deployDir, 'deployment.yml')),
-		E.map((_) => _.split('---')[0]),
-		E.chain((_) => parseYaml<KubeDeployment>(_)),
-		E.map((_) => _.metadata.name)
+		readFile(path.join(deployDir, 'chart', 'values.yml')),
+		E.chain((_) => parseYaml<DeploymentValues>(_)),
+		E.map((_) => _.appName)
 	);
 
 /*
  * TODO steps needed for refactor
  *
- * 1) Get deployment name from values.yml file appName property
+ * 1) Get deployment name from values.yml file appName property **DONE**
  * 2) Construct imageName property using repo prefix, plus image tag from docker build or other previous stage
  * 3) Run helm command
  * 4) Run restart command
@@ -66,10 +66,6 @@ const doDeploy = (
 		getDeploymentName(deployDir),
 		TE.fromEither,
 		TE.bindTo('deploymentName'),
-		TE.bind('configmaps', () => findConfigmaps(deployDir)),
-		TE.chainFirst(({ configmaps }) =>
-			deployConfigmaps(deployDir, configmaps)
-		),
 		TE.chainFirst(() =>
 			runCommand(
 				`KUBE_IMG_VERSION=${context.projectInfo.version} envsubst < deployment.yml | kubectl apply -f -`,
