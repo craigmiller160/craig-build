@@ -27,7 +27,8 @@ export const stages: Stage[] = [
 	getProjectInfo,
 	validateDependencyVersions,
 	validateProjectVersionAllowed,
-	validateKubernetesConfig,
+	// TODO remove or restore depending on if it is needed
+	// validateKubernetesConfig,
 	validateGitTag,
 	buildArtifact,
 	preparePreReleaseVersion,
