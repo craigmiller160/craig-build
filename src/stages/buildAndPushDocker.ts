@@ -5,7 +5,6 @@ import { match, P } from 'ts-pattern';
 import { ProjectType } from '../context/ProjectType';
 import { pipe } from 'fp-ts/function';
 import { isApplication, isDocker } from '../context/projectTypeUtils';
-import { ProjectInfo } from '../context/ProjectInfo';
 import { DOCKER_REPO_PREFIX } from '../configFileTypes/constants';
 import shellEnv from 'shell-env';
 import { EnvironmentVariables } from '../env/EnvironmentVariables';

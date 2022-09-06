@@ -4,8 +4,7 @@ import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
 import { ProjectType } from '../../src/context/ProjectType';
 import {
-	deployToKubernetes,
-	isDeploymentInstalled
+	deployToKubernetes
 } from '../../src/stages/deployToKubernetes';
 import '@relmify/jest-fp-ts';
 import path from 'path';
