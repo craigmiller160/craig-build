@@ -14,6 +14,8 @@ import { parseYaml } from '../functions/Yaml';
 import { DeploymentValues } from '../configFileTypes/DeploymentValues';
 import { createDockerImageTag } from '../utils/dockerUtils';
 
+// TODO completely re-evaluate the tests for this
+
 const K8S_CTX = 'microk8s-prod';
 const K8S_NS = 'apps-prod';
 
@@ -24,15 +26,17 @@ const getDeploymentName = (deployDir: string): E.Either<Error, string> =>
 		E.map((_) => _.appName)
 	);
 
-const isDeploymentInstalled = (deploymentName: string) => (text: string): boolean =>
-	!!text.split('\n')
-		.map((row) =>
-			row.split(' ')
-				.map((_) => _.trim())[0]
-		)
-		.find((name) => name === deploymentName);
+const isDeploymentInstalled =
+	(deploymentName: string) =>
+	(text: string): boolean =>
+		!!text
+			.split('\n')
+			.map((row) => row.split(' ').map((_) => _.trim())[0])
+			.find((name) => name === deploymentName);
 
-const getHelmInstallOrUpgrade = (deploymentName: string): TE.TaskEither<Error, string> => {
+const getHelmInstallOrUpgrade = (
+	deploymentName: string
+): TE.TaskEither<Error, string> => {
 	pipe(
 		runCommand(
 			`helm list --kube-context=${K8S_CTX} --namespace ${K8S_NS}`,
