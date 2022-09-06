@@ -3,12 +3,21 @@ import { getCwdMock } from '../testutils/getCwdMock';
 import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
 import { ProjectType } from '../../src/context/ProjectType';
-import { deployToKubernetes } from '../../src/stages/deployToKubernetes';
+import {
+	deployToKubernetes,
+	isDeploymentInstalled
+} from '../../src/stages/deployToKubernetes';
 import '@relmify/jest-fp-ts';
 import path from 'path';
 import { baseWorkingDir } from '../testutils/baseWorkingDir';
 import * as TE from 'fp-ts/TaskEither';
 import { VersionType } from '../../src/context/VersionType';
+
+const helmList = `
+NAME            NAMESPACE       REVISION        UPDATED                                 STATUS          CHART                   APP VERSION
+email-service   apps-prod       1               2022-09-06 16:30:04.728675 -0400 EDT    deployed        email-service-0.1.0     1.0.0      
+ingress         apps-prod       1               2022-09-05 17:01:57.090562 -0400 EDT    deployed        ingress-0.1.0           1.0.0
+`;
 
 const baseBuildContext = createBuildContext({
 	projectInfo: {
@@ -23,6 +32,12 @@ describe('deployToKubernetes', () => {
 	beforeEach(() => {
 		jest.resetAllMocks();
 		runCommandMock.mockImplementation(() => TE.right(''));
+	});
+
+	// TODO delete this test
+	it('delete this test', () => {
+		const result = isDeploymentInstalled('email-service')(helmList);
+		expect(result).toEqual(true);
 	});
 
 	it('deploys for MavenApplication', async () => {
