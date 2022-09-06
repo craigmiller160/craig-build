@@ -74,7 +74,7 @@ const doDeploy = (
 		),
 		TE.chainFirst(({ deploymentName, helmCommand }) =>
 			runCommand(
-				`helm ${helmCommand} ${deploymentName} ./chart --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml --set app_deployment.deployment.image=${image}`,
+				`helm ${helmCommand} ${deploymentName} ./chart --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml --set app-deployment.deployment.image=${image}`,
 				{
 					printOutput: true,
 					cwd: deployDir
