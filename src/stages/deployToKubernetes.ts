@@ -26,8 +26,7 @@ const getDeploymentName = (deployDir: string): E.Either<Error, string> =>
 		E.map((_) => _['app-deployment'].appName)
 	);
 
-// TODO remove the export part of this
-export const isDeploymentInstalled =
+const isDeploymentInstalled =
 	(deploymentName: string) =>
 	(text: string): boolean =>
 		!!text

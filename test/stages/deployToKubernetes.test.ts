@@ -34,12 +34,6 @@ describe('deployToKubernetes', () => {
 		runCommandMock.mockImplementation(() => TE.right(''));
 	});
 
-	// TODO delete this test
-	it('delete this test', () => {
-		const result = isDeploymentInstalled('email-service')(helmList);
-		expect(result).toEqual(true);
-	});
-
 	it('deploys for MavenApplication', async () => {
 		const baseCwd = path.join(baseWorkingDir, 'mavenReleaseApplication');
 		getCwdMock.mockImplementation(() => baseCwd);
