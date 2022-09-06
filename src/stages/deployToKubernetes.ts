@@ -34,7 +34,7 @@ export const isDeploymentInstalled =
 			.split('\n')
 			.map((_) => _.trim())
 			.filter((_) => _.length > 0)
-			.map((row) => row.split(' ').map((_) => _.trim())[0])
+			.map((row) => row.split(/\s/).map((_) => _.trim())[0])
 			.find((name) => name === deploymentName);
 
 const getHelmInstallOrUpgrade = (
