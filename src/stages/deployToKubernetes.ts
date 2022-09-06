@@ -24,6 +24,26 @@ const getDeploymentName = (deployDir: string): E.Either<Error, string> =>
 		E.map((_) => _.appName)
 	);
 
+const isDeploymentInstalled = (deploymentName: string) => (text: string): boolean =>
+	!!text.split('\n')
+		.map((row) =>
+			row.split(' ')
+				.map((_) => _.trim())[0]
+		)
+		.find((name) => name === deploymentName);
+
+const getHelmInstallOrUpgrade = (deploymentName: string): TE.TaskEither<Error, string> => {
+	pipe(
+		runCommand(
+			`helm list --kube-context=${K8S_CTX} --namespace ${K8S_NS}`,
+			{
+				printOutput: true
+			}
+		),
+		TE.map(isDeploymentInstalled(deploymentName))
+	);
+};
+
 // TODO how to handle install vs upgrade?
 const doDeploy = (
 	context: BuildContext
