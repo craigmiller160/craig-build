@@ -48,6 +48,16 @@ const getDeploymentName = (deployDir: string): E.Either<Error, string> =>
 		E.map((_) => _.metadata.name)
 	);
 
+/*
+ * TODO steps needed for refactor
+ *
+ * 1) Get deployment name from values.yml file appName property
+ * 2) Construct imageName property using repo prefix, plus image tag from docker build or other previous stage
+ * 3) Run helm command
+ * 4) Run restart command
+ * 5) Run command to wait on deployment
+ */
+
 const doDeploy = (
 	context: BuildContext
 ): TE.TaskEither<Error, BuildContext> => {
