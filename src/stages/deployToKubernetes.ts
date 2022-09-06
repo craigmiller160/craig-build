@@ -23,7 +23,7 @@ const getDeploymentName = (deployDir: string): E.Either<Error, string> =>
 	pipe(
 		readFile(path.join(deployDir, 'chart', 'values.yml')),
 		E.chain((_) => parseYaml<DeploymentValues>(_)),
-		E.map((_) => _.appName)
+		E.map((_) => _['app-deployment'].appName)
 	);
 
 const isDeploymentInstalled =
