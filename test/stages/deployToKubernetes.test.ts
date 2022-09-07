@@ -48,7 +48,7 @@ describe('deployToKubernetes', () => {
 		const image = createDockerImageTag(buildContext.projectInfo);
 
 		runCommandMock.mockImplementationOnce(() =>
-			TE.right(createHelmList(deploymentName))
+			TE.right(createHelmList('abcdefg'))
 		);
 		runCommandMock.mockImplementation(() => TE.right(''));
 
