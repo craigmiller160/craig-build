@@ -14,8 +14,6 @@ import { parseYaml } from '../functions/Yaml';
 import { DeploymentValues } from '../configFileTypes/DeploymentValues';
 import { createDockerImageTag } from '../utils/dockerUtils';
 
-// TODO completely re-evaluate the tests for this
-
 export const K8S_CTX = 'microk8s-prod';
 export const K8S_NS = 'apps-prod';
 
