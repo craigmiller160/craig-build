@@ -13,6 +13,7 @@ import { BuildContext } from '../../src/context/BuildContext';
 import { baseWorkingDir } from '../testutils/baseWorkingDir';
 import { ProjectType } from '../../src/context/ProjectType';
 import path from 'path';
+import { createDockerImageTag } from '../../src/utils/dockerUtils';
 
 const createHelmList = (deploymentName: string): string => `
 NAME            NAMESPACE       REVISION        UPDATED                                 STATUS          CHART                   APP VERSION
@@ -43,6 +44,8 @@ describe('deployToKubernetes', () => {
 		};
 
 		const deploymentName = 'email-service';
+		const deployDir = path.join(baseCwd, 'deploy');
+		const image = createDockerImageTag(buildContext.projectInfo);
 
 		runCommandMock.mockImplementationOnce(() =>
 			TE.right(createHelmList(deploymentName))
@@ -57,6 +60,31 @@ describe('deployToKubernetes', () => {
 			1,
 			`helm list --kube-context=${K8S_CTX} --namespace ${K8S_NS}`,
 			{ printOutput: true }
+		);
+		expect(runCommandMock).toHaveBeenNthCalledWith(
+			2,
+			`kubectl config use-context ${K8S_CTX}`,
+			{ printOutput: true, cwd: deployDir }
+		);
+		expect(runCommandMock).toHaveBeenNthCalledWith(
+			3,
+			'helm dependency build',
+			{ printOutput: true, cwd: path.join(deployDir, 'chart') }
+		);
+		expect(runCommandMock).toHaveBeenNthCalledWith(
+			4,
+			`helm install ${deploymentName} ./chart --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml --set app-deployment.deployment.image=${image}`,
+			{ printOutput: true, cwd: deployDir }
+		);
+		expect(runCommandMock).toHaveBeenNthCalledWith(
+			5,
+			`kubectl rollout restart deployment ${deploymentName} -n ${K8S_NS}`,
+			{ printOutput: true, cwd: deployDir }
+		);
+		expect(runCommandMock).toHaveBeenNthCalledWith(
+			6,
+			`kubectl rollout status deployment ${deploymentName} -n ${K8S_NS}`,
+			{ printOutput: true, cwd: deployDir }
 		);
 	});
 
