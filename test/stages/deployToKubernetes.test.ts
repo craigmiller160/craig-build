@@ -1,14 +1,25 @@
-import { runCommandMock } from '../testutils/runCommandMock';
 import { getCwdMock } from '../testutils/getCwdMock';
+import { runCommandMock } from '../testutils/runCommandMock';
 import { createBuildContext } from '../testutils/createBuildContext';
-import { BuildContext } from '../../src/context/BuildContext';
-import { ProjectType } from '../../src/context/ProjectType';
-import { deployToKubernetes } from '../../src/stages/deployToKubernetes';
+import {
+	deployToKubernetes,
+	K8S_CTX,
+	K8S_NS
+} from '../../src/stages/deployToKubernetes';
 import '@relmify/jest-fp-ts';
-import path from 'path';
-import { baseWorkingDir } from '../testutils/baseWorkingDir';
 import * as TE from 'fp-ts/TaskEither';
 import { VersionType } from '../../src/context/VersionType';
+import { BuildContext } from '../../src/context/BuildContext';
+import { baseWorkingDir } from '../testutils/baseWorkingDir';
+import { ProjectType } from '../../src/context/ProjectType';
+import path from 'path';
+import { createDockerImageTag } from '../../src/utils/dockerUtils';
+
+const createHelmList = (deploymentName: string): string => `
+NAME            NAMESPACE       REVISION        UPDATED                                 STATUS          CHART                   APP VERSION
+${deploymentName}   apps-prod       1               2022-09-06 16:30:04.728675 -0400 EDT    deployed        email-service-0.1.0     1.0.0      
+ingress         apps-prod       1               2022-09-05 17:01:57.090562 -0400 EDT    deployed        ingress-0.1.0           1.0.0
+`;
 
 const baseBuildContext = createBuildContext({
 	projectInfo: {
@@ -22,10 +33,9 @@ const baseBuildContext = createBuildContext({
 describe('deployToKubernetes', () => {
 	beforeEach(() => {
 		jest.resetAllMocks();
-		runCommandMock.mockImplementation(() => TE.right(''));
 	});
 
-	it('deploys for MavenApplication', async () => {
+	it('installs new application via helm', async () => {
 		const baseCwd = path.join(baseWorkingDir, 'mavenReleaseApplication');
 		getCwdMock.mockImplementation(() => baseCwd);
 		const buildContext: BuildContext = {
@@ -33,175 +43,101 @@ describe('deployToKubernetes', () => {
 			projectType: ProjectType.MavenApplication
 		};
 
-		const result = await deployToKubernetes.execute(buildContext)();
-		expect(result).toEqualRight(buildContext);
+		const deploymentName = 'email-service';
+		const deployDir = path.join(baseCwd, 'deploy');
+		const image = createDockerImageTag(buildContext.projectInfo);
 
-		expect(runCommandMock).toHaveBeenCalledTimes(2);
-		expect(runCommandMock).toHaveBeenNthCalledWith(
-			1,
-			'KUBE_IMG_VERSION=1.0.0 envsubst < deployment.yml | kubectl apply -f -',
-			{
-				cwd: path.join(baseCwd, 'deploy'),
-				printOutput: true
-			}
+		runCommandMock.mockImplementationOnce(() =>
+			TE.right(createHelmList('abcdefg'))
 		);
-		expect(runCommandMock).toHaveBeenNthCalledWith(
-			2,
-			'kubectl rollout restart deployment email-service',
-			{
-				cwd: path.join(baseCwd, 'deploy'),
-				printOutput: true
-			}
-		);
-	});
-
-	it('deploys for NpmApplication', async () => {
-		const baseCwd = path.join(baseWorkingDir, 'npmReleaseApplication');
-		getCwdMock.mockImplementation(() => baseCwd);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.NpmApplication
-		};
+		runCommandMock.mockImplementation(() => TE.right(''));
 
 		const result = await deployToKubernetes.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
 
-		expect(runCommandMock).toHaveBeenCalledTimes(2);
+		expect(runCommandMock).toHaveBeenCalledTimes(6);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			1,
-			'KUBE_IMG_VERSION=1.0.0 envsubst < deployment.yml | kubectl apply -f -',
-			{
-				cwd: path.join(baseCwd, 'deploy'),
-				printOutput: true
-			}
+			`helm list --kube-context=${K8S_CTX} --namespace ${K8S_NS}`,
+			{ printOutput: true }
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			2,
-			'kubectl rollout restart deployment email-service',
-			{
-				cwd: path.join(baseCwd, 'deploy'),
-				printOutput: true
-			}
-		);
-	});
-
-	it('deploys for DockerApplication', async () => {
-		const baseCwd = path.join(baseWorkingDir, 'dockerReleaseApplication');
-		getCwdMock.mockImplementation(() => baseCwd);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.DockerApplication
-		};
-
-		const result = await deployToKubernetes.execute(buildContext)();
-		expect(result).toEqualRight(buildContext);
-
-		expect(runCommandMock).toHaveBeenCalledTimes(2);
-		expect(runCommandMock).toHaveBeenNthCalledWith(
-			1,
-			'KUBE_IMG_VERSION=1.0.0 envsubst < deployment.yml | kubectl apply -f -',
-			{
-				cwd: path.join(baseCwd, 'deploy'),
-				printOutput: true
-			}
-		);
-		expect(runCommandMock).toHaveBeenNthCalledWith(
-			2,
-			'kubectl rollout restart deployment email-service',
-			{
-				cwd: path.join(baseCwd, 'deploy'),
-				printOutput: true
-			}
-		);
-	});
-
-	it('deploys for MavenApplication with configmap', async () => {
-		const baseCwd = path.join(
-			baseWorkingDir,
-			'mavenReleaseApplicationOneConfigmap'
-		);
-		getCwdMock.mockImplementation(() => baseCwd);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.MavenApplication
-		};
-
-		const result = await deployToKubernetes.execute(buildContext)();
-		expect(result).toEqualRight(buildContext);
-
-		expect(runCommandMock).toHaveBeenCalledTimes(3);
-		expect(runCommandMock).toHaveBeenNthCalledWith(
-			1,
-			'kubectl apply -f one.configmap.yml',
-			{
-				cwd: path.join(baseCwd, 'deploy'),
-				printOutput: true
-			}
-		);
-		expect(runCommandMock).toHaveBeenNthCalledWith(
-			2,
-			'KUBE_IMG_VERSION=1.0.0 envsubst < deployment.yml | kubectl apply -f -',
-			{
-				cwd: path.join(baseCwd, 'deploy'),
-				printOutput: true
-			}
+			`kubectl config use-context ${K8S_CTX}`,
+			{ printOutput: true, cwd: deployDir }
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			3,
-			'kubectl rollout restart deployment email-service',
-			{
-				cwd: path.join(baseCwd, 'deploy'),
-				printOutput: true
-			}
-		);
-	});
-
-	it('deploys for MavenApplication with multiple configmaps', async () => {
-		const baseCwd = path.join(
-			baseWorkingDir,
-			'mavenReleaseApplicationTwoConfigmaps'
-		);
-		getCwdMock.mockImplementation(() => baseCwd);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.MavenApplication
-		};
-
-		const result = await deployToKubernetes.execute(buildContext)();
-		expect(result).toEqualRight(buildContext);
-
-		expect(runCommandMock).toHaveBeenCalledTimes(4);
-		expect(runCommandMock).toHaveBeenNthCalledWith(
-			1,
-			'kubectl apply -f one.configmap.yml',
-			{
-				cwd: path.join(baseCwd, 'deploy'),
-				printOutput: true
-			}
-		);
-		expect(runCommandMock).toHaveBeenNthCalledWith(
-			2,
-			'kubectl apply -f two.configmap.yml',
-			{
-				cwd: path.join(baseCwd, 'deploy'),
-				printOutput: true
-			}
-		);
-		expect(runCommandMock).toHaveBeenNthCalledWith(
-			3,
-			'KUBE_IMG_VERSION=1.0.0 envsubst < deployment.yml | kubectl apply -f -',
-			{
-				cwd: path.join(baseCwd, 'deploy'),
-				printOutput: true
-			}
+			'helm dependency build',
+			{ printOutput: true, cwd: path.join(deployDir, 'chart') }
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			4,
-			'kubectl rollout restart deployment email-service',
-			{
-				cwd: path.join(baseCwd, 'deploy'),
-				printOutput: true
-			}
+			`helm install ${deploymentName} ./chart --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml --set app-deployment.deployment.image=${image}`,
+			{ printOutput: true, cwd: deployDir }
+		);
+		expect(runCommandMock).toHaveBeenNthCalledWith(
+			5,
+			`kubectl rollout restart deployment ${deploymentName} -n ${K8S_NS}`,
+			{ printOutput: true, cwd: deployDir }
+		);
+		expect(runCommandMock).toHaveBeenNthCalledWith(
+			6,
+			`kubectl rollout status deployment ${deploymentName} -n ${K8S_NS}`,
+			{ printOutput: true, cwd: deployDir }
+		);
+	});
+
+	it('upgrades existing application via helm', async () => {
+		const baseCwd = path.join(baseWorkingDir, 'mavenReleaseApplication');
+		getCwdMock.mockImplementation(() => baseCwd);
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.MavenApplication
+		};
+
+		const deploymentName = 'email-service';
+		const deployDir = path.join(baseCwd, 'deploy');
+		const image = createDockerImageTag(buildContext.projectInfo);
+
+		runCommandMock.mockImplementationOnce(() =>
+			TE.right(createHelmList(deploymentName))
+		);
+		runCommandMock.mockImplementation(() => TE.right(''));
+
+		const result = await deployToKubernetes.execute(buildContext)();
+		expect(result).toEqualRight(buildContext);
+
+		expect(runCommandMock).toHaveBeenCalledTimes(6);
+		expect(runCommandMock).toHaveBeenNthCalledWith(
+			1,
+			`helm list --kube-context=${K8S_CTX} --namespace ${K8S_NS}`,
+			{ printOutput: true }
+		);
+		expect(runCommandMock).toHaveBeenNthCalledWith(
+			2,
+			`kubectl config use-context ${K8S_CTX}`,
+			{ printOutput: true, cwd: deployDir }
+		);
+		expect(runCommandMock).toHaveBeenNthCalledWith(
+			3,
+			'helm dependency build',
+			{ printOutput: true, cwd: path.join(deployDir, 'chart') }
+		);
+		expect(runCommandMock).toHaveBeenNthCalledWith(
+			4,
+			`helm upgrade ${deploymentName} ./chart --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml --set app-deployment.deployment.image=${image}`,
+			{ printOutput: true, cwd: deployDir }
+		);
+		expect(runCommandMock).toHaveBeenNthCalledWith(
+			5,
+			`kubectl rollout restart deployment ${deploymentName} -n ${K8S_NS}`,
+			{ printOutput: true, cwd: deployDir }
+		);
+		expect(runCommandMock).toHaveBeenNthCalledWith(
+			6,
+			`kubectl rollout status deployment ${deploymentName} -n ${K8S_NS}`,
+			{ printOutput: true, cwd: deployDir }
 		);
 	});
 });

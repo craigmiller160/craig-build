@@ -3,66 +3,78 @@ import * as TE from 'fp-ts/TaskEither';
 import { match, P } from 'ts-pattern';
 import { isApplication } from '../context/projectTypeUtils';
 import { pipe } from 'fp-ts/function';
-import { listFilesInDir, readFile } from '../functions/File';
+import { readFile } from '../functions/File';
 import path from 'path';
 import { getCwd } from '../command/getCwd';
-import * as A from 'fp-ts/Array';
 import * as E from 'fp-ts/Either';
 import { runCommand } from '../command/runCommand';
 import * as Pred from 'fp-ts/Predicate';
 import { Stage, StageExecuteFn } from './Stage';
 import { parseYaml } from '../functions/Yaml';
-import { KubeDeployment } from '../configFileTypes/KubeDeployment';
+import { DeploymentValues } from '../configFileTypes/DeploymentValues';
+import { createDockerImageTag } from '../utils/dockerUtils';
 
-const findConfigmaps = (deployDir: string): TE.TaskEither<Error, string[]> =>
-	pipe(
-		listFilesInDir(deployDir),
-		E.map(A.filter((_) => _.endsWith('configmap.yml'))),
-		TE.fromEither
-	);
-
-const deployConfigmaps = (
-	deployDir: string,
-	configmapFiles: string[]
-): TE.TaskEither<Error, string> =>
-	pipe(
-		configmapFiles,
-		A.reduce(TE.right<Error, string>(''), (result, file) =>
-			pipe(
-				result,
-				TE.chain(() =>
-					runCommand(`kubectl apply -f ${file}`, {
-						printOutput: true,
-						cwd: deployDir
-					})
-				)
-			)
-		)
-	);
+export const K8S_CTX = 'microk8s-prod';
+export const K8S_NS = 'apps-prod';
 
 const getDeploymentName = (deployDir: string): E.Either<Error, string> =>
 	pipe(
-		readFile(path.join(deployDir, 'deployment.yml')),
-		E.map((_) => _.split('---')[0]),
-		E.chain((_) => parseYaml<KubeDeployment>(_)),
-		E.map((_) => _.metadata.name)
+		readFile(path.join(deployDir, 'chart', 'values.yml')),
+		E.chain((_) => parseYaml<DeploymentValues>(_)),
+		E.map((_) => _['app-deployment'].appName)
+	);
+
+const isDeploymentInstalled =
+	(deploymentName: string) =>
+	(text: string): boolean =>
+		!!text
+			.split('\n')
+			.map((_) => _.trim())
+			.filter((_) => _.length > 0)
+			.map((row) => row.split(/\s/).map((_) => _.trim())[0])
+			.find((name) => name === deploymentName);
+
+const getHelmInstallOrUpgrade = (
+	deploymentName: string
+): TE.TaskEither<Error, string> =>
+	pipe(
+		runCommand(
+			`helm list --kube-context=${K8S_CTX} --namespace ${K8S_NS}`,
+			{
+				printOutput: true
+			}
+		),
+		TE.map(isDeploymentInstalled(deploymentName)),
+		TE.map((isInstalled) => (isInstalled ? 'upgrade' : 'install'))
 	);
 
 const doDeploy = (
 	context: BuildContext
 ): TE.TaskEither<Error, BuildContext> => {
 	const deployDir = path.join(getCwd(), 'deploy');
+	const image = createDockerImageTag(context.projectInfo);
 	return pipe(
 		getDeploymentName(deployDir),
 		TE.fromEither,
 		TE.bindTo('deploymentName'),
-		TE.bind('configmaps', () => findConfigmaps(deployDir)),
-		TE.chainFirst(({ configmaps }) =>
-			deployConfigmaps(deployDir, configmaps)
+		TE.bind('helmCommand', ({ deploymentName }) =>
+			getHelmInstallOrUpgrade(deploymentName)
 		),
 		TE.chainFirst(() =>
+			runCommand(`kubectl config use-context ${K8S_CTX}`, {
+				printOutput: true,
+				cwd: deployDir
+			})
+		),
+		TE.chainFirst(() =>
+			runCommand('helm dependency build', {
+				printOutput: true,
+				cwd: path.join(deployDir, 'chart')
+			})
+		),
+		TE.chainFirst(({ deploymentName, helmCommand }) =>
 			runCommand(
-				`KUBE_IMG_VERSION=${context.projectInfo.version} envsubst < deployment.yml | kubectl apply -f -`,
+				`helm ${helmCommand} ${deploymentName} ./chart --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml --set app-deployment.deployment.image=${image}`,
 				{
 					printOutput: true,
 					cwd: deployDir
@@ -70,10 +82,22 @@ const doDeploy = (
 			)
 		),
 		TE.chainFirst(({ deploymentName }) =>
-			runCommand(`kubectl rollout restart deployment ${deploymentName}`, {
-				printOutput: true,
-				cwd: deployDir
-			})
+			runCommand(
+				`kubectl rollout restart deployment ${deploymentName} -n ${K8S_NS}`,
+				{
+					printOutput: true,
+					cwd: deployDir
+				}
+			)
+		),
+		TE.chainFirst(({ deploymentName }) =>
+			runCommand(
+				`kubectl rollout status deployment ${deploymentName} -n ${K8S_NS}`,
+				{
+					printOutput: true,
+					cwd: deployDir
+				}
+			)
 		),
 		TE.map(() => context)
 	);

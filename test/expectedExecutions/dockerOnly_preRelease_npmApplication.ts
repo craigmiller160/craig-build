@@ -1,6 +1,5 @@
 import { validateDependencyVersions } from '../../src/stages/validateDependencyVersions';
 import { validateProjectVersionAllowed } from '../../src/stages/validateProjectVersionAllowed';
-import { validateKubernetesConfig } from '../../src/stages/validateKubernetesConfig';
 import { validateGitTag } from '../../src/stages/validateGitTag';
 import { buildArtifact } from '../../src/stages/buildArtifact';
 import { preparePreReleaseVersion } from '../../src/stages/preparePreReleaseVersion';
@@ -27,7 +26,7 @@ export const dockerOnly_preRelease_npmApplication: ExpectedExecution = {
 	[getProjectInfo.name]: true,
 	[validateDependencyVersions.name]: false,
 	[validateProjectVersionAllowed.name]: false,
-	[validateKubernetesConfig.name]: true,
+	// [validateKubernetesConfig.name]: true,
 	[validateGitTag.name]: false,
 	[buildArtifact.name]: false,
 	[preparePreReleaseVersion.name]: true,

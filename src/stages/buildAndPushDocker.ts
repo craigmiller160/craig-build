@@ -5,7 +5,6 @@ import { match, P } from 'ts-pattern';
 import { ProjectType } from '../context/ProjectType';
 import { pipe } from 'fp-ts/function';
 import { isApplication, isDocker } from '../context/projectTypeUtils';
-import { ProjectInfo } from '../context/ProjectInfo';
 import { DOCKER_REPO_PREFIX } from '../configFileTypes/constants';
 import shellEnv from 'shell-env';
 import { EnvironmentVariables } from '../env/EnvironmentVariables';
@@ -16,6 +15,7 @@ import { CommandType } from '../context/CommandType';
 import { isKubernetesOnly } from '../context/commandTypeUtils';
 import path from 'path';
 import { getCwd } from '../command/getCwd';
+import { createDockerImageTag } from '../utils/dockerUtils';
 
 interface DockerCreds {
 	readonly userName: string;
@@ -26,9 +26,6 @@ const isDockerOrApplication: Pred.Predicate<ProjectType> = pipe(
 	isApplication,
 	Pred.or(isDocker)
 );
-
-const createDockerTag = (projectInfo: ProjectInfo): string =>
-	`${DOCKER_REPO_PREFIX}/${projectInfo.name}:${projectInfo.version}`;
 
 const getAndValidateDockerEnvVariables = (): TE.TaskEither<
 	Error,
@@ -114,7 +111,7 @@ const pushDockerImage = (dockerTag: string): TE.TaskEither<Error, string> =>
 const runDockerBuild = (
 	context: BuildContext
 ): TE.TaskEither<Error, BuildContext> => {
-	const dockerTag = createDockerTag(context.projectInfo);
+	const dockerTag = createDockerImageTag(context.projectInfo);
 	return pipe(
 		getAndValidateDockerEnvVariables(),
 		TE.chain(loginToNexusDocker),

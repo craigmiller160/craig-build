@@ -6,7 +6,6 @@ import { getProjectType } from './getProjectType';
 import { getProjectInfo } from './getProjectInfo';
 import { validateProjectVersionAllowed } from './validateProjectVersionAllowed';
 import { validateDependencyVersions } from './validateDependencyVersions';
-import { validateKubernetesConfig } from './validateKubernetesConfig';
 import { validateGitTag } from './validateGitTag';
 import { buildArtifact } from './buildArtifact';
 import { preparePreReleaseVersion } from './preparePreReleaseVersion';
@@ -27,7 +26,7 @@ export const stages: Stage[] = [
 	getProjectInfo,
 	validateDependencyVersions,
 	validateProjectVersionAllowed,
-	validateKubernetesConfig,
+	// validateKubernetesConfig,
 	validateGitTag,
 	buildArtifact,
 	preparePreReleaseVersion,

@@ -7,7 +7,6 @@ import { getProjectInfo } from '../../src/stages/getProjectInfo';
 import { checkForUncommittedChanges } from '../../src/stages/checkForUncommittedChanges';
 import { validateDependencyVersions } from '../../src/stages/validateDependencyVersions';
 import { validateProjectVersionAllowed } from '../../src/stages/validateProjectVersionAllowed';
-import { validateKubernetesConfig } from '../../src/stages/validateKubernetesConfig';
 import { validateGitTag } from '../../src/stages/validateGitTag';
 import { buildArtifact } from '../../src/stages/buildArtifact';
 import { preparePreReleaseVersion } from '../../src/stages/preparePreReleaseVersion';
@@ -30,7 +29,7 @@ describe('stages', () => {
 			getProjectInfo.name,
 			validateDependencyVersions.name,
 			validateProjectVersionAllowed.name,
-			validateKubernetesConfig.name,
+			// validateKubernetesConfig.name,
 			validateGitTag.name,
 			buildArtifact.name,
 			preparePreReleaseVersion.name,
