@@ -4,6 +4,11 @@ import { deployToKubernetes } from '../../src/stages/deployToKubernetes';
 import '@relmify/jest-fp-ts';
 import * as TE from 'fp-ts/TaskEither';
 import { VersionType } from '../../src/context/VersionType';
+import { getCwdMock } from '../testutils/getCwdMock';
+import { BuildContext } from '../../src/context/BuildContext';
+import { baseWorkingDir } from '../testutils/baseWorkingDir';
+import { ProjectType } from '../../src/context/ProjectType';
+import path from 'path';
 
 const helmList = `
 NAME            NAMESPACE       REVISION        UPDATED                                 STATUS          CHART                   APP VERSION
@@ -27,6 +32,15 @@ describe('deployToKubernetes', () => {
 	});
 
 	it('deploys for application', async () => {
+		const baseCwd = path.join(baseWorkingDir, 'mavenReleaseApplication');
+		getCwdMock.mockImplementation(() => baseCwd);
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.MavenApplication
+		};
+
+		const result = await deployToKubernetes.execute(buildContext)();
+		expect(result).toEqualRight(buildContext);
 		throw new Error();
 	});
 });
