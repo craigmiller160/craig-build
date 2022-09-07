@@ -16,8 +16,8 @@ import { createDockerImageTag } from '../utils/dockerUtils';
 
 // TODO completely re-evaluate the tests for this
 
-const K8S_CTX = 'microk8s-prod';
-const K8S_NS = 'apps-prod';
+export const K8S_CTX = 'microk8s-prod';
+export const K8S_NS = 'apps-prod';
 
 const getDeploymentName = (deployDir: string): E.Either<Error, string> =>
 	pipe(
