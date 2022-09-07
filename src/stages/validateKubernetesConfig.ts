@@ -20,8 +20,6 @@ import { Stage, StageExecuteFn } from './Stage';
 import { logger } from '../logger';
 import * as EU from '../functions/EitherUtils';
 
-// TODO not entirely sure I still need this
-
 const KUBE_IMAGE_REGEX =
 	/^(?<repoPrefix>.*)\/(?<imageName>.*):(?<imageVersion>.*)$/;
 
