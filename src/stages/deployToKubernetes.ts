@@ -48,6 +48,13 @@ const getHelmInstallOrUpgrade = (
 		TE.map((isInstalled) => (isInstalled ? 'upgrade' : 'install'))
 	);
 
+const createFullHelmCommand = (
+	deploymentName: string,
+	helmCommand: string,
+	image: string
+): string =>
+	`helm ${helmCommand} ${deploymentName} ./chart --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml --set app-deployment.deployment.image=${image}`;
+
 const doDeploy = (
 	context: BuildContext
 ): TE.TaskEither<Error, BuildContext> => {
@@ -72,9 +79,18 @@ const doDeploy = (
 				cwd: path.join(deployDir, 'chart')
 			})
 		),
+		TE.chainFirst(({ deploymentName }) =>
+			runCommand(
+				createFullHelmCommand(deploymentName, 'template', image),
+				{
+					printOutput: true,
+					cwd: deployDir
+				}
+			)
+		),
 		TE.chainFirst(({ deploymentName, helmCommand }) =>
 			runCommand(
-				`helm ${helmCommand} ${deploymentName} ./chart --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml --set app-deployment.deployment.image=${image}`,
+				createFullHelmCommand(deploymentName, helmCommand, image),
 				{
 					printOutput: true,
 					cwd: deployDir
