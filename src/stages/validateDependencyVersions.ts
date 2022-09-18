@@ -65,17 +65,25 @@ const mavenReplaceVersionProperty = (
 		)
 		.otherwise(() => version);
 
-const mavenHasSnapshotDependencies = ([
+const mavenHasNoSnapshotDependencies = ([
 	pomXml,
 	mvnProps
-]: PomAndProps): boolean =>
-	pipe(
-		pomXml.project.dependencies[0].dependency,
-		A.map(mavenFormatDependencyVersion),
-		A.filter((version) =>
-			mavenReplaceVersionProperty(mvnProps, version).includes('SNAPSHOT')
-		)
-	).length === 0;
+]: PomAndProps): boolean => {
+	if (!pomXml.project.dependencies) {
+		return true;
+	}
+	return (
+		pipe(
+			pomXml.project.dependencies[0].dependency,
+			A.map(mavenFormatDependencyVersion),
+			A.filter((version) =>
+				mavenReplaceVersionProperty(mvnProps, version).includes(
+					'SNAPSHOT'
+				)
+			)
+		).length === 0
+	);
+};
 
 const validateMavenReleaseDependencies = (
 	context: BuildContext
@@ -84,7 +92,7 @@ const validateMavenReleaseDependencies = (
 		getRawProjectData<PomXml>(context.projectType),
 		TE.map((pomXml): PomAndProps => [pomXml, getMavenProperties(pomXml)]),
 		TE.filterOrElse(
-			mavenHasSnapshotDependencies,
+			mavenHasNoSnapshotDependencies,
 			() =>
 				new Error('Cannot have SNAPSHOT dependencies in Maven release')
 		),

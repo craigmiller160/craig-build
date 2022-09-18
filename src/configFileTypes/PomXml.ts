@@ -18,6 +18,6 @@ export interface PomXml {
 		readonly artifactId: string[];
 		readonly version: string[];
 		readonly properties?: MavenProperties[];
-		readonly dependencies: MavenDependencies[];
+		readonly dependencies?: MavenDependencies[];
 	};
 }
