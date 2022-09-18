@@ -65,7 +65,7 @@ const mavenReplaceVersionProperty = (
 		)
 		.otherwise(() => version);
 
-const mavenHasSnapshotDependencies = ([
+const mavenHasNoSnapshotDependencies = ([
 	pomXml,
 	mvnProps
 ]: PomAndProps): boolean => {
@@ -92,7 +92,7 @@ const validateMavenReleaseDependencies = (
 		getRawProjectData<PomXml>(context.projectType),
 		TE.map((pomXml): PomAndProps => [pomXml, getMavenProperties(pomXml)]),
 		TE.filterOrElse(
-			mavenHasSnapshotDependencies,
+			mavenHasNoSnapshotDependencies,
 			() =>
 				new Error('Cannot have SNAPSHOT dependencies in Maven release')
 		),
