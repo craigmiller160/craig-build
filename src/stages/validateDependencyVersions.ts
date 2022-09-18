@@ -68,14 +68,22 @@ const mavenReplaceVersionProperty = (
 const mavenHasSnapshotDependencies = ([
 	pomXml,
 	mvnProps
-]: PomAndProps): boolean =>
-	pipe(
-		pomXml.project.dependencies[0].dependency,
-		A.map(mavenFormatDependencyVersion),
-		A.filter((version) =>
-			mavenReplaceVersionProperty(mvnProps, version).includes('SNAPSHOT')
-		)
-	).length === 0;
+]: PomAndProps): boolean => {
+	if (!pomXml.project.dependencies) {
+		return true;
+	}
+	return (
+		pipe(
+			pomXml.project.dependencies[0].dependency,
+			A.map(mavenFormatDependencyVersion),
+			A.filter((version) =>
+				mavenReplaceVersionProperty(mvnProps, version).includes(
+					'SNAPSHOT'
+				)
+			)
+		).length === 0
+	);
+};
 
 const validateMavenReleaseDependencies = (
 	context: BuildContext
