@@ -14,7 +14,7 @@ import { parseYaml } from '../functions/Yaml';
 import { DeploymentValues } from '../configFileTypes/DeploymentValues';
 import { createDockerImageTag } from '../utils/dockerUtils';
 
-export const K8S_CTX = 'microk8s-prod';
+export const K8S_CTX = 'microk8s';
 export const K8S_NS = 'apps-prod';
 
 const getDeploymentName = (deployDir: string): E.Either<Error, string> =>
