@@ -31,6 +31,12 @@ Then use `craig-build -h` to see available commands.
 
 Run `npm i -g @craigmiller160/craig-build`. A full re-install tends to update it best.
 
+## A Note on Gradle
+
+Gradle builds require the `craig-build-gradle-tool`, which is automatically downloaded upon install. It also requires `gradle-init` to have been setup on the machine `craig-build` is being run on.
+
+NOTE: There may be an issue where the `craig-build-gradle-tool` only installs properly when installing from the repo, rather than installing the artifact directly. Since they both use the same tool version, any problems have been masked until now.
+
 ## Project Types
 
 ### NpmApplication
@@ -38,10 +44,10 @@ Run `npm i -g @craigmiller160/craig-build`. A full re-install tends to update it
 /
     deploy/
         Dockerfile
-        deployment.yml
+        chart/
+            Chart.yaml
     package.json
 ```
-Optional configmaps can be included in `deploy` directory. All configmaps must match `{name}.configmap.yml`.
 
 ### NpmLibrary
 ```
@@ -54,10 +60,10 @@ Optional configmaps can be included in `deploy` directory. All configmaps must m
 /
     deploy/
         Dockerfile
-        deployment.yml
+        chart/
+            Chart.yaml
     pom.xml
 ```
-Optional configmaps can be included in `deploy` directory. All configmaps must match `{name}.configmap.yml`.
 
 ### MavenLibrary
 ```
@@ -84,8 +90,43 @@ This is building a docker application directly, without an artifact involved. Th
 /
     deploy/
         Dockerfile
-        deployment.yml
+        chart/
+            Chart.yaml
     docker.json
 ```
 
-Optional configmaps can be included in `deploy` directory. All configmaps must match `{name}.configmap.yml`.
+### Gradle Library
+
+This is building a library using Gradle.
+
+```
+# Groovy
+/
+    build.gradle
+
+# Kotlin
+/
+    build.gradle.kts
+```
+
+### Gradle Application
+
+This is building and deploying an application using Gradle.
+
+```
+# Groovy
+/
+    deploy/
+        Dockerfile
+        chart/
+            Chart.yaml
+    build.gradle
+
+# Kotlin
+/
+    deploy/
+        Dockerfile
+        chart/
+            Chart.yaml
+    build.gradle.kts
+```
