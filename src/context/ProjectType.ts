@@ -7,5 +7,7 @@ export enum ProjectType {
 	MavenApplication = 'MavenApplication',
 	DockerApplication = 'DockerApplication',
 	DockerImage = 'DockerImage',
+	HelmApplication = 'HelmApplication',
+	HelmLibrary = 'HelmLibrary',
 	Unknown = 'Unknown'
 }

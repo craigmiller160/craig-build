@@ -131,6 +131,18 @@ This is building and deploying an application using Gradle.
     build.gradle.kts
 ```
 
+### Helm Library or Application
+
+This is building and deploying a Helm Chart as a library or as an application in Kubernetes. The difference is determined in the `helm.json` file, see the documentation below.
+
+```
+/
+    deploy/
+        chart/
+            Chart.yaml
+    helm.json
+```
+
 ## Custom Configuration Files
 
 Some of the project types use custom configuration files I designed. Here is a summary of them.
@@ -147,3 +159,27 @@ Docker-only projects use a `docker.json` file with the following simple structur
 ```
 
 Pre-release versions have a `-beta` suffix.
+
+## Helm Projects
+
+Helm-only projects contain a special `helm.json` file that provides special details on the Helm operations that must be performed. Here is its structure:
+
+```json
+{
+  "name": "the-name",
+  "version": "1.0.0",
+  "type": "library",
+  "namespace": "infra-prod",
+  "setValues": {
+    "hello": "world"
+  }
+}
+```
+
+Pre-release versions have a `-beta` suffix.
+
+| Property  | Description                                                |
+|-----------|------------------------------------------------------------|
+| type      | The type of Helm project. Either a library or application. |
+| namespace | The k8s namespace to deploy to.                            |
+| setValues | Helm values to set via CLI arguments. Optional.            |

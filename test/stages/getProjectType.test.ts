@@ -133,4 +133,28 @@ describe('getProjectType', () => {
 		const result = await getProjectType.execute(buildContext)();
 		expect(result).toEqualRight(expectedContext);
 	});
+
+	it('is HelmLibrary', async () => {
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDir, 'helmReleaseLibrary')
+		);
+		const expectedContext: BuildContext = {
+			...buildContext,
+			projectType: ProjectType.HelmLibrary
+		};
+		const result = await getProjectType.execute(buildContext)();
+		expect(result).toEqualRight(expectedContext);
+	});
+
+	it('isHelmApplication', async () => {
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDir, 'helmReleaseApplication')
+		);
+		const expectedContext: BuildContext = {
+			...buildContext,
+			projectType: ProjectType.HelmApplication
+		};
+		const result = await getProjectType.execute(buildContext)();
+		expect(result).toEqualRight(expectedContext);
+	});
 });
