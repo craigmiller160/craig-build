@@ -73,6 +73,10 @@ describe('projectTypeUtils', () => {
 		unknownType(result, false);
 	});
 
+	it('isHelm', () => {
+		throw new Error();
+	});
+
 	it('isApplication', () => {
 		const result = projectTypes.map(isApplication);
 		expect(result).toHaveLength(NUM_PROJECT_TYPES);

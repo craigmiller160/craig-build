@@ -20,6 +20,11 @@ export const isGradle: P.Predicate<ProjectType> = (projectType) =>
 		projectType
 	);
 
+export const isHelm: P.Predicate<ProjectType> = (projectType) =>
+	[ProjectType.HelmApplication, ProjectType.HelmLibrary].includes(
+		projectType
+	);
+
 export const isJvm: P.Predicate<ProjectType> = pipe(isMaven, P.or(isGradle));
 
 export const isApplication: P.Predicate<ProjectType> = (projectType) =>
@@ -27,5 +32,6 @@ export const isApplication: P.Predicate<ProjectType> = (projectType) =>
 		ProjectType.DockerApplication,
 		ProjectType.MavenApplication,
 		ProjectType.NpmApplication,
-		ProjectType.GradleApplication
+		ProjectType.GradleApplication,
+		ProjectType.HelmApplication
 	].includes(projectType);
