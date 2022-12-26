@@ -3,13 +3,14 @@ import {
 	isApplication,
 	isDocker,
 	isGradle,
+	isHelm,
 	isJvm,
 	isMaven,
 	isNpm
 } from '../../src/context/projectTypeUtils';
 
 const projectTypes = Object.values(ProjectType);
-const NUM_PROJECT_TYPES = 9;
+const NUM_PROJECT_TYPES = 11;
 
 const npmLibrary = (result: boolean[], value: boolean) =>
 	expect(result[0]).toEqual(value);
@@ -27,8 +28,12 @@ const dockerApplication = (result: boolean[], value: boolean) =>
 	expect(result[6]).toEqual(value);
 const dockerImage = (result: boolean[], value: boolean) =>
 	expect(result[7]).toEqual(value);
-const unknownType = (result: boolean[], value: boolean) =>
+const helmApplication = (result: boolean[], value: boolean) =>
 	expect(result[8]).toEqual(value);
+const helmLibrary = (result: boolean[], value: boolean) =>
+	expect(result[9]).toEqual(value);
+const unknownType = (result: boolean[], value: boolean) =>
+	expect(result[10]).toEqual(value);
 
 describe('projectTypeUtils', () => {
 	it('isMaven', () => {
@@ -42,6 +47,8 @@ describe('projectTypeUtils', () => {
 		mavenApplication(result, true);
 		dockerApplication(result, false);
 		dockerImage(result, false);
+		helmApplication(result, false);
+		helmLibrary(result, false);
 		unknownType(result, false);
 	});
 
@@ -56,6 +63,8 @@ describe('projectTypeUtils', () => {
 		mavenApplication(result, false);
 		dockerApplication(result, false);
 		dockerImage(result, false);
+		helmApplication(result, false);
+		helmLibrary(result, false);
 		unknownType(result, false);
 	});
 
@@ -70,11 +79,25 @@ describe('projectTypeUtils', () => {
 		mavenApplication(result, false);
 		dockerApplication(result, true);
 		dockerImage(result, true);
+		helmApplication(result, false);
+		helmLibrary(result, false);
 		unknownType(result, false);
 	});
 
 	it('isHelm', () => {
-		throw new Error();
+		const result = projectTypes.map(isHelm);
+		expect(result).toHaveLength(NUM_PROJECT_TYPES);
+		npmLibrary(result, false);
+		mavenLibrary(result, false);
+		gradleLibrary(result, false);
+		gradleApplication(result, false);
+		npmApplication(result, false);
+		mavenApplication(result, false);
+		dockerApplication(result, false);
+		dockerImage(result, false);
+		helmApplication(result, true);
+		helmLibrary(result, true);
+		unknownType(result, false);
 	});
 
 	it('isApplication', () => {
@@ -88,6 +111,8 @@ describe('projectTypeUtils', () => {
 		mavenApplication(result, true);
 		dockerApplication(result, true);
 		dockerImage(result, false);
+		helmApplication(result, true);
+		helmLibrary(result, false);
 		unknownType(result, false);
 	});
 
@@ -102,6 +127,8 @@ describe('projectTypeUtils', () => {
 		mavenApplication(result, false);
 		dockerApplication(result, false);
 		dockerImage(result, false);
+		helmApplication(result, false);
+		helmLibrary(result, false);
 		unknownType(result, false);
 	});
 
@@ -116,6 +143,8 @@ describe('projectTypeUtils', () => {
 		mavenApplication(result, true);
 		dockerApplication(result, false);
 		dockerImage(result, false);
+		helmApplication(result, false);
+		helmLibrary(result, false);
 		unknownType(result, false);
 	});
 });
