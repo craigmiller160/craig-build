@@ -80,7 +80,7 @@ const checkProjectFilesForType = (): E.Either<Error, ProjectType> =>
 		)
 		.when(
 			(_) => fileExists(_, HELM_PROJECT_FILE) && !isHelmApplication(),
-			() => E.right(ProjectType.HelmApplication)
+			() => E.right(ProjectType.HelmLibrary)
 		)
 		.otherwise(() => E.left(new Error('Unable to identify ProjectType')));
 
