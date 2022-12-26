@@ -54,14 +54,25 @@ const readHelmProject = (): E.Either<Error, HelmJson> =>
 		E.chain((_) => parseJson<HelmJson>(_))
 	);
 
-export const getAndCacheHelmProject = (): E.Either<Error, HelmJson> =>
-	pipe(
-		readHelmProject(),
-		E.map((helmProject) => {
-			project = O.some(helmProject);
-			return helmProject;
-		})
+export const getAndCacheHelmProject = (): E.Either<Error, HelmJson> => {
+	if (process.env.NODE_ENV === 'test') {
+		return readHelmProject();
+	}
+	return pipe(
+		project,
+		O.fold(
+			() =>
+				pipe(
+					readHelmProject(),
+					E.map((helmProject) => {
+						project = O.some(helmProject);
+						return helmProject;
+					})
+				),
+			(_) => E.right(_ as HelmJson)
+		)
 	);
+};
 
 const readAndCacheRawProjectData = <T>(
 	projectType: ProjectType
