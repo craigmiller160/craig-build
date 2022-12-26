@@ -176,8 +176,10 @@ Helm-only projects contain a special `helm.json` file that provides special deta
 }
 ```
 
+Pre-release versions have a `-beta` suffix.
+
 | Property  | Description                                                |
 |-----------|------------------------------------------------------------|
 | type      | The type of Helm project. Either a library or application. |
 | namespace | The k8s namespace to deploy to.                            |
-| setValues | Helm values to set via CLI arguments.                      |
+| setValues | Helm values to set via CLI arguments. Optional.            |
