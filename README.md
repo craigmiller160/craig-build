@@ -130,3 +130,20 @@ This is building and deploying an application using Gradle.
             Chart.yaml
     build.gradle.kts
 ```
+
+## Custom Configuration Files
+
+Some of the project types use custom configuration files I designed. Here is a summary of them.
+
+## Docker Projects
+
+Docker-only projects use a `docker.json` file with the following simple structure:
+
+```json
+{
+  "name": "the-name",
+  "version": "1.0.0"
+}
+```
+
+Pre-release versions have a `-beta` suffix.
