@@ -14,12 +14,20 @@ import {
 	GRADLE_GROOVY_PROJECT_FILE,
 	GRADLE_KOTLIN_PROJECT_FILE,
 	HELM_DEPLOY_FILE,
+	HELM_PROJECT_FILE,
 	MAVEN_PROJECT_FILE,
 	NPM_PROJECT_FILE
 } from '../configFileTypes/constants';
+import { getAndCacheHelmProject } from '../projectCache';
 
 const fileExists = (cwd: string, file: string): boolean =>
 	fs.existsSync(path.resolve(cwd, file));
+
+const isHelmApplication = (): boolean =>
+	pipe(
+		getAndCacheHelmProject(),
+		E.exists((helmJson) => helmJson.type === 'application')
+	);
 
 const checkProjectFilesForType = (): E.Either<Error, ProjectType> =>
 	match(getCwd())
@@ -65,6 +73,14 @@ const checkProjectFilesForType = (): E.Either<Error, ProjectType> =>
 		.when(
 			(_) => fileExists(_, DOCKER_PROJECT_FILE),
 			() => E.right(ProjectType.DockerImage)
+		)
+		.when(
+			(_) => fileExists(_, HELM_PROJECT_FILE) && isHelmApplication(),
+			() => E.right(ProjectType.HelmApplication)
+		)
+		.when(
+			(_) => fileExists(_, HELM_PROJECT_FILE) && !isHelmApplication(),
+			() => E.right(ProjectType.HelmApplication)
 		)
 		.otherwise(() => E.left(new Error('Unable to identify ProjectType')));
 

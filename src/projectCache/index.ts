@@ -54,6 +54,15 @@ const readHelmProject = (): E.Either<Error, HelmJson> =>
 		E.chain((_) => parseJson<HelmJson>(_))
 	);
 
+export const getAndCacheHelmProject = (): E.Either<Error, HelmJson> =>
+	pipe(
+		readHelmProject(),
+		E.map((helmProject) => {
+			project = O.some(helmProject);
+			return helmProject;
+		})
+	);
+
 const readAndCacheRawProjectData = <T>(
 	projectType: ProjectType
 ): TE.TaskEither<Error, T> => {
