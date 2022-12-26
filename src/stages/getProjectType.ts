@@ -10,6 +10,7 @@ import * as Pred from 'fp-ts/Predicate';
 import * as TE from 'fp-ts/TaskEither';
 import { BuildContext } from '../context/BuildContext';
 
+// TODO move these constants to shared file
 const NPM_PROJECT_FILE = 'package.json';
 const MVN_PROJECT_FILE = 'pom.xml';
 const GRADLE_KOTLIN_PROJECT_FILE = 'build.gradle.kts';
