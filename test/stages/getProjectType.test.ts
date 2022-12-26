@@ -133,4 +133,12 @@ describe('getProjectType', () => {
 		const result = await getProjectType.execute(buildContext)();
 		expect(result).toEqualRight(expectedContext);
 	});
+
+	it('is HelmLibrary', async () => {
+		throw new Error();
+	});
+
+	it('isHelmApplication', async () => {
+		throw new Error();
+	});
 });
