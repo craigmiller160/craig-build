@@ -9,14 +9,14 @@ import { pipe } from 'fp-ts/function';
 import * as Pred from 'fp-ts/Predicate';
 import * as TE from 'fp-ts/TaskEither';
 import { BuildContext } from '../context/BuildContext';
-
-// TODO move these constants to shared file
-const NPM_PROJECT_FILE = 'package.json';
-const MVN_PROJECT_FILE = 'pom.xml';
-const GRADLE_KOTLIN_PROJECT_FILE = 'build.gradle.kts';
-const GRADLE_GROOVY_PROJECT_FILE = 'build.gradle';
-const DOCKER_PROJECT_FILE = 'docker.json';
-const DEPLOY_PATH = path.join('deploy', 'chart', 'Chart.yaml');
+import {
+	DOCKER_PROJECT_FILE,
+	GRADLE_GROOVY_PROJECT_FILE,
+	GRADLE_KOTLIN_PROJECT_FILE,
+	HELM_DEPLOY_FILE,
+	MAVEN_PROJECT_FILE,
+	NPM_PROJECT_FILE
+} from '../configFileTypes/constants';
 
 const fileExists = (cwd: string, file: string): boolean =>
 	fs.existsSync(path.resolve(cwd, file));
@@ -25,7 +25,8 @@ const checkProjectFilesForType = (): E.Either<Error, ProjectType> =>
 	match(getCwd())
 		.when(
 			(_) =>
-				fileExists(_, NPM_PROJECT_FILE) && fileExists(_, DEPLOY_PATH),
+				fileExists(_, NPM_PROJECT_FILE) &&
+				fileExists(_, HELM_DEPLOY_FILE),
 			() => E.right(ProjectType.NpmApplication)
 		)
 		.when(
@@ -36,7 +37,7 @@ const checkProjectFilesForType = (): E.Either<Error, ProjectType> =>
 			(_) =>
 				(fileExists(_, GRADLE_KOTLIN_PROJECT_FILE) ||
 					fileExists(_, GRADLE_GROOVY_PROJECT_FILE)) &&
-				fileExists(_, DEPLOY_PATH),
+				fileExists(_, HELM_DEPLOY_FILE),
 			() => E.right(ProjectType.GradleApplication)
 		)
 		.when(
@@ -47,17 +48,18 @@ const checkProjectFilesForType = (): E.Either<Error, ProjectType> =>
 		)
 		.when(
 			(_) =>
-				fileExists(_, MVN_PROJECT_FILE) && fileExists(_, DEPLOY_PATH),
+				fileExists(_, MAVEN_PROJECT_FILE) &&
+				fileExists(_, HELM_DEPLOY_FILE),
 			() => E.right(ProjectType.MavenApplication)
 		)
 		.when(
-			(_) => fileExists(_, MVN_PROJECT_FILE),
+			(_) => fileExists(_, MAVEN_PROJECT_FILE),
 			() => E.right(ProjectType.MavenLibrary)
 		)
 		.when(
 			(_) =>
 				fileExists(_, DOCKER_PROJECT_FILE) &&
-				fileExists(_, DEPLOY_PATH),
+				fileExists(_, HELM_DEPLOY_FILE),
 			() => E.right(ProjectType.DockerApplication)
 		)
 		.when(
