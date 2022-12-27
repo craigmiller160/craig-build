@@ -183,4 +183,74 @@ describe('getProjectInfo', () => {
 		const result = await getProjectInfo.execute(buildContext)();
 		expect(result).toEqualRight(expectedContext);
 	});
+
+	it('HelmLibrary release project', async () => {
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDir, 'helmReleaseLibrary')
+		);
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.HelmLibrary
+		};
+		const expectedContext: BuildContext = {
+			...buildContext,
+			projectInfo: {
+				group: 'craigmiller160',
+				name: 'my-lib',
+				version: '1.0.0',
+				versionType: VersionType.Release
+			}
+		};
+		const result = await getProjectInfo.execute(buildContext)();
+		expect(result).toEqualRight(expectedContext);
+	});
+
+	it('HelmLibrary pre-release project', async () => {
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDir, 'helmPreReleaseLibrary')
+		);
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.HelmLibrary
+		};
+		const result = await getProjectInfo.execute(buildContext)();
+		expect(result).toEqualLeft(
+			new Error('Helm pre-release projects are not currently supported')
+		);
+	});
+
+	it('HelmApplication release project', async () => {
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDir, 'helmReleaseApplication')
+		);
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.HelmApplication
+		};
+		const expectedContext: BuildContext = {
+			...buildContext,
+			projectInfo: {
+				group: 'craigmiller160',
+				name: 'my-app',
+				version: '1.0.0',
+				versionType: VersionType.Release
+			}
+		};
+		const result = await getProjectInfo.execute(buildContext)();
+		expect(result).toEqualRight(expectedContext);
+	});
+
+	it('HelmApplication pre-release project', async () => {
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDir, 'helmPreReleaseApplication')
+		);
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.HelmApplication
+		};
+		const result = await getProjectInfo.execute(buildContext)();
+		expect(result).toEqualLeft(
+			new Error('Helm pre-release projects are not currently supported')
+		);
+	});
 });

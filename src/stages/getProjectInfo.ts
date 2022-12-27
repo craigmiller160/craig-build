@@ -8,6 +8,7 @@ import * as Pred from 'fp-ts/Predicate';
 import {
 	isDocker,
 	isGradle,
+	isHelm,
 	isMaven,
 	isNpm
 } from '../context/projectTypeUtils';
@@ -20,6 +21,7 @@ import { VersionType } from '../context/VersionType';
 import { regexTest } from '../functions/RegExp';
 import { GradleProject } from '../special/gradle';
 import { getRawProjectData } from '../projectCache';
+import { HelmJson } from '../configFileTypes/HelmJson';
 
 const BETA_VERSION_REGEX = /^.*-beta/;
 const SNAPSHOT_VERSION_REGEX = /^.*-SNAPSHOT/;
@@ -98,6 +100,29 @@ const readGradleProjectInfo = (
 		}))
 	);
 
+const readHelmProjectInfo = (
+	projectType: ProjectType
+): TE.TaskEither<Error, ProjectInfo> =>
+	pipe(
+		getRawProjectData<HelmJson>(projectType),
+		TE.map((helmJson): ProjectInfo => {
+			const [group, name] = npmSeparateGroupAndName(helmJson.name);
+			return {
+				group,
+				name,
+				version: helmJson.version,
+				versionType: getVersionType(helmJson.version)
+			};
+		}),
+		TE.filterOrElse(
+			(projectInfo) => projectInfo.versionType === VersionType.Release,
+			() =>
+				new Error(
+					'Helm pre-release projects are not currently supported'
+				)
+		)
+	);
+
 const readProjectInfoByType = (
 	projectType: ProjectType
 ): TE.TaskEither<Error, ProjectInfo> =>
@@ -106,6 +131,7 @@ const readProjectInfoByType = (
 		.when(isNpm, readNpmProjectInfo)
 		.when(isDocker, readDockerProjectInfo)
 		.when(isGradle, readGradleProjectInfo)
+		.when(isHelm, readHelmProjectInfo)
 		.otherwise(() =>
 			TE.left(new Error(`Unsupported ProjectType: ${projectType}`))
 		);
