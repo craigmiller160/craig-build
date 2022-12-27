@@ -340,13 +340,13 @@ describe('execute.fullBuild', () => {
 		validateStages(dockerOnly_release_helmLibrary);
 	});
 
-	it('executes docker onnly for release HelmApplication', async () => {
+	it('executes docker only for release HelmApplication', async () => {
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
-				type: CommandType.FullBuild
+				type: CommandType.DockerOnly
 			},
-			projectType: ProjectType.DockerOnly,
+			projectType: ProjectType.HelmApplication,
 			projectInfo: {
 				...baseContext.projectInfo,
 				versionType: VersionType.Release

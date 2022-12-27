@@ -21,6 +21,8 @@ import { kubernetesOnly_preRelease_dockerImage } from '../expectedExecutions/kub
 import { Stage } from '../../src/stages/Stage';
 import { stages } from '../../src/stages';
 import { VersionType } from '../../src/context/VersionType';
+import { kubernetesOnly_release_helmLibrary } from '../expectedExecutions/kubernetesOnly_release_helmLibrary';
+import { kubernetesOnly_release_helmApplication } from '../expectedExecutions/kubernetesOnly_release_helmApplication';
 
 jest.mock('../../src/stages', () => {
 	const createStageMock = (stage: Stage): Stage => ({
@@ -314,5 +316,47 @@ describe('execute.kubernetesOnly', () => {
 		expect(result).toEqualRight(context);
 
 		validateStages(kubernetesOnly_preRelease_dockerImage);
+	});
+
+	it('executes kubernetes only only for release HelmLibrary', async () => {
+		const context: BuildContext = {
+			...baseContext,
+			commandInfo: {
+				type: CommandType.KubernetesOnly
+			},
+			projectType: ProjectType.HelmLibrary,
+			projectInfo: {
+				...baseContext.projectInfo,
+				versionType: VersionType.Release
+			}
+		};
+
+		prepareStageExecutionMock(context);
+
+		const result = await execute(context)();
+		expect(result).toEqualRight(context);
+
+		validateStages(kubernetesOnly_release_helmLibrary);
+	});
+
+	it('executes kubernetes only only for release HelmApplication', async () => {
+		const context: BuildContext = {
+			...baseContext,
+			commandInfo: {
+				type: CommandType.KubernetesOnly
+			},
+			projectType: ProjectType.HelmApplication,
+			projectInfo: {
+				...baseContext.projectInfo,
+				versionType: VersionType.Release
+			}
+		};
+
+		prepareStageExecutionMock(context);
+
+		const result = await execute(context)();
+		expect(result).toEqualRight(context);
+
+		validateStages(kubernetesOnly_release_helmApplication);
 	});
 });
