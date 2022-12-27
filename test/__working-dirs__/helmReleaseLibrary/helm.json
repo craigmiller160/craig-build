@@ -1,5 +1,5 @@
 {
-  "name": "my-lib",
+  "name": "@craigmiller160/my-lib",
   "version": "1.0.0",
   "type": "library",
   "namespace": "infra-prod"
