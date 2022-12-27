@@ -1,0 +1,6 @@
+{
+  "name": "my-app",
+  "version": "1.0.0-beta",
+  "type": "application",
+  "namespace": "infra-prod"
+}
