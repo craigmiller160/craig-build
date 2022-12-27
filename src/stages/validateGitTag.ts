@@ -7,8 +7,7 @@ import { runCommand } from '../command/runCommand';
 import * as A from 'fp-ts/Array';
 import * as Pred from 'fp-ts/Predicate';
 import { Stage, StageExecuteFn } from './Stage';
-import { isFullBuild, isKubernetesOnly } from '../context/commandTypeUtils';
-import { isDocker } from '../context/projectTypeUtils';
+import { isFullBuild } from '../context/commandTypeUtils';
 
 const executeGitTagValidation = (
 	context: BuildContext
@@ -40,18 +39,10 @@ const isFullBuildAndReleaseVersion: Pred.Predicate<BuildContext> = pipe(
 	(_: BuildContext) => isFullBuild(_.commandInfo.type),
 	Pred.and((_) => isRelease(_.projectInfo))
 );
-const isDockerReleaseProjectNoKubernetesOnly: Pred.Predicate<BuildContext> =
-	pipe(
-		(_: BuildContext) => isDocker(_.projectType),
-		Pred.and((_) => isRelease(_.projectInfo)),
-		Pred.and(Pred.not((_) => isKubernetesOnly(_.commandInfo.type)))
-	);
 
 const execute: StageExecuteFn = (context) => handleValidationByProject(context);
-const shouldStageExecute: Pred.Predicate<BuildContext> = pipe(
-	isFullBuildAndReleaseVersion,
-	Pred.or(isDockerReleaseProjectNoKubernetesOnly)
-);
+const shouldStageExecute: Pred.Predicate<BuildContext> =
+	isFullBuildAndReleaseVersion;
 
 export const validateGitTag: Stage = {
 	name: 'Validate Existing Git Tag',
