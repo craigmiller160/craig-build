@@ -77,4 +77,8 @@ describe('manuallyPublishArtifact', () => {
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(2, CLEAR_FILES_COMMAND);
 	});
+
+	it('publishes HelmLibrary project', () => {
+		throw new Error();
+	});
 });

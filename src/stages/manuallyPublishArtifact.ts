@@ -54,18 +54,28 @@ const publishNpmArtifact = (
 	);
 };
 
+const publishHelmArtifact = (
+	context: BuildContext
+): TE.TaskEither<Error, BuildContext> => {
+	throw new Error();
+};
+
 const handlePublishByProject = (
 	context: BuildContext
 ): TE.TaskEither<Error, BuildContext> =>
 	match(context)
 		.with({ projectType: P.when(isNpm) }, publishNpmArtifact)
+		.with({ projectType: P.when(isHelm) }, publishHelmArtifact)
 		.run();
 
-const isNpmOrHelm: Pred.Predicate<ProjectType> = pipe(isNpm, Pred.or(isHelm));
+const isAnyNpmOrHelmLibrary: Pred.Predicate<ProjectType> = pipe(
+	isNpm,
+	Pred.or((_) => ProjectType.HelmLibrary === _)
+);
 
 const execute: StageExecuteFn = (context) => handlePublishByProject(context);
 const shouldStageExecute: Pred.Predicate<BuildContext> = pipe(
-	(_: BuildContext) => isNpmOrHelm(_.projectType),
+	(_: BuildContext) => isAnyNpmOrHelmLibrary(_.projectType),
 	Pred.and((_) => isFullBuild(_.commandInfo.type))
 );
 
