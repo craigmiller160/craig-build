@@ -214,7 +214,9 @@ describe('getProjectInfo', () => {
 			projectType: ProjectType.HelmLibrary
 		};
 		const result = await getProjectInfo.execute(buildContext)();
-		expect(result).toEqualLeft(new Error('FooBar'));
+		expect(result).toEqualLeft(
+			new Error('Helm pre-release projects are not currently supported')
+		);
 	});
 
 	it('HelmApplication release project', async () => {
@@ -247,6 +249,8 @@ describe('getProjectInfo', () => {
 			projectType: ProjectType.HelmApplication
 		};
 		const result = await getProjectInfo.execute(buildContext)();
-		expect(result).toEqualLeft(new Error('FooBar'));
+		expect(result).toEqualLeft(
+			new Error('Helm pre-release projects are not currently supported')
+		);
 	});
 });

@@ -115,7 +115,7 @@ const readHelmProjectInfo = (
 			};
 		}),
 		TE.filterOrElse(
-			(projectInfo) => projectInfo.versionType === VersionType.PreRelease,
+			(projectInfo) => projectInfo.versionType === VersionType.Release,
 			() =>
 				new Error(
 					'Helm pre-release projects are not currently supported'
