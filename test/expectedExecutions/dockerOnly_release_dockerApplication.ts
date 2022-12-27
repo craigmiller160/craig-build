@@ -27,7 +27,7 @@ export const dockerOnly_release_dockerApplication: ExpectedExecution = {
 	[validateDependencyVersions.name]: false,
 	[validateProjectVersionAllowed.name]: true,
 	// [validateKubernetesConfig.name]: true,
-	[validateGitTag.name]: true,
+	[validateGitTag.name]: false,
 	[buildArtifact.name]: false,
 	[preparePreReleaseVersion.name]: false,
 	[manuallyPublishArtifact.name]: false,
