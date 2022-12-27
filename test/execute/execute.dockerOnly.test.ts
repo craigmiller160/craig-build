@@ -22,6 +22,9 @@ import { Stage } from '../../src/stages/Stage';
 import { stages } from '../../src/stages';
 import { VersionType } from '../../src/context/VersionType';
 
+import { dockerOnly_release_helmLibrary } from '../expectedExecutions/dockerOnly_release_helmLibrary';
+import { dockerOnly_release_helmApplication } from '../expectedExecutions/dockerOnly_release_helmApplication';
+
 jest.mock('../../src/stages', () => {
 	const createStageMock = (stage: Stage): Stage => ({
 		name: stage.name,
@@ -314,5 +317,47 @@ describe('execute.fullBuild', () => {
 		expect(result).toEqualRight(context);
 
 		validateStages(dockerOnly_preRelease_dockerImage);
+	});
+
+	it('executes docker only for release HelmLibrary', async () => {
+		const context: BuildContext = {
+			...baseContext,
+			commandInfo: {
+				type: CommandType.DockerOnly
+			},
+			projectType: ProjectType.HelmLibrary,
+			projectInfo: {
+				...baseContext.projectInfo,
+				versionType: VersionType.Release
+			}
+		};
+
+		prepareStageExecutionMock(context);
+
+		const result = await execute(context)();
+		expect(result).toEqualRight(context);
+
+		validateStages(dockerOnly_release_helmLibrary);
+	});
+
+	it('executes docker onnly for release HelmApplication', async () => {
+		const context: BuildContext = {
+			...baseContext,
+			commandInfo: {
+				type: CommandType.FullBuild
+			},
+			projectType: ProjectType.DockerOnly,
+			projectInfo: {
+				...baseContext.projectInfo,
+				versionType: VersionType.Release
+			}
+		};
+
+		prepareStageExecutionMock(context);
+
+		const result = await execute(context)();
+		expect(result).toEqualRight(context);
+
+		validateStages(dockerOnly_release_helmApplication);
 	});
 });

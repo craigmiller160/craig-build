@@ -22,6 +22,7 @@ import { Stage } from '../../src/stages/Stage';
 import { stages } from '../../src/stages';
 import { VersionType } from '../../src/context/VersionType';
 import { fullBuild_release_helmLibrary } from '../expectedExecutions/fullBuild_release_helmLibrary';
+import { fullBuild_release_helmApplication } from '../expectedExecutions/fullBuild_release_helmApplication';
 
 jest.mock('../../src/stages', () => {
 	const createStageMock = (stage: Stage): Stage => ({
@@ -356,6 +357,6 @@ describe('execute.fullBuild', () => {
 		const result = await execute(context)();
 		expect(result).toEqualRight(context);
 
-		validateStages(fullBuild_release_helmLibrary);
+		validateStages(fullBuild_release_helmApplication);
 	});
 });
