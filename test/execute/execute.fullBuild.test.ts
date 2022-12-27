@@ -21,6 +21,7 @@ import { fullBuild_preRelease_dockerImage } from '../expectedExecutions/fullBuil
 import { Stage } from '../../src/stages/Stage';
 import { stages } from '../../src/stages';
 import { VersionType } from '../../src/context/VersionType';
+import { fullBuild_release_helmLibrary } from '../expectedExecutions/fullBuild_release_helmLibrary';
 
 jest.mock('../../src/stages', () => {
 	const createStageMock = (stage: Stage): Stage => ({
@@ -314,5 +315,47 @@ describe('execute.fullBuild', () => {
 		expect(result).toEqualRight(context);
 
 		validateStages(fullBuild_preRelease_dockerImage);
+	});
+
+	it('executes full build for release HelmLibrary', async () => {
+		const context: BuildContext = {
+			...baseContext,
+			commandInfo: {
+				type: CommandType.FullBuild
+			},
+			projectType: ProjectType.HelmLibrary,
+			projectInfo: {
+				...baseContext.projectInfo,
+				versionType: VersionType.Release
+			}
+		};
+
+		prepareStageExecutionMock(context);
+
+		const result = await execute(context)();
+		expect(result).toEqualRight(context);
+
+		validateStages(fullBuild_release_helmLibrary);
+	});
+
+	it('executes full build for release HelmApplication', async () => {
+		const context: BuildContext = {
+			...baseContext,
+			commandInfo: {
+				type: CommandType.FullBuild
+			},
+			projectType: ProjectType.HelmApplication,
+			projectInfo: {
+				...baseContext.projectInfo,
+				versionType: VersionType.Release
+			}
+		};
+
+		prepareStageExecutionMock(context);
+
+		const result = await execute(context)();
+		expect(result).toEqualRight(context);
+
+		validateStages(fullBuild_release_helmLibrary);
 	});
 });
