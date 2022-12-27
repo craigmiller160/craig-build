@@ -58,9 +58,14 @@ const validateStages = (expected: ExpectedExecution) => {
 				expect(stage.execute).not.toHaveBeenCalled();
 			}
 		} catch (ex) {
-			// eslint-disable-next-line no-console
-			console.error('ERROR WITH STAGE', stage.name);
-			throw ex;
+			throw new Error(
+				`Error validating state: ${stage.name}.\n${
+					(ex as Error).message
+				}`,
+				{
+					cause: ex
+				}
+			);
 		}
 	});
 };

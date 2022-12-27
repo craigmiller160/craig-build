@@ -35,5 +35,5 @@ export const kubernetesOnly_release_helmApplication: ExpectedExecution = {
 	[waitOnNexusUpdate.name]: false,
 	[downloadArtifactForDeployment.name]: false,
 	[buildAndPushDocker.name]: false,
-	[deployToKubernetes.name]: false
+	[deployToKubernetes.name]: true
 };
