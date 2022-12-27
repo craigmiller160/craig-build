@@ -49,4 +49,21 @@ describe('validateGitTag', () => {
 
 		expect(runCommandMock).toHaveBeenCalledWith('git tag');
 	});
+
+	it('skips execution for pre-release version', async () => {
+		runCommandMock.mockImplementation(() => TE.right(versions));
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectInfo: {
+				...baseBuildContext.projectInfo,
+				versionType: VersionType.PreRelease,
+				version: '1.0.0'
+			}
+		};
+
+		const result = await validateGitTag.execute(buildContext)();
+		expect(result).toEqualRight(buildContext);
+
+		expect(runCommandMock).not.toHaveBeenCalled();
+	});
 });
