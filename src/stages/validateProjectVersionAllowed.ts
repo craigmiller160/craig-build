@@ -2,7 +2,7 @@ import { BuildContext } from '../context/BuildContext';
 import { pipe } from 'fp-ts/function';
 import * as TE from 'fp-ts/TaskEither';
 import { match, P } from 'ts-pattern';
-import { isDocker, isJvm, isNpm } from '../context/projectTypeUtils';
+import { isDocker, isHelm, isJvm, isNpm } from '../context/projectTypeUtils';
 import {
 	NexusRepoGroupSearchFn,
 	searchForDockerReleases,
@@ -15,6 +15,7 @@ import { isRelease } from '../context/projectInfoUtils';
 import { Stage, StageExecuteFn } from './Stage';
 import * as Pred from 'fp-ts/Predicate';
 import { isDockerOnly, isFullBuild } from '../context/commandTypeUtils';
+import { ProjectType } from '../context/ProjectType';
 
 const isReleaseVersionUnique = (
 	nexusResult: NexusSearchResult,
@@ -66,9 +67,12 @@ const execute: StageExecuteFn = (context) =>
 		TE.map(() => context)
 	);
 
-const isFullBuildAndRelease: Pred.Predicate<BuildContext> = pipe(
+const isNotHelm: Pred.Predicate<ProjectType> = Pred.not(isHelm);
+
+const isNonHelmFullBuildAndRelease: Pred.Predicate<BuildContext> = pipe(
 	(_: BuildContext) => isRelease(_.projectInfo),
-	Pred.and((_) => isFullBuild(_.commandInfo.type))
+	Pred.and((_) => isFullBuild(_.commandInfo.type)),
+	Pred.and((_) => isNotHelm(_.projectType))
 );
 
 const isDockerOnlyAndDockerProjectAndRelease: Pred.Predicate<BuildContext> =
@@ -79,7 +83,7 @@ const isDockerOnlyAndDockerProjectAndRelease: Pred.Predicate<BuildContext> =
 	);
 
 const shouldStageExecute: Pred.Predicate<BuildContext> = pipe(
-	isFullBuildAndRelease,
+	isNonHelmFullBuildAndRelease,
 	Pred.or(isDockerOnlyAndDockerProjectAndRelease)
 );
 

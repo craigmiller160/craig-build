@@ -4,7 +4,7 @@ import * as Pred from 'fp-ts/Predicate';
 import { match, P } from 'ts-pattern';
 import { ProjectType } from '../context/ProjectType';
 import { pipe } from 'fp-ts/function';
-import { isApplication, isDocker } from '../context/projectTypeUtils';
+import { isApplication, isDocker, isHelm } from '../context/projectTypeUtils';
 import { DOCKER_REPO_PREFIX } from '../configFileTypes/constants';
 import shellEnv from 'shell-env';
 import { EnvironmentVariables } from '../env/EnvironmentVariables';
@@ -132,10 +132,12 @@ const handleDockerBuildByProject = (
 
 const isNotKubernetesOnly: Pred.Predicate<CommandType> =
 	Pred.not(isKubernetesOnly);
+const isNotHelm: Pred.Predicate<ProjectType> = Pred.not(isHelm);
 
 const shouldStageExecute: Pred.Predicate<BuildContext> = pipe(
 	(_: BuildContext) => isDockerOrApplication(_.projectType),
-	Pred.and((_) => isNotKubernetesOnly(_.commandInfo.type))
+	Pred.and((_) => isNotKubernetesOnly(_.commandInfo.type)),
+	Pred.and((_) => isNotHelm(_.projectType))
 );
 
 const execute: StageExecuteFn = (context) =>

@@ -27,13 +27,13 @@ export const fullBuild_release_helmApplication: ExpectedExecution = {
 	[validateDependencyVersions.name]: false,
 	[validateProjectVersionAllowed.name]: false,
 	// [validateKubernetesConfig.name]: false,
-	[validateGitTag.name]: false,
+	[validateGitTag.name]: true,
 	[buildArtifact.name]: false,
 	[preparePreReleaseVersion.name]: false,
 	[manuallyPublishArtifact.name]: false,
-	[gitTag.name]: false,
+	[gitTag.name]: true,
 	[waitOnNexusUpdate.name]: false,
 	[downloadArtifactForDeployment.name]: false,
 	[buildAndPushDocker.name]: false,
-	[deployToKubernetes.name]: false
+	[deployToKubernetes.name]: true
 };
