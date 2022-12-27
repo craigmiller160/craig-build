@@ -183,4 +183,20 @@ describe('getProjectInfo', () => {
 		const result = await getProjectInfo.execute(buildContext)();
 		expect(result).toEqualRight(expectedContext);
 	});
+
+	it('HelmLibrary release project', async () => {
+		throw new Error();
+	});
+
+	it('HelmLibrary pre-release project', async () => {
+		throw new Error();
+	});
+
+	it('HelmApplication release project', async () => {
+		throw new Error();
+	});
+
+	it('HelmApplication pre-release project', async () => {
+		throw new Error();
+	});
 });
