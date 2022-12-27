@@ -188,27 +188,65 @@ describe('getProjectInfo', () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(baseWorkingDir, 'helmReleaseLibrary')
 		);
-		throw new Error();
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.HelmLibrary
+		};
+		const expectedContext: BuildContext = {
+			...buildContext,
+			projectInfo: {
+				group: 'craigmiller160',
+				name: 'my-lib',
+				version: '1.0.0',
+				versionType: VersionType.Release
+			}
+		};
+		const result = await getProjectInfo.execute(buildContext)();
+		expect(result).toEqualRight(expectedContext);
 	});
 
 	it('HelmLibrary pre-release project', async () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(baseWorkingDir, 'helmPreReleaseLibrary')
 		);
-		throw new Error();
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.HelmLibrary
+		};
+		const result = await getProjectInfo.execute(buildContext)();
+		expect(result).toEqualLeft(new Error('FooBar'));
 	});
 
 	it('HelmApplication release project', async () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(baseWorkingDir, 'helmReleaseApplication')
 		);
-		throw new Error();
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.HelmApplication
+		};
+		const expectedContext: BuildContext = {
+			...buildContext,
+			projectInfo: {
+				group: 'craigmiller160',
+				name: 'my-app',
+				version: '1.0.0',
+				versionType: VersionType.Release
+			}
+		};
+		const result = await getProjectInfo.execute(buildContext)();
+		expect(result).toEqualRight(expectedContext);
 	});
 
 	it('HelmApplication pre-release project', async () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(baseWorkingDir, 'helmPreReleaseApplication')
 		);
-		throw new Error();
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.HelmApplication
+		};
+		const result = await getProjectInfo.execute(buildContext)();
+		expect(result).toEqualLeft(new Error('FooBar'));
 	});
 });
