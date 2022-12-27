@@ -185,18 +185,30 @@ describe('getProjectInfo', () => {
 	});
 
 	it('HelmLibrary release project', async () => {
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDir, 'helmReleaseLibrary')
+		);
 		throw new Error();
 	});
 
 	it('HelmLibrary pre-release project', async () => {
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDir, 'helmPreReleaseLibrary')
+		);
 		throw new Error();
 	});
 
 	it('HelmApplication release project', async () => {
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDir, 'helmReleaseApplication')
+		);
 		throw new Error();
 	});
 
 	it('HelmApplication pre-release project', async () => {
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDir, 'helmPreReleaseApplication')
+		);
 		throw new Error();
 	});
 });
