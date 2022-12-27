@@ -4,6 +4,7 @@ import { match, P } from 'ts-pattern';
 import {
 	isDocker,
 	isGradle,
+	isHelm,
 	isMaven,
 	isNpm
 } from '../context/projectTypeUtils';
@@ -165,14 +166,16 @@ const handleValidationByProject = (
 		.run();
 
 const isNotDocker: Pred.Predicate<ProjectType> = Pred.not(isDocker);
+const isNotHelm: Pred.Predicate<ProjectType> = Pred.not(isHelm);
 
 const execute: StageExecuteFn = (context) => handleValidationByProject(context);
-const isNonDockerRelease: Pred.Predicate<BuildContext> = pipe(
+const isNonDockerNonHelmRelease: Pred.Predicate<BuildContext> = pipe(
 	(_: BuildContext) => isNotDocker(_.projectType),
+	Pred.and((_) => isNotHelm(_.projectType)),
 	Pred.and((_) => isRelease(_.projectInfo))
 );
 const shouldStageExecute: Pred.Predicate<BuildContext> = pipe(
-	isNonDockerRelease,
+	isNonDockerNonHelmRelease,
 	Pred.and((_) => isFullBuild(_.commandInfo.type))
 );
 
