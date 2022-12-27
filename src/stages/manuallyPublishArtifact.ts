@@ -1,7 +1,7 @@
 import { BuildContext } from '../context/BuildContext';
 import * as TE from 'fp-ts/TaskEither';
 import { match, P } from 'ts-pattern';
-import { isNpm } from '../context/projectTypeUtils';
+import { isHelm, isNpm } from '../context/projectTypeUtils';
 import { pipe } from 'fp-ts/function';
 import { runCommand } from '../command/runCommand';
 import { Stage, StageExecuteFn } from './Stage';
@@ -16,6 +16,7 @@ import { parseJson } from '../functions/Json';
 import { PackageJson } from '../configFileTypes/PackageJson';
 import { NPM_PROJECT_FILE } from '../configFileTypes/constants';
 import { logger } from '../logger';
+import { ProjectType } from '../context/ProjectType';
 
 export const NPM_PUBLISH_COMMAND =
 	'yarn publish --no-git-tag-version --new-version';
@@ -60,9 +61,11 @@ const handlePublishByProject = (
 		.with({ projectType: P.when(isNpm) }, publishNpmArtifact)
 		.run();
 
+const isNpmOrHelm: Pred.Predicate<ProjectType> = pipe(isNpm, Pred.or(isHelm));
+
 const execute: StageExecuteFn = (context) => handlePublishByProject(context);
 const shouldStageExecute: Pred.Predicate<BuildContext> = pipe(
-	(_: BuildContext) => isNpm(_.projectType),
+	(_: BuildContext) => isNpmOrHelm(_.projectType),
 	Pred.and((_) => isFullBuild(_.commandInfo.type))
 );
 

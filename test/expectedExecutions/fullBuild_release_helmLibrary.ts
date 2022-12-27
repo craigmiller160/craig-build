@@ -30,7 +30,7 @@ export const fullBuild_release_helmLibrary: ExpectedExecution = {
 	[validateGitTag.name]: true,
 	[buildArtifact.name]: false,
 	[preparePreReleaseVersion.name]: false,
-	[manuallyPublishArtifact.name]: false,
+	[manuallyPublishArtifact.name]: true,
 	[gitTag.name]: true,
 	[waitOnNexusUpdate.name]: false,
 	[downloadArtifactForDeployment.name]: false,
