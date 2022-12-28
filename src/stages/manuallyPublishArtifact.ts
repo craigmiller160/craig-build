@@ -17,6 +17,7 @@ import { PackageJson } from '../configFileTypes/PackageJson';
 import { NPM_PROJECT_FILE } from '../configFileTypes/constants';
 import { logger } from '../logger';
 import { ProjectType } from '../context/ProjectType';
+import { getNexusCredentials } from '../utils/getNexusCredentials';
 
 export const NPM_PUBLISH_COMMAND =
 	'yarn publish --no-git-tag-version --new-version';
@@ -65,11 +66,11 @@ const publishHelmArtifact = (
 				cwd: path.join(getCwd(), 'deploy')
 			}
 		),
-		TE.chain(() => {
-			const user = process.env.NEXUS_USER;
-			const password = process.env.NEXUS_PASSWORD;
+		TE.chainEitherK(() => getNexusCredentials()),
+		TE.chain(({ userName, password }) => {
+			const tarFile = `${context.projectInfo.name}-${context.projectInfo.version}.tgz`;
 			return runCommand(
-				`curl -v -u USER:PASSWORD https://nexus-craigmiller160.ddns.net/repository/helm-private/ --upload-file ${tarFile}`,
+				`curl -v -u ${userName}:${password} https://nexus-craigmiller160.ddns.net/repository/helm-private/ --upload-file ${tarFile}`,
 				{
 					printOutput: true,
 					cwd: path.join(getCwd(), 'deploy')
