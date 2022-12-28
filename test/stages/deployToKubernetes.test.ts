@@ -214,7 +214,6 @@ describe('deployToKubernetes', () => {
 			`helm install ${deploymentName} ${tarFile} --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml`,
 			{ printOutput: true, cwd: deployDir }
 		);
-		throw new Error('What about secrets?');
 	});
 
 	it('updates helm application via helm', async () => {
@@ -268,6 +267,9 @@ describe('deployToKubernetes', () => {
 			`helm upgrade ${deploymentName} ${tarFile} --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml`,
 			{ printOutput: true, cwd: deployDir }
 		);
-		throw new Error('What about secrets?');
+	});
+
+	it('installs helm application via helm with secrets', async () => {
+		throw new Error();
 	});
 });
