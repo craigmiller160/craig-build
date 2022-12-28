@@ -182,7 +182,7 @@ describe('deployToKubernetes', () => {
 		const result = await deployToKubernetes.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
 
-		expect(runCommandMock).toHaveBeenCalledTimes(5);
+		expect(runCommandMock).toHaveBeenCalledTimes(6);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			1,
 			`helm list --kube-context=${K8S_CTX} --namespace ${K8S_NS}`,
@@ -205,7 +205,13 @@ describe('deployToKubernetes', () => {
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			5,
-			`helm install ${deploymentName} ./chart --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml`,
+			`helm package ./chart --version ${buildContext.projectInfo.version}`,
+			{ printOutput: true, cwd: deployDir }
+		);
+		const tarFile = `${buildContext.projectInfo.name}-0.1.0.tgz`;
+		expect(runCommandMock).toHaveBeenNthCalledWith(
+			6,
+			`helm install ${deploymentName} ${tarFile} --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml`,
 			{ printOutput: true, cwd: deployDir }
 		);
 		throw new Error('What about secrets?');
@@ -230,7 +236,7 @@ describe('deployToKubernetes', () => {
 		const result = await deployToKubernetes.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
 
-		expect(runCommandMock).toHaveBeenCalledTimes(5);
+		expect(runCommandMock).toHaveBeenCalledTimes(6);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			1,
 			`helm list --kube-context=${K8S_CTX} --namespace ${K8S_NS}`,
@@ -253,7 +259,13 @@ describe('deployToKubernetes', () => {
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			5,
-			`helm upgrade ${deploymentName} ./chart --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml`,
+			`helm package ./chart --version ${buildContext.projectInfo.version}`,
+			{ printOutput: true, cwd: deployDir }
+		);
+		const tarFile = `${buildContext.projectInfo.name}-0.1.0.tgz`;
+		expect(runCommandMock).toHaveBeenNthCalledWith(
+			6,
+			`helm upgrade ${deploymentName} ${tarFile} --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml`,
 			{ printOutput: true, cwd: deployDir }
 		);
 		throw new Error('What about secrets?');
