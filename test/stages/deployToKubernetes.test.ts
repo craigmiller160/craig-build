@@ -150,4 +150,12 @@ describe('deployToKubernetes', () => {
 			{ printOutput: true, cwd: deployDir }
 		);
 	});
+
+	it('installs helm application via helmp', async () => {
+		throw new Error();
+	});
+
+	it('updates helm application via helm', async () => {
+		throw new Error();
+	});
 });
