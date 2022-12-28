@@ -4,11 +4,8 @@ import * as Pred from 'fp-ts/Predicate';
 import { match, P } from 'ts-pattern';
 import { ProjectType } from '../context/ProjectType';
 import { pipe } from 'fp-ts/function';
-import { isApplication, isDocker } from '../context/projectTypeUtils';
+import { isApplication, isDocker, isHelm } from '../context/projectTypeUtils';
 import { DOCKER_REPO_PREFIX } from '../configFileTypes/constants';
-import shellEnv from 'shell-env';
-import { EnvironmentVariables } from '../env/EnvironmentVariables';
-import * as O from 'fp-ts/Option';
 import { runCommand } from '../command/runCommand';
 import { Stage, StageExecuteFn } from './Stage';
 import { CommandType } from '../context/CommandType';
@@ -16,34 +13,19 @@ import { isKubernetesOnly } from '../context/commandTypeUtils';
 import path from 'path';
 import { getCwd } from '../command/getCwd';
 import { createDockerImageTag } from '../utils/dockerUtils';
-
-interface DockerCreds {
-	readonly userName: string;
-	readonly password: string;
-}
+import {
+	getNexusCredentials,
+	NexusCredentials
+} from '../utils/getNexusCredentials';
 
 const isDockerOrApplication: Pred.Predicate<ProjectType> = pipe(
 	isApplication,
 	Pred.or(isDocker)
 );
 
-const getAndValidateDockerEnvVariables = (): TE.TaskEither<
-	Error,
-	DockerCreds
-> =>
-	pipe(
-		O.of(shellEnv.sync<EnvironmentVariables>()),
-		O.bindTo('env'),
-		O.bind('userName', ({ env }) => O.fromNullable(env.NEXUS_USER)),
-		O.bind('password', ({ env }) => O.fromNullable(env.NEXUS_PASSWORD)),
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		O.map(({ env, ...creds }): DockerCreds => creds),
-		TE.fromOption(
-			() => new Error('Missing Docker credential environment variables')
-		)
-	);
-
-const loginToNexusDocker = (creds: DockerCreds): TE.TaskEither<Error, string> =>
+const loginToNexusDocker = (
+	creds: NexusCredentials
+): TE.TaskEither<Error, string> =>
 	runCommand(
 		`sudo docker login ${DOCKER_REPO_PREFIX} -u \${user} -p \${password}`,
 		{
@@ -113,7 +95,8 @@ const runDockerBuild = (
 ): TE.TaskEither<Error, BuildContext> => {
 	const dockerTag = createDockerImageTag(context.projectInfo);
 	return pipe(
-		getAndValidateDockerEnvVariables(),
+		getNexusCredentials(),
+		TE.fromEither,
 		TE.chain(loginToNexusDocker),
 		TE.chain(() => checkForExistingImages(context)),
 		TE.chain((_) => removeExistingImagesIfExist(_, context)),
@@ -132,10 +115,12 @@ const handleDockerBuildByProject = (
 
 const isNotKubernetesOnly: Pred.Predicate<CommandType> =
 	Pred.not(isKubernetesOnly);
+const isNotHelm: Pred.Predicate<ProjectType> = Pred.not(isHelm);
 
 const shouldStageExecute: Pred.Predicate<BuildContext> = pipe(
 	(_: BuildContext) => isDockerOrApplication(_.projectType),
-	Pred.and((_) => isNotKubernetesOnly(_.commandInfo.type))
+	Pred.and((_) => isNotKubernetesOnly(_.commandInfo.type)),
+	Pred.and((_) => isNotHelm(_.projectType))
 );
 
 const execute: StageExecuteFn = (context) =>

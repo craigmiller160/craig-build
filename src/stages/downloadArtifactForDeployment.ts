@@ -13,6 +13,7 @@ import {
 	isApplication,
 	isDocker,
 	isGradle,
+	isHelm,
 	isMaven,
 	isNpm
 } from '../context/projectTypeUtils';
@@ -150,12 +151,13 @@ const isNotKubernetesOnly: Pred.Predicate<CommandType> =
 	Pred.not(isKubernetesOnly);
 
 const execute: StageExecuteFn = (context) => downloadArtifactByProject(context);
-const isNonDockerApplication: Pred.Predicate<BuildContext> = pipe(
+const isNonDockerNonHelmApplication: Pred.Predicate<BuildContext> = pipe(
 	(_: BuildContext) => isNotDocker(_.projectType),
+	Pred.and(Pred.not((_) => isHelm(_.projectType))),
 	Pred.and((_) => isApplication(_.projectType))
 );
 const shouldStageExecute: Pred.Predicate<BuildContext> = pipe(
-	isNonDockerApplication,
+	isNonDockerNonHelmApplication,
 	Pred.and((_) => isNotKubernetesOnly(_.commandInfo.type))
 );
 

@@ -86,7 +86,7 @@ describe('buildAndPushDocker', () => {
 
 		const result = await buildAndPushDocker.execute(buildContext)();
 		expect(result).toEqualLeft(
-			new Error('Missing Docker credential environment variables')
+			new Error('Missing Nexus credential environment variables')
 		);
 	});
 
@@ -102,7 +102,7 @@ describe('buildAndPushDocker', () => {
 
 		const result = await buildAndPushDocker.execute(buildContext)();
 		expect(result).toEqualLeft(
-			new Error('Missing Docker credential environment variables')
+			new Error('Missing Nexus credential environment variables')
 		);
 
 		expect(runCommandMock).not.toHaveBeenCalled();
