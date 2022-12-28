@@ -164,7 +164,7 @@ describe('deployToKubernetes', () => {
 	});
 
 	it('installs helm application via helm', async () => {
-		const baseCwd = path.join(baseWorkingDir, 'mavenReleaseApplication');
+		const baseCwd = path.join(baseWorkingDir, 'helmReleaseApplication');
 		getCwdMock.mockImplementation(() => baseCwd);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -217,7 +217,7 @@ describe('deployToKubernetes', () => {
 	});
 
 	it('updates helm application via helm', async () => {
-		const baseCwd = path.join(baseWorkingDir, 'mavenReleaseApplication');
+		const baseCwd = path.join(baseWorkingDir, 'helmReleaseApplication');
 		getCwdMock.mockImplementation(() => baseCwd);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -270,6 +270,58 @@ describe('deployToKubernetes', () => {
 	});
 
 	it('installs helm application via helm with secrets', async () => {
-		throw new Error();
+		const baseCwd = path.join(
+			baseWorkingDir,
+			'helmReleaseApplicationWithSecrets'
+		);
+		getCwdMock.mockImplementation(() => baseCwd);
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.MavenApplication
+		};
+
+		const deploymentName = 'email-service';
+		const deployDir = path.join(baseCwd, 'deploy');
+
+		runCommandMock.mockImplementationOnce(() =>
+			TE.right(createHelmList('abcdefg'))
+		);
+		runCommandMock.mockImplementation(() => TE.right(''));
+
+		const result = await deployToKubernetes.execute(buildContext)();
+		expect(result).toEqualRight(buildContext);
+
+		expect(runCommandMock).toHaveBeenCalledTimes(6);
+		expect(runCommandMock).toHaveBeenNthCalledWith(
+			1,
+			`helm list --kube-context=${K8S_CTX} --namespace ${K8S_NS}`,
+			{ printOutput: true }
+		);
+		expect(runCommandMock).toHaveBeenNthCalledWith(
+			2,
+			`kubectl config use-context ${K8S_CTX}`,
+			{ printOutput: true, cwd: deployDir }
+		);
+		expect(runCommandMock).toHaveBeenNthCalledWith(
+			3,
+			'helm dependency build',
+			{ printOutput: true, cwd: path.join(deployDir, 'chart') }
+		);
+		expect(runCommandMock).toHaveBeenNthCalledWith(
+			4,
+			`helm template ${deploymentName} ./chart --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml`,
+			{ printOutput: true, cwd: deployDir }
+		);
+		expect(runCommandMock).toHaveBeenNthCalledWith(
+			5,
+			`helm package ./chart --version ${buildContext.projectInfo.version}`,
+			{ printOutput: true, cwd: deployDir }
+		);
+		const tarFile = `${buildContext.projectInfo.name}-0.1.0.tgz`;
+		expect(runCommandMock).toHaveBeenNthCalledWith(
+			6,
+			`helm install ${deploymentName} ${tarFile} --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml --set theSuperSecret=HelloWorld`,
+			{ printOutput: true, cwd: deployDir }
+		);
 	});
 });
