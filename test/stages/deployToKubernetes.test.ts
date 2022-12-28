@@ -161,7 +161,6 @@ describe('deployToKubernetes', () => {
 
 		const deploymentName = 'email-service';
 		const deployDir = path.join(baseCwd, 'deploy');
-		const image = createDockerImageTag(buildContext.projectInfo);
 
 		runCommandMock.mockImplementationOnce(() =>
 			TE.right(createHelmList('abcdefg'))
@@ -189,14 +188,15 @@ describe('deployToKubernetes', () => {
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			4,
-			`helm template ${deploymentName} ./chart --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml --set app-deployment.image=${image}`,
+			`helm template ${deploymentName} ./chart --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml`,
 			{ printOutput: true, cwd: deployDir }
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			5,
-			`helm install ${deploymentName} ./chart --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml --set app-deployment.image=${image}`,
+			`helm install ${deploymentName} ./chart --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml`,
 			{ printOutput: true, cwd: deployDir }
 		);
+		throw new Error('What about secrets?');
 	});
 
 	it('updates helm application via helm', async () => {
@@ -209,7 +209,6 @@ describe('deployToKubernetes', () => {
 
 		const deploymentName = 'email-service';
 		const deployDir = path.join(baseCwd, 'deploy');
-		const image = createDockerImageTag(buildContext.projectInfo);
 
 		runCommandMock.mockImplementationOnce(() =>
 			TE.right(createHelmList(deploymentName))
@@ -237,13 +236,14 @@ describe('deployToKubernetes', () => {
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			4,
-			`helm template ${deploymentName} ./chart --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml --set app-deployment.image=${image}`,
+			`helm template ${deploymentName} ./chart --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml`,
 			{ printOutput: true, cwd: deployDir }
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			5,
-			`helm upgrade ${deploymentName} ./chart --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml --set app-deployment.image=${image}`,
+			`helm upgrade ${deploymentName} ./chart --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml`,
 			{ printOutput: true, cwd: deployDir }
 		);
+		throw new Error('What about secrets?');
 	});
 });
