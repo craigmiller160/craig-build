@@ -78,7 +78,38 @@ describe('manuallyPublishArtifact', () => {
 		expect(runCommandMock).toHaveBeenNthCalledWith(2, CLEAR_FILES_COMMAND);
 	});
 
-	it('publishes HelmLibrary project', () => {
-		throw new Error();
+	it('publishes HelmLibrary project', async () => {
+		const projectPath = path.join(baseWorkingDir, 'helmReleaseLibrary');
+		getCwdMock.mockImplementation(() => projectPath);
+		runCommandMock.mockImplementation(() => TE.right(''));
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.HelmLibrary,
+			projectInfo: {
+				...baseBuildContext.projectInfo,
+				version: '1.0.0'
+			}
+		};
+
+		const result = await manuallyPublishArtifact.execute(buildContext)();
+		expect(result).toEqualRight(buildContext);
+
+		expect(runCommandMock).toHaveBeenCalledTimes(2);
+		expect(runCommandMock).toHaveBeenNthCalledWith(
+			1,
+			'helm package ./chart',
+			{
+				printOutput: true,
+				cwd: path.join(projectPath, 'deploy')
+			}
+		);
+		expect(runCommandMock).toHaveBeenNthCalledWith(
+			2,
+			'curl -v -u USER:PASSWORD https://nexus-craigmiller160.ddns.net/repository/helm-private/ --upload-file chart.tgz',
+			{
+				printOutput: true,
+				cwd: path.join(projectPath, 'deploy')
+			}
+		);
 	});
 });
