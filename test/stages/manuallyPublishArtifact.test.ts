@@ -87,7 +87,7 @@ describe('manuallyPublishArtifact', () => {
 			projectType: ProjectType.HelmLibrary,
 			projectInfo: {
 				...baseBuildContext.projectInfo,
-				version: '1.0.0'
+				version: '2.0.0'
 			}
 		};
 
@@ -97,7 +97,7 @@ describe('manuallyPublishArtifact', () => {
 		expect(runCommandMock).toHaveBeenCalledTimes(2);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			1,
-			'helm package ./chart',
+			'helm package ./chart --version 2.0.0',
 			{
 				printOutput: true,
 				cwd: path.join(projectPath, 'deploy')
