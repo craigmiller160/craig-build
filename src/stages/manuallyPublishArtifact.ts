@@ -56,9 +56,28 @@ const publishNpmArtifact = (
 
 const publishHelmArtifact = (
 	context: BuildContext
-): TE.TaskEither<Error, BuildContext> => {
-	throw new Error();
-};
+): TE.TaskEither<Error, BuildContext> =>
+	pipe(
+		runCommand(
+			`helm package ./chart --version ${context.projectInfo.version}`,
+			{
+				printOutput: true,
+				cwd: path.join(getCwd(), 'deploy')
+			}
+		),
+		TE.chain(() => {
+			const user = process.env.NEXUS_USER;
+			const password = process.env.NEXUS_PASSWORD;
+			return runCommand(
+				`curl -v -u USER:PASSWORD https://nexus-craigmiller160.ddns.net/repository/helm-private/ --upload-file ${tarFile}`,
+				{
+					printOutput: true,
+					cwd: path.join(getCwd(), 'deploy')
+				}
+			);
+		}),
+		TE.map(() => context)
+	);
 
 const handlePublishByProject = (
 	context: BuildContext
