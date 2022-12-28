@@ -12,6 +12,19 @@ import * as TE from 'fp-ts/TaskEither';
 import { NPM_PUBLISH_COMMAND } from '../../src/stages/manuallyPublishArtifact';
 import path from 'path';
 import { baseWorkingDir } from '../testutils/baseWorkingDir';
+import shellEnv from 'shell-env';
+
+jest.mock('shell-env', () => ({
+	sync: jest.fn()
+}));
+
+const shellEnvMock = shellEnv.sync as jest.Mock;
+
+const prepareEnvMock = () =>
+	shellEnvMock.mockImplementation(() => ({
+		NEXUS_USER: 'user',
+		NEXUS_PASSWORD: 'password'
+	}));
 
 const baseBuildContext = createBuildContext();
 
@@ -79,6 +92,7 @@ describe('manuallyPublishArtifact', () => {
 	});
 
 	it('publishes HelmLibrary project', async () => {
+		prepareEnvMock();
 		const projectPath = path.join(baseWorkingDir, 'helmReleaseLibrary');
 		getCwdMock.mockImplementation(() => projectPath);
 		runCommandMock.mockImplementation(() => TE.right(''));
@@ -97,7 +111,7 @@ describe('manuallyPublishArtifact', () => {
 		expect(runCommandMock).toHaveBeenCalledTimes(2);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			1,
-			'helm package ./chart --version 2.0.0',
+			`helm package ./chart --version ${buildContext.projectInfo.version}`,
 			{
 				printOutput: true,
 				cwd: path.join(projectPath, 'deploy')
@@ -106,7 +120,7 @@ describe('manuallyPublishArtifact', () => {
 		const tarFile = `${buildContext.projectInfo.name}-${buildContext.projectInfo.version}.tgz`;
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			2,
-			`curl -v -u USER:PASSWORD https://nexus-craigmiller160.ddns.net/repository/helm-private/ --upload-file ${tarFile}`,
+			`curl -v -u user:password https://nexus-craigmiller160.ddns.net/repository/helm-private/ --upload-file ${tarFile}`,
 			{
 				printOutput: true,
 				cwd: path.join(projectPath, 'deploy')
