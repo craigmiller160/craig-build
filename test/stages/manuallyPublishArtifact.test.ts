@@ -117,7 +117,11 @@ describe('manuallyPublishArtifact', () => {
 				cwd: path.join(projectPath, 'deploy')
 			}
 		);
-		const tarFile = `${buildContext.projectInfo.name}-${buildContext.projectInfo.version}.tgz`;
+		const tarFile = path.join(
+			projectPath,
+			'deploy',
+			`${buildContext.projectInfo.name}-${buildContext.projectInfo.version}.tgz`
+		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			2,
 			`curl -v -u user:password https://nexus-craigmiller160.ddns.net/repository/helm-private/ --upload-file ${tarFile}`,

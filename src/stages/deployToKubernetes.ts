@@ -35,7 +35,7 @@ const getDeploymentName = (deployDir: string): E.Either<Error, string> =>
 	pipe(
 		readFile(path.join(deployDir, 'chart', 'values.yml')),
 		E.chain((_) => parseYaml<DeploymentValues>(_)),
-		E.map((_) => _['app-deployment'].appName)
+		E.map((_) => _['app_deployment'].appName)
 	);
 
 const isProjectInstalled =
@@ -79,7 +79,7 @@ const createHelmSetValues = (
 ): E.Either<Error, string> => {
 	if (!isHelm(context.projectType)) {
 		const image = createDockerImageTag(context.projectInfo);
-		return E.right(`--set app-deployment.image=${image}`);
+		return E.right(`--set app_deployment.image=${image}`);
 	}
 
 	return pipe(
@@ -109,7 +109,10 @@ const doDeploy = (
 ): TE.TaskEither<Error, BuildContext> => {
 	const deployDir = path.join(getCwd(), 'deploy');
 	const shellVariables = shellEnv.sync();
-	const tarName = `${context.projectInfo.name}-${context.projectInfo.version}.tgz`;
+	const tarFile = path.join(
+		deployDir,
+		`${context.projectInfo.name}-${context.projectInfo.version}.tgz`
+	);
 	const deployTE = pipe(
 		getNamespace(context),
 		E.bindTo('namespace'),
@@ -122,12 +125,6 @@ const doDeploy = (
 			runCommand(`kubectl config use-context ${K8S_CTX}`, {
 				printOutput: true,
 				cwd: deployDir
-			})
-		),
-		TE.chainFirst(() =>
-			runCommand('helm dependency build', {
-				printOutput: true,
-				cwd: path.join(deployDir, 'chart')
 			})
 		),
 		TE.chainFirst(() =>
@@ -144,7 +141,7 @@ const doDeploy = (
 				createFullHelmCommand(
 					context.projectInfo.name,
 					'template',
-					tarName,
+					tarFile,
 					setValues,
 					namespace
 				),
@@ -160,7 +157,7 @@ const doDeploy = (
 				createFullHelmCommand(
 					context.projectInfo.name,
 					helmCommand,
-					tarName,
+					tarFile,
 					setValues,
 					namespace
 				),
