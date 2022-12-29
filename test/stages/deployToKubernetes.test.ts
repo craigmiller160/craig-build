@@ -81,7 +81,7 @@ describe('deployToKubernetes', () => {
 			{ printOutput: true, cwd: deployDir }
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
-			4,
+			3,
 			`helm package ./chart --version ${buildContext.projectInfo.version} --app-version ${buildContext.projectInfo.version}`,
 			{ printOutput: true, cwd: deployDir }
 		);
@@ -90,22 +90,22 @@ describe('deployToKubernetes', () => {
 			`${buildContext.projectInfo.name}-${buildContext.projectInfo.version}.tgz`
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
-			5,
+			4,
 			`helm template ${buildContext.projectInfo.name} ${tarFile} --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml --set app_deployment.image=${image}`,
 			{ printOutput: true, cwd: deployDir, env: expect.anything() }
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
-			6,
+			5,
 			`helm install ${buildContext.projectInfo.name} ${tarFile} --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml --set app_deployment.image=${image}`,
 			{ printOutput: true, cwd: deployDir, env: expect.any(Object) }
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
-			7,
+			6,
 			`kubectl rollout restart deployment ${deploymentName} -n ${K8S_NS}`,
 			{ printOutput: true, cwd: deployDir }
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
-			8,
+			7,
 			`kubectl rollout status deployment ${deploymentName} -n ${K8S_NS}`,
 			{ printOutput: true, cwd: deployDir }
 		);
@@ -143,7 +143,7 @@ describe('deployToKubernetes', () => {
 			{ printOutput: true, cwd: deployDir }
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
-			4,
+			3,
 			`helm package ./chart --version ${buildContext.projectInfo.version} --app-version ${buildContext.projectInfo.version}`,
 			{ printOutput: true, cwd: deployDir }
 		);
@@ -152,22 +152,22 @@ describe('deployToKubernetes', () => {
 			`${buildContext.projectInfo.name}-${buildContext.projectInfo.version}.tgz`
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
-			5,
+			4,
 			`helm template ${buildContext.projectInfo.name} ${tarFile} --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml --set app_deployment.image=${image}`,
 			{ printOutput: true, cwd: deployDir, env: expect.any(Object) }
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
-			6,
+			5,
 			`helm upgrade ${buildContext.projectInfo.name} ${tarFile} --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml --set app_deployment.image=${image}`,
 			{ printOutput: true, cwd: deployDir, env: expect.any(Object) }
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
-			7,
+			6,
 			`kubectl rollout restart deployment ${deploymentName} -n ${K8S_NS}`,
 			{ printOutput: true, cwd: deployDir }
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
-			8,
+			7,
 			`kubectl rollout status deployment ${deploymentName} -n ${K8S_NS}`,
 			{ printOutput: true, cwd: deployDir }
 		);
@@ -203,7 +203,7 @@ describe('deployToKubernetes', () => {
 			{ printOutput: true, cwd: deployDir }
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
-			4,
+			3,
 			`helm package ./chart --version ${buildContext.projectInfo.version} --app-version ${buildContext.projectInfo.version}`,
 			{ printOutput: true, cwd: deployDir }
 		);
@@ -212,12 +212,12 @@ describe('deployToKubernetes', () => {
 			`${buildContext.projectInfo.name}-${buildContext.projectInfo.version}.tgz`
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
-			5,
+			4,
 			`helm template ${buildContext.projectInfo.name} ${tarFile} --kube-context=${K8S_CTX} --namespace infra-prod --values ./chart/values.yml `,
 			{ printOutput: true, cwd: deployDir, env: expect.any(Object) }
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
-			6,
+			5,
 			`helm install ${buildContext.projectInfo.name} ${tarFile} --kube-context=${K8S_CTX} --namespace infra-prod --values ./chart/values.yml `,
 			{ printOutput: true, cwd: deployDir, env: expect.any(Object) }
 		);
@@ -253,7 +253,7 @@ describe('deployToKubernetes', () => {
 			{ printOutput: true, cwd: deployDir }
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
-			4,
+			3,
 			`helm package ./chart --version ${buildContext.projectInfo.version} --app-version ${buildContext.projectInfo.version}`,
 			{ printOutput: true, cwd: deployDir }
 		);
@@ -262,12 +262,12 @@ describe('deployToKubernetes', () => {
 			`${buildContext.projectInfo.name}-${buildContext.projectInfo.version}.tgz`
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
-			5,
+			4,
 			`helm template ${buildContext.projectInfo.name} ${tarFile} --kube-context=${K8S_CTX} --namespace infra-prod --values ./chart/values.yml `,
 			{ printOutput: true, cwd: deployDir, env: expect.any(Object) }
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
-			6,
+			5,
 			`helm upgrade ${buildContext.projectInfo.name} ${tarFile} --kube-context=${K8S_CTX} --namespace infra-prod --values ./chart/values.yml `,
 			{ printOutput: true, cwd: deployDir, env: expect.any(Object) }
 		);
@@ -306,7 +306,7 @@ describe('deployToKubernetes', () => {
 			{ printOutput: true, cwd: deployDir }
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
-			4,
+			3,
 			`helm package ./chart --version ${buildContext.projectInfo.version} --app-version ${buildContext.projectInfo.version}`,
 			{ printOutput: true, cwd: deployDir }
 		);
@@ -315,12 +315,12 @@ describe('deployToKubernetes', () => {
 			`${buildContext.projectInfo.name}-${buildContext.projectInfo.version}.tgz`
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
-			5,
+			4,
 			`helm template ${buildContext.projectInfo.name} ${tarFile} --kube-context=${K8S_CTX} --namespace infra-prod --values ./chart/values.yml --set theSuperSecret=$SECRET_ENV_VARIABLE`,
 			{ printOutput: true, cwd: deployDir, env: expect.any(Object) }
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
-			6,
+			5,
 			`helm install ${buildContext.projectInfo.name} ${tarFile} --kube-context=${K8S_CTX} --namespace infra-prod --values ./chart/values.yml --set theSuperSecret=$SECRET_ENV_VARIABLE`,
 			{ printOutput: true, cwd: deployDir, env: expect.any(Object) }
 		);
