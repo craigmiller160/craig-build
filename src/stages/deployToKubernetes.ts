@@ -128,12 +128,6 @@ const doDeploy = (
 			})
 		),
 		TE.chainFirst(() =>
-			runCommand('helm dependency build', {
-				printOutput: true,
-				cwd: path.join(deployDir, 'chart')
-			})
-		),
-		TE.chainFirst(() =>
 			runCommand(
 				`helm package ./chart --version ${context.projectInfo.version} --app-version ${context.projectInfo.version}`,
 				{
