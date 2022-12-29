@@ -1,5 +1,5 @@
 export interface DeploymentValues {
-	readonly 'app-deployment': {
+	readonly app_deployment: {
 		readonly appName: string;
 	};
 }
