@@ -16,9 +16,9 @@ import path from 'path';
 import { createDockerImageTag } from '../../src/utils/dockerUtils';
 import shellEnv from 'shell-env';
 
-const createHelmList = (deploymentName: string): string => `
+const createHelmList = (projectName: string): string => `
 NAME            NAMESPACE       REVISION        UPDATED                                 STATUS          CHART                   APP VERSION
-${deploymentName}   apps-prod       1               2022-09-06 16:30:04.728675 -0400 EDT    deployed        email-service-0.1.0     1.0.0      
+${projectName}   apps-prod       1               2022-09-06 16:30:04.728675 -0400 EDT    deployed        email-service-0.1.0     1.0.0      
 ingress         apps-prod       1               2022-09-05 17:01:57.090562 -0400 EDT    deployed        ingress-0.1.0           1.0.0
 `;
 
@@ -126,7 +126,7 @@ describe('deployToKubernetes', () => {
 		const image = createDockerImageTag(buildContext.projectInfo);
 
 		runCommandMock.mockImplementationOnce(() =>
-			TE.right(createHelmList(deploymentName))
+			TE.right(createHelmList(buildContext.projectInfo.name))
 		);
 		runCommandMock.mockImplementation(() => TE.right(''));
 
