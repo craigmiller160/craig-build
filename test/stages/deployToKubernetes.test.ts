@@ -81,11 +81,6 @@ describe('deployToKubernetes', () => {
 			{ printOutput: true, cwd: deployDir }
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
-			3,
-			'helm dependency build',
-			{ printOutput: true, cwd: path.join(deployDir, 'chart') }
-		);
-		expect(runCommandMock).toHaveBeenNthCalledWith(
 			4,
 			`helm package ./chart --version ${buildContext.projectInfo.version} --app-version ${buildContext.projectInfo.version}`,
 			{ printOutput: true, cwd: deployDir }
@@ -136,7 +131,7 @@ describe('deployToKubernetes', () => {
 		const result = await deployToKubernetes.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
 
-		expect(runCommandMock).toHaveBeenCalledTimes(8);
+		expect(runCommandMock).toHaveBeenCalledTimes(7);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			1,
 			`helm list --kube-context=${K8S_CTX} --namespace ${K8S_NS}`,
@@ -146,11 +141,6 @@ describe('deployToKubernetes', () => {
 			2,
 			`kubectl config use-context ${K8S_CTX}`,
 			{ printOutput: true, cwd: deployDir }
-		);
-		expect(runCommandMock).toHaveBeenNthCalledWith(
-			3,
-			'helm dependency build',
-			{ printOutput: true, cwd: path.join(deployDir, 'chart') }
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			4,
@@ -201,7 +191,7 @@ describe('deployToKubernetes', () => {
 		const result = await deployToKubernetes.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
 
-		expect(runCommandMock).toHaveBeenCalledTimes(6);
+		expect(runCommandMock).toHaveBeenCalledTimes(5);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			1,
 			`helm list --kube-context=${K8S_CTX} --namespace infra-prod`,
@@ -211,11 +201,6 @@ describe('deployToKubernetes', () => {
 			2,
 			`kubectl config use-context ${K8S_CTX}`,
 			{ printOutput: true, cwd: deployDir }
-		);
-		expect(runCommandMock).toHaveBeenNthCalledWith(
-			3,
-			'helm dependency build',
-			{ printOutput: true, cwd: path.join(deployDir, 'chart') }
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			4,
@@ -256,7 +241,7 @@ describe('deployToKubernetes', () => {
 		const result = await deployToKubernetes.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
 
-		expect(runCommandMock).toHaveBeenCalledTimes(6);
+		expect(runCommandMock).toHaveBeenCalledTimes(5);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			1,
 			`helm list --kube-context=${K8S_CTX} --namespace infra-prod`,
@@ -266,11 +251,6 @@ describe('deployToKubernetes', () => {
 			2,
 			`kubectl config use-context ${K8S_CTX}`,
 			{ printOutput: true, cwd: deployDir }
-		);
-		expect(runCommandMock).toHaveBeenNthCalledWith(
-			3,
-			'helm dependency build',
-			{ printOutput: true, cwd: path.join(deployDir, 'chart') }
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			4,
@@ -314,7 +294,7 @@ describe('deployToKubernetes', () => {
 		const result = await deployToKubernetes.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
 
-		expect(runCommandMock).toHaveBeenCalledTimes(6);
+		expect(runCommandMock).toHaveBeenCalledTimes(5);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			1,
 			`helm list --kube-context=${K8S_CTX} --namespace infra-prod`,
@@ -324,11 +304,6 @@ describe('deployToKubernetes', () => {
 			2,
 			`kubectl config use-context ${K8S_CTX}`,
 			{ printOutput: true, cwd: deployDir }
-		);
-		expect(runCommandMock).toHaveBeenNthCalledWith(
-			3,
-			'helm dependency build',
-			{ printOutput: true, cwd: path.join(deployDir, 'chart') }
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			4,
