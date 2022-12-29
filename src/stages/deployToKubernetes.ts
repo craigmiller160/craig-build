@@ -29,7 +29,7 @@ const setValuesMonoid: Monoid.Monoid<string> = {
 };
 
 export const K8S_CTX = 'microk8s';
-export const K8S_NS = 'apps-prod'; // TODO make this dynamic
+export const K8S_NS = 'apps-prod';
 
 const getDeploymentName = (deployDir: string): E.Either<Error, string> =>
 	pipe(
@@ -49,11 +49,12 @@ const isProjectInstalled =
 			.find((name) => name === projectName);
 
 const getHelmInstallOrUpgrade = (
-	projectName: string
+	projectName: string,
+	namespace: string
 ): TE.TaskEither<Error, string> =>
 	pipe(
 		runCommand(
-			`helm list --kube-context=${K8S_CTX} --namespace ${K8S_NS}`,
+			`helm list --kube-context=${K8S_CTX} --namespace ${namespace}`,
 			{
 				printOutput: true
 			}
@@ -61,6 +62,17 @@ const getHelmInstallOrUpgrade = (
 		TE.map(isProjectInstalled(projectName)),
 		TE.map((isInstalled) => (isInstalled ? 'upgrade' : 'install'))
 	);
+
+const getNamespace = (context: BuildContext): E.Either<Error, string> => {
+	if (!isHelm(context.projectType)) {
+		return E.right(K8S_NS);
+	}
+
+	return pipe(
+		getAndCacheHelmProject(),
+		E.map((_) => _.namespace)
+	);
+};
 
 const createHelmSetValues = (
 	context: BuildContext
@@ -87,9 +99,10 @@ const createFullHelmCommand = (
 	appName: string,
 	helmCommand: string,
 	tarName: string,
-	setValues: string
+	setValues: string,
+	namespace: string
 ): string =>
-	`helm ${helmCommand} ${appName} ${tarName} --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml ${setValues}`;
+	`helm ${helmCommand} ${appName} ${tarName} --kube-context=${K8S_CTX} --namespace ${namespace} --values ./chart/values.yml ${setValues}`;
 
 const doDeploy = (
 	context: BuildContext
@@ -98,9 +111,13 @@ const doDeploy = (
 	const shellVariables = shellEnv.sync();
 	const tarName = `${context.projectInfo.name}-${context.projectInfo.version}.tgz`;
 	const deployTE = pipe(
-		getHelmInstallOrUpgrade(context.projectInfo.name),
-		TE.bindTo('helmCommand'),
-		TE.bind('setValues', () => TE.fromEither(createHelmSetValues(context))),
+		getNamespace(context),
+		E.bindTo('namespace'),
+		E.bind('setValues', () => createHelmSetValues(context)),
+		TE.fromEither,
+		TE.bind('helmCommand', ({ namespace }) =>
+			getHelmInstallOrUpgrade(context.projectInfo.name, namespace)
+		),
 		TE.chainFirst(() =>
 			runCommand(`kubectl config use-context ${K8S_CTX}`, {
 				printOutput: true,
@@ -122,13 +139,14 @@ const doDeploy = (
 				}
 			)
 		),
-		TE.chainFirst(({ setValues }) =>
+		TE.chainFirst(({ setValues, namespace }) =>
 			runCommand(
 				createFullHelmCommand(
 					context.projectInfo.name,
 					'template',
 					tarName,
-					setValues
+					setValues,
+					namespace
 				),
 				{
 					printOutput: true,
@@ -137,13 +155,14 @@ const doDeploy = (
 				}
 			)
 		),
-		TE.chainFirst(({ helmCommand, setValues }) =>
+		TE.chainFirst(({ helmCommand, setValues, namespace }) =>
 			runCommand(
 				createFullHelmCommand(
 					context.projectInfo.name,
 					helmCommand,
 					tarName,
-					setValues
+					setValues,
+					namespace
 				),
 				{
 					printOutput: true,
@@ -157,19 +176,21 @@ const doDeploy = (
 	if (!isHelm(context.projectType)) {
 		return pipe(
 			deployTE,
-			TE.chainEitherK(() => getDeploymentName(deployDir)),
-			TE.chainFirst((deploymentName) =>
+			TE.bind('deploymentName', () =>
+				TE.fromEither(getDeploymentName(deployDir))
+			),
+			TE.chainFirst(({ deploymentName, namespace }) =>
 				runCommand(
-					`kubectl rollout restart deployment ${deploymentName} -n ${K8S_NS}`,
+					`kubectl rollout restart deployment ${deploymentName} -n ${namespace}`,
 					{
 						printOutput: true,
 						cwd: deployDir
 					}
 				)
 			),
-			TE.chainFirst((deploymentName) =>
+			TE.chainFirst(({ deploymentName, namespace }) =>
 				runCommand(
-					`kubectl rollout status deployment ${deploymentName} -n ${K8S_NS}`,
+					`kubectl rollout status deployment ${deploymentName} -n ${namespace}`,
 					{
 						printOutput: true,
 						cwd: deployDir
