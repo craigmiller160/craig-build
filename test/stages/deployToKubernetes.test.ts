@@ -198,7 +198,7 @@ describe('deployToKubernetes', () => {
 		expect(runCommandMock).toHaveBeenCalledTimes(6);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			1,
-			`helm list --kube-context=${K8S_CTX} --namespace ${K8S_NS}`,
+			`helm list --kube-context=${K8S_CTX} --namespace infra-prod`,
 			{ printOutput: true }
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
@@ -219,12 +219,12 @@ describe('deployToKubernetes', () => {
 		const tarFile = `${buildContext.projectInfo.name}-${buildContext.projectInfo.version}.tgz`;
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			5,
-			`helm template ${buildContext.projectInfo.name} ${tarFile} --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml`,
+			`helm template ${buildContext.projectInfo.name} ${tarFile} --kube-context=${K8S_CTX} --namespace infra-prod --values ./chart/values.yml`,
 			{ printOutput: true, cwd: deployDir, env: expect.any(Object) }
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			6,
-			`helm install ${buildContext.projectInfo.name} ${tarFile} --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml`,
+			`helm install ${buildContext.projectInfo.name} ${tarFile} --kube-context=${K8S_CTX} --namespace infra-prod --values ./chart/values.yml`,
 			{ printOutput: true, cwd: deployDir, env: expect.any(Object) }
 		);
 	});
@@ -251,7 +251,7 @@ describe('deployToKubernetes', () => {
 		expect(runCommandMock).toHaveBeenCalledTimes(6);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			1,
-			`helm list --kube-context=${K8S_CTX} --namespace ${K8S_NS}`,
+			`helm list --kube-context=${K8S_CTX} --namespace infra-prod`,
 			{ printOutput: true }
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
@@ -272,12 +272,12 @@ describe('deployToKubernetes', () => {
 		const tarFile = `${buildContext.projectInfo.name}-${buildContext.projectInfo.version}.tgz`;
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			5,
-			`helm template ${buildContext.projectInfo.name} ${tarFile} --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml`,
+			`helm template ${buildContext.projectInfo.name} ${tarFile} --kube-context=${K8S_CTX} --namespace infra-prod --values ./chart/values.yml`,
 			{ printOutput: true, cwd: deployDir, env: expect.any(Object) }
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			6,
-			`helm upgrade ${buildContext.projectInfo.name} ${tarFile} --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml`,
+			`helm upgrade ${buildContext.projectInfo.name} ${tarFile} --kube-context=${K8S_CTX} --namespace infra-prod --values ./chart/values.yml`,
 			{ printOutput: true, cwd: deployDir, env: expect.any(Object) }
 		);
 	});
@@ -306,7 +306,7 @@ describe('deployToKubernetes', () => {
 		expect(runCommandMock).toHaveBeenCalledTimes(6);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			1,
-			`helm list --kube-context=${K8S_CTX} --namespace ${K8S_NS}`,
+			`helm list --kube-context=${K8S_CTX} --namespace infra-prod`,
 			{ printOutput: true }
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
@@ -326,13 +326,13 @@ describe('deployToKubernetes', () => {
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			5,
-			`helm template ${buildContext.projectInfo.name} ./chart --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml --set theSuperSecret=$SECRET_ENV_VARIABLE`,
+			`helm template ${buildContext.projectInfo.name} ./chart --kube-context=${K8S_CTX} --namespace infra-prod --values ./chart/values.yml --set theSuperSecret=$SECRET_ENV_VARIABLE`,
 			{ printOutput: true, cwd: deployDir, env: expect.any(Object) }
 		);
 		const tarFile = `${buildContext.projectInfo.name}-${buildContext.projectInfo.version}.tgz`;
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			6,
-			`helm install ${buildContext.projectInfo.name} ${tarFile} --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml --set theSuperSecret=$SECRET_ENV_VARIABLE`,
+			`helm install ${buildContext.projectInfo.name} ${tarFile} --kube-context=${K8S_CTX} --namespace infra-prod --values ./chart/values.yml --set theSuperSecret=$SECRET_ENV_VARIABLE`,
 			{ printOutput: true, cwd: deployDir, env: expect.any(Object) }
 		);
 	});

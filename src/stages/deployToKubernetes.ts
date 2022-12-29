@@ -29,7 +29,7 @@ const setValuesMonoid: Monoid.Monoid<string> = {
 };
 
 export const K8S_CTX = 'microk8s';
-export const K8S_NS = 'apps-prod';
+export const K8S_NS = 'apps-prod'; // TODO make this dynamic
 
 const getDeploymentName = (deployDir: string): E.Either<Error, string> =>
 	pipe(
@@ -38,18 +38,18 @@ const getDeploymentName = (deployDir: string): E.Either<Error, string> =>
 		E.map((_) => _['app-deployment'].appName)
 	);
 
-const isDeploymentInstalled =
-	(deploymentName: string) =>
+const isProjectInstalled =
+	(projectName: string) =>
 	(text: string): boolean =>
 		!!text
 			.split('\n')
 			.map((_) => _.trim())
 			.filter((_) => _.length > 0)
 			.map((row) => row.split(/\s/).map((_) => _.trim())[0])
-			.find((name) => name === deploymentName);
+			.find((name) => name === projectName);
 
 const getHelmInstallOrUpgrade = (
-	deploymentName: string
+	projectName: string
 ): TE.TaskEither<Error, string> =>
 	pipe(
 		runCommand(
@@ -58,7 +58,7 @@ const getHelmInstallOrUpgrade = (
 				printOutput: true
 			}
 		),
-		TE.map(isDeploymentInstalled(deploymentName)),
+		TE.map(isProjectInstalled(projectName)),
 		TE.map((isInstalled) => (isInstalled ? 'upgrade' : 'install'))
 	);
 
@@ -97,6 +97,11 @@ const doDeploy = (
 	const deployDir = path.join(getCwd(), 'deploy');
 	const shellVariables = shellEnv.sync();
 	const tarName = `${context.projectInfo.name}-${context.projectInfo.version}.tgz`;
+	pipe(
+		getHelmInstallOrUpgrade(context.projectInfo.name),
+		TE.bindTo('helmCommand')
+	);
+
 	return pipe(
 		getDeploymentName(deployDir),
 		TE.fromEither,
