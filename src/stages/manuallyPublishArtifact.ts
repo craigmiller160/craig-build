@@ -68,7 +68,11 @@ const publishHelmArtifact = (
 		),
 		TE.chainEitherK(() => getNexusCredentials()),
 		TE.chain(({ userName, password }) => {
-			const tarFile = `${context.projectInfo.name}-${context.projectInfo.version}.tgz`;
+			const tarFile = path.join(
+				getCwd(),
+				'deploy',
+				`${context.projectInfo.name}-${context.projectInfo.version}.tgz`
+			);
 			return runCommand(
 				`curl -v -u ${userName}:${password} https://nexus-craigmiller160.ddns.net/repository/helm-private/ --upload-file ${tarFile}`,
 				{
