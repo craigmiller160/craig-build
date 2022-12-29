@@ -4,6 +4,6 @@
   "type": "application",
   "namespace": "infra-prod",
   "setValues": {
-    "theSuperSecret": "$secret_value"
+    "theSuperSecret": "$SECRET_ENV_VARIABLE"
   }
 }

@@ -320,7 +320,7 @@ describe('deployToKubernetes', () => {
 		const tarFile = `${buildContext.projectInfo.name}-0.1.0.tgz`;
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			6,
-			`helm install ${deploymentName} ${tarFile} --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml --set theSuperSecret=HelloWorld`,
+			`helm install ${deploymentName} ${tarFile} --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml --set theSuperSecret=$SECRET_ENV_VARIABLE`,
 			{ printOutput: true, cwd: deployDir }
 		);
 	});
