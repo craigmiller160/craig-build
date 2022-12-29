@@ -182,7 +182,7 @@ describe('deployToKubernetes', () => {
 		getCwdMock.mockImplementation(() => baseCwd);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
-			projectType: ProjectType.MavenApplication
+			projectType: ProjectType.HelmApplication
 		};
 
 		const deployDir = path.join(baseCwd, 'deploy');
@@ -290,7 +290,7 @@ describe('deployToKubernetes', () => {
 		getCwdMock.mockImplementation(() => baseCwd);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
-			projectType: ProjectType.MavenApplication
+			projectType: ProjectType.HelmApplication
 		};
 
 		const deployDir = path.join(baseCwd, 'deploy');
