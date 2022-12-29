@@ -35,7 +35,7 @@ const getDeploymentName = (deployDir: string): E.Either<Error, string> =>
 	pipe(
 		readFile(path.join(deployDir, 'chart', 'values.yml')),
 		E.chain((_) => parseYaml<DeploymentValues>(_)),
-		E.map((_) => _['app-deployment'].appName)
+		E.map((_) => _['app_deployment'].appName)
 	);
 
 const isProjectInstalled =
@@ -79,7 +79,7 @@ const createHelmSetValues = (
 ): E.Either<Error, string> => {
 	if (!isHelm(context.projectType)) {
 		const image = createDockerImageTag(context.projectInfo);
-		return E.right(`--set app-deployment.image=${image}`);
+		return E.right(`--set app_deployment.image=${image}`);
 	}
 
 	return pipe(
