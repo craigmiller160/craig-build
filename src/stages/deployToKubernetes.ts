@@ -84,12 +84,12 @@ const createHelmSetValues = (
 };
 
 const createFullHelmCommand = (
-	deploymentName: string,
+	appName: string,
 	helmCommand: string,
 	tarName: string,
 	setValues: string
 ): string =>
-	`helm ${helmCommand} ${deploymentName} ${tarName} --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml ${setValues}`;
+	`helm ${helmCommand} ${appName} ${tarName} --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml ${setValues}`;
 
 const doDeploy = (
 	context: BuildContext
@@ -126,10 +126,10 @@ const doDeploy = (
 				}
 			)
 		),
-		TE.chainFirst(({ deploymentName, setValues }) =>
+		TE.chainFirst(({ setValues }) =>
 			runCommand(
 				createFullHelmCommand(
-					deploymentName,
+					context.projectInfo.name,
 					'template',
 					tarName,
 					setValues
@@ -141,10 +141,10 @@ const doDeploy = (
 				}
 			)
 		),
-		TE.chainFirst(({ deploymentName, helmCommand, setValues }) =>
+		TE.chainFirst(({ helmCommand, setValues }) =>
 			runCommand(
 				createFullHelmCommand(
-					deploymentName,
+					context.projectInfo.name,
 					helmCommand,
 					tarName,
 					setValues
