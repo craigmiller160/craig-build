@@ -69,7 +69,7 @@ describe('deployToKubernetes', () => {
 		const result = await deployToKubernetes.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
 
-		expect(runCommandMock).toHaveBeenCalledTimes(8);
+		expect(runCommandMock).toHaveBeenCalledTimes(7);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			1,
 			`helm list --kube-context=${K8S_CTX} --namespace ${K8S_NS}`,
