@@ -11,6 +11,7 @@ export interface CommandOptions {
 	readonly printOutput: boolean;
 	readonly cwd: string;
 	readonly variables: Variables;
+	readonly env: object;
 }
 
 const formatCommand = (command: string, variables: Variables): string =>
@@ -34,7 +35,11 @@ export const runCommand = (
 		() =>
 			new Promise((resolve, reject) => {
 				const childProcess = spawn('bash', ['-c', formattedCommand], {
-					cwd
+					cwd,
+					env: {
+						...process.env,
+						...(options?.env ?? {})
+					}
 				});
 				let fullOutput = '';
 				childProcess.stdout?.on('data', (data) => {
