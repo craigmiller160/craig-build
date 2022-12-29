@@ -219,12 +219,12 @@ describe('deployToKubernetes', () => {
 		const tarFile = `${buildContext.projectInfo.name}-${buildContext.projectInfo.version}.tgz`;
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			5,
-			`helm template ${buildContext.projectInfo.name} ${tarFile} --kube-context=${K8S_CTX} --namespace infra-prod --values ./chart/values.yml`,
+			`helm template ${buildContext.projectInfo.name} ${tarFile} --kube-context=${K8S_CTX} --namespace infra-prod --values ./chart/values.yml `,
 			{ printOutput: true, cwd: deployDir, env: expect.any(Object) }
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			6,
-			`helm install ${buildContext.projectInfo.name} ${tarFile} --kube-context=${K8S_CTX} --namespace infra-prod --values ./chart/values.yml`,
+			`helm install ${buildContext.projectInfo.name} ${tarFile} --kube-context=${K8S_CTX} --namespace infra-prod --values ./chart/values.yml `,
 			{ printOutput: true, cwd: deployDir, env: expect.any(Object) }
 		);
 	});
@@ -237,11 +237,10 @@ describe('deployToKubernetes', () => {
 			projectType: ProjectType.HelmApplication
 		};
 
-		const deploymentName = 'email-service';
 		const deployDir = path.join(baseCwd, 'deploy');
 
 		runCommandMock.mockImplementationOnce(() =>
-			TE.right(createHelmList(deploymentName))
+			TE.right(createHelmList(buildContext.projectInfo.name))
 		);
 		runCommandMock.mockImplementation(() => TE.right(''));
 
@@ -266,18 +265,18 @@ describe('deployToKubernetes', () => {
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			4,
-			`helm package ./chart --version ${buildContext.projectInfo.version}`,
+			`helm package ./chart --version ${buildContext.projectInfo.version} --app-version ${buildContext.projectInfo.version}`,
 			{ printOutput: true, cwd: deployDir }
 		);
 		const tarFile = `${buildContext.projectInfo.name}-${buildContext.projectInfo.version}.tgz`;
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			5,
-			`helm template ${buildContext.projectInfo.name} ${tarFile} --kube-context=${K8S_CTX} --namespace infra-prod --values ./chart/values.yml`,
+			`helm template ${buildContext.projectInfo.name} ${tarFile} --kube-context=${K8S_CTX} --namespace infra-prod --values ./chart/values.yml `,
 			{ printOutput: true, cwd: deployDir, env: expect.any(Object) }
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			6,
-			`helm upgrade ${buildContext.projectInfo.name} ${tarFile} --kube-context=${K8S_CTX} --namespace infra-prod --values ./chart/values.yml`,
+			`helm upgrade ${buildContext.projectInfo.name} ${tarFile} --kube-context=${K8S_CTX} --namespace infra-prod --values ./chart/values.yml `,
 			{ printOutput: true, cwd: deployDir, env: expect.any(Object) }
 		);
 	});
@@ -321,18 +320,18 @@ describe('deployToKubernetes', () => {
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			4,
-			`helm package ./chart --version ${buildContext.projectInfo.version}`,
+			`helm package ./chart --version ${buildContext.projectInfo.version} --app-version ${buildContext.projectInfo.version}`,
 			{ printOutput: true, cwd: deployDir }
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			5,
-			`helm template ${buildContext.projectInfo.name} ./chart --kube-context=${K8S_CTX} --namespace infra-prod --values ./chart/values.yml --set theSuperSecret=$SECRET_ENV_VARIABLE`,
+			`helm template ${buildContext.projectInfo.name} ./chart --kube-context=${K8S_CTX} --namespace infra-prod --values ./chart/values.yml --set theSuperSecret=$SECRET_ENV_VARIABLE `,
 			{ printOutput: true, cwd: deployDir, env: expect.any(Object) }
 		);
 		const tarFile = `${buildContext.projectInfo.name}-${buildContext.projectInfo.version}.tgz`;
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			6,
-			`helm install ${buildContext.projectInfo.name} ${tarFile} --kube-context=${K8S_CTX} --namespace infra-prod --values ./chart/values.yml --set theSuperSecret=$SECRET_ENV_VARIABLE`,
+			`helm install ${buildContext.projectInfo.name} ${tarFile} --kube-context=${K8S_CTX} --namespace infra-prod --values ./chart/values.yml --set theSuperSecret=$SECRET_ENV_VARIABLE `,
 			{ printOutput: true, cwd: deployDir, env: expect.any(Object) }
 		);
 	});
