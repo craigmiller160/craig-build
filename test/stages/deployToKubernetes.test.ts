@@ -90,7 +90,10 @@ describe('deployToKubernetes', () => {
 			`helm package ./chart --version ${buildContext.projectInfo.version} --app-version ${buildContext.projectInfo.version}`,
 			{ printOutput: true, cwd: deployDir }
 		);
-		const tarFile = `${buildContext.projectInfo.name}-${buildContext.projectInfo.version}.tgz`;
+		const tarFile = path.join(
+			deployDir,
+			`${buildContext.projectInfo.name}-${buildContext.projectInfo.version}.tgz`
+		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			5,
 			`helm template ${buildContext.projectInfo.name} ${tarFile} --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml --set app-deployment.image=${image}`,
@@ -154,7 +157,10 @@ describe('deployToKubernetes', () => {
 			`helm package ./chart --version ${buildContext.projectInfo.version} --app-version ${buildContext.projectInfo.version}`,
 			{ printOutput: true, cwd: deployDir }
 		);
-		const tarFile = `${buildContext.projectInfo.name}-${buildContext.projectInfo.version}.tgz`;
+		const tarFile = path.join(
+			deployDir,
+			`${buildContext.projectInfo.name}-${buildContext.projectInfo.version}.tgz`
+		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			5,
 			`helm template ${buildContext.projectInfo.name} ${tarFile} --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml --set app-deployment.image=${image}`,
@@ -216,7 +222,10 @@ describe('deployToKubernetes', () => {
 			`helm package ./chart --version ${buildContext.projectInfo.version} --app-version ${buildContext.projectInfo.version}`,
 			{ printOutput: true, cwd: deployDir }
 		);
-		const tarFile = `${buildContext.projectInfo.name}-${buildContext.projectInfo.version}.tgz`;
+		const tarFile = path.join(
+			deployDir,
+			`${buildContext.projectInfo.name}-${buildContext.projectInfo.version}.tgz`
+		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			5,
 			`helm template ${buildContext.projectInfo.name} ${tarFile} --kube-context=${K8S_CTX} --namespace infra-prod --values ./chart/values.yml `,
@@ -268,7 +277,10 @@ describe('deployToKubernetes', () => {
 			`helm package ./chart --version ${buildContext.projectInfo.version} --app-version ${buildContext.projectInfo.version}`,
 			{ printOutput: true, cwd: deployDir }
 		);
-		const tarFile = `${buildContext.projectInfo.name}-${buildContext.projectInfo.version}.tgz`;
+		const tarFile = path.join(
+			deployDir,
+			`${buildContext.projectInfo.name}-${buildContext.projectInfo.version}.tgz`
+		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			5,
 			`helm template ${buildContext.projectInfo.name} ${tarFile} --kube-context=${K8S_CTX} --namespace infra-prod --values ./chart/values.yml `,
@@ -323,7 +335,10 @@ describe('deployToKubernetes', () => {
 			`helm package ./chart --version ${buildContext.projectInfo.version} --app-version ${buildContext.projectInfo.version}`,
 			{ printOutput: true, cwd: deployDir }
 		);
-		const tarFile = `${buildContext.projectInfo.name}-${buildContext.projectInfo.version}.tgz`;
+		const tarFile = path.join(
+			deployDir,
+			`${buildContext.projectInfo.name}-${buildContext.projectInfo.version}.tgz`
+		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			5,
 			`helm template ${buildContext.projectInfo.name} ${tarFile} --kube-context=${K8S_CTX} --namespace infra-prod --values ./chart/values.yml --set theSuperSecret=$SECRET_ENV_VARIABLE`,
