@@ -1,7 +1,7 @@
 import { BuildContext } from '../context/BuildContext';
 import * as TE from 'fp-ts/TaskEither';
 import { match, P } from 'ts-pattern';
-import { isApplication } from '../context/projectTypeUtils';
+import { isApplication, isHelm } from '../context/projectTypeUtils';
 import { flow, pipe } from 'fp-ts/function';
 import { readFile } from '../functions/File';
 import path from 'path';
@@ -14,7 +14,6 @@ import { parseYaml } from '../functions/Yaml';
 import { DeploymentValues } from '../configFileTypes/DeploymentValues';
 import { createDockerImageTag } from '../utils/dockerUtils';
 import { getAndCacheHelmProject } from '../projectCache';
-import { HelmSetValues } from '../configFileTypes/HelmJson';
 import * as RArray from 'fp-ts/ReadonlyArray';
 import * as Monoid from 'fp-ts/Monoid';
 import shellEnv from 'shell-env';
@@ -63,18 +62,17 @@ const getHelmInstallOrUpgrade = (
 		TE.map((isInstalled) => (isInstalled ? 'upgrade' : 'install'))
 	);
 
-const createHelmSetExpression = (
-	extra: HelmSetValues
-): E.Either<Error, string> =>
-	pipe(
+const createHelmSetValues = (
+	context: BuildContext
+): E.Either<Error, string> => {
+	if (!isHelm(context.projectType)) {
+		const image = createDockerImageTag(context.projectInfo);
+		return E.right(`--set app-deployment.image=${image}`);
+	}
+
+	return pipe(
 		getAndCacheHelmProject(),
 		E.map((_) => _.setValues ?? {}),
-		E.map(
-			(_): HelmSetValues => ({
-				..._,
-				...extra
-			})
-		),
 		E.map(
 			flow(
 				Object.entries,
@@ -83,19 +81,19 @@ const createHelmSetExpression = (
 			)
 		)
 	);
+};
 
 const createFullHelmCommand = (
 	deploymentName: string,
 	helmCommand: string,
-	image: string
+	setValues: string
 ): string =>
-	`helm ${helmCommand} ${deploymentName} ./chart --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml --set app-deployment.image=${image}`;
+	`helm ${helmCommand} ${deploymentName} ./chart --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml ${setValues}`;
 
 const doDeploy = (
 	context: BuildContext
 ): TE.TaskEither<Error, BuildContext> => {
 	const deployDir = path.join(getCwd(), 'deploy');
-	const image = createDockerImageTag(context.projectInfo);
 	const shellVariables = shellEnv.sync();
 	return pipe(
 		getDeploymentName(deployDir),
@@ -104,6 +102,7 @@ const doDeploy = (
 		TE.bind('helmCommand', ({ deploymentName }) =>
 			getHelmInstallOrUpgrade(deploymentName)
 		),
+		TE.bind('setValues', () => TE.fromEither(createHelmSetValues(context))),
 		TE.chainFirst(() =>
 			runCommand(`kubectl config use-context ${K8S_CTX}`, {
 				printOutput: true,
@@ -116,9 +115,9 @@ const doDeploy = (
 				cwd: path.join(deployDir, 'chart')
 			})
 		),
-		TE.chainFirst(({ deploymentName }) =>
+		TE.chainFirst(({ deploymentName, setValues }) =>
 			runCommand(
-				createFullHelmCommand(deploymentName, 'template', image),
+				createFullHelmCommand(deploymentName, 'template', setValues),
 				{
 					printOutput: true,
 					cwd: deployDir,
@@ -126,9 +125,9 @@ const doDeploy = (
 				}
 			)
 		),
-		TE.chainFirst(({ deploymentName, helmCommand }) =>
+		TE.chainFirst(({ deploymentName, helmCommand, setValues }) =>
 			runCommand(
-				createFullHelmCommand(deploymentName, helmCommand, image),
+				createFullHelmCommand(deploymentName, helmCommand, setValues),
 				{
 					printOutput: true,
 					cwd: deployDir,
