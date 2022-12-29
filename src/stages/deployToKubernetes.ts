@@ -2,7 +2,7 @@ import { BuildContext } from '../context/BuildContext';
 import * as TE from 'fp-ts/TaskEither';
 import { match, P } from 'ts-pattern';
 import { isApplication } from '../context/projectTypeUtils';
-import { pipe } from 'fp-ts/function';
+import { flow, pipe } from 'fp-ts/function';
 import { readFile } from '../functions/File';
 import path from 'path';
 import { getCwd } from '../command/getCwd';
@@ -13,6 +13,20 @@ import { Stage, StageExecuteFn } from './Stage';
 import { parseYaml } from '../functions/Yaml';
 import { DeploymentValues } from '../configFileTypes/DeploymentValues';
 import { createDockerImageTag } from '../utils/dockerUtils';
+import { getAndCacheHelmProject } from '../projectCache';
+import { HelmSetValues } from '../configFileTypes/HelmJson';
+import * as RArray from 'fp-ts/ReadonlyArray';
+import * as Monoid from 'fp-ts/Monoid';
+
+const setValuesMonoid: Monoid.Monoid<string> = {
+	empty: '',
+	concat: (a, b) => {
+		if (!a) {
+			return b;
+		}
+		return `${a} ${b}`;
+	}
+};
 
 export const K8S_CTX = 'microk8s';
 export const K8S_NS = 'apps-prod';
@@ -46,6 +60,27 @@ const getHelmInstallOrUpgrade = (
 		),
 		TE.map(isDeploymentInstalled(deploymentName)),
 		TE.map((isInstalled) => (isInstalled ? 'upgrade' : 'install'))
+	);
+
+const createHelmSetExpression = (
+	extra: HelmSetValues
+): E.Either<Error, string> =>
+	pipe(
+		getAndCacheHelmProject(),
+		E.map((_) => _.setValues ?? {}),
+		E.map(
+			(_): HelmSetValues => ({
+				..._,
+				...extra
+			})
+		),
+		E.map(
+			flow(
+				Object.entries,
+				RArray.map(([key, value]) => `--set ${key}=${value}`),
+				Monoid.concatAll(setValuesMonoid)
+			)
+		)
 	);
 
 const createFullHelmCommand = (
