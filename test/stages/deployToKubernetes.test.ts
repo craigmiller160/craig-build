@@ -213,7 +213,7 @@ describe('deployToKubernetes', () => {
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			4,
-			`helm package ./chart --version ${buildContext.projectInfo.version}`,
+			`helm package ./chart --version ${buildContext.projectInfo.version} --app-version ${buildContext.projectInfo.version}`,
 			{ printOutput: true, cwd: deployDir }
 		);
 		const tarFile = `${buildContext.projectInfo.name}-${buildContext.projectInfo.version}.tgz`;
