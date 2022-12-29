@@ -17,6 +17,7 @@ import { getAndCacheHelmProject } from '../projectCache';
 import { HelmSetValues } from '../configFileTypes/HelmJson';
 import * as RArray from 'fp-ts/ReadonlyArray';
 import * as Monoid from 'fp-ts/Monoid';
+import shellEnv from 'shell-env';
 
 const setValuesMonoid: Monoid.Monoid<string> = {
 	empty: '',
@@ -95,6 +96,7 @@ const doDeploy = (
 ): TE.TaskEither<Error, BuildContext> => {
 	const deployDir = path.join(getCwd(), 'deploy');
 	const image = createDockerImageTag(context.projectInfo);
+	const shellVariables = shellEnv.sync();
 	return pipe(
 		getDeploymentName(deployDir),
 		TE.fromEither,
@@ -119,7 +121,8 @@ const doDeploy = (
 				createFullHelmCommand(deploymentName, 'template', image),
 				{
 					printOutput: true,
-					cwd: deployDir
+					cwd: deployDir,
+					env: shellVariables
 				}
 			)
 		),
@@ -128,7 +131,8 @@ const doDeploy = (
 				createFullHelmCommand(deploymentName, helmCommand, image),
 				{
 					printOutput: true,
-					cwd: deployDir
+					cwd: deployDir,
+					env: shellVariables
 				}
 			)
 		),

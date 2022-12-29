@@ -14,6 +14,7 @@ import { baseWorkingDir } from '../testutils/baseWorkingDir';
 import { ProjectType } from '../../src/context/ProjectType';
 import path from 'path';
 import { createDockerImageTag } from '../../src/utils/dockerUtils';
+import shellEnv from 'shell-env';
 
 const createHelmList = (deploymentName: string): string => `
 NAME            NAMESPACE       REVISION        UPDATED                                 STATUS          CHART                   APP VERSION
@@ -30,9 +31,22 @@ const baseBuildContext = createBuildContext({
 	}
 });
 
+jest.mock('shell-env', () => ({
+	sync: jest.fn()
+}));
+
+const shellEnvMock = shellEnv.sync as jest.Mock;
+
+const prepareEnvMock = () =>
+	shellEnvMock.mockImplementation(() => ({
+		NEXUS_USER: 'user',
+		NEXUS_PASSWORD: 'password'
+	}));
+
 describe('deployToKubernetes', () => {
 	beforeEach(() => {
 		jest.resetAllMocks();
+		prepareEnvMock();
 	});
 
 	it('installs new application via helm', async () => {
