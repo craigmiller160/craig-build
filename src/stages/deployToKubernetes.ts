@@ -86,15 +86,17 @@ const createHelmSetValues = (
 const createFullHelmCommand = (
 	deploymentName: string,
 	helmCommand: string,
+	tarName: string,
 	setValues: string
 ): string =>
-	`helm ${helmCommand} ${deploymentName} ./chart --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml ${setValues}`;
+	`helm ${helmCommand} ${deploymentName} ${tarName} --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml ${setValues}`;
 
 const doDeploy = (
 	context: BuildContext
 ): TE.TaskEither<Error, BuildContext> => {
 	const deployDir = path.join(getCwd(), 'deploy');
 	const shellVariables = shellEnv.sync();
+	const tarName = `${context.projectInfo.name}-${context.projectInfo.version}.tgz`;
 	return pipe(
 		getDeploymentName(deployDir),
 		TE.fromEither,
@@ -115,9 +117,23 @@ const doDeploy = (
 				cwd: path.join(deployDir, 'chart')
 			})
 		),
+		TE.chainFirst(() =>
+			runCommand(
+				`helm package ./chart --version ${context.projectInfo.version} --app-version ${context.projectInfo.version}`,
+				{
+					printOutput: true,
+					cwd: path.join(deployDir)
+				}
+			)
+		),
 		TE.chainFirst(({ deploymentName, setValues }) =>
 			runCommand(
-				createFullHelmCommand(deploymentName, 'template', setValues),
+				createFullHelmCommand(
+					deploymentName,
+					'template',
+					tarName,
+					setValues
+				),
 				{
 					printOutput: true,
 					cwd: deployDir,
@@ -127,7 +143,12 @@ const doDeploy = (
 		),
 		TE.chainFirst(({ deploymentName, helmCommand, setValues }) =>
 			runCommand(
-				createFullHelmCommand(deploymentName, helmCommand, setValues),
+				createFullHelmCommand(
+					deploymentName,
+					helmCommand,
+					tarName,
+					setValues
+				),
 				{
 					printOutput: true,
 					cwd: deployDir,
