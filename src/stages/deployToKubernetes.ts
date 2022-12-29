@@ -97,18 +97,9 @@ const doDeploy = (
 	const deployDir = path.join(getCwd(), 'deploy');
 	const shellVariables = shellEnv.sync();
 	const tarName = `${context.projectInfo.name}-${context.projectInfo.version}.tgz`;
-	pipe(
+	const deployTE = pipe(
 		getHelmInstallOrUpgrade(context.projectInfo.name),
-		TE.bindTo('helmCommand')
-	);
-
-	return pipe(
-		getDeploymentName(deployDir),
-		TE.fromEither,
-		TE.bindTo('deploymentName'),
-		TE.bind('helmCommand', ({ deploymentName }) =>
-			getHelmInstallOrUpgrade(deploymentName)
-		),
+		TE.bindTo('helmCommand'),
 		TE.bind('setValues', () => TE.fromEither(createHelmSetValues(context))),
 		TE.chainFirst(() =>
 			runCommand(`kubectl config use-context ${K8S_CTX}`, {
@@ -160,25 +151,37 @@ const doDeploy = (
 					env: shellVariables
 				}
 			)
-		),
-		TE.chainFirst(({ deploymentName }) =>
-			runCommand(
-				`kubectl rollout restart deployment ${deploymentName} -n ${K8S_NS}`,
-				{
-					printOutput: true,
-					cwd: deployDir
-				}
-			)
-		),
-		TE.chainFirst(({ deploymentName }) =>
-			runCommand(
-				`kubectl rollout status deployment ${deploymentName} -n ${K8S_NS}`,
-				{
-					printOutput: true,
-					cwd: deployDir
-				}
-			)
-		),
+		)
+	);
+
+	if (!isHelm(context.projectType)) {
+		return pipe(
+			deployTE,
+			TE.chainEitherK(() => getDeploymentName(deployDir)),
+			TE.chainFirst((deploymentName) =>
+				runCommand(
+					`kubectl rollout restart deployment ${deploymentName} -n ${K8S_NS}`,
+					{
+						printOutput: true,
+						cwd: deployDir
+					}
+				)
+			),
+			TE.chainFirst((deploymentName) =>
+				runCommand(
+					`kubectl rollout status deployment ${deploymentName} -n ${K8S_NS}`,
+					{
+						printOutput: true,
+						cwd: deployDir
+					}
+				)
+			),
+			TE.map(() => context)
+		);
+	}
+
+	return pipe(
+		deployTE,
 		TE.map(() => context)
 	);
 };
