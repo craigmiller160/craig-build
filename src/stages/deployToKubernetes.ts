@@ -109,7 +109,10 @@ const doDeploy = (
 ): TE.TaskEither<Error, BuildContext> => {
 	const deployDir = path.join(getCwd(), 'deploy');
 	const shellVariables = shellEnv.sync();
-	const tarName = `${context.projectInfo.name}-${context.projectInfo.version}.tgz`;
+	const tarFile = path.join(
+		deployDir,
+		`${context.projectInfo.name}-${context.projectInfo.version}.tgz`
+	);
 	const deployTE = pipe(
 		getNamespace(context),
 		E.bindTo('namespace'),
@@ -144,7 +147,7 @@ const doDeploy = (
 				createFullHelmCommand(
 					context.projectInfo.name,
 					'template',
-					tarName,
+					tarFile,
 					setValues,
 					namespace
 				),
@@ -160,7 +163,7 @@ const doDeploy = (
 				createFullHelmCommand(
 					context.projectInfo.name,
 					helmCommand,
-					tarName,
+					tarFile,
 					setValues,
 					namespace
 				),
