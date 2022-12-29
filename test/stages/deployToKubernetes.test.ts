@@ -137,15 +137,15 @@ describe('deployToKubernetes', () => {
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			4,
-			`helm template ${deploymentName} ./chart --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml --set app-deployment.image=${image}`,
-			{ printOutput: true, cwd: deployDir }
-		);
-		expect(runCommandMock).toHaveBeenNthCalledWith(
-			5,
 			`helm package ./chart --version ${buildContext.projectInfo.version}`,
 			{ printOutput: true, cwd: deployDir }
 		);
 		const tarFile = `${buildContext.projectInfo.name}-0.1.0.tgz`;
+		expect(runCommandMock).toHaveBeenNthCalledWith(
+			5,
+			`helm template ${deploymentName} ${tarFile} --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml --set app-deployment.image=${image}`,
+			{ printOutput: true, cwd: deployDir }
+		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			6,
 			`helm upgrade ${deploymentName} ${tarFile} --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml --set app-deployment.image=${image}`,
@@ -200,15 +200,15 @@ describe('deployToKubernetes', () => {
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			4,
-			`helm template ${deploymentName} ./chart --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml`,
-			{ printOutput: true, cwd: deployDir }
-		);
-		expect(runCommandMock).toHaveBeenNthCalledWith(
-			5,
 			`helm package ./chart --version ${buildContext.projectInfo.version}`,
 			{ printOutput: true, cwd: deployDir }
 		);
 		const tarFile = `${buildContext.projectInfo.name}-0.1.0.tgz`;
+		expect(runCommandMock).toHaveBeenNthCalledWith(
+			5,
+			`helm template ${deploymentName} ${tarFile} --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml`,
+			{ printOutput: true, cwd: deployDir }
+		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			6,
 			`helm install ${deploymentName} ${tarFile} --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml`,
@@ -253,15 +253,15 @@ describe('deployToKubernetes', () => {
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			4,
-			`helm template ${deploymentName} ./chart --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml`,
-			{ printOutput: true, cwd: deployDir }
-		);
-		expect(runCommandMock).toHaveBeenNthCalledWith(
-			5,
 			`helm package ./chart --version ${buildContext.projectInfo.version}`,
 			{ printOutput: true, cwd: deployDir }
 		);
 		const tarFile = `${buildContext.projectInfo.name}-0.1.0.tgz`;
+		expect(runCommandMock).toHaveBeenNthCalledWith(
+			5,
+			`helm template ${deploymentName} ${tarFile} --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml`,
+			{ printOutput: true, cwd: deployDir }
+		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			6,
 			`helm upgrade ${deploymentName} ${tarFile} --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml`,
@@ -309,12 +309,12 @@ describe('deployToKubernetes', () => {
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			4,
-			`helm template ${deploymentName} ./chart --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml`,
+			`helm package ./chart --version ${buildContext.projectInfo.version}`,
 			{ printOutput: true, cwd: deployDir }
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			5,
-			`helm package ./chart --version ${buildContext.projectInfo.version}`,
+			`helm template ${deploymentName} ./chart --kube-context=${K8S_CTX} --namespace ${K8S_NS} --values ./chart/values.yml`,
 			{ printOutput: true, cwd: deployDir }
 		);
 		const tarFile = `${buildContext.projectInfo.name}-0.1.0.tgz`;
