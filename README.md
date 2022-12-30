@@ -183,3 +183,13 @@ Pre-release versions have a `-beta` suffix.
 | type      | The type of Helm project. Either a library or application.                              |
 | namespace | The k8s namespace to deploy to. Only required for applications, not libraries.          |
 | setValues | Helm values to set via CLI arguments. Optional for applications, ignored for libraries. |
+
+## Terraform Support
+
+Any Application being deployed supports an optional terraform config. If present, it will be executed at the end of the build. It looks in the following location for the config:
+
+```
+/
+    deploy/
+        terraform/
+```
