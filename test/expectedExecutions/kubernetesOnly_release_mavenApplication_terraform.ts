@@ -19,25 +19,26 @@ import { waitOnNexusUpdate } from '../../src/stages/waitOnNexusUpdate';
 import { runTerraformScript } from '../../src/stages/runTerraformScript';
 import { checkForTerraformScript } from '../../src/stages/checkForTerraformScript';
 
-export const kubernetesOnly_release_mavenApplication: ExpectedExecution = {
-	[getCommandInfo.name]: true,
-	[getBuildToolInfo.name]: true,
-	[validateBuildToolVersion.name]: true,
-	[checkForUncommittedChanges.name]: true,
-	[getProjectType.name]: true,
-	[getProjectInfo.name]: true,
-	[checkForTerraformScript.name]: true,
-	[validateDependencyVersions.name]: false,
-	[validateProjectVersionAllowed.name]: false,
-	// [validateKubernetesConfig.name]: true,
-	[validateGitTag.name]: false,
-	[buildArtifact.name]: false,
-	[preparePreReleaseVersion.name]: false,
-	[manuallyPublishArtifact.name]: false,
-	[gitTag.name]: false,
-	[waitOnNexusUpdate.name]: false,
-	[downloadArtifactForDeployment.name]: false,
-	[buildAndPushDocker.name]: false,
-	[deployToKubernetes.name]: true,
-	[runTerraformScript.name]: true
-};
+export const kubernetesOnly_release_mavenApplication_terraform: ExpectedExecution =
+	{
+		[getCommandInfo.name]: true,
+		[getBuildToolInfo.name]: true,
+		[validateBuildToolVersion.name]: true,
+		[checkForUncommittedChanges.name]: true,
+		[getProjectType.name]: true,
+		[getProjectInfo.name]: true,
+		[checkForTerraformScript.name]: true,
+		[validateDependencyVersions.name]: false,
+		[validateProjectVersionAllowed.name]: false,
+		// [validateKubernetesConfig.name]: true,
+		[validateGitTag.name]: false,
+		[buildArtifact.name]: false,
+		[preparePreReleaseVersion.name]: false,
+		[manuallyPublishArtifact.name]: false,
+		[gitTag.name]: false,
+		[waitOnNexusUpdate.name]: false,
+		[downloadArtifactForDeployment.name]: false,
+		[buildAndPushDocker.name]: false,
+		[deployToKubernetes.name]: true,
+		[runTerraformScript.name]: true
+	};
