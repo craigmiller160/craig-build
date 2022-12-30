@@ -17,6 +17,7 @@ import { getProjectType } from '../../src/stages/getProjectType';
 import { getProjectInfo } from '../../src/stages/getProjectInfo';
 import { waitOnNexusUpdate } from '../../src/stages/waitOnNexusUpdate';
 import { runTerraformScript } from '../../src/stages/runTerraformScript';
+import { checkForTerraformScript } from '../../src/stages/checkForTerraformScript';
 
 export const fullBuild_release_mavenApplication: ExpectedExecution = {
 	[getCommandInfo.name]: true,
@@ -25,6 +26,7 @@ export const fullBuild_release_mavenApplication: ExpectedExecution = {
 	[checkForUncommittedChanges.name]: true,
 	[getProjectType.name]: true,
 	[getProjectInfo.name]: true,
+	[checkForTerraformScript.name]: true,
 	[validateDependencyVersions.name]: true,
 	[validateProjectVersionAllowed.name]: true,
 	// [validateKubernetesConfig.name]: true,

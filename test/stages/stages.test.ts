@@ -17,6 +17,7 @@ import { buildAndPushDocker } from '../../src/stages/buildAndPushDocker';
 import { deployToKubernetes } from '../../src/stages/deployToKubernetes';
 import { waitOnNexusUpdate } from '../../src/stages/waitOnNexusUpdate';
 import { runTerraformScript } from '../../src/stages/runTerraformScript';
+import { checkForTerraformScript } from '../../src/stages/checkForTerraformScript';
 
 describe('stages', () => {
 	it('all stages are added in the correct order', () => {
@@ -28,6 +29,7 @@ describe('stages', () => {
 			checkForUncommittedChanges.name,
 			getProjectType.name,
 			getProjectInfo.name,
+			checkForTerraformScript.name,
 			validateDependencyVersions.name,
 			validateProjectVersionAllowed.name,
 			// validateKubernetesConfig.name,

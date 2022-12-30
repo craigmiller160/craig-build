@@ -17,6 +17,7 @@ import { getProjectType } from '../../src/stages/getProjectType';
 import { getProjectInfo } from '../../src/stages/getProjectInfo';
 import { waitOnNexusUpdate } from '../../src/stages/waitOnNexusUpdate';
 import { runTerraformScript } from '../../src/stages/runTerraformScript';
+import { checkForTerraformScript } from '../../src/stages/checkForTerraformScript';
 
 export const dockerOnly_preRelease_dockerApplication: ExpectedExecution = {
 	[getCommandInfo.name]: true,
@@ -25,6 +26,7 @@ export const dockerOnly_preRelease_dockerApplication: ExpectedExecution = {
 	[checkForUncommittedChanges.name]: true,
 	[getProjectType.name]: true,
 	[getProjectInfo.name]: true,
+	[checkForTerraformScript.name]: true,
 	[validateDependencyVersions.name]: false,
 	[validateProjectVersionAllowed.name]: false,
 	// [validateKubernetesConfig.name]: true,

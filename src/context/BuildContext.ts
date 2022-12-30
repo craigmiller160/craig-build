@@ -8,4 +8,5 @@ export interface BuildContext {
 	readonly buildToolInfo: BuildToolInfo;
 	readonly projectType: ProjectType;
 	readonly projectInfo: ProjectInfo;
+	readonly hasTerraform: boolean;
 }
