@@ -32,6 +32,15 @@ describe('checkForTerraformScript', () => {
 	});
 
 	it('is application without terraform script', async () => {
-		throw new Error();
+		getCwdMock.mockImplementation(() =>
+			path.join(baseWorkingDir, 'mavenReleaseApplication')
+		);
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.MavenApplication
+		};
+
+		const result = await checkForTerraformScript.execute(buildContext)();
+		expect(result).toEqualRight(buildContext);
 	});
 });
