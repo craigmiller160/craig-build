@@ -364,4 +364,8 @@ describe('execute.kubernetesOnly', () => {
 
 		validateStages(kubernetesOnly_release_helmApplication);
 	});
+
+	it('executes kubernetes only for release MavenApplication with terraform', async () => {
+		throw new Error();
+	});
 });

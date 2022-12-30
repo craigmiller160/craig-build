@@ -365,4 +365,8 @@ describe('execute.fullBuild', () => {
 
 		validateStages(dockerOnly_release_helmApplication);
 	});
+
+	it('executes docker only for release MavenApplication with terraform', async () => {
+		throw new Error();
+	});
 });

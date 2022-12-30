@@ -364,4 +364,8 @@ describe('execute.fullBuild', () => {
 
 		validateStages(fullBuild_release_helmApplication);
 	});
+
+	it('executes full build for release MavenApplication with terraform', async () => {
+		throw new Error();
+	});
 });
