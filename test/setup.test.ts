@@ -17,6 +17,7 @@ describe('setup', () => {
 				versionType: VersionType.Unknown
 			},
 			projectType: ProjectType.Unknown,
+			hasTerraform: false,
 			projectInfo: {
 				group: '',
 				name: '',
