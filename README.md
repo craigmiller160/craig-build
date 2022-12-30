@@ -147,7 +147,7 @@ This is building and deploying a Helm Chart as a library or as an application in
 
 Some of the project types use custom configuration files I designed. Here is a summary of them.
 
-## Docker Projects
+### Docker Projects
 
 Docker-only projects use a `docker.json` file with the following simple structure:
 
@@ -160,7 +160,7 @@ Docker-only projects use a `docker.json` file with the following simple structur
 
 Pre-release versions have a `-beta` suffix.
 
-## Helm Projects
+### Helm Projects
 
 Helm-only projects contain a special `helm.json` file that provides special details on the Helm operations that must be performed. Here is its structure:
 
