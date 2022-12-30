@@ -29,18 +29,20 @@ const defaultBuildContext: BuildContext = {
 	commandInfo: defaultCommandInfo,
 	buildToolInfo: defaultBuildToolInfo,
 	projectType: defaultProjectType,
-	projectInfo: defaultProjectInfo
+	projectInfo: defaultProjectInfo,
+	hasTerraform: false
 };
 
 export const createBuildContext = ({
 	commandInfo = defaultCommandInfo,
 	buildToolInfo = defaultBuildToolInfo,
 	projectType = defaultProjectType,
-	projectInfo = defaultProjectInfo
+	projectInfo = defaultProjectInfo,
+	hasTerraform = defaultBuildContext.hasTerraform
 }: Partial<BuildContext> = defaultBuildContext): BuildContext => ({
 	commandInfo,
 	buildToolInfo,
 	projectType,
 	projectInfo,
-	hasTerraform: false
+	hasTerraform
 });
