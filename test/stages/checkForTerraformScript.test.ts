@@ -22,9 +22,13 @@ describe('checkForTerraformScript', () => {
 			...baseBuildContext,
 			projectType: ProjectType.MavenApplication
 		};
+		const expectedContext: BuildContext = {
+			...buildContext,
+			hasTerraform: true
+		};
 
 		const result = await checkForTerraformScript.execute(buildContext)();
-		expect(result).toEqualRight(buildContext);
+		expect(result).toEqualRight(expectedContext);
 	});
 
 	it('is application without terraform script', async () => {
