@@ -3,10 +3,12 @@ import * as TaskEither from 'fp-ts/TaskEither';
 import { BuildContext } from '../context/BuildContext';
 import { isApplication } from '../context/projectTypeUtils';
 import fs from 'fs';
+import path from 'path';
 import { TERRAFORM_DEPLOY_PATH } from '../configFileTypes/constants';
+import { getCwd } from '../command/getCwd';
 
 const hasTerraformDirectory = (): boolean =>
-	fs.existsSync(TERRAFORM_DEPLOY_PATH);
+	fs.existsSync(path.join(getCwd(), TERRAFORM_DEPLOY_PATH));
 
 const execute: StageExecuteFn = (context) =>
 	TaskEither.right({
