@@ -17,6 +17,7 @@ import { deployToKubernetes } from './deployToKubernetes';
 import { Stage } from './Stage';
 import { waitOnNexusUpdate } from './waitOnNexusUpdate';
 import { runTerraformScript } from './runTerraformScript';
+import { checkForTerraformScript } from './checkForTerraformScript';
 
 export const stages: Stage[] = [
 	getCommandInfo,
@@ -25,6 +26,7 @@ export const stages: Stage[] = [
 	checkForUncommittedChanges,
 	getProjectType,
 	getProjectInfo,
+	checkForTerraformScript,
 	validateDependencyVersions,
 	validateProjectVersionAllowed,
 	// validateKubernetesConfig,
