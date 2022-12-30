@@ -26,7 +26,7 @@ export const dockerOnly_preRelease_mavenApplication: ExpectedExecution = {
 	[checkForUncommittedChanges.name]: true,
 	[getProjectType.name]: true,
 	[getProjectInfo.name]: true,
-	[checkForTerraformScript.name]: false,
+	[checkForTerraformScript.name]: true,
 	[validateDependencyVersions.name]: false,
 	[validateProjectVersionAllowed.name]: false,
 	// [validateKubernetesConfig.name]: true,

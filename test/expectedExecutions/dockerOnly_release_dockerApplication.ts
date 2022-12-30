@@ -26,7 +26,7 @@ export const dockerOnly_release_dockerApplication: ExpectedExecution = {
 	[checkForUncommittedChanges.name]: true,
 	[getProjectType.name]: true,
 	[getProjectInfo.name]: true,
-	[checkForTerraformScript.name]: false,
+	[checkForTerraformScript.name]: true,
 	[validateDependencyVersions.name]: false,
 	[validateProjectVersionAllowed.name]: true,
 	// [validateKubernetesConfig.name]: true,
