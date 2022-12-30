@@ -41,5 +41,6 @@ export const createBuildContext = ({
 	commandInfo,
 	buildToolInfo,
 	projectType,
-	projectInfo
+	projectInfo,
+	hasTerraform: false
 });
