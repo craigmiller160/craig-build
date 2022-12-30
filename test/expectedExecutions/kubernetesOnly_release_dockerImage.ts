@@ -16,6 +16,7 @@ import { checkForUncommittedChanges } from '../../src/stages/checkForUncommitted
 import { getProjectType } from '../../src/stages/getProjectType';
 import { getProjectInfo } from '../../src/stages/getProjectInfo';
 import { waitOnNexusUpdate } from '../../src/stages/waitOnNexusUpdate';
+import { runTerraformScript } from '../../src/stages/runTerraformScript';
 
 export const kubernetesOnly_release_dockerImage: ExpectedExecution = {
 	[getCommandInfo.name]: true,
@@ -35,5 +36,6 @@ export const kubernetesOnly_release_dockerImage: ExpectedExecution = {
 	[waitOnNexusUpdate.name]: false,
 	[downloadArtifactForDeployment.name]: false,
 	[buildAndPushDocker.name]: false,
-	[deployToKubernetes.name]: false
+	[deployToKubernetes.name]: false,
+	[runTerraformScript.name]: false
 };

@@ -16,6 +16,7 @@ import { buildAndPushDocker } from './buildAndPushDocker';
 import { deployToKubernetes } from './deployToKubernetes';
 import { Stage } from './Stage';
 import { waitOnNexusUpdate } from './waitOnNexusUpdate';
+import { runTerraformScript } from './runTerraformScript';
 
 export const stages: Stage[] = [
 	getCommandInfo,
@@ -35,5 +36,6 @@ export const stages: Stage[] = [
 	waitOnNexusUpdate,
 	downloadArtifactForDeployment,
 	buildAndPushDocker,
-	deployToKubernetes
+	deployToKubernetes,
+	runTerraformScript
 ];

@@ -16,6 +16,7 @@ import { downloadArtifactForDeployment } from '../../src/stages/downloadArtifact
 import { buildAndPushDocker } from '../../src/stages/buildAndPushDocker';
 import { deployToKubernetes } from '../../src/stages/deployToKubernetes';
 import { waitOnNexusUpdate } from '../../src/stages/waitOnNexusUpdate';
+import { runTerraformScript } from '../../src/stages/runTerraformScript';
 
 describe('stages', () => {
 	it('all stages are added in the correct order', () => {
@@ -38,7 +39,8 @@ describe('stages', () => {
 			waitOnNexusUpdate.name,
 			downloadArtifactForDeployment.name,
 			buildAndPushDocker.name,
-			deployToKubernetes.name
+			deployToKubernetes.name,
+			runTerraformScript.name
 		]);
 	});
 });
