@@ -7,6 +7,12 @@ import { createBuildContext } from '../testutils/createBuildContext';
 import { ProjectType } from '../../src/context/ProjectType';
 import { runTerraformScript } from '../../src/stages/runTerraformScript';
 import '@relmify/jest-fp-ts';
+import { readUserInput } from '../../src/utils/readUserInput';
+
+jest.mock('../../src/utils/readUserInput', () => ({
+	readUserInput: jest.fn()
+}));
+const readUserInputMock = readUserInput as jest.Mock;
 
 describe('runTerraformScript', () => {
 	beforeEach(() => {
@@ -19,6 +25,7 @@ describe('runTerraformScript', () => {
 			'mavenReleaseApplicationWithTerraform'
 		);
 		getCwdMock.mockImplementation(() => workingDir);
+		readUserInputMock.mockImplementation(() => 'y');
 		const buildContext: BuildContext = {
 			...createBuildContext(),
 			projectType: ProjectType.MavenApplication,
@@ -28,11 +35,21 @@ describe('runTerraformScript', () => {
 		const result = await runTerraformScript.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
 
+		expect(readUserInputMock).toHaveBeenCalledTimes(1);
+		expect(readUserInputMock).toHaveBeenNthCalledWith(
+			1,
+			'Do you want to execute the terraform script? (y/n): '
+		);
+
 		expect(runCommandMock).toHaveBeenCalledTimes(1);
 		expect(runCommandMock).toHaveBeenNthCalledWith(1, 'terraform apply', {
 			printOutput: true,
 			cwd: path.join(workingDir, 'deploy', 'terraform')
 		});
 		throw new Error('Need user input too');
+	});
+
+	it('skips terraform execution if user chooses', async () => {
+		throw new Error();
 	});
 });
