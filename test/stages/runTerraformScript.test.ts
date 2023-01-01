@@ -46,10 +46,30 @@ describe('runTerraformScript', () => {
 			printOutput: true,
 			cwd: path.join(workingDir, 'deploy', 'terraform')
 		});
-		throw new Error('Need user input too');
 	});
 
 	it('skips terraform execution if user chooses', async () => {
-		throw new Error();
+		const workingDir = path.join(
+			baseWorkingDir,
+			'mavenReleaseApplicationWithTerraform'
+		);
+		getCwdMock.mockImplementation(() => workingDir);
+		readUserInputMock.mockImplementation(() => 'n');
+		const buildContext: BuildContext = {
+			...createBuildContext(),
+			projectType: ProjectType.MavenApplication,
+			hasTerraform: true
+		};
+
+		const result = await runTerraformScript.execute(buildContext)();
+		expect(result).toEqualRight(buildContext);
+
+		expect(readUserInputMock).toHaveBeenCalledTimes(1);
+		expect(readUserInputMock).toHaveBeenNthCalledWith(
+			1,
+			'Do you want to execute the terraform script? (y/n): '
+		);
+
+		expect(runCommandMock).toHaveBeenCalledTimes(0);
 	});
 });
