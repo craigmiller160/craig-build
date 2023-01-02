@@ -8,6 +8,7 @@ import { ProjectType } from '../../src/context/ProjectType';
 import { runTerraformScript } from '../../src/stages/runTerraformScript';
 import '@relmify/jest-fp-ts';
 import { readUserInput } from '../../src/utils/readUserInput';
+import * as Task from 'fp-ts/Task';
 
 jest.mock('../../src/utils/readUserInput', () => ({
 	readUserInput: jest.fn()
@@ -25,7 +26,7 @@ describe('runTerraformScript', () => {
 			'mavenReleaseApplicationWithTerraform'
 		);
 		getCwdMock.mockImplementation(() => workingDir);
-		readUserInputMock.mockImplementation(() => () => 'y');
+		readUserInputMock.mockImplementation(() => Task.of('y'));
 		const buildContext: BuildContext = {
 			...createBuildContext(),
 			projectType: ProjectType.MavenApplication,
