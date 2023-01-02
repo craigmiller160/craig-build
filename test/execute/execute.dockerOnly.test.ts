@@ -1,9 +1,10 @@
 import { createBuildContext } from '../testutils/createBuildContext';
 import '@relmify/jest-fp-ts';
+import { prepareStageExecutionMock } from './executeTestUtils';
 import { CommandType } from '../../src/context/CommandType';
 import { BuildContext } from '../../src/context/BuildContext';
 import { ProjectType } from '../../src/context/ProjectType';
-import * as TE from 'fp-ts/TaskEither';
+import { stages } from '../../src/stages';
 import { execute } from '../../src/execute';
 import { dockerOnly_release_mavenApplication } from '../expectedExecutions/dockerOnly_release_mavenApplication';
 import { ExpectedExecution } from '../expectedExecutions/ExpectedExecution';
@@ -18,35 +19,14 @@ import { dockerOnly_release_dockerApplication } from '../expectedExecutions/dock
 import { dockerOnly_preRelease_dockerApplication } from '../expectedExecutions/dockerOnly_preRelease_dockerApplication';
 import { dockerOnly_release_dockerImage } from '../expectedExecutions/dockerOnly_release_dockerImage';
 import { dockerOnly_preRelease_dockerImage } from '../expectedExecutions/dockerOnly_preRelease_dockerImage';
-import { Stage } from '../../src/stages/Stage';
-import { stages } from '../../src/stages';
+
 import { VersionType } from '../../src/context/VersionType';
 
 import { dockerOnly_release_helmLibrary } from '../expectedExecutions/dockerOnly_release_helmLibrary';
 import { dockerOnly_release_helmApplication } from '../expectedExecutions/dockerOnly_release_helmApplication';
 import { dockerOnly_release_mavenApplication_terraform } from '../expectedExecutions/dockerOnly_release_mavenApplication_terraform';
 
-jest.mock('../../src/stages', () => {
-	const createStageMock = (stage: Stage): Stage => ({
-		name: stage.name,
-		execute: jest.fn(),
-		shouldStageExecute: stage.shouldStageExecute
-	});
-
-	const { stages } = jest.requireActual('../../src/stages');
-	return {
-		stages: stages.map(createStageMock)
-	};
-});
-
 const baseContext = createBuildContext();
-const prepareStageExecutionMock = (context: BuildContext) => {
-	stages.forEach((stage) => {
-		(stage.execute as jest.Mock).mockImplementation(() =>
-			TE.right(context)
-		);
-	});
-};
 
 const validateStages = (expected: ExpectedExecution) => {
 	expect(Object.keys(expected)).toHaveLength(stages.length);
