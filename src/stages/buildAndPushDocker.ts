@@ -9,7 +9,7 @@ import { DOCKER_REPO_PREFIX } from '../configFileTypes/constants';
 import { runCommand } from '../command/runCommand';
 import { Stage, StageExecuteFn } from './Stage';
 import { CommandType } from '../context/CommandType';
-import { isKubernetesOnly } from '../context/commandTypeUtils';
+import { isKubernetesOnly, isTerraformOnly } from '../context/commandTypeUtils';
 import path from 'path';
 import { getCwd } from '../command/getCwd';
 import { createDockerImageTag } from '../utils/dockerUtils';
@@ -116,11 +116,14 @@ const handleDockerBuildByProject = (
 const isNotKubernetesOnly: Pred.Predicate<CommandType> =
 	Pred.not(isKubernetesOnly);
 const isNotHelm: Pred.Predicate<ProjectType> = Pred.not(isHelm);
+const isNotTerraformOnly: Pred.Predicate<CommandType> =
+	Pred.not(isTerraformOnly);
 
 const shouldStageExecute: Pred.Predicate<BuildContext> = pipe(
 	(_: BuildContext) => isDockerOrApplication(_.projectType),
 	Pred.and((_) => isNotKubernetesOnly(_.commandInfo.type)),
-	Pred.and((_) => isNotHelm(_.projectType))
+	Pred.and((_) => isNotHelm(_.projectType)),
+	Pred.and((_) => isNotTerraformOnly(_.commandInfo.type))
 );
 
 const execute: StageExecuteFn = (context) =>
