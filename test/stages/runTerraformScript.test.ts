@@ -9,6 +9,7 @@ import { runTerraformScript } from '../../src/stages/runTerraformScript';
 import '@relmify/jest-fp-ts';
 import { readUserInput } from '../../src/utils/readUserInput';
 import * as Task from 'fp-ts/Task';
+import * as TaskEither from 'fp-ts/TaskEither';
 
 jest.mock('../../src/utils/readUserInput', () => ({
 	readUserInput: jest.fn()
@@ -27,6 +28,7 @@ describe('runTerraformScript', () => {
 		);
 		getCwdMock.mockImplementation(() => workingDir);
 		readUserInputMock.mockImplementation(() => Task.of('y'));
+		runCommandMock.mockImplementation(() => TaskEither.right(''));
 		const buildContext: BuildContext = {
 			...createBuildContext(),
 			projectType: ProjectType.MavenApplication,
