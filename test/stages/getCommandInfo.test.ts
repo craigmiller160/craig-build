@@ -78,4 +78,8 @@ describe('getCommandInfo', () => {
 			}
 		});
 	});
+
+	it('TERRAFORM_ONLY', async () => {
+		throw new Error();
+	});
 });
