@@ -25,7 +25,7 @@ describe('runTerraformScript', () => {
 			'mavenReleaseApplicationWithTerraform'
 		);
 		getCwdMock.mockImplementation(() => workingDir);
-		readUserInputMock.mockImplementation(() => 'y');
+		readUserInputMock.mockImplementation(() => () => 'y');
 		const buildContext: BuildContext = {
 			...createBuildContext(),
 			projectType: ProjectType.MavenApplication,
