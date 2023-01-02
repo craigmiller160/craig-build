@@ -1,11 +1,10 @@
 import { Stage, StageExecuteFn } from './Stage';
 import { match } from 'ts-pattern';
-import { OptionValues } from 'commander';
+import { OptionValues, program } from 'commander';
 import { CommandInfo } from '../context/CommandInfo';
 import { CommandType } from '../context/CommandType';
 import * as TE from 'fp-ts/TaskEither';
 import * as P from 'fp-ts/Predicate';
-import { program } from 'commander';
 import { BuildContext } from '../context/BuildContext';
 
 const constructCommandInfo = (options: OptionValues): CommandInfo =>
@@ -14,6 +13,9 @@ const constructCommandInfo = (options: OptionValues): CommandInfo =>
 		.with({ dockerOnly: true }, () => ({ type: CommandType.DockerOnly }))
 		.with({ kubernetesOnly: true }, () => ({
 			type: CommandType.KubernetesOnly
+		}))
+		.with({ terraformOnly: true }, () => ({
+			type: CommandType.TerraformOnly
 		}))
 		.run();
 
