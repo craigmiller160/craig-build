@@ -192,4 +192,13 @@ Any Application being deployed supports an optional terraform config. If present
 /
     deploy/
         terraform/
+            terraform.json (Optional)
+```
+
+The `terraform.json` file is an optional file to specify variable arguments for Terraform. ie, if secrets need to be provided via the CLI, then this JSON format contains the key/value pairs for them. Obviously the secret values should be set in environment variables rather than committed into Git.
+
+```json
+{
+  "variable_one": "$THE_VALUE"
+}
 ```
