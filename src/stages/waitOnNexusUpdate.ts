@@ -7,7 +7,7 @@ import { pipe } from 'fp-ts/function';
 import { ProjectType } from '../context/ProjectType';
 import * as Pred from 'fp-ts/Predicate';
 import { Stage, StageExecuteFn } from './Stage';
-import { isKubernetesOnly } from '../context/commandTypeUtils';
+import { isKubernetesOnly, isTerraformOnly } from '../context/commandTypeUtils';
 import { CommandType } from '../context/CommandType';
 
 const WAIT_TIME_MILLIS = 3000;
@@ -29,6 +29,8 @@ const isNonDockerNonHelmApplication: Pred.Predicate<ProjectType> = pipe(
 );
 const isNotKuberntesOnly: Pred.Predicate<CommandType> =
 	Pred.not(isKubernetesOnly);
+const isNotTerraformOnly: Pred.Predicate<CommandType> =
+	Pred.not(isTerraformOnly);
 
 const handleWaitingByProject = (
 	context: BuildContext
@@ -43,7 +45,8 @@ const handleWaitingByProject = (
 const execute: StageExecuteFn = (context) => handleWaitingByProject(context);
 const shouldStageExecute: Pred.Predicate<BuildContext> = pipe(
 	(_: BuildContext) => isNonDockerNonHelmApplication(_.projectType),
-	Pred.and((_) => isNotKuberntesOnly(_.commandInfo.type))
+	Pred.and((_) => isNotKuberntesOnly(_.commandInfo.type)),
+	Pred.and((_) => isNotTerraformOnly(_.commandInfo.type))
 );
 
 export const waitOnNexusUpdate: Stage = {
