@@ -80,6 +80,21 @@ describe('getCommandInfo', () => {
 	});
 
 	it('TERRAFORM_ONLY', async () => {
-		throw new Error();
+		const options: OptionValues = {
+			terraformOnly: true
+		};
+		optsMock.mockImplementation(() => options);
+		const buildContext: BuildContext = createBuildContext({
+			commandInfo: {
+				type: CommandType.Unknown
+			}
+		});
+		const result = await getCommandInfo.execute(buildContext)();
+		expect(result).toEqualRight({
+			...buildContext,
+			commandInfo: {
+				type: CommandType.TerraformOnly
+			}
+		});
 	});
 });
