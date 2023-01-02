@@ -56,7 +56,7 @@ describe('runTerraformScript', () => {
 		);
 
 		expect(runCommandMock).toHaveBeenCalledTimes(1);
-		expect(runCommandMock).toHaveBeenNthCalledWith(1, 'terraform apply', {
+		expect(runCommandMock).toHaveBeenNthCalledWith(1, 'terraform apply ', {
 			printOutput: true,
 			cwd: path.join(workingDir, 'deploy', 'terraform')
 		});

@@ -7,17 +7,43 @@ import { isApplication } from '../context/projectTypeUtils';
 import { readUserInput } from '../utils/readUserInput';
 import path from 'path';
 import { getCwd } from '../command/getCwd';
-import { TERRAFORM_DEPLOY_PATH } from '../configFileTypes/constants';
+import {
+	TERRAFORM_DEPLOY_PATH,
+	TERRAFORM_JSON_PATH
+} from '../configFileTypes/constants';
 import { runCommand } from '../command/runCommand';
 import { match } from 'ts-pattern';
+import fs from 'fs';
+import { readTerraformProject } from '../projectCache';
+import * as Either from 'fp-ts/Either';
+import { TerraformJson } from '../configFileTypes/TerraformJson';
 
-const runTerraform = (): TaskEither.TaskEither<Error, string> => {
-	const terraformDir = path.join(getCwd(), TERRAFORM_DEPLOY_PATH);
-	return runCommand('terraform apply', {
-		cwd: terraformDir,
-		printOutput: true
-	});
+const terraformJsonToVariableString = (json: TerraformJson): string =>
+	Object.entries(json)
+		.map(([key, value]) => `-var=${key}=${value}`)
+		.join(' ');
+
+const getTerraformVariableString = (): Either.Either<Error, string> => {
+	if (fs.existsSync(path.join(getCwd(), TERRAFORM_JSON_PATH))) {
+		return pipe(
+			readTerraformProject(),
+			Either.map(terraformJsonToVariableString)
+		);
+	}
+	return Either.right('');
 };
+
+const runTerraform = (): TaskEither.TaskEither<Error, string> =>
+	pipe(
+		getTerraformVariableString(),
+		TaskEither.fromEither,
+		TaskEither.chain((variableString) =>
+			runCommand(`terraform apply ${variableString}`, {
+				cwd: path.join(getCwd(), TERRAFORM_DEPLOY_PATH),
+				printOutput: true
+			})
+		)
+	);
 
 const handlePromptResult = (
 	result: string
