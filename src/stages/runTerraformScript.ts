@@ -17,6 +17,7 @@ import fs from 'fs';
 import { readTerraformProject } from '../projectCache';
 import * as Either from 'fp-ts/Either';
 import { TerraformJson } from '../configFileTypes/TerraformJson';
+import shellEnv from 'shell-env';
 
 const terraformJsonToVariableString = (json: TerraformJson): string =>
 	Object.entries(json)
@@ -33,17 +34,20 @@ const getTerraformVariableString = (): Either.Either<Error, string> => {
 	return Either.right('');
 };
 
-const runTerraform = (): TaskEither.TaskEither<Error, string> =>
-	pipe(
+const runTerraform = (): TaskEither.TaskEither<Error, string> => {
+	const env = shellEnv.sync();
+	return pipe(
 		getTerraformVariableString(),
 		TaskEither.fromEither,
 		TaskEither.chain((variableString) =>
 			runCommand(`terraform apply ${variableString}`, {
 				cwd: path.join(getCwd(), TERRAFORM_DEPLOY_PATH),
-				printOutput: true
+				printOutput: true,
+				env
 			})
 		)
 	);
+};
 
 const handlePromptResult = (
 	result: string
