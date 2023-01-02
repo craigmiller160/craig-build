@@ -23,6 +23,7 @@ import { stages } from '../../src/stages';
 import { VersionType } from '../../src/context/VersionType';
 import { fullBuild_release_helmLibrary } from '../expectedExecutions/fullBuild_release_helmLibrary';
 import { fullBuild_release_helmApplication } from '../expectedExecutions/fullBuild_release_helmApplication';
+import { fullBuild_release_mavenApplication_terraform } from '../expectedExecutions/fullBuild_release_mavenApplication_terraform';
 
 jest.mock('../../src/stages', () => {
 	const createStageMock = (stage: Stage): Stage => ({
@@ -363,5 +364,27 @@ describe('execute.fullBuild', () => {
 		expect(result).toEqualRight(context);
 
 		validateStages(fullBuild_release_helmApplication);
+	});
+
+	it('executes full build for release MavenApplication with terraform', async () => {
+		const context: BuildContext = {
+			...baseContext,
+			commandInfo: {
+				type: CommandType.FullBuild
+			},
+			projectType: ProjectType.MavenApplication,
+			projectInfo: {
+				...baseContext.projectInfo,
+				versionType: VersionType.Release
+			},
+			hasTerraform: true
+		};
+
+		prepareStageExecutionMock(context);
+
+		const result = await execute(context)();
+		expect(result).toEqualRight(context);
+
+		validateStages(fullBuild_release_mavenApplication_terraform);
 	});
 });

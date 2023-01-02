@@ -24,6 +24,7 @@ import { VersionType } from '../../src/context/VersionType';
 
 import { dockerOnly_release_helmLibrary } from '../expectedExecutions/dockerOnly_release_helmLibrary';
 import { dockerOnly_release_helmApplication } from '../expectedExecutions/dockerOnly_release_helmApplication';
+import { dockerOnly_release_mavenApplication_terraform } from '../expectedExecutions/dockerOnly_release_mavenApplication_terraform';
 
 jest.mock('../../src/stages', () => {
 	const createStageMock = (stage: Stage): Stage => ({
@@ -364,5 +365,27 @@ describe('execute.fullBuild', () => {
 		expect(result).toEqualRight(context);
 
 		validateStages(dockerOnly_release_helmApplication);
+	});
+
+	it('executes docker only for release MavenApplication with terraform', async () => {
+		const context: BuildContext = {
+			...baseContext,
+			commandInfo: {
+				type: CommandType.DockerOnly
+			},
+			projectType: ProjectType.MavenApplication,
+			projectInfo: {
+				...baseContext.projectInfo,
+				versionType: VersionType.Release
+			},
+			hasTerraform: true
+		};
+
+		prepareStageExecutionMock(context);
+
+		const result = await execute(context)();
+		expect(result).toEqualRight(context);
+
+		validateStages(dockerOnly_release_mavenApplication_terraform);
 	});
 });

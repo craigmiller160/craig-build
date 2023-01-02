@@ -23,6 +23,7 @@ import { stages } from '../../src/stages';
 import { VersionType } from '../../src/context/VersionType';
 import { kubernetesOnly_release_helmLibrary } from '../expectedExecutions/kubernetesOnly_release_helmLibrary';
 import { kubernetesOnly_release_helmApplication } from '../expectedExecutions/kubernetesOnly_release_helmApplication';
+import { kubernetesOnly_release_mavenApplication_terraform } from '../expectedExecutions/kubernetesOnly_release_mavenApplication_terraform';
 
 jest.mock('../../src/stages', () => {
 	const createStageMock = (stage: Stage): Stage => ({
@@ -363,5 +364,27 @@ describe('execute.kubernetesOnly', () => {
 		expect(result).toEqualRight(context);
 
 		validateStages(kubernetesOnly_release_helmApplication);
+	});
+
+	it('executes kubernetes only for release MavenApplication with terraform', async () => {
+		const context: BuildContext = {
+			...baseContext,
+			commandInfo: {
+				type: CommandType.KubernetesOnly
+			},
+			projectType: ProjectType.MavenApplication,
+			projectInfo: {
+				...baseContext.projectInfo,
+				versionType: VersionType.Release
+			},
+			hasTerraform: true
+		};
+
+		prepareStageExecutionMock(context);
+
+		const result = await execute(context)();
+		expect(result).toEqualRight(context);
+
+		validateStages(kubernetesOnly_release_mavenApplication_terraform);
 	});
 });
