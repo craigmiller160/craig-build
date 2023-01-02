@@ -7,6 +7,7 @@ import { ProjectType } from '../../src/context/ProjectType';
 import { VersionType } from '../../src/context/VersionType';
 import { execute } from '../../src/execute';
 import { terraformOnly_release_mavenApplication } from '../expectedExecutions/terraformOnly_release_mavenApplication';
+import { terraformOnly_release_mavenApplication_terraform } from '../expectedExecutions/terraformOnly_release_mavenApplication_terraform';
 
 const baseContext = createBuildContext();
 
@@ -18,7 +19,7 @@ describe('execute.terraformOnly', () => {
 		const context: BuildContext = {
 			...baseContext,
 			commandInfo: {
-				type: CommandType.KubernetesOnly
+				type: CommandType.TerraformOnly
 			},
 			projectType: ProjectType.MavenApplication,
 			projectInfo: {
@@ -35,6 +36,24 @@ describe('execute.terraformOnly', () => {
 	});
 
 	it('executes terraform only for MavenApplication with terraform', async () => {
-		throw new Error();
+		const context: BuildContext = {
+			...baseContext,
+			commandInfo: {
+				type: CommandType.TerraformOnly
+			},
+			projectType: ProjectType.MavenApplication,
+			projectInfo: {
+				...baseContext.projectInfo,
+				versionType: VersionType.Release
+			},
+			hasTerraform: true
+		};
+
+		prepareStageExecutionMock(context);
+
+		const result = await execute(context)();
+		expect(result).toEqualRight(context);
+
+		validateStages(terraformOnly_release_mavenApplication_terraform);
 	});
 });
