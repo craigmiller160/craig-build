@@ -75,4 +75,38 @@ describe('runTerraformScript', () => {
 
 		expect(runCommandMock).toHaveBeenCalledTimes(0);
 	});
+
+	it('executes the terraform script with secret variables', async () => {
+		const workingDir = path.join(
+			baseWorkingDir,
+			'mavenReleaseApplicationWithTerraformAndSecrets'
+		);
+		getCwdMock.mockImplementation(() => workingDir);
+		readUserInputMock.mockImplementation(() => Task.of('y'));
+		runCommandMock.mockImplementation(() => TaskEither.right(''));
+		const buildContext: BuildContext = {
+			...createBuildContext(),
+			projectType: ProjectType.MavenApplication,
+			hasTerraform: true
+		};
+
+		const result = await runTerraformScript.execute(buildContext)();
+		expect(result).toEqualRight(buildContext);
+
+		expect(readUserInputMock).toHaveBeenCalledTimes(1);
+		expect(readUserInputMock).toHaveBeenNthCalledWith(
+			1,
+			'Do you want to execute the terraform script? (y/n): '
+		);
+
+		expect(runCommandMock).toHaveBeenCalledTimes(1);
+		expect(runCommandMock).toHaveBeenNthCalledWith(
+			1,
+			'terraform apply -var=variable_one=$THE_VALUE',
+			{
+				printOutput: true,
+				cwd: path.join(workingDir, 'deploy', 'terraform')
+			}
+		);
+	});
 });
