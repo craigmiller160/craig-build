@@ -58,7 +58,7 @@ const readHelmProject = (): E.Either<Error, HelmJson> =>
 
 export const readTerraformProject = (): E.Either<Error, TerraformJson> =>
 	pipe(
-		readFile(path.join(getCwd(), TERRAFORM_JSON_PATH, 'terraform.json')),
+		readFile(path.join(getCwd(), TERRAFORM_JSON_PATH)),
 		E.chain((_) => parseJson<TerraformJson>(_))
 	);
 
