@@ -16,12 +16,6 @@ import path from 'path';
 import { createDockerImageTag } from '../../src/utils/dockerUtils';
 import shellEnv from 'shell-env';
 
-const createHelmList = (projectName: string): string => `
-NAME            NAMESPACE       REVISION        UPDATED                                 STATUS          CHART                   APP VERSION
-${projectName}   apps-prod       1               2022-09-06 16:30:04.728675 -0400 EDT    deployed        email-service-0.1.0     1.0.0      
-ingress         apps-prod       1               2022-09-05 17:01:57.090562 -0400 EDT    deployed        ingress-0.1.0           1.0.0
-`;
-
 const baseBuildContext = createBuildContext({
 	projectInfo: {
 		group: 'craigmiller160',
@@ -61,9 +55,6 @@ describe('deployToKubernetes', () => {
 		const deployDir = path.join(baseCwd, 'deploy');
 		const image = createDockerImageTag(buildContext.projectInfo);
 
-		runCommandMock.mockImplementationOnce(() =>
-			TE.right(createHelmList('abcdefg'))
-		);
 		runCommandMock.mockImplementation(() => TE.right(''));
 
 		const result = await deployToKubernetes.execute(buildContext)();
@@ -123,9 +114,6 @@ describe('deployToKubernetes', () => {
 		const deployDir = path.join(baseCwd, 'deploy');
 		const image = createDockerImageTag(buildContext.projectInfo);
 
-		runCommandMock.mockImplementationOnce(() =>
-			TE.right(createHelmList(buildContext.projectInfo.name))
-		);
 		runCommandMock.mockImplementation(() => TE.right(''));
 
 		const result = await deployToKubernetes.execute(buildContext)();
@@ -183,9 +171,6 @@ describe('deployToKubernetes', () => {
 
 		const deployDir = path.join(baseCwd, 'deploy');
 
-		runCommandMock.mockImplementationOnce(() =>
-			TE.right(createHelmList('abcdefg'))
-		);
 		runCommandMock.mockImplementation(() => TE.right(''));
 
 		const result = await deployToKubernetes.execute(buildContext)();
@@ -233,9 +218,6 @@ describe('deployToKubernetes', () => {
 
 		const deployDir = path.join(baseCwd, 'deploy');
 
-		runCommandMock.mockImplementationOnce(() =>
-			TE.right(createHelmList(buildContext.projectInfo.name))
-		);
 		runCommandMock.mockImplementation(() => TE.right(''));
 
 		const result = await deployToKubernetes.execute(buildContext)();
@@ -286,9 +268,6 @@ describe('deployToKubernetes', () => {
 
 		const deployDir = path.join(baseCwd, 'deploy');
 
-		runCommandMock.mockImplementationOnce(() =>
-			TE.right(createHelmList('abcdefg'))
-		);
 		runCommandMock.mockImplementation(() => TE.right(''));
 
 		const result = await deployToKubernetes.execute(buildContext)();
