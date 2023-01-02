@@ -102,7 +102,7 @@ const createFullHelmCommand = (
 	setValues: string,
 	namespace: string
 ): string =>
-	`helm ${helmCommand} ${appName} ${tarName} --kube-context=${K8S_CTX} --namespace ${namespace} --values ./chart/values.yml ${setValues}`;
+	`helm ${helmCommand} ${appName} ${tarName} --kube-context=${K8S_CTX} --wait --timeout 5m --namespace ${namespace} --values ./chart/values.yml ${setValues}`;
 
 const doDeploy = (
 	context: BuildContext
@@ -170,33 +170,33 @@ const doDeploy = (
 		)
 	);
 
-	if (!isHelm(context.projectType)) {
-		return pipe(
-			deployTE,
-			TE.bind('deploymentName', () =>
-				TE.fromEither(getDeploymentName(deployDir))
-			),
-			TE.chainFirst(({ deploymentName, namespace }) =>
-				runCommand(
-					`kubectl rollout restart deployment ${deploymentName} -n ${namespace}`,
-					{
-						printOutput: true,
-						cwd: deployDir
-					}
-				)
-			),
-			TE.chainFirst(({ deploymentName, namespace }) =>
-				runCommand(
-					`kubectl rollout status deployment ${deploymentName} -n ${namespace}`,
-					{
-						printOutput: true,
-						cwd: deployDir
-					}
-				)
-			),
-			TE.map(() => context)
-		);
-	}
+	// if (!isHelm(context.projectType)) {
+	// 	return pipe(
+	// 		deployTE,
+	// 		TE.bind('deploymentName', () =>
+	// 			TE.fromEither(getDeploymentName(deployDir))
+	// 		),
+	// 		TE.chainFirst(({ deploymentName, namespace }) =>
+	// 			runCommand(
+	// 				`kubectl rollout restart deployment ${deploymentName} -n ${namespace}`,
+	// 				{
+	// 					printOutput: true,
+	// 					cwd: deployDir
+	// 				}
+	// 			)
+	// 		),
+	// 		TE.chainFirst(({ deploymentName, namespace }) =>
+	// 			runCommand(
+	// 				`kubectl rollout status deployment ${deploymentName} -n ${namespace}`,
+	// 				{
+	// 					printOutput: true,
+	// 					cwd: deployDir
+	// 				}
+	// 			)
+	// 		),
+	// 		TE.map(() => context)
+	// 	);
+	// }
 
 	return pipe(
 		deployTE,
