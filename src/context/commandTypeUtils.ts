@@ -9,3 +9,6 @@ export const isDockerOnly: P.Predicate<CommandType> = (commandType) =>
 
 export const isKubernetesOnly: P.Predicate<CommandType> = (commandType) =>
 	CommandType.KubernetesOnly === commandType;
+
+export const isTerraformOnly: P.Predicate<CommandType> = (commandType) =>
+	CommandType.TerraformOnly === commandType;

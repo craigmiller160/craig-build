@@ -34,7 +34,7 @@ import * as E from 'fp-ts/Either';
 import * as Pred from 'fp-ts/Predicate';
 import { Stage, StageExecuteFn } from './Stage';
 import { CommandType } from '../context/CommandType';
-import { isKubernetesOnly } from '../context/commandTypeUtils';
+import { isKubernetesOnly, isTerraformOnly } from '../context/commandTypeUtils';
 
 const isMavenOrGradle: Pred.Predicate<ProjectType> = pipe(
 	isMaven,
@@ -149,6 +149,8 @@ const downloadArtifactByProject = (
 const isNotDocker: Pred.Predicate<ProjectType> = Pred.not(isDocker);
 const isNotKubernetesOnly: Pred.Predicate<CommandType> =
 	Pred.not(isKubernetesOnly);
+const isNotTerraformOnly: Pred.Predicate<CommandType> =
+	Pred.not(isTerraformOnly);
 
 const execute: StageExecuteFn = (context) => downloadArtifactByProject(context);
 const isNonDockerNonHelmApplication: Pred.Predicate<BuildContext> = pipe(
@@ -158,7 +160,8 @@ const isNonDockerNonHelmApplication: Pred.Predicate<BuildContext> = pipe(
 );
 const shouldStageExecute: Pred.Predicate<BuildContext> = pipe(
 	isNonDockerNonHelmApplication,
-	Pred.and((_) => isNotKubernetesOnly(_.commandInfo.type))
+	Pred.and((_) => isNotKubernetesOnly(_.commandInfo.type)),
+	Pred.and((_) => isNotTerraformOnly(_.commandInfo.type))
 );
 
 export const downloadArtifactForDeployment: Stage = {

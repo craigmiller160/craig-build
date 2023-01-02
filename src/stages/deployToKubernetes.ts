@@ -14,6 +14,8 @@ import { getAndCacheHelmProject } from '../projectCache';
 import * as RArray from 'fp-ts/ReadonlyArray';
 import * as Monoid from 'fp-ts/Monoid';
 import shellEnv from 'shell-env';
+import { CommandType } from '../context/CommandType';
+import { isTerraformOnly } from '../context/commandTypeUtils';
 
 const setValuesMonoid: Monoid.Monoid<string> = {
 	empty: '',
@@ -152,9 +154,14 @@ const handleDeployByProject = (
 		.with({ projectType: P.when(isApplication) }, doDeploy)
 		.run();
 
+const isNotTerraformOnly: Pred.Predicate<CommandType> =
+	Pred.not(isTerraformOnly);
+
 const execute: StageExecuteFn = (context) => handleDeployByProject(context);
-const shouldStageExecute: Pred.Predicate<BuildContext> = (_: BuildContext) =>
-	isApplication(_.projectType);
+const shouldStageExecute: Pred.Predicate<BuildContext> = pipe(
+	(_: BuildContext) => isApplication(_.projectType),
+	Pred.and((_) => isNotTerraformOnly(_.commandInfo.type))
+);
 
 export const deployToKubernetes: Stage = {
 	name: 'Deploy to Kubernetes',

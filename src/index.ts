@@ -24,8 +24,15 @@ const packageJson: PackageJson = pipe(
 program
 	.version(packageJson.version)
 	.option('-b, --full-build', 'Fully build and deploy the project')
-	.option('-d, --docker-only', 'Build and deploy only the Docker image')
+	.option(
+		'-d, --docker-only',
+		'Build and deploy only the Docker image to Kubernetes'
+	)
 	.option('-k, --kubernetes-only', 'Deploy to Kubernetes only')
+	.option(
+		'-t, --terraform-only',
+		'Run only the Terraform scripts, if present'
+	)
 	.parse(process.argv);
 
 pipe(
