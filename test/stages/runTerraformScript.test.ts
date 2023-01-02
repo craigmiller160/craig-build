@@ -10,11 +10,22 @@ import '@relmify/jest-fp-ts';
 import { readUserInput } from '../../src/utils/readUserInput';
 import * as Task from 'fp-ts/Task';
 import * as TaskEither from 'fp-ts/TaskEither';
+import shellEnv from 'shell-env';
 
 jest.mock('../../src/utils/readUserInput', () => ({
 	readUserInput: jest.fn()
 }));
 const readUserInputMock = readUserInput as jest.Mock;
+
+jest.mock('shell-env', () => ({
+	sync: jest.fn()
+}));
+const shellEnvMock = shellEnv.sync as jest.Mock;
+const prepareEnvMock = () =>
+	shellEnvMock.mockImplementation(() => ({
+		NEXUS_USER: 'user',
+		NEXUS_PASSWORD: 'password'
+	}));
 
 describe('runTerraformScript', () => {
 	beforeEach(() => {
@@ -77,6 +88,7 @@ describe('runTerraformScript', () => {
 	});
 
 	it('executes the terraform script with secret variables', async () => {
+		prepareEnvMock();
 		const workingDir = path.join(
 			baseWorkingDir,
 			'mavenReleaseApplicationWithTerraformAndSecrets'
@@ -105,7 +117,8 @@ describe('runTerraformScript', () => {
 			'terraform apply -var=variable_one=$THE_VALUE',
 			{
 				printOutput: true,
-				cwd: path.join(workingDir, 'deploy', 'terraform')
+				cwd: path.join(workingDir, 'deploy', 'terraform'),
+				env: expect.any(Object)
 			}
 		);
 	});

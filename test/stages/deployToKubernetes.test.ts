@@ -77,7 +77,7 @@ describe('deployToKubernetes', () => {
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			3,
 			`helm template ${buildContext.projectInfo.name} ${tarFile} --kube-context=${K8S_CTX} --wait --timeout 5m --namespace ${K8S_NS} --values ./chart/values.yml --set app_deployment.image=${image}`,
-			{ printOutput: true, cwd: deployDir, env: expect.anything() }
+			{ printOutput: true, cwd: deployDir, env: expect.any(Object) }
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			4,
