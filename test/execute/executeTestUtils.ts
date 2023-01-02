@@ -2,6 +2,7 @@ import { Stage } from '../../src/stages/Stage';
 import { BuildContext } from '../../src/context/BuildContext';
 import { stages } from '../../src/stages';
 import * as TE from 'fp-ts/TaskEither';
+import { ExpectedExecution } from '../expectedExecutions/ExpectedExecution';
 
 jest.mock('../../src/stages', () => {
 	const createStageMock = (stage: Stage): Stage => ({
@@ -21,5 +22,29 @@ export const prepareStageExecutionMock = (context: BuildContext) => {
 		(stage.execute as jest.Mock).mockImplementation(() =>
 			TE.right(context)
 		);
+	});
+};
+
+export const validateStages = (expected: ExpectedExecution) => {
+	expect(Object.keys(expected)).toHaveLength(stages.length);
+	stages.forEach((stage) => {
+		try {
+			const expectedValue = expected[stage.name];
+			expect(expectedValue).not.toBeUndefined();
+			if (expectedValue) {
+				expect(stage.execute).toHaveBeenCalled();
+			} else {
+				expect(stage.execute).not.toHaveBeenCalled();
+			}
+		} catch (ex) {
+			throw new Error(
+				`Error validating stage: ${stage.name}.\n${
+					(ex as Error).message
+				}`,
+				{
+					cause: ex
+				}
+			);
+		}
 	});
 };
