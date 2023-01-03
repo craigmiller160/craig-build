@@ -40,7 +40,7 @@ const runTerraform = (): TaskEither.TaskEither<Error, string> => {
 		getTerraformVariableString(),
 		TaskEither.fromEither,
 		TaskEither.chain((variableString) =>
-			runCommand(`terraform apply ${variableString}`, {
+			runCommand(`terraform apply -auto-approve ${variableString}`, {
 				cwd: path.join(getCwd(), TERRAFORM_DEPLOY_PATH),
 				printOutput: true,
 				env
