@@ -55,11 +55,19 @@ describe('runTerraformScript', () => {
 			'Do you want to execute the terraform script? (y/n): '
 		);
 
-		expect(runCommandMock).toHaveBeenCalledTimes(1);
-		expect(runCommandMock).toHaveBeenNthCalledWith(1, 'terraform apply ', {
+		expect(runCommandMock).toHaveBeenCalledTimes(2);
+		expect(runCommandMock).toHaveBeenNthCalledWith(1, 'terraform plan ', {
 			printOutput: true,
 			cwd: path.join(workingDir, 'deploy', 'terraform')
 		});
+		expect(runCommandMock).toHaveBeenNthCalledWith(
+			2,
+			'terraform apply -auto-approve ',
+			{
+				printOutput: true,
+				cwd: path.join(workingDir, 'deploy', 'terraform')
+			}
+		);
 	});
 
 	it('skips terraform execution if user chooses', async () => {
@@ -111,10 +119,19 @@ describe('runTerraformScript', () => {
 			'Do you want to execute the terraform script? (y/n): '
 		);
 
-		expect(runCommandMock).toHaveBeenCalledTimes(1);
+		expect(runCommandMock).toHaveBeenCalledTimes(2);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			1,
-			'terraform apply -var=variable_one=$THE_VALUE',
+			'terraform plan -var=variable_one=$THE_VALUE',
+			{
+				printOutput: true,
+				cwd: path.join(workingDir, 'deploy', 'terraform'),
+				env: expect.any(Object)
+			}
+		);
+		expect(runCommandMock).toHaveBeenNthCalledWith(
+			2,
+			'terraform apply -auto-approve -var=variable_one=$THE_VALUE',
 			{
 				printOutput: true,
 				cwd: path.join(workingDir, 'deploy', 'terraform'),
