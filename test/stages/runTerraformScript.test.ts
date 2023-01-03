@@ -77,6 +77,7 @@ describe('runTerraformScript', () => {
 		);
 		getCwdMock.mockImplementation(() => workingDir);
 		readUserInputMock.mockImplementation(() => 'n');
+		runCommandMock.mockImplementation(() => TaskEither.right(''));
 		const buildContext: BuildContext = {
 			...createBuildContext(),
 			projectType: ProjectType.MavenApplication,
@@ -92,7 +93,11 @@ describe('runTerraformScript', () => {
 			'Do you want to execute the terraform script? (y/n): '
 		);
 
-		expect(runCommandMock).toHaveBeenCalledTimes(0);
+		expect(runCommandMock).toHaveBeenCalledTimes(1);
+		expect(runCommandMock).toHaveBeenNthCalledWith(1, 'terraform plan ', {
+			printOutput: true,
+			cwd: path.join(workingDir, 'deploy', 'terraform')
+		});
 	});
 
 	it('executes the terraform script with secret variables', async () => {
