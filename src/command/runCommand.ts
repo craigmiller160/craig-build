@@ -39,7 +39,9 @@ export const runCommand = (
 					env: {
 						...process.env,
 						...(options?.env ?? {})
-					}
+					},
+					// TODO delete this if it doesn't work
+					detached: true
 				});
 				let fullOutput = '';
 				childProcess.stdout?.on('data', (data) => {
