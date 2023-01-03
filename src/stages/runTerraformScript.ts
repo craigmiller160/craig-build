@@ -34,32 +34,54 @@ const getTerraformVariableString = (): Either.Either<Error, string> => {
 	return Either.right('');
 };
 
-const runTerraform = (): TaskEither.TaskEither<Error, string> => {
+const applyTerraform = (
+	variableString: string
+): TaskEither.TaskEither<Error, string> => {
 	const env = shellEnv.sync();
-	return pipe(
-		getTerraformVariableString(),
-		TaskEither.fromEither,
-		TaskEither.chain((variableString) =>
-			runCommand(`terraform apply -auto-approve ${variableString}`, {
-				cwd: path.join(getCwd(), TERRAFORM_DEPLOY_PATH),
-				printOutput: true,
-				env
-			})
-		)
-	);
+	return runCommand(`terraform apply -auto-approve ${variableString}`, {
+		cwd: path.join(getCwd(), TERRAFORM_DEPLOY_PATH),
+		printOutput: true,
+		env
+	});
+};
+const planTerraform = (
+	variableString: string
+): TaskEither.TaskEither<Error, string> => {
+	const env = shellEnv.sync();
+	return runCommand(`terraform plan ${variableString}`, {
+		cwd: path.join(getCwd(), TERRAFORM_DEPLOY_PATH),
+		printOutput: true,
+		env
+	});
 };
 
-const handlePromptResult = (
-	result: string
-): TaskEither.TaskEither<Error, string> =>
-	match(result)
-		.with('y', runTerraform)
+type PromptResultArgs = {
+	readonly variableString: string;
+	readonly promptResult: string;
+};
+const handlePromptResult = ({
+	variableString,
+	promptResult
+}: PromptResultArgs): TaskEither.TaskEither<Error, string> =>
+	match(promptResult)
+		.with('y', () => applyTerraform(variableString))
 		.otherwise(() => TaskEither.right(''));
 
 const askAndRunTerraform = (): TaskEither.TaskEither<Error, string> =>
 	pipe(
-		readUserInput('Do you want to execute the terraform script? (y/n): '),
-		TaskEither.fromTask,
+		getTerraformVariableString(),
+		TaskEither.fromEither,
+		TaskEither.bindTo('variableString'),
+		TaskEither.chainFirst(({ variableString }) =>
+			planTerraform(variableString)
+		),
+		TaskEither.bind('promptResult', () =>
+			TaskEither.fromTask(
+				readUserInput(
+					'Do you want to execute the terraform script? (y/n): '
+				)
+			)
+		),
 		TaskEither.chain(handlePromptResult)
 	);
 
