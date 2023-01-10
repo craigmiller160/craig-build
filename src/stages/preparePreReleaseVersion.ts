@@ -16,6 +16,7 @@ import {
 } from '../services/NexusRepoApi';
 import { NexusSearchResult } from '../services/NexusSearchResult';
 import * as O from 'fp-ts/Option';
+import { isNone, isSome } from 'fp-ts/Option';
 import * as A from 'fp-ts/Array';
 import { readFile } from '../functions/File';
 import { homedir } from 'os';
@@ -26,9 +27,12 @@ import { parseXml } from '../functions/Xml';
 import { MavenMetadataNexus } from '../configFileTypes/MavenMetadataNexus';
 import { Stage, StageExecuteFn } from './Stage';
 import { regexExecGroups } from '../functions/RegExp';
-import { isDockerOnly, isFullBuild } from '../context/commandTypeUtils';
+import {
+	isDockerOnly,
+	isFullBuild,
+	isTerraformOnly
+} from '../context/commandTypeUtils';
 import { CommandType } from '../context/CommandType';
-import { isNone, isSome } from 'fp-ts/Option';
 import { ProjectInfo } from '../context/ProjectInfo';
 import { logger } from '../logger';
 import { stringifyJson } from '../functions/Json';
@@ -318,8 +322,11 @@ const handlePreparingPreReleaseVersionByProject = (
 
 const execute: StageExecuteFn = (context) =>
 	handlePreparingPreReleaseVersionByProject(context);
-const shouldStageExecute: Pred.Predicate<BuildContext> = (context) =>
-	isPreRelease(context.projectInfo);
+const isNotTerraformOnly = Pred.not(isTerraformOnly);
+const shouldStageExecute: Pred.Predicate<BuildContext> = pipe(
+	(_: BuildContext) => isPreRelease(_.projectInfo),
+	Pred.and((_) => isNotTerraformOnly(_.commandInfo.type))
+);
 
 export const preparePreReleaseVersion: Stage = {
 	name: 'Prepare Pre-Release Version',
