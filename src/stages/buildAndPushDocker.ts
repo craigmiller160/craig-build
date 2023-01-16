@@ -19,9 +19,10 @@ import {
 } from '../utils/getNexusCredentials';
 import os from 'os';
 
-const cmdSudo = match(os.type())
-	.with('Darwin', () => '')
-	.otherwise(() => 'sudo ');
+const getCmdSudo = (): string =>
+	match(os.type())
+		.with('Darwin', () => '')
+		.otherwise(() => 'sudo ');
 
 const isDockerOrApplication: Pred.Predicate<ProjectType> = pipe(
 	isApplication,
@@ -32,7 +33,7 @@ const loginToNexusDocker = (
 	creds: NexusCredentials
 ): TE.TaskEither<Error, string> =>
 	runCommand(
-		`${cmdSudo}docker login ${DOCKER_REPO_PREFIX} -u \${user} -p \${password}`,
+		`${getCmdSudo()}docker login ${DOCKER_REPO_PREFIX} -u \${user} -p \${password}`,
 		{
 			printOutput: true,
 			variables: {
@@ -46,7 +47,7 @@ const checkForExistingImages = (
 	context: BuildContext
 ): TE.TaskEither<Error, string> => {
 	const baseCommand = [
-		`${cmdSudo}docker image ls`,
+		`${getCmdSudo()}docker image ls`,
 		`grep ${context.projectInfo.name}`,
 		`grep ${context.projectInfo.version}`
 	].join(' | ');
@@ -61,7 +62,7 @@ const removeExistingImages = (
 ): TE.TaskEither<Error, string> =>
 	runCommand(
 		[
-			`${cmdSudo}docker image ls`,
+			`${getCmdSudo()}docker image ls`,
 			`grep ${context.projectInfo.name}`,
 			`grep ${context.projectInfo.version}`,
 			"awk '{ print $3 }'",
@@ -85,7 +86,7 @@ const removeExistingImagesIfExist = (
 
 const buildDockerImage = (dockerTag: string): TE.TaskEither<Error, string> =>
 	runCommand(
-		`${cmdSudo}docker build --platform amd64 --network=host -t ${dockerTag} .`,
+		`${getCmdSudo()}docker build --platform amd64 --network=host -t ${dockerTag} .`,
 		{
 			printOutput: true,
 			cwd: path.join(getCwd(), 'deploy')
@@ -93,7 +94,9 @@ const buildDockerImage = (dockerTag: string): TE.TaskEither<Error, string> =>
 	);
 
 const pushDockerImage = (dockerTag: string): TE.TaskEither<Error, string> =>
-	runCommand(`${cmdSudo}docker push ${dockerTag}`, { printOutput: true });
+	runCommand(`${getCmdSudo()}docker push ${dockerTag}`, {
+		printOutput: true
+	});
 
 const runDockerBuild = (
 	context: BuildContext
