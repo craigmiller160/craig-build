@@ -20,8 +20,8 @@ import {
 import os from 'os';
 
 const cmdSudo = match(os.type())
-	.with('Darwin', () => 'sudo ')
-	.otherwise(() => '');
+	.with('Darwin', () => '')
+	.otherwise(() => 'sudo ');
 
 const isDockerOrApplication: Pred.Predicate<ProjectType> = pipe(
 	isApplication,
