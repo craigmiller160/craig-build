@@ -21,7 +21,7 @@ import shellEnv from 'shell-env';
 import { logger } from '../logger';
 
 const HAS_NO_CHANGES =
-	/No changes\. Your infrastructure matches the configuration\./g;
+	/.*No changes\..*Your infrastructure matches the configuration\..*/;
 
 const terraformJsonToVariableString = (json: TerraformJson): string =>
 	Object.entries(json)
