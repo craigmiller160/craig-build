@@ -36,38 +36,46 @@ const prepareEnvMock = () =>
 		NEXUS_PASSWORD: 'password'
 	}));
 
-const validateCommands = (numCommands = 5) => {
+type ValidateCommandsArgs = {
+	readonly numCommands: number;
+	readonly useSudo: boolean;
+};
+const validateCommands = ({
+	numCommands = 5,
+	useSudo = true
+}: Partial<ValidateCommandsArgs> = {}) => {
 	expect(runCommandMock).toHaveBeenCalledTimes(numCommands);
 	let callCount = 1;
+	const cmdSudo = useSudo ? 'sudo ' : '';
 	expect(runCommandMock).toHaveBeenNthCalledWith(
 		callCount,
-		'sudo docker login nexus-docker-craigmiller160.ddns.net -u ${user} -p ${password}',
+		`${cmdSudo}docker login nexus-docker-craigmiller160.ddns.net -u \${user} -p \${password}`,
 		{ printOutput: true, variables: { user: 'user', password: 'password' } }
 	);
 	callCount++;
 	expect(runCommandMock).toHaveBeenNthCalledWith(
 		callCount,
-		'sudo docker image ls | grep my-project | grep 1.0.0 || true',
+		`${cmdSudo}docker image ls | grep my-project | grep 1.0.0 || true`,
 		{ printOutput: true }
 	);
 	callCount++;
 	if (numCommands === 5) {
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			3,
-			"sudo docker image ls | grep my-project | grep 1.0.0 | awk '{ print $3 }' | xargs sudo docker image rm -f",
+			`${cmdSudo}docker image ls | grep my-project | grep 1.0.0 | awk '{ print $3 }' | xargs sudo docker image rm -f`,
 			{ printOutput: true }
 		);
 		callCount++;
 	}
 	expect(runCommandMock).toHaveBeenNthCalledWith(
 		callCount,
-		'sudo docker build --platform amd64 --network=host -t nexus-docker-craigmiller160.ddns.net/my-project:1.0.0 .',
+		`${cmdSudo}docker build --platform amd64 --network=host -t nexus-docker-craigmiller160.ddns.net/my-project:1.0.0 .`,
 		{ printOutput: true, cwd: path.join('/root', 'deploy') }
 	);
 	callCount++;
 	expect(runCommandMock).toHaveBeenNthCalledWith(
 		callCount,
-		'sudo docker push nexus-docker-craigmiller160.ddns.net/my-project:1.0.0',
+		`${cmdSudo}docker push nexus-docker-craigmiller160.ddns.net/my-project:1.0.0`,
 		{ printOutput: true }
 	);
 };
@@ -144,7 +152,7 @@ describe('buildAndPushDocker', () => {
 		const result = await buildAndPushDocker.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
 
-		validateCommands(4);
+		validateCommands({ numCommands: 4 });
 	});
 
 	it('builds and pushes docker image for npm application', async () => {
