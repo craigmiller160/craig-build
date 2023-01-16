@@ -201,6 +201,17 @@ describe('buildAndPushDocker', () => {
 	});
 
 	it('builds and pushes docker image on MacOS', async () => {
-		throw new Error();
+		prepareEnvMock();
+		osTypeMock.mockImplementation(() => 'Darwin');
+
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.MavenApplication
+		};
+
+		const result = await buildAndPushDocker.execute(buildContext)();
+		expect(result).toEqualRight(buildContext);
+
+		validateCommands({ useSudo: false });
 	});
 });
