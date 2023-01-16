@@ -179,11 +179,7 @@ describe('runTerraformScript', () => {
 		const result = await runTerraformScript.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
 
-		expect(readUserInputMock).toHaveBeenCalledTimes(1);
-		expect(readUserInputMock).toHaveBeenNthCalledWith(
-			1,
-			'Do you want to execute the terraform script? (y/n): '
-		);
+		expect(readUserInputMock).toHaveBeenCalledTimes(0);
 
 		expect(runCommandMock).toHaveBeenCalledTimes(1);
 		expect(runCommandMock).toHaveBeenNthCalledWith(1, 'terraform plan', {
