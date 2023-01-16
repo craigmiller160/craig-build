@@ -8,8 +8,13 @@ import {
 import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
 import { CommandType } from '../../src/context/CommandType';
+import { readUserInput } from '../../src/utils/readUserInput';
 
 const baseBuildContext = createBuildContext();
+jest.mock('../../src/utils/readUserInput', () => ({
+	readUserInput: jest.fn()
+}));
+const readUserInputMock = readUserInput as jest.Mock;
 
 describe('checkForUncommittedChanges', () => {
 	beforeEach(() => {
@@ -32,6 +37,7 @@ describe('checkForUncommittedChanges', () => {
 		expect(result).toEqualRight(buildContext);
 
 		expect(runCommandMock).toHaveBeenCalledWith(GIT_COMMAND);
+		expect(readUserInputMock).not.toHaveBeenCalled();
 	});
 
 	it('uncommitted changes found for DockerOnly build', async () => {
@@ -50,6 +56,7 @@ describe('checkForUncommittedChanges', () => {
 		expect(result).toEqualRight(buildContext);
 
 		expect(runCommandMock).toHaveBeenCalledWith(GIT_COMMAND);
+		expect(readUserInputMock).not.toHaveBeenCalled();
 	});
 
 	it('uncommitted changes not found', async () => {
@@ -63,6 +70,7 @@ describe('checkForUncommittedChanges', () => {
 		);
 
 		expect(runCommandMock).toHaveBeenCalledWith(GIT_COMMAND);
+		expect(readUserInputMock).not.toHaveBeenCalled();
 	});
 
 	it('uncommitted changes found for KubernetesOnly build', async () => {
