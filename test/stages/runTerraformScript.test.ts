@@ -26,6 +26,38 @@ Terraform has compared your real infrastructure against your configuration
 and found no differences, so no changes are needed.
 `;
 
+const HAS_CHANGES_OUTPUT = `
+data.keycloak_realm.apps_prod: Reading...
+data.keycloak_realm.apps_dev: Read complete after 0s [id=apps-dev]
+keycloak_openid_client.expense_tracker_ui_dev: Refreshing state... [id=7ba71e16-28cf-4568-9ea1-819781bdf85e]
+data.keycloak_realm.apps_prod: Read complete after 0s [id=apps-prod]
+keycloak_openid_client.expense_tracker_ui_prod: Refreshing state... [id=302c0308-9523-43cf-aa23-d5dbb055bd17]
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  ~ update in-place
+
+Terraform will perform the following actions:
+
+  # keycloak_openid_client.expense_tracker_ui_prod will be updated in-place
+  ~ resource "keycloak_openid_client" "expense_tracker_ui_prod" {
+        id                                         = "302c0308-9523-43cf-aa23-d5dbb055bd17"
+        name                                       = "expense-tracker-ui"
+      ~ valid_post_logout_redirect_uris            = [
+          - "https://apps-craigmiller160.ddns.net/expense-tracker/*",
+          + "https://apps-craigmiller160.ddns.net/expense-tracker/*2",
+        ]
+        # (22 unchanged attributes hidden)
+    }
+
+Plan: 0 to add, 1 to change, 0 to destroy.
+
+─────────────────────────────────────────────────────────────────────────────
+
+Note: You didn't use the -out option to save this plan, so Terraform can't
+guarantee to take exactly these actions if you run "terraform apply" now.
+`;
+
 jest.mock('../../src/utils/readUserInput', () => ({
 	readUserInput: jest.fn()
 }));
@@ -53,7 +85,9 @@ describe('runTerraformScript', () => {
 		);
 		getCwdMock.mockImplementation(() => workingDir);
 		readUserInputMock.mockImplementation(() => Task.of('y'));
-		runCommandMock.mockImplementation(() => TaskEither.right(''));
+		runCommandMock.mockImplementation(() =>
+			TaskEither.right(HAS_CHANGES_OUTPUT)
+		);
 		const buildContext: BuildContext = {
 			...createBuildContext(),
 			projectType: ProjectType.MavenApplication,
@@ -91,7 +125,9 @@ describe('runTerraformScript', () => {
 		);
 		getCwdMock.mockImplementation(() => workingDir);
 		readUserInputMock.mockImplementation(() => 'n');
-		runCommandMock.mockImplementation(() => TaskEither.right(''));
+		runCommandMock.mockImplementation(() =>
+			TaskEither.right(HAS_CHANGES_OUTPUT)
+		);
 		const buildContext: BuildContext = {
 			...createBuildContext(),
 			projectType: ProjectType.MavenApplication,
@@ -122,7 +158,9 @@ describe('runTerraformScript', () => {
 		);
 		getCwdMock.mockImplementation(() => workingDir);
 		readUserInputMock.mockImplementation(() => Task.of('y'));
-		runCommandMock.mockImplementation(() => TaskEither.right(''));
+		runCommandMock.mockImplementation(() =>
+			TaskEither.right(HAS_CHANGES_OUTPUT)
+		);
 		const buildContext: BuildContext = {
 			...createBuildContext(),
 			projectType: ProjectType.MavenApplication,
