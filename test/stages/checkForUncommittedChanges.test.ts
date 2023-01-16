@@ -32,9 +32,7 @@ describe('checkForUncommittedChanges', () => {
 			}
 		};
 
-		const result = await checkForUncommittedChanges.execute(
-			buildContext
-		)();
+		const result = await checkForUncommittedChanges.execute(buildContext)();
 		expect(result).toEqualLeft(
 			new Error('Cannot run with uncommitted changes')
 		);
@@ -53,9 +51,7 @@ describe('checkForUncommittedChanges', () => {
 			}
 		};
 
-		const result = await checkForUncommittedChanges.execute(
-			buildContext
-		)();
+		const result = await checkForUncommittedChanges.execute(buildContext)();
 		expect(result).toEqualLeft(
 			new Error('Cannot run with uncommitted changes')
 		);
@@ -74,9 +70,7 @@ describe('checkForUncommittedChanges', () => {
 			}
 		};
 
-		const result = await checkForUncommittedChanges.execute(
-			buildContext
-		)();
+		const result = await checkForUncommittedChanges.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
 
 		expect(runCommandMock).toHaveBeenCalledWith(GIT_COMMAND);
@@ -85,6 +79,7 @@ describe('checkForUncommittedChanges', () => {
 
 	it('uncommitted changes found for KubernetesOnly build, approve to proceed', async () => {
 		runCommandMock.mockImplementation(() => TaskEither.right(''));
+		readUserInputMock.mockImplementation(() => Task.of('y'));
 		const buildContext: BuildContext = {
 			...baseBuildContext,
 			commandInfo: {
@@ -93,17 +88,18 @@ describe('checkForUncommittedChanges', () => {
 			}
 		};
 
-		const result = await checkForUncommittedChanges.execute(
-			buildContext
-		)();
+		const result = await checkForUncommittedChanges.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
 
 		expect(runCommandMock).toHaveBeenCalledWith(GIT_COMMAND);
-		throw new Error();
+		expect(readUserInputMock).toHaveBeenCalledWith(
+			'Uncommitted changes found, do you want to proceed? (y/n): '
+		);
 	});
 
 	it('uncommitted changes found for TerraformOnly build, approve to proceed', async () => {
 		runCommandMock.mockImplementation(() => TaskEither.right(''));
+		readUserInputMock.mockImplementation(() => Task.of('y'));
 		const buildContext: BuildContext = {
 			...baseBuildContext,
 			commandInfo: {
@@ -112,16 +108,34 @@ describe('checkForUncommittedChanges', () => {
 			}
 		};
 
-		const result = await checkForUncommittedChanges.execute(
-			buildContext
-		)();
+		const result = await checkForUncommittedChanges.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
 
 		expect(runCommandMock).toHaveBeenCalledWith(GIT_COMMAND);
-		throw new Error();
+		expect(readUserInputMock).toHaveBeenCalledWith(
+			'Uncommitted changes found, do you want to proceed? (y/n): '
+		);
 	});
 
 	it('uncommitted changes found for TerraformOnly build, deny to proceed', async () => {
-		throw new Error();
+		runCommandMock.mockImplementation(() => TaskEither.right(''));
+		readUserInputMock.mockImplementation(() => Task.of('n'));
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			commandInfo: {
+				...baseBuildContext.commandInfo,
+				type: CommandType.TerraformOnly
+			}
+		};
+
+		const result = await checkForUncommittedChanges.execute(buildContext)();
+		expect(result).toEqualLeft(
+			new Error('Cannot run with uncommitted changes')
+		);
+
+		expect(runCommandMock).toHaveBeenCalledWith(GIT_COMMAND);
+		expect(readUserInputMock).toHaveBeenCalledWith(
+			'Uncommitted changes found, do you want to proceed? (y/n): '
+		);
 	});
 });
