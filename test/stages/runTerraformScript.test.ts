@@ -12,6 +12,7 @@ import * as Task from 'fp-ts/Task';
 import * as TaskEither from 'fp-ts/TaskEither';
 import shellEnv from 'shell-env';
 
+// The no changes line includes the hidden characters that will show up when testing the output
 const NO_CHANGES_OUTPUT = `
 data.keycloak_realm.apps_prod: Reading...
 data.keycloak_realm.apps_dev: Reading...
@@ -20,7 +21,7 @@ keycloak_openid_client.expense_tracker_ui_dev: Refreshing state... [id=7ba71e16-
 data.keycloak_realm.apps_prod: Read complete after 0s [id=apps-prod]
 keycloak_openid_client.expense_tracker_ui_prod: Refreshing state... [id=302c0308-9523-43cf-aa23-d5dbb055bd17]
 
-No changes. Your infrastructure matches the configuration.
+\x1B[0m\x1B[1m\x1B[32mNo changes.\x1B[0m\x1B[1m Your infrastructure matches the configuration.\x1B[0m
 
 Terraform has compared your real infrastructure against your configuration
 and found no differences, so no changes are needed.
