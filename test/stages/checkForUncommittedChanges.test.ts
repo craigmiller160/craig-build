@@ -35,7 +35,21 @@ describe('checkForUncommittedChanges', () => {
 	});
 
 	it('uncommitted changes found for DockerOnly build', async () => {
-		throw new Error();
+		runCommandMock.mockImplementation(() => TE.right(''));
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			commandInfo: {
+				...baseBuildContext.commandInfo,
+				type: CommandType.DockerOnly
+			}
+		};
+
+		const result = await checkForUncommittedChanges.execute(
+			baseBuildContext
+		)();
+		expect(result).toEqualRight(buildContext);
+
+		expect(runCommandMock).toHaveBeenCalledWith(GIT_COMMAND);
 	});
 
 	it('uncommitted changes not found', async () => {
@@ -52,10 +66,40 @@ describe('checkForUncommittedChanges', () => {
 	});
 
 	it('uncommitted changes found for KubernetesOnly build', async () => {
+		runCommandMock.mockImplementation(() => TE.right(''));
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			commandInfo: {
+				...baseBuildContext.commandInfo,
+				type: CommandType.KubernetesOnly
+			}
+		};
+
+		const result = await checkForUncommittedChanges.execute(
+			baseBuildContext
+		)();
+		expect(result).toEqualRight(buildContext);
+
+		expect(runCommandMock).toHaveBeenCalledWith(GIT_COMMAND);
 		throw new Error();
 	});
 
 	it('uncommitted changes found for TerraformOnly build', async () => {
+		runCommandMock.mockImplementation(() => TE.right(''));
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			commandInfo: {
+				...baseBuildContext.commandInfo,
+				type: CommandType.TerraformOnly
+			}
+		};
+
+		const result = await checkForUncommittedChanges.execute(
+			baseBuildContext
+		)();
+		expect(result).toEqualRight(buildContext);
+
+		expect(runCommandMock).toHaveBeenCalledWith(GIT_COMMAND);
 		throw new Error();
 	});
 });
