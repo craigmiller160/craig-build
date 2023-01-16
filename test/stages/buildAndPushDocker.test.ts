@@ -9,10 +9,15 @@ import { ProjectType } from '../../src/context/ProjectType';
 import * as TE from 'fp-ts/TaskEither';
 import { VersionType } from '../../src/context/VersionType';
 import path from 'path';
+import { type } from 'os';
 
 jest.mock('shell-env', () => ({
 	sync: jest.fn()
 }));
+jest.mock('os', () => ({
+	type: jest.fn()
+}));
+const osTypeMock = type as jest.Mock;
 
 const baseBuildContext = createBuildContext({
 	projectInfo: {
@@ -78,6 +83,7 @@ describe('buildAndPushDocker', () => {
 		shellEnvMock.mockImplementation(() => ({
 			NEXUS_PASSWORD: 'password'
 		}));
+		osTypeMock.mockImplementation(() => 'Linux');
 
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -94,6 +100,7 @@ describe('buildAndPushDocker', () => {
 		shellEnvMock.mockImplementation(() => ({
 			NEXUS_USER: 'user'
 		}));
+		osTypeMock.mockImplementation(() => 'Linux');
 
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -110,6 +117,7 @@ describe('buildAndPushDocker', () => {
 
 	it('builds and pushes docker image for maven application', async () => {
 		prepareEnvMock();
+		osTypeMock.mockImplementation(() => 'Linux');
 
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -126,6 +134,7 @@ describe('buildAndPushDocker', () => {
 		runCommandMock.mockReset();
 		runCommandMock.mockImplementation(() => TE.right(''));
 		prepareEnvMock();
+		osTypeMock.mockImplementation(() => 'Linux');
 
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -140,6 +149,7 @@ describe('buildAndPushDocker', () => {
 
 	it('builds and pushes docker image for npm application', async () => {
 		prepareEnvMock();
+		osTypeMock.mockImplementation(() => 'Linux');
 
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -154,6 +164,7 @@ describe('buildAndPushDocker', () => {
 
 	it('builds and pushes docker image for docker application', async () => {
 		prepareEnvMock();
+		osTypeMock.mockImplementation(() => 'Linux');
 
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -168,6 +179,7 @@ describe('buildAndPushDocker', () => {
 
 	it('builds and pushes docker image for docker image', async () => {
 		prepareEnvMock();
+		osTypeMock.mockImplementation(() => 'Linux');
 
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -178,5 +190,9 @@ describe('buildAndPushDocker', () => {
 		expect(result).toEqualRight(buildContext);
 
 		validateCommands();
+	});
+
+	it('builds and pushes docker image on MacOS', async () => {
+		throw new Error();
 	});
 });
