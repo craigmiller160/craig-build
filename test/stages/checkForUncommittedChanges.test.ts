@@ -1,5 +1,6 @@
 import { runCommandMock } from '../testutils/runCommandMock';
-import * as TE from 'fp-ts/TaskEither';
+import * as TaskEither from 'fp-ts/TaskEither';
+import * as Task from 'fp-ts/Task';
 import '@relmify/jest-fp-ts';
 import {
 	checkForUncommittedChanges,
@@ -22,7 +23,7 @@ describe('checkForUncommittedChanges', () => {
 	});
 
 	it('uncommitted changes found for FullBuild build', async () => {
-		runCommandMock.mockImplementation(() => TE.right(''));
+		runCommandMock.mockImplementation(() => TaskEither.right('abc'));
 		const buildContext: BuildContext = {
 			...baseBuildContext,
 			commandInfo: {
@@ -32,38 +33,7 @@ describe('checkForUncommittedChanges', () => {
 		};
 
 		const result = await checkForUncommittedChanges.execute(
-			baseBuildContext
-		)();
-		expect(result).toEqualRight(buildContext);
-
-		expect(runCommandMock).toHaveBeenCalledWith(GIT_COMMAND);
-		expect(readUserInputMock).not.toHaveBeenCalled();
-	});
-
-	it('uncommitted changes found for DockerOnly build', async () => {
-		runCommandMock.mockImplementation(() => TE.right(''));
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			commandInfo: {
-				...baseBuildContext.commandInfo,
-				type: CommandType.DockerOnly
-			}
-		};
-
-		const result = await checkForUncommittedChanges.execute(
-			baseBuildContext
-		)();
-		expect(result).toEqualRight(buildContext);
-
-		expect(runCommandMock).toHaveBeenCalledWith(GIT_COMMAND);
-		expect(readUserInputMock).not.toHaveBeenCalled();
-	});
-
-	it('uncommitted changes not found', async () => {
-		runCommandMock.mockImplementation(() => TE.right('abc'));
-
-		const result = await checkForUncommittedChanges.execute(
-			baseBuildContext
+			buildContext
 		)();
 		expect(result).toEqualLeft(
 			new Error('Cannot run with uncommitted changes')
@@ -73,8 +43,48 @@ describe('checkForUncommittedChanges', () => {
 		expect(readUserInputMock).not.toHaveBeenCalled();
 	});
 
+	it('uncommitted changes found for DockerOnly build', async () => {
+		runCommandMock.mockImplementation(() => TaskEither.right('abc'));
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			commandInfo: {
+				...baseBuildContext.commandInfo,
+				type: CommandType.DockerOnly
+			}
+		};
+
+		const result = await checkForUncommittedChanges.execute(
+			buildContext
+		)();
+		expect(result).toEqualLeft(
+			new Error('Cannot run with uncommitted changes')
+		);
+
+		expect(runCommandMock).toHaveBeenCalledWith(GIT_COMMAND);
+		expect(readUserInputMock).not.toHaveBeenCalled();
+	});
+
+	it('uncommitted changes not found', async () => {
+		runCommandMock.mockImplementation(() => TaskEither.right(''));
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			commandInfo: {
+				...baseBuildContext.commandInfo,
+				type: CommandType.DockerOnly
+			}
+		};
+
+		const result = await checkForUncommittedChanges.execute(
+			buildContext
+		)();
+		expect(result).toEqualRight(buildContext);
+
+		expect(runCommandMock).toHaveBeenCalledWith(GIT_COMMAND);
+		expect(readUserInputMock).not.toHaveBeenCalled();
+	});
+
 	it('uncommitted changes found for KubernetesOnly build, approve to proceed', async () => {
-		runCommandMock.mockImplementation(() => TE.right(''));
+		runCommandMock.mockImplementation(() => TaskEither.right(''));
 		const buildContext: BuildContext = {
 			...baseBuildContext,
 			commandInfo: {
@@ -84,7 +94,7 @@ describe('checkForUncommittedChanges', () => {
 		};
 
 		const result = await checkForUncommittedChanges.execute(
-			baseBuildContext
+			buildContext
 		)();
 		expect(result).toEqualRight(buildContext);
 
@@ -93,7 +103,7 @@ describe('checkForUncommittedChanges', () => {
 	});
 
 	it('uncommitted changes found for TerraformOnly build, approve to proceed', async () => {
-		runCommandMock.mockImplementation(() => TE.right(''));
+		runCommandMock.mockImplementation(() => TaskEither.right(''));
 		const buildContext: BuildContext = {
 			...baseBuildContext,
 			commandInfo: {
@@ -103,7 +113,7 @@ describe('checkForUncommittedChanges', () => {
 		};
 
 		const result = await checkForUncommittedChanges.execute(
-			baseBuildContext
+			buildContext
 		)();
 		expect(result).toEqualRight(buildContext);
 
