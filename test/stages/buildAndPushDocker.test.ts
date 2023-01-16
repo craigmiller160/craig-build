@@ -9,7 +9,7 @@ import { ProjectType } from '../../src/context/ProjectType';
 import * as TE from 'fp-ts/TaskEither';
 import { VersionType } from '../../src/context/VersionType';
 import path from 'path';
-import { type } from 'os';
+import os from 'os';
 
 jest.mock('shell-env', () => ({
 	sync: jest.fn()
@@ -17,7 +17,7 @@ jest.mock('shell-env', () => ({
 jest.mock('os', () => ({
 	type: jest.fn()
 }));
-const osTypeMock = type as jest.Mock;
+const osTypeMock = os.type as jest.Mock;
 
 const baseBuildContext = createBuildContext({
 	projectInfo: {
