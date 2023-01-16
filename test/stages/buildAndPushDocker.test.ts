@@ -9,10 +9,15 @@ import { ProjectType } from '../../src/context/ProjectType';
 import * as TE from 'fp-ts/TaskEither';
 import { VersionType } from '../../src/context/VersionType';
 import path from 'path';
+import os from 'os';
 
 jest.mock('shell-env', () => ({
 	sync: jest.fn()
 }));
+jest.mock('os', () => ({
+	type: jest.fn()
+}));
+const osTypeMock = os.type as jest.Mock;
 
 const baseBuildContext = createBuildContext({
 	projectInfo: {
@@ -31,38 +36,46 @@ const prepareEnvMock = () =>
 		NEXUS_PASSWORD: 'password'
 	}));
 
-const validateCommands = (numCommands = 5) => {
+type ValidateCommandsArgs = {
+	readonly numCommands: number;
+	readonly useSudo: boolean;
+};
+const validateCommands = ({
+	numCommands = 5,
+	useSudo = true
+}: Partial<ValidateCommandsArgs> = {}) => {
 	expect(runCommandMock).toHaveBeenCalledTimes(numCommands);
 	let callCount = 1;
+	const cmdSudo = useSudo ? 'sudo ' : '';
 	expect(runCommandMock).toHaveBeenNthCalledWith(
 		callCount,
-		'sudo docker login nexus-docker-craigmiller160.ddns.net -u ${user} -p ${password}',
+		`${cmdSudo}docker login nexus-docker-craigmiller160.ddns.net -u \${user} -p \${password}`,
 		{ printOutput: true, variables: { user: 'user', password: 'password' } }
 	);
 	callCount++;
 	expect(runCommandMock).toHaveBeenNthCalledWith(
 		callCount,
-		'sudo docker image ls | grep my-project | grep 1.0.0 || true',
+		`${cmdSudo}docker image ls | grep my-project | grep 1.0.0 || true`,
 		{ printOutput: true }
 	);
 	callCount++;
 	if (numCommands === 5) {
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			3,
-			"sudo docker image ls | grep my-project | grep 1.0.0 | awk '{ print $3 }' | xargs sudo docker image rm -f",
+			`${cmdSudo}docker image ls | grep my-project | grep 1.0.0 | awk '{ print $3 }' | xargs sudo docker image rm -f`,
 			{ printOutput: true }
 		);
 		callCount++;
 	}
 	expect(runCommandMock).toHaveBeenNthCalledWith(
 		callCount,
-		'sudo docker build --platform amd64 --network=host -t nexus-docker-craigmiller160.ddns.net/my-project:1.0.0 .',
+		`${cmdSudo}docker build --platform amd64 --network=host -t nexus-docker-craigmiller160.ddns.net/my-project:1.0.0 .`,
 		{ printOutput: true, cwd: path.join('/root', 'deploy') }
 	);
 	callCount++;
 	expect(runCommandMock).toHaveBeenNthCalledWith(
 		callCount,
-		'sudo docker push nexus-docker-craigmiller160.ddns.net/my-project:1.0.0',
+		`${cmdSudo}docker push nexus-docker-craigmiller160.ddns.net/my-project:1.0.0`,
 		{ printOutput: true }
 	);
 };
@@ -78,6 +91,7 @@ describe('buildAndPushDocker', () => {
 		shellEnvMock.mockImplementation(() => ({
 			NEXUS_PASSWORD: 'password'
 		}));
+		osTypeMock.mockImplementation(() => 'Linux');
 
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -94,6 +108,7 @@ describe('buildAndPushDocker', () => {
 		shellEnvMock.mockImplementation(() => ({
 			NEXUS_USER: 'user'
 		}));
+		osTypeMock.mockImplementation(() => 'Linux');
 
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -110,6 +125,7 @@ describe('buildAndPushDocker', () => {
 
 	it('builds and pushes docker image for maven application', async () => {
 		prepareEnvMock();
+		osTypeMock.mockImplementation(() => 'Linux');
 
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -126,6 +142,7 @@ describe('buildAndPushDocker', () => {
 		runCommandMock.mockReset();
 		runCommandMock.mockImplementation(() => TE.right(''));
 		prepareEnvMock();
+		osTypeMock.mockImplementation(() => 'Linux');
 
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -135,11 +152,12 @@ describe('buildAndPushDocker', () => {
 		const result = await buildAndPushDocker.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
 
-		validateCommands(4);
+		validateCommands({ numCommands: 4 });
 	});
 
 	it('builds and pushes docker image for npm application', async () => {
 		prepareEnvMock();
+		osTypeMock.mockImplementation(() => 'Linux');
 
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -154,6 +172,7 @@ describe('buildAndPushDocker', () => {
 
 	it('builds and pushes docker image for docker application', async () => {
 		prepareEnvMock();
+		osTypeMock.mockImplementation(() => 'Linux');
 
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -168,6 +187,7 @@ describe('buildAndPushDocker', () => {
 
 	it('builds and pushes docker image for docker image', async () => {
 		prepareEnvMock();
+		osTypeMock.mockImplementation(() => 'Linux');
 
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -178,5 +198,20 @@ describe('buildAndPushDocker', () => {
 		expect(result).toEqualRight(buildContext);
 
 		validateCommands();
+	});
+
+	it('builds and pushes docker image on MacOS', async () => {
+		prepareEnvMock();
+		osTypeMock.mockImplementation(() => 'Darwin');
+
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.MavenApplication
+		};
+
+		const result = await buildAndPushDocker.execute(buildContext)();
+		expect(result).toEqualRight(buildContext);
+
+		validateCommands({ useSudo: false });
 	});
 });
