@@ -73,7 +73,7 @@ describe('checkForUncommittedChanges', () => {
 		expect(readUserInputMock).not.toHaveBeenCalled();
 	});
 
-	it('uncommitted changes found for KubernetesOnly build', async () => {
+	it('uncommitted changes found for KubernetesOnly build, approve to proceed', async () => {
 		runCommandMock.mockImplementation(() => TE.right(''));
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -92,7 +92,7 @@ describe('checkForUncommittedChanges', () => {
 		throw new Error();
 	});
 
-	it('uncommitted changes found for TerraformOnly build', async () => {
+	it('uncommitted changes found for TerraformOnly build, approve to proceed', async () => {
 		runCommandMock.mockImplementation(() => TE.right(''));
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -108,6 +108,10 @@ describe('checkForUncommittedChanges', () => {
 		expect(result).toEqualRight(buildContext);
 
 		expect(runCommandMock).toHaveBeenCalledWith(GIT_COMMAND);
+		throw new Error();
+	});
+
+	it('uncommitted changes found for TerraformOnly build, deny to proceed', async () => {
 		throw new Error();
 	});
 });
