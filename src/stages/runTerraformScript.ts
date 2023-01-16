@@ -71,14 +71,11 @@ const handlePromptResult = ({
 		.with('y', () => applyTerraform(variableString))
 		.otherwise(() => TaskEither.right(''));
 
-const hasNoChanges = (planOutput: string): boolean =>
-	!!planOutput.split('\n').find((line) => HAS_NO_CHANGES.test(line.trim()));
-
 const promptAndRunIfChanges = (
 	planOutput: string,
 	variableString: string
 ): TaskEither.TaskEither<Error, string> => {
-	if (hasNoChanges(planOutput)) {
+	if (HAS_NO_CHANGES.test(planOutput)) {
 		logger.debug('No terraform changes to apply');
 		return TaskEither.right('');
 	}
