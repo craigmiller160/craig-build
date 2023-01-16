@@ -78,7 +78,7 @@ describe('checkForUncommittedChanges', () => {
 	});
 
 	it('uncommitted changes found for KubernetesOnly build, approve to proceed', async () => {
-		runCommandMock.mockImplementation(() => TaskEither.right(''));
+		runCommandMock.mockImplementation(() => TaskEither.right('abc'));
 		readUserInputMock.mockImplementation(() => Task.of('y'));
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -98,7 +98,7 @@ describe('checkForUncommittedChanges', () => {
 	});
 
 	it('uncommitted changes found for TerraformOnly build, approve to proceed', async () => {
-		runCommandMock.mockImplementation(() => TaskEither.right(''));
+		runCommandMock.mockImplementation(() => TaskEither.right('abc'));
 		readUserInputMock.mockImplementation(() => Task.of('y'));
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -118,7 +118,7 @@ describe('checkForUncommittedChanges', () => {
 	});
 
 	it('uncommitted changes found for TerraformOnly build, deny to proceed', async () => {
-		runCommandMock.mockImplementation(() => TaskEither.right(''));
+		runCommandMock.mockImplementation(() => TaskEither.right('abc'));
 		readUserInputMock.mockImplementation(() => Task.of('n'));
 		const buildContext: BuildContext = {
 			...baseBuildContext,
