@@ -21,7 +21,7 @@ import shellEnv from 'shell-env';
 import { logger } from '../logger';
 
 const HAS_NO_CHANGES =
-	/No changes\. Your infrastructure matches the configuration\./g;
+	/^No changes\. Your infrastructure matches the configuration\.$/;
 
 const terraformJsonToVariableString = (json: TerraformJson): string =>
 	Object.entries(json)
@@ -71,11 +71,14 @@ const handlePromptResult = ({
 		.with('y', () => applyTerraform(variableString))
 		.otherwise(() => TaskEither.right(''));
 
+const hasNoChanges = (planOutput: string): boolean =>
+	!!planOutput.split('\n').find((line) => HAS_NO_CHANGES.test(line.trim()));
+
 const promptAndRunIfChanges = (
 	planOutput: string,
 	variableString: string
 ): TaskEither.TaskEither<Error, string> => {
-	if (HAS_NO_CHANGES.test(planOutput)) {
+	if (hasNoChanges(planOutput)) {
 		logger.debug('No terraform changes to apply');
 		return TaskEither.right('');
 	}
