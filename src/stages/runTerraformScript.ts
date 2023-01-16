@@ -18,6 +18,10 @@ import { readTerraformProject } from '../projectCache';
 import * as Either from 'fp-ts/Either';
 import { TerraformJson } from '../configFileTypes/TerraformJson';
 import shellEnv from 'shell-env';
+import { logger } from '../logger';
+
+const HAS_NO_CHANGES =
+	/No changes\. Your infrastructure matches the configuration\./g;
 
 const terraformJsonToVariableString = (json: TerraformJson): string =>
 	Object.entries(json)
@@ -67,22 +71,38 @@ const handlePromptResult = ({
 		.with('y', () => applyTerraform(variableString))
 		.otherwise(() => TaskEither.right(''));
 
+const promptAndRunIfChanges = (
+	planOutput: string,
+	variableString: string
+): TaskEither.TaskEither<Error, string> => {
+	if (HAS_NO_CHANGES.test(planOutput)) {
+		logger.debug('No terraform changes to apply');
+		return TaskEither.right('');
+	}
+
+	return pipe(
+		TaskEither.fromTask<string, Error>(
+			readUserInput(
+				'Do you want to execute the terraform script? (y/n): '
+			)
+		),
+		TaskEither.chain((promptResult) =>
+			handlePromptResult({ promptResult, variableString })
+		)
+	);
+};
+
 const askAndRunTerraform = (): TaskEither.TaskEither<Error, string> =>
 	pipe(
 		getTerraformVariableString(),
 		TaskEither.fromEither,
 		TaskEither.bindTo('variableString'),
-		TaskEither.chainFirst(({ variableString }) =>
+		TaskEither.bind('planOutput', ({ variableString }) =>
 			planTerraform(variableString)
 		),
-		TaskEither.bind('promptResult', () =>
-			TaskEither.fromTask(
-				readUserInput(
-					'Do you want to execute the terraform script? (y/n): '
-				)
-			)
-		),
-		TaskEither.chain(handlePromptResult)
+		TaskEither.chain(({ planOutput, variableString }) =>
+			promptAndRunIfChanges(planOutput, variableString)
+		)
 	);
 
 const execute: StageExecuteFn = (context) =>
