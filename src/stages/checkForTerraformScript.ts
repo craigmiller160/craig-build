@@ -6,9 +6,15 @@ import fs from 'fs';
 import path from 'path';
 import { TERRAFORM_DEPLOY_PATH } from '../configFileTypes/constants';
 import { getCwd } from '../command/getCwd';
+import { logger } from '../logger';
 
-const hasTerraformDirectory = (): boolean =>
-	fs.existsSync(path.join(getCwd(), TERRAFORM_DEPLOY_PATH));
+const hasTerraformDirectory = (): boolean => {
+	const terraformPath = path.join(getCwd(), TERRAFORM_DEPLOY_PATH);
+	logger.debug(
+		`Checking for presence of terraform directory: ${terraformPath}`
+	);
+	return fs.existsSync(terraformPath);
+};
 
 const execute: StageExecuteFn = (context) =>
 	TaskEither.right({
