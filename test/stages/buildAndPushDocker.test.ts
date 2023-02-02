@@ -62,7 +62,7 @@ const validateCommands = ({
 	if (numCommands === 5) {
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			3,
-			`${cmdSudo}docker image ls | grep my-project | grep 1.0.0 | awk '{ print $3 }' | xargs ${cmdSudo} docker image rm -f`,
+			`${cmdSudo}docker image ls | grep my-project | grep 1.0.0 | awk '{ print $3 }' | xargs ${cmdSudo}docker image rm -f`,
 			{ printOutput: true }
 		);
 		callCount++;
