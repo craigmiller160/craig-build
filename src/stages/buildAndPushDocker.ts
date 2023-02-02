@@ -66,7 +66,7 @@ const removeExistingImages = (
 			`grep ${context.projectInfo.name}`,
 			`grep ${context.projectInfo.version}`,
 			"awk '{ print $3 }'",
-			'xargs sudo docker image rm -f'
+			`xargs ${getCmdSudo()}docker image rm -f`
 		].join(' | '),
 		{
 			printOutput: true
