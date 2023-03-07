@@ -29,10 +29,13 @@ const prepareDirectory = () => {
 };
 
 const searchForGradleTool = () => {
+	const repository = /^.*-SNAPSHOT$/.test(GRADLE_TOOL_VERSION)
+		? 'maven-snapshots'
+		: 'maven-releases';
 	const queryObj = {
 		'maven.groupId': 'io.craigmiller160',
 		'maven.artifactId': 'craig-build-gradle-tool',
-		repository: 'maven-releases',
+		repository,
 		sort: 'version',
 		direction: 'desc',
 		version: GRADLE_TOOL_VERSION
