@@ -29,16 +29,16 @@ const prepareDirectory = () => {
 };
 
 const searchForGradleTool = () => {
-	const repository = /^.*-SNAPSHOT$/.test(GRADLE_TOOL_VERSION)
-		? 'maven-snapshots'
-		: 'maven-releases';
+	const isSnapshot = /^.*-SNAPSHOT$/.test(GRADLE_TOOL_VERSION);
+	const repository = isSnapshot ? 'maven-snapshots' : 'maven-releases';
+	const versionKey = isSnapshot ? 'maven.baseVersion' : 'version';
 	const queryObj = {
 		'maven.groupId': 'io.craigmiller160',
 		'maven.artifactId': 'craig-build-gradle-tool',
 		repository,
 		sort: 'version',
 		direction: 'desc',
-		version: GRADLE_TOOL_VERSION
+		[versionKey]: GRADLE_TOOL_VERSION
 	};
 	const uri = `/search?${qs.stringify(queryObj)}`;
 	console.log(`Searching for gradle tool: ${uri}`);
