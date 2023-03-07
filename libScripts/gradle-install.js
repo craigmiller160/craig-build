@@ -40,7 +40,9 @@ const searchForGradleTool = () => {
 		direction: 'desc',
 		version: GRADLE_TOOL_VERSION
 	};
-	return restApiInstance.get(`/search?${qs.stringify(queryObj)}`);
+	const uri = `/search?${qs.stringify(queryObj)}`;
+	console.log(`Searching for gradle tool: ${uri}`);
+	return restApiInstance.get(uri);
 };
 
 const getDownloadUrl = (result) =>
