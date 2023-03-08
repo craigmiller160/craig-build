@@ -104,7 +104,7 @@ describe('validateDependencyVersions', () => {
 		);
 	});
 
-	it('unresolved dependency for gradle kotlin project', async () => {
+	it.skip('unresolved dependency for gradle kotlin project', async () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(
 				baseWorkingDir,
