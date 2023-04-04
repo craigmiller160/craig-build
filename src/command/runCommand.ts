@@ -57,7 +57,11 @@ export const runCommand = (
 				childProcess.on('close', (code) => {
 					match(code)
 						.with(0, () => resolve(fullOutput))
-						.otherwise(() => reject(fullOutput));
+						.otherwise((code) =>
+							reject(
+								`Failed to run command "${command}". Code: ${code} Message: ${fullOutput}`
+							)
+						);
 				});
 			}),
 		unknownToError
