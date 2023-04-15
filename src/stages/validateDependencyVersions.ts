@@ -147,9 +147,12 @@ const extractGradleVersions = (output: string): ReadonlyArray<string> => {
 	const array = pipe(
 		output,
 		S.split('\n'),
-		RArray.map(S.replace(/^.*---/, ''))
+		RArray.filter((_) => /^.*?--- /.test(_)),
+		RArray.map(S.replace(/^.*?---/, '')),
+		RArray.map(S.trim),
+		RArray.filter(Pred.not(S.isEmpty))
 	);
-	array.forEach((_) => console.log(_));
+	console.log(array.join('\n'));
 	return array;
 };
 
