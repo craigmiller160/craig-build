@@ -79,7 +79,9 @@ describe('validateDependencyVersions', () => {
 		};
 		const result = await validateDependencyVersions.execute(buildContext)();
 		expect(result).toEqualLeft(
-			new Error('Cannot have SNAPSHOT dependencies in Maven release')
+			new Error(
+				'Cannot have SNAPSHOT dependencies or plugins in Maven release'
+			)
 		);
 	});
 
@@ -97,7 +99,9 @@ describe('validateDependencyVersions', () => {
 		};
 		const result = await validateDependencyVersions.execute(buildContext)();
 		expect(result).toEqualLeft(
-			new Error('Cannot have SNAPSHOT plugins in Maven release')
+			new Error(
+				'Cannot have SNAPSHOT dependencies or plugins in Maven release'
+			)
 		);
 	});
 
