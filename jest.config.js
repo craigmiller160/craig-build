@@ -12,7 +12,7 @@ module.exports = {
 	// setupFilesAfterEnv: [path.resolve(process.cwd(), 'test', 'setup.ts')],
 	modulePathIgnorePatterns: [path.resolve(process.cwd(), '.yalc')],
 	transform: {
-		'^.+\\.tsx?$': 'ts-jest'
+		'^.+\\.tsx?$': '@swc/jest'
 	},
 	setupFilesAfterEnv: [
 		path.join(process.cwd(), 'test', 'jestSetup.ts')
