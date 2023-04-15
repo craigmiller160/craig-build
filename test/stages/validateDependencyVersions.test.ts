@@ -11,7 +11,7 @@ import { VersionType } from '../../src/context/VersionType';
 import '../testutils/readGradleProjectUnmock';
 import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
-import { match } from 'ts-pattern';
+import { match, P } from 'ts-pattern';
 import fs from 'fs';
 
 const baseBuildContext = createBuildContext();
@@ -41,11 +41,19 @@ const runCommandMockImpl = (
 	snapshot: GradleSnapshot
 ): TE.TaskEither<Error, string> =>
 	match({ command, snapshot })
-		.with({ command: 'gradle dependencies', snapshot: 'none' }, () =>
-			TE.right(dependencies)
+		.with(
+			{
+				command: 'gradle dependencies',
+				snapshot: P.union('none', 'plugins')
+			},
+			() => TE.right(dependencies)
 		)
-		.with({ command: 'gradle buildEnvironment', snapshot: 'none' }, () =>
-			TE.right(buildEnvironment)
+		.with(
+			{
+				command: 'gradle buildEnvironment',
+				snapshot: P.union('none', 'dependencies')
+			},
+			() => TE.right(buildEnvironment)
 		)
 		.with(
 			{ command: 'gradle dependencies', snapshot: 'dependencies' },
