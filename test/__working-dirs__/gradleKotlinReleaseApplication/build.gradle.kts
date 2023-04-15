@@ -2,6 +2,7 @@ plugins {
     java
     id("org.springframework.boot").version("2.6.4")
     id("io.spring.dependency-management").version("1.0.11.RELEASE")
+    id("io.craigmiller160.something").version("1.0.0")
 }
 
 group = "io.craigmiller160"
