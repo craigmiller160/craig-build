@@ -10,7 +10,7 @@ import {
 } from '../context/projectTypeUtils';
 import * as TE from 'fp-ts/TaskEither';
 import { getCwd } from '../command/getCwd';
-import { MavenDependency, PomXml } from '../configFileTypes/PomXml';
+import { MavenArtifact, PomXml } from '../configFileTypes/PomXml';
 import * as A from 'fp-ts/Array';
 import * as O from 'fp-ts/Option';
 import * as Pred from 'fp-ts/Predicate';
@@ -48,7 +48,7 @@ const getMavenProperties = (pomXml: PomXml): MavenProperties =>
 		O.getOrElse(() => ({}))
 	);
 
-const mavenFormatDependencyVersion = (dependency: MavenDependency): string =>
+const mavenFormatArtifactVersion = (dependency: MavenArtifact): string =>
 	pipe(
 		O.fromNullable(dependency.version),
 		O.chain(A.head),
@@ -73,17 +73,28 @@ const mavenHasNoSnapshotDependencies = ([
 	if (!pomXml.project.dependencies) {
 		return true;
 	}
-	return (
+	const hasNoSnapshotDependencies =
 		pipe(
 			pomXml.project.dependencies[0].dependency,
-			A.map(mavenFormatDependencyVersion),
+			A.map(mavenFormatArtifactVersion),
 			A.filter((version) =>
 				mavenReplaceVersionProperty(mvnProps, version).includes(
 					'SNAPSHOT'
 				)
 			)
-		).length === 0
-	);
+		).length === 0;
+	const hasNoSnapshotPlugins =
+		pipe(
+			pomXml.project.build?.[0].plugins?.[0].plugin ?? [],
+			A.map(mavenFormatArtifactVersion),
+			A.filter((version) =>
+				mavenReplaceVersionProperty(mvnProps, version).includes(
+					'SNAPSHOT'
+				)
+			)
+		).length === 0;
+
+	return hasNoSnapshotDependencies && hasNoSnapshotPlugins;
 };
 
 const validateMavenReleaseDependencies = (
@@ -95,7 +106,9 @@ const validateMavenReleaseDependencies = (
 		TE.filterOrElse(
 			mavenHasNoSnapshotDependencies,
 			() =>
-				new Error('Cannot have SNAPSHOT dependencies in Maven release')
+				new Error(
+					'Cannot have SNAPSHOT dependencies or plugins in Maven release'
+				)
 		),
 		TE.map(() => context)
 	);
