@@ -186,7 +186,9 @@ const validateGradleReleaseDependencies = (
 			([dependencyResult, pluginResult]) =>
 				dependencyResult && pluginResult,
 			() =>
-				new Error('Cannot have SNAPSHOT dependencies in Gradle release')
+				new Error(
+					'Cannot have SNAPSHOT dependencies or plugins in Gradle release'
+				)
 		),
 		TE.map(() => context)
 	);
