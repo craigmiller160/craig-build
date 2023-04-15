@@ -84,7 +84,21 @@ describe('validateDependencyVersions', () => {
 	});
 
 	it('invalid release plugins for maven project', async () => {
-		throw new Error();
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDir, 'mavenReleaseApplicationBadPlugin')
+		);
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.MavenApplication,
+			projectInfo: {
+				...baseBuildContext.projectInfo,
+				versionType: VersionType.Release
+			}
+		};
+		const result = await validateDependencyVersions.execute(buildContext)();
+		expect(result).toEqualLeft(
+			new Error('Cannot have SNAPSHOT plugins in Maven release')
+		);
 	});
 
 	it('invalid release dependencies for gradle kotlin project', async () => {
@@ -109,7 +123,24 @@ describe('validateDependencyVersions', () => {
 	});
 
 	it('invalid release plugins for gradle kotlin project', async () => {
-		throw new Error();
+		getCwdMock.mockImplementation(() =>
+			path.resolve(
+				baseWorkingDir,
+				'gradleKotlinReleaseApplicationBadPlugin'
+			)
+		);
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.GradleApplication,
+			projectInfo: {
+				...baseBuildContext.projectInfo,
+				versionType: VersionType.Release
+			}
+		};
+		const result = await validateDependencyVersions.execute(buildContext)();
+		expect(result).toEqualLeft(
+			new Error('Cannot have SNAPSHOT plugins in Gradle release')
+		);
 	});
 
 	it.skip('unresolved dependency for gradle kotlin project', async () => {
