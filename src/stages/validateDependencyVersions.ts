@@ -9,6 +9,7 @@ import {
 	isNpm
 } from '../context/projectTypeUtils';
 import * as TE from 'fp-ts/TaskEither';
+import * as S from 'fp-ts/string';
 import { getCwd } from '../command/getCwd';
 import { MavenArtifact, PomXml } from '../configFileTypes/PomXml';
 import * as A from 'fp-ts/Array';
@@ -143,7 +144,13 @@ const validateNpmReleaseDependencies = (
 	);
 
 const extractGradleVersions = (output: string): ReadonlyArray<string> => {
-	return [];
+	const array = pipe(
+		output,
+		S.split('\n'),
+		RArray.map(S.replace(/^.*---/, ''))
+	);
+	array.forEach((_) => console.log(_));
+	return array;
 };
 
 const hasSnapshotVersion = (output: string): boolean =>
