@@ -1,5 +1,5 @@
 import { BuildContext } from '../context/BuildContext';
-import { pipe } from 'fp-ts/function';
+import { flow, pipe } from 'fp-ts/function';
 import { match, P } from 'ts-pattern';
 import {
 	isDocker,
@@ -9,9 +9,12 @@ import {
 	isNpm
 } from '../context/projectTypeUtils';
 import * as TE from 'fp-ts/TaskEither';
+import * as S from 'fp-ts/string';
 import { getCwd } from '../command/getCwd';
-import { MavenDependency, PomXml } from '../configFileTypes/PomXml';
+import { MavenArtifact, PomXml } from '../configFileTypes/PomXml';
 import * as A from 'fp-ts/Array';
+import * as RArray from 'fp-ts/ReadonlyArray';
+import * as RNonEmptyArray from 'fp-ts/ReadonlyNonEmptyArray';
 import * as O from 'fp-ts/Option';
 import * as Pred from 'fp-ts/Predicate';
 import { PackageJson } from '../configFileTypes/PackageJson';
@@ -19,8 +22,8 @@ import { isRelease } from '../context/projectInfoUtils';
 import { Stage, StageExecuteFn } from './Stage';
 import { ProjectType } from '../context/ProjectType';
 import { isFullBuild } from '../context/commandTypeUtils';
-import { GradleItem, readGradleProject } from '../special/gradle';
 import { getRawProjectData } from '../projectCache';
+import { runCommand } from '../command/runCommand';
 
 const MAVEN_PROPERTY_REGEX = /\${.*}/;
 
@@ -48,7 +51,7 @@ const getMavenProperties = (pomXml: PomXml): MavenProperties =>
 		O.getOrElse(() => ({}))
 	);
 
-const mavenFormatDependencyVersion = (dependency: MavenDependency): string =>
+const mavenFormatArtifactVersion = (dependency: MavenArtifact): string =>
 	pipe(
 		O.fromNullable(dependency.version),
 		O.chain(A.head),
@@ -73,17 +76,28 @@ const mavenHasNoSnapshotDependencies = ([
 	if (!pomXml.project.dependencies) {
 		return true;
 	}
-	return (
+	const hasNoSnapshotDependencies =
 		pipe(
 			pomXml.project.dependencies[0].dependency,
-			A.map(mavenFormatDependencyVersion),
+			A.map(mavenFormatArtifactVersion),
 			A.filter((version) =>
 				mavenReplaceVersionProperty(mvnProps, version).includes(
 					'SNAPSHOT'
 				)
 			)
-		).length === 0
-	);
+		).length === 0;
+	const hasNoSnapshotPlugins =
+		pipe(
+			pomXml.project.build?.[0].plugins?.[0].plugin ?? [],
+			A.map(mavenFormatArtifactVersion),
+			A.filter((version) =>
+				mavenReplaceVersionProperty(mvnProps, version).includes(
+					'SNAPSHOT'
+				)
+			)
+		).length === 0;
+
+	return hasNoSnapshotDependencies && hasNoSnapshotPlugins;
 };
 
 const validateMavenReleaseDependencies = (
@@ -95,7 +109,9 @@ const validateMavenReleaseDependencies = (
 		TE.filterOrElse(
 			mavenHasNoSnapshotDependencies,
 			() =>
-				new Error('Cannot have SNAPSHOT dependencies in Maven release')
+				new Error(
+					'Cannot have SNAPSHOT dependencies or plugins in Maven release'
+				)
 		),
 		TE.map(() => context)
 	);
@@ -128,24 +144,55 @@ const validateNpmReleaseDependencies = (
 		TE.map(() => context)
 	);
 
-const gradleHasNoSnapshotDependencies = (
-	dependencies: ReadonlyArray<GradleItem>
-): boolean =>
-	dependencies.filter((item) => item.version.includes('SNAPSHOT')).length ===
-	0;
+const extractGradleVersions = (output: string): ReadonlyArray<string> =>
+	pipe(
+		output,
+		S.split('\n'),
+		RArray.filter((_) => /^.*?--- /.test(_)),
+		RArray.map(S.trim),
+		RArray.map(S.replace(/^.*?---/, '')),
+		RArray.map(S.replace(/\([*|c]\)$/, '')),
+		RArray.map(S.replace(/ -> /, ':')),
+		RArray.filter(Pred.not(S.isEmpty)),
+		RArray.map(flow(S.split(':'), RNonEmptyArray.last))
+	);
+
+const hasSnapshotVersion = (output: string): boolean =>
+	pipe(
+		extractGradleVersions(output),
+		RArray.filter((version) => version.endsWith('SNAPSHOT'))
+	).length === 0;
 
 const validateGradleReleaseDependencies = (
 	context: BuildContext
-): TE.TaskEither<Error, BuildContext> =>
-	pipe(
-		readGradleProject(getCwd()),
+): TE.TaskEither<Error, BuildContext> => {
+	const hasSnapshotDependency = pipe(
+		runCommand('gradle dependencies', {
+			cwd: getCwd()
+		}),
+		TE.map(hasSnapshotVersion)
+	);
+
+	const hasSnapshotPlugin = pipe(
+		runCommand('gradle buildEnvironment', {
+			cwd: getCwd()
+		}),
+		TE.map(hasSnapshotVersion)
+	);
+
+	return pipe(
+		TE.sequenceArray([hasSnapshotDependency, hasSnapshotPlugin]),
 		TE.filterOrElse(
-			(_) => gradleHasNoSnapshotDependencies(_.dependencies),
+			([dependencyResult, pluginResult]) =>
+				dependencyResult && pluginResult,
 			() =>
-				new Error('Cannot have SNAPSHOT dependencies in Gradle release')
+				new Error(
+					'Cannot have SNAPSHOT dependencies or plugins in Gradle release'
+				)
 		),
 		TE.map(() => context)
 	);
+};
 
 const handleValidationByProject = (
 	context: BuildContext

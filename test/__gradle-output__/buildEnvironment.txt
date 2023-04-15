@@ -1,0 +1,139 @@
+
+> Task :buildEnvironment
+
+------------------------------------------------------------
+Root project 'market-tracker-porfolio-service'
+------------------------------------------------------------
+
+classpath
++--- org.springframework.boot:org.springframework.boot.gradle.plugin:3.0.4
+|    \--- org.springframework.boot:spring-boot-gradle-plugin:3.0.4
+|         +--- org.springframework.boot:spring-boot-buildpack-platform:3.0.4
+|         |    +--- com.fasterxml.jackson.core:jackson-databind:2.14.2
+|         |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.14.2
+|         |    |    |    \--- com.fasterxml.jackson:jackson-bom:2.14.2
+|         |    |    |         +--- com.fasterxml.jackson.core:jackson-annotations:2.14.2 (c)
+|         |    |    |         +--- com.fasterxml.jackson.core:jackson-core:2.14.2 (c)
+|         |    |    |         +--- com.fasterxml.jackson.core:jackson-databind:2.14.2 (c)
+|         |    |    |         \--- com.fasterxml.jackson.module:jackson-module-parameter-names:2.14.2 (c)
+|         |    |    +--- com.fasterxml.jackson.core:jackson-core:2.14.2
+|         |    |    |    \--- com.fasterxml.jackson:jackson-bom:2.14.2 (*)
+|         |    |    \--- com.fasterxml.jackson:jackson-bom:2.14.2 (*)
+|         |    +--- com.fasterxml.jackson.module:jackson-module-parameter-names:2.14.2
+|         |    |    +--- com.fasterxml.jackson.core:jackson-core:2.14.2 (*)
+|         |    |    +--- com.fasterxml.jackson.core:jackson-databind:2.14.2 (*)
+|         |    |    \--- com.fasterxml.jackson:jackson-bom:2.14.2 (*)
+|         |    +--- net.java.dev.jna:jna-platform:5.7.0
+|         |    |    \--- net.java.dev.jna:jna:5.7.0
+|         |    +--- org.apache.commons:commons-compress:1.21
+|         |    +--- org.apache.httpcomponents:httpclient:4.5.14
+|         |    |    +--- org.apache.httpcomponents:httpcore:4.4.16
+|         |    |    \--- commons-codec:commons-codec:1.11
+|         |    +--- org.springframework:spring-core:6.0.6
+|         |    |    \--- org.springframework:spring-jcl:6.0.6
+|         |    \--- org.tomlj:tomlj:1.0.0
+|         |         +--- org.antlr:antlr4-runtime:4.7.2
+|         |         \--- com.google.code.findbugs:jsr305:3.0.2
+|         +--- org.springframework.boot:spring-boot-loader-tools:3.0.4
+|         |    +--- org.apache.commons:commons-compress:1.21
+|         |    \--- org.springframework:spring-core:6.0.6 (*)
+|         +--- io.spring.gradle:dependency-management-plugin:1.1.0
+|         +--- org.apache.commons:commons-compress:1.21
+|         \--- org.springframework:spring-core:6.0.6 (*)
++--- io.spring.dependency-management:io.spring.dependency-management.gradle.plugin:1.1.0
+|    \--- io.spring.gradle:dependency-management-plugin:1.1.0
++--- org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin:1.8.10
+|    \--- org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.10
+|         +--- org.jetbrains.kotlin:kotlin-gradle-plugin-api:1.8.10
+|         |    +--- org.jetbrains.kotlin:kotlin-native-utils:1.8.10
+|         |    |    \--- org.jetbrains.kotlin:kotlin-util-io:1.8.10
+|         |    +--- org.jetbrains.kotlin:kotlin-project-model:1.8.10
+|         |    |    \--- org.jetbrains.kotlin:kotlin-tooling-core:1.8.10
+|         |    \--- org.jetbrains.kotlin:kotlin-tooling-core:1.8.10
+|         +--- org.jetbrains.kotlin:kotlin-gradle-plugin-api:1.8.10 (*)
+|         +--- org.jetbrains.kotlin:kotlin-gradle-plugin-model:1.8.10
+|         |    \--- org.jetbrains.kotlin:kotlin-gradle-plugin-api:1.8.10 (*)
+|         +--- org.jetbrains.kotlin:kotlin-tooling-core:1.8.10
+|         +--- org.jetbrains.kotlin:kotlin-gradle-plugin-idea:1.8.10
+|         |    \--- org.jetbrains.kotlin:kotlin-tooling-core:1.8.10
+|         +--- org.jetbrains.kotlin:kotlin-gradle-plugin-idea-proto:1.8.10
+|         |    \--- org.jetbrains.kotlin:kotlin-gradle-plugin-idea:1.8.10 (*)
+|         +--- org.jetbrains.kotlin:kotlin-util-klib:1.8.10
+|         |    \--- org.jetbrains.kotlin:kotlin-util-io:1.8.10
+|         +--- org.jetbrains.kotlin:kotlin-klib-commonizer-api:1.8.10
+|         |    \--- org.jetbrains.kotlin:kotlin-native-utils:1.8.10 (*)
+|         +--- org.jetbrains.kotlin:kotlin-project-model:1.8.10 (*)
+|         +--- org.jetbrains.kotlin:kotlin-compiler-embeddable:1.8.10
+|         |    +--- org.jetbrains.kotlin:kotlin-daemon-embeddable:1.8.10
+|         |    +--- org.jetbrains.intellij.deps:trove4j:1.0.20200330
+|         |    \--- net.java.dev.jna:jna:5.6.0 -> 5.7.0
+|         +--- org.jetbrains.kotlin:kotlin-annotation-processing-gradle:1.8.10
+|         |    \--- org.jetbrains.kotlin:kotlin-compiler-embeddable:1.8.10 (*)
+|         +--- org.jetbrains.kotlin:kotlin-android-extensions:1.8.10
+|         |    \--- org.jetbrains.kotlin:kotlin-compiler-embeddable:1.8.10 (*)
+|         +--- org.jetbrains.kotlin:kotlin-compiler-runner:1.8.10
+|         |    +--- org.jetbrains.kotlin:kotlin-build-common:1.8.10
+|         |    +--- org.jetbrains.kotlin:kotlin-daemon-client:1.8.10
+|         |    |    \--- org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.5.0
+|         |    +--- org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.5.0
+|         |    \--- org.jetbrains.kotlin:kotlin-compiler-embeddable:1.8.10 (*)
+|         +--- org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable:1.8.10
+|         |    \--- org.jetbrains.kotlin:kotlin-scripting-compiler-impl-embeddable:1.8.10
+|         |         +--- org.jetbrains.kotlin:kotlin-scripting-common:1.8.10
+|         |         \--- org.jetbrains.kotlin:kotlin-scripting-jvm:1.8.10
+|         |              \--- org.jetbrains.kotlin:kotlin-scripting-common:1.8.10
+|         \--- org.jetbrains.kotlin:kotlin-scripting-compiler-impl-embeddable:1.8.10 (*)
++--- org.jetbrains.kotlin.plugin.spring:org.jetbrains.kotlin.plugin.spring.gradle.plugin:1.8.10
+|    \--- org.jetbrains.kotlin:kotlin-allopen:1.8.10
+|         +--- org.jetbrains.kotlin:kotlin-gradle-plugin-api:1.8.10 (*)
+|         \--- org.jetbrains.kotlin:kotlin-gradle-plugin-model:1.8.10 (*)
++--- io.craigmiller160.gradle.defaults:io.craigmiller160.gradle.defaults.gradle.plugin:1.0.0
+|    \--- io.craigmiller160:craig-defaults-gradle-plugin:1.0.0
+|         \--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.10
+|              +--- org.jetbrains.kotlin:kotlin-stdlib:1.8.10
+|              |    +--- org.jetbrains.kotlin:kotlin-stdlib-common:1.8.10
+|              |    \--- org.jetbrains:annotations:13.0
+|              \--- org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.10
+|                   \--- org.jetbrains.kotlin:kotlin-stdlib:1.8.10 (*)
++--- com.diffplug.spotless:com.diffplug.spotless.gradle.plugin:6.17.0
+|    \--- com.diffplug.spotless:spotless-plugin-gradle:6.17.0
+|         +--- com.diffplug.durian:durian-core:1.2.0
+|         +--- com.diffplug.durian:durian-io:1.2.0
+|         |    +--- com.diffplug.durian:durian-core:1.2.0
+|         |    \--- com.diffplug.durian:durian-collect:1.2.0
+|         |         \--- com.diffplug.durian:durian-core:1.2.0
+|         +--- com.diffplug.durian:durian-collect:1.2.0 (*)
+|         +--- org.eclipse.jgit:org.eclipse.jgit:6.5.0.202303070854-r
+|         |    +--- com.googlecode.javaewah:JavaEWAH:1.1.13
+|         |    \--- org.slf4j:slf4j-api:1.7.30 -> 1.7.36
+|         +--- com.diffplug.spotless:spotless-lib:2.37.0
+|         \--- com.diffplug.spotless:spotless-lib-extra:2.37.0
+|              +--- com.diffplug.durian:durian-core:1.2.0
+|              +--- com.diffplug.durian:durian-collect:1.2.0 (*)
+|              +--- org.eclipse.jgit:org.eclipse.jgit:6.5.0.202303070854-r (*)
+|              +--- com.googlecode.concurrent-trees:concurrent-trees:2.6.1
+|              +--- dev.equo.ide:solstice:1.0.0
+|              |    +--- org.tukaani:xz:1.9
+|              |    +--- com.squareup.okhttp3:okhttp:4.10.0
+|              |    |    +--- com.squareup.okio:okio:3.0.0
+|              |    |    |    \--- com.squareup.okio:okio-jvm:3.0.0
+|              |    |    |         +--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.31 -> 1.8.10 (*)
+|              |    |    |         \--- org.jetbrains.kotlin:kotlin-stdlib-common:1.5.31 -> 1.8.10
+|              |    |    \--- org.jetbrains.kotlin:kotlin-stdlib:1.6.20 -> 1.8.10 (*)
+|              |    +--- org.eclipse.platform:org.eclipse.osgi:3.18.200
+|              |    +--- org.slf4j:slf4j-api:1.7.36
+|              |    \--- com.diffplug.durian:durian-swt.os:4.1.1
+|              \--- com.diffplug.spotless:spotless-lib:2.37.0
++--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:{strictly 1.8.10} -> 1.8.10 (c)
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 1.8.10} -> 1.8.10 (c)
++--- org.jetbrains.kotlin:kotlin-stdlib-jdk7:{strictly 1.8.10} -> 1.8.10 (c)
++--- org.jetbrains.kotlin:kotlin-stdlib-common:{strictly 1.8.10} -> 1.8.10 (c)
+\--- org.jetbrains:annotations:{strictly 13.0} -> 13.0 (c)
+
+(c) - A dependency constraint, not a dependency. The dependency affected by the constraint occurs elsewhere in the tree.
+(*) - Indicates repeated occurrences of a transitive dependency subtree. Gradle expands transitive dependency subtrees only once per project; repeat occurrences only display the root of the subtree, followed by this annotation.
+
+A web-based, searchable dependency report is available by adding the --scan option.
+
+BUILD SUCCESSFUL in 422ms
+1 actionable task: 1 executed
