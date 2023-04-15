@@ -12,6 +12,7 @@ import * as TE from 'fp-ts/TaskEither';
 import { getCwd } from '../command/getCwd';
 import { MavenArtifact, PomXml } from '../configFileTypes/PomXml';
 import * as A from 'fp-ts/Array';
+import * as RArray from 'fp-ts/ReadonlyArray';
 import * as O from 'fp-ts/Option';
 import * as Pred from 'fp-ts/Predicate';
 import { PackageJson } from '../configFileTypes/PackageJson';
@@ -19,8 +20,8 @@ import { isRelease } from '../context/projectInfoUtils';
 import { Stage, StageExecuteFn } from './Stage';
 import { ProjectType } from '../context/ProjectType';
 import { isFullBuild } from '../context/commandTypeUtils';
-import { GradleItem, readGradleProject } from '../special/gradle';
 import { getRawProjectData } from '../projectCache';
+import { runCommand } from '../command/runCommand';
 
 const MAVEN_PROPERTY_REGEX = /\${.*}/;
 
@@ -141,24 +142,44 @@ const validateNpmReleaseDependencies = (
 		TE.map(() => context)
 	);
 
-const gradleHasNoSnapshotDependencies = (
-	dependencies: ReadonlyArray<GradleItem>
-): boolean =>
-	dependencies.filter((item) => item.version.includes('SNAPSHOT')).length ===
-	0;
+const extractGradleVersions = (output: string): ReadonlyArray<string> => {
+	return [];
+};
+
+const hasSnapshotVersion = (output: string): boolean =>
+	pipe(
+		extractGradleVersions(output),
+		RArray.filter((version) => version.endsWith('SNAPSHOT'))
+	).length === 0;
 
 const validateGradleReleaseDependencies = (
 	context: BuildContext
-): TE.TaskEither<Error, BuildContext> =>
-	pipe(
-		readGradleProject(getCwd()),
+): TE.TaskEither<Error, BuildContext> => {
+	const hasSnapshotDependency = pipe(
+		runCommand('gradle dependencies', {
+			cwd: getCwd()
+		}),
+		TE.map(hasSnapshotVersion)
+	);
+
+	const hasSnapshotPlugin = pipe(
+		runCommand('gradle buildEnvironment', {
+			cwd: getCwd()
+		}),
+		TE.map(hasSnapshotVersion)
+	);
+
+	return pipe(
+		TE.sequenceArray([hasSnapshotDependency, hasSnapshotPlugin]),
 		TE.filterOrElse(
-			(_) => gradleHasNoSnapshotDependencies(_.dependencies),
+			([dependencyResult, pluginResult]) =>
+				dependencyResult && pluginResult,
 			() =>
 				new Error('Cannot have SNAPSHOT dependencies in Gradle release')
 		),
 		TE.map(() => context)
 	);
+};
 
 const handleValidationByProject = (
 	context: BuildContext
