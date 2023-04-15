@@ -17,7 +17,7 @@ describe('validateDependencyVersions', () => {
 		jest.resetAllMocks();
 	});
 
-	it('all release dependencies are valid for maven project', async () => {
+	it('all release dependencies and plugins are valid for maven project', async () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(baseWorkingDir, 'mavenReleaseApplication')
 		);
@@ -33,7 +33,7 @@ describe('validateDependencyVersions', () => {
 		expect(result).toEqualRight(buildContext);
 	});
 
-	it('all release dependencies are valid for gradle kotlin project', async () => {
+	it('all release dependencies and plugins are valid for gradle kotlin project', async () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(baseWorkingDir, 'gradleKotlinReleaseApplication')
 		);
@@ -83,6 +83,10 @@ describe('validateDependencyVersions', () => {
 		);
 	});
 
+	it('invalid release plugins for maven project', async () => {
+		throw new Error();
+	});
+
 	it('invalid release dependencies for gradle kotlin project', async () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(
@@ -104,7 +108,11 @@ describe('validateDependencyVersions', () => {
 		);
 	});
 
-	it.skip('unresolved dependency for gradle kotlin project', async () => {
+	it('invalid release plugins for gradle kotlin project', async () => {
+		throw new Error();
+	});
+
+	it('unresolved dependency for gradle kotlin project', async () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(
 				baseWorkingDir,
