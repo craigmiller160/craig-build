@@ -1,4 +1,5 @@
 import '@relmify/jest-fp-ts';
+import { runCommandMock } from '../testutils/runCommandMock';
 import { baseWorkingDir } from '../testutils/baseWorkingDir';
 import { getCwdMock } from '../testutils/getCwdMock';
 import path from 'path';
@@ -9,8 +10,55 @@ import { validateDependencyVersions } from '../../src/stages/validateDependencyV
 import { VersionType } from '../../src/context/VersionType';
 import '../testutils/readGradleProjectUnmock';
 import * as E from 'fp-ts/Either';
+import * as TE from 'fp-ts/TaskEither';
+import { match } from 'ts-pattern';
+import fs from 'fs';
 
 const baseBuildContext = createBuildContext();
+
+const gradleOutput = path.join(process.cwd(), 'test', '__gradle-output__');
+const buildEnvironment = fs.readFileSync(
+	path.join(gradleOutput, 'buildEnvironment.txt'),
+	'utf8'
+);
+const buildEnvironmentWithSnapshot = fs.readFileSync(
+	path.join(gradleOutput, 'buildEnvironment_withSnapshot.txt'),
+	'utf8'
+);
+const dependencies = fs.readFileSync(
+	path.join(gradleOutput, 'dependencies.txt'),
+	'utf8'
+);
+const dependenciesWithSnapshot = fs.readFileSync(
+	path.join(gradleOutput, 'dependencies_withSnapshot.txt'),
+	'utf8'
+);
+
+type GradleSnapshot = 'none' | 'plugins' | 'dependencies';
+
+const runCommandMockImpl = (
+	command: string,
+	snapshot: GradleSnapshot
+): TE.TaskEither<Error, string> =>
+	match({ command, snapshot })
+		.with({ command: 'gradle dependencies', snapshot: 'none' }, () =>
+			TE.right(dependencies)
+		)
+		.with({ command: 'gradle buildEnvironment', snapshot: 'none' }, () =>
+			TE.right(buildEnvironment)
+		)
+		.with(
+			{ command: 'gradle dependencies', snapshot: 'dependencies' },
+			() => TE.right(dependenciesWithSnapshot)
+		)
+		.with({ command: 'gradle buildEnvironment', snapshot: 'plugins' }, () =>
+			TE.right(buildEnvironmentWithSnapshot)
+		)
+		.otherwise(() =>
+			TE.left(
+				new Error(`Invalid command: '${command}' Snapshot: ${snapshot}`)
+			)
+		);
 
 describe('validateDependencyVersions', () => {
 	beforeEach(() => {
@@ -36,6 +84,9 @@ describe('validateDependencyVersions', () => {
 	it('all release dependencies and plugins are valid for gradle kotlin project', async () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(baseWorkingDir, 'gradleKotlinReleaseApplication')
+		);
+		runCommandMock.mockImplementation((command: string) =>
+			runCommandMockImpl(command, 'none')
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -112,6 +163,9 @@ describe('validateDependencyVersions', () => {
 				'gradleKotlinReleaseApplicationBadDependency'
 			)
 		);
+		runCommandMock.mockImplementation((command: string) =>
+			runCommandMockImpl(command, 'dependencies')
+		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
 			projectType: ProjectType.GradleApplication,
@@ -132,6 +186,9 @@ describe('validateDependencyVersions', () => {
 				baseWorkingDir,
 				'gradleKotlinReleaseApplicationBadPlugin'
 			)
+		);
+		runCommandMock.mockImplementation((command: string) =>
+			runCommandMockImpl(command, 'plugins')
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
