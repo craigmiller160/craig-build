@@ -1,5 +1,5 @@
 import { BuildContext } from '../context/BuildContext';
-import { pipe } from 'fp-ts/function';
+import { flow, pipe } from 'fp-ts/function';
 import { match, P } from 'ts-pattern';
 import {
 	isDocker,
@@ -14,6 +14,7 @@ import { getCwd } from '../command/getCwd';
 import { MavenArtifact, PomXml } from '../configFileTypes/PomXml';
 import * as A from 'fp-ts/Array';
 import * as RArray from 'fp-ts/ReadonlyArray';
+import * as RNonEmptyArray from 'fp-ts/ReadonlyNonEmptyArray';
 import * as O from 'fp-ts/Option';
 import * as Pred from 'fp-ts/Predicate';
 import { PackageJson } from '../configFileTypes/PackageJson';
@@ -143,18 +144,18 @@ const validateNpmReleaseDependencies = (
 		TE.map(() => context)
 	);
 
-const extractGradleVersions = (output: string): ReadonlyArray<string> => {
-	const array = pipe(
+const extractGradleVersions = (output: string): ReadonlyArray<string> =>
+	pipe(
 		output,
 		S.split('\n'),
 		RArray.filter((_) => /^.*?--- /.test(_)),
-		RArray.map(S.replace(/^.*?---/, '')),
 		RArray.map(S.trim),
-		RArray.filter(Pred.not(S.isEmpty))
+		RArray.map(S.replace(/^.*?---/, '')),
+		RArray.map(S.replace(/\([*|c]\)$/, '')),
+		RArray.map(S.replace(/ -> /, ':')),
+		RArray.filter(Pred.not(S.isEmpty)),
+		RArray.map(flow(S.split(':'), RNonEmptyArray.last))
 	);
-	console.log(array.join('\n'));
-	return array;
-};
 
 const hasSnapshotVersion = (output: string): boolean =>
 	pipe(
