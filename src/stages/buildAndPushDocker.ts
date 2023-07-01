@@ -86,7 +86,7 @@ const removeExistingImagesIfExist = (
 
 const buildDockerImage = (dockerTag: string): TE.TaskEither<Error, string> =>
 	runCommand(
-		`${getCmdSudo()}docker build --platform amd64 --network=host -t ${dockerTag} .`,
+		`${getCmdSudo()}docker build --platform linux/amd64 --network=host -t ${dockerTag} .`,
 		{
 			printOutput: true,
 			cwd: path.join(getCwd(), 'deploy')

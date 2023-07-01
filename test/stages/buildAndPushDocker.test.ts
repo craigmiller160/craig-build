@@ -69,7 +69,7 @@ const validateCommands = ({
 	}
 	expect(runCommandMock).toHaveBeenNthCalledWith(
 		callCount,
-		`${cmdSudo}docker build --platform amd64 --network=host -t nexus-docker-craigmiller160.ddns.net/my-project:1.0.0 .`,
+		`${cmdSudo}docker build --platform linux/amd64 --network=host -t nexus-docker-craigmiller160.ddns.net/my-project:1.0.0 .`,
 		{ printOutput: true, cwd: path.join('/root', 'deploy') }
 	);
 	callCount++;
