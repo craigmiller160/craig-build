@@ -11,7 +11,7 @@ import { isFullBuild } from '../context/commandTypeUtils';
 
 export const MAVEN_BUILD_CMD = 'mvn clean deploy -Ddependency-check.skip=true';
 export const NPM_BUILD_CMD = 'yarn build';
-export const GRADLE_BUILD_COMMAND = 'gradle clean build publish';
+export const GRADLE_BUILD_COMMAND = 'gradle clean build && gradle publish';
 
 const runBuildCommand = (
 	context: BuildContext,
