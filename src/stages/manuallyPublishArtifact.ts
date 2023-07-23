@@ -19,6 +19,7 @@ import { logger } from '../logger';
 import { ProjectType } from '../context/ProjectType';
 import { getNexusCredentials } from '../utils/getNexusCredentials';
 
+// TODO change this
 export const NPM_PUBLISH_COMMAND =
 	'yarn publish --no-git-tag-version --new-version';
 

@@ -10,6 +10,7 @@ import { Stage, StageExecuteFn } from './Stage';
 import { isFullBuild } from '../context/commandTypeUtils';
 
 export const MAVEN_BUILD_CMD = 'mvn clean deploy -Ddependency-check.skip=true';
+// TODO change this
 export const NPM_BUILD_CMD = 'yarn build';
 export const GRADLE_BUILD_COMMAND = 'gradle clean build && gradle publish';
 
