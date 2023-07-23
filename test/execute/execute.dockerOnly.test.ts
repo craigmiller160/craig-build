@@ -23,6 +23,10 @@ import { VersionType } from '../../src/context/VersionType';
 import { dockerOnly_release_helmLibrary } from '../expectedExecutions/dockerOnly_release_helmLibrary';
 import { dockerOnly_release_helmApplication } from '../expectedExecutions/dockerOnly_release_helmApplication';
 import { dockerOnly_release_mavenApplication_terraform } from '../expectedExecutions/dockerOnly_release_mavenApplication_terraform';
+import { dockerOnly_release_gradleApplication } from '../expectedExecutions/dockerOnly_release_gradleApplication';
+import { dockerOnly_preRelease_gradleApplication } from '../expectedExecutions/dockerOnly_preRelease_gradleApplication';
+import { dockerOnly_release_gradleLibrary } from '../expectedExecutions/dockerOnly_release_gradleLibrary';
+import { dockerOnly_preRelease_gradleLibrary } from '../expectedExecutions/dockerOnly_preRelease_gradleLibrary';
 
 const baseContext = createBuildContext();
 
@@ -361,7 +365,7 @@ describe('execute.fullBuild', () => {
 
 		const result = await execute(context)();
 		expect(result).toEqualRight(context);
-		throw new Error();
+		validateStages(dockerOnly_release_gradleApplication);
 	});
 
 	it('executes docker only for pre-release GradleApplication', async () => {
@@ -383,7 +387,7 @@ describe('execute.fullBuild', () => {
 
 		const result = await execute(context)();
 		expect(result).toEqualRight(context);
-		throw new Error();
+		validateStages(dockerOnly_preRelease_gradleApplication);
 	});
 
 	it('executes docker only for release GradleLibrary', async () => {
@@ -404,7 +408,7 @@ describe('execute.fullBuild', () => {
 
 		const result = await execute(context)();
 		expect(result).toEqualRight(context);
-		throw new Error();
+		validateStages(dockerOnly_release_gradleLibrary);
 	});
 
 	it('executes docker only for pre-release GradleLibrary', async () => {
@@ -426,6 +430,6 @@ describe('execute.fullBuild', () => {
 
 		const result = await execute(context)();
 		expect(result).toEqualRight(context);
-		throw new Error();
+		validateStages(dockerOnly_preRelease_gradleLibrary);
 	});
 });
