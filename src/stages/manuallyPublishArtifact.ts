@@ -21,6 +21,7 @@ import { getNexusCredentials } from '../utils/getNexusCredentials';
 
 export const NPM_PUBLISH_COMMAND =
 	'yarn publish --no-git-tag-version --new-version';
+export const GRADLE_PUBLISH_COMMAND = 'gradle publish';
 
 export const CLEAR_FILES_COMMAND = 'git checkout .';
 
