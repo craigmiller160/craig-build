@@ -23,6 +23,3 @@ export const getNpmBuildTool = (): Either.Either<Error, NpmBuildTool> => {
 
 	return Either.left(new Error('Unable to determine the NPM command to use'));
 };
-
-export const getNpmBuildCommand = (npmBuildTool: NpmBuildTool): string => '';
-export const getNpmPublishCommand = (npmBuildTool: NpmBuildTool): string => '';
