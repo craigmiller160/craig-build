@@ -34,7 +34,8 @@ describe('caching raw project data', () => {
 				group: 'craigmiller160',
 				name: 'craig-build',
 				version: '1.0.0',
-				versionType: VersionType.Release
+				versionType: VersionType.Release,
+				npmCommand: 'yarn'
 			}
 		};
 		// Reads the actual project file
