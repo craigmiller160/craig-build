@@ -21,7 +21,5 @@ export const getNpmCommand = (): Either.Either<Error, NpmCommand> => {
 		return Either.right('pnpm');
 	}
 
-	return Either.left(
-		new Error('Unable to determine the yarn command to use')
-	);
+	return Either.left(new Error('Unable to determine the NPM command to use'));
 };
