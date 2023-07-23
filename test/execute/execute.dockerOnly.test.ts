@@ -347,7 +347,7 @@ describe('execute.fullBuild', () => {
 		throw new Error();
 	});
 
-	it('executes docker only for pre-release GradleLibrary', async () => {
+	it('executes docker only for pre-release GradleApplication', async () => {
 		throw new Error();
 	});
 

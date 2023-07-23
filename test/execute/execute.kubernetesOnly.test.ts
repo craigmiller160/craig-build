@@ -345,7 +345,7 @@ describe('execute.kubernetesOnly', () => {
 		throw new Error();
 	});
 
-	it('executes kubernetes only for pre-release GradleLibrary', async () => {
+	it('executes kubernetes only for pre-release GradleApplication', async () => {
 		throw new Error();
 	});
 
