@@ -33,7 +33,7 @@ export const fullBuild_preRelease_gradleApplication: ExpectedExecution = {
 	[validateGitTag.name]: false,
 	[buildArtifact.name]: true,
 	[preparePreReleaseVersion.name]: true,
-	[manuallyPublishArtifact.name]: true,
+	[manuallyPublishArtifact.name]: false,
 	[gitTag.name]: false,
 	[waitOnNexusUpdate.name]: true,
 	[downloadArtifactForDeployment.name]: true,
