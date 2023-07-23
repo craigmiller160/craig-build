@@ -1,7 +1,7 @@
 import { BuildContext } from '../context/BuildContext';
 import * as TE from 'fp-ts/TaskEither';
 import { match, P } from 'ts-pattern';
-import { isHelm, isNpm } from '../context/projectTypeUtils';
+import { isGradle, isHelm, isNpm } from '../context/projectTypeUtils';
 import { pipe } from 'fp-ts/function';
 import { runCommand } from '../command/runCommand';
 import { Stage, StageExecuteFn } from './Stage';
@@ -93,14 +93,15 @@ const handlePublishByProject = (
 		.with({ projectType: P.when(isHelm) }, publishHelmArtifact)
 		.run();
 
-const isAnyNpmOrHelmLibrary: Pred.Predicate<ProjectType> = pipe(
+const isCorrectProjectType: Pred.Predicate<ProjectType> = pipe(
 	isNpm,
+	Pred.or(isGradle),
 	Pred.or((_) => ProjectType.HelmLibrary === _)
 );
 
 const execute: StageExecuteFn = (context) => handlePublishByProject(context);
 const shouldStageExecute: Pred.Predicate<BuildContext> = pipe(
-	(_: BuildContext) => isAnyNpmOrHelmLibrary(_.projectType),
+	(_: BuildContext) => isCorrectProjectType(_.projectType),
 	Pred.and((_) => isFullBuild(_.commandInfo.type))
 );
 
