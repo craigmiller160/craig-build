@@ -43,7 +43,7 @@ describe('caching raw project data', () => {
 		expect(result).toEqualRight(expectedContext);
 
 		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDir, 'npmPreReleaseLibrary')
+			path.resolve(baseWorkingDir, 'npmBetaLibrary')
 		);
 
 		const differentBuildContext: BuildContext = {
