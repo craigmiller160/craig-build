@@ -1,7 +1,7 @@
 import { BuildContext } from '../context/BuildContext';
 import * as TE from 'fp-ts/TaskEither';
 import { match, P } from 'ts-pattern';
-import { isGradle, isHelm, isNpm } from '../context/projectTypeUtils';
+import { isHelm, isNpm } from '../context/projectTypeUtils';
 import { pipe } from 'fp-ts/function';
 import { runCommand } from '../command/runCommand';
 import { Stage, StageExecuteFn } from './Stage';
@@ -21,7 +21,6 @@ import { getNexusCredentials } from '../utils/getNexusCredentials';
 
 export const NPM_PUBLISH_COMMAND =
 	'yarn publish --no-git-tag-version --new-version';
-export const GRADLE_PUBLISH_COMMAND = 'gradle publish';
 
 export const CLEAR_FILES_COMMAND = 'git checkout .';
 
@@ -93,15 +92,14 @@ const handlePublishByProject = (
 		.with({ projectType: P.when(isHelm) }, publishHelmArtifact)
 		.run();
 
-const isCorrectProjectType: Pred.Predicate<ProjectType> = pipe(
+const isAnyNpmOrHelmLibrary: Pred.Predicate<ProjectType> = pipe(
 	isNpm,
-	Pred.or(isGradle),
 	Pred.or((_) => ProjectType.HelmLibrary === _)
 );
 
 const execute: StageExecuteFn = (context) => handlePublishByProject(context);
 const shouldStageExecute: Pred.Predicate<BuildContext> = pipe(
-	(_: BuildContext) => isCorrectProjectType(_.projectType),
+	(_: BuildContext) => isAnyNpmOrHelmLibrary(_.projectType),
 	Pred.and((_) => isFullBuild(_.commandInfo.type))
 );
 
