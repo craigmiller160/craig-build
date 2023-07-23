@@ -1,5 +1,7 @@
 import { getCwdMock } from '../testutils/getCwdMock';
 import path from 'path';
+import '@relmify/jest-fp-ts';
+import { getNpmCommand } from '../../src/context/npmCommandUtils';
 
 const getNpmCommandBaseDir = path.join(
 	process.cwd(),
@@ -17,26 +19,32 @@ describe('npmCommandUtils', () => {
 			getCwdMock.mockImplementation(() =>
 				path.join(getNpmCommandBaseDir, 'npm')
 			);
-			throw new Error();
+			const result = getNpmCommand();
+			expect(result).toEqualRight('npm');
 		});
 
 		it('is yarn', () => {
 			getCwdMock.mockImplementation(() =>
 				path.join(getNpmCommandBaseDir, 'yarn')
 			);
-			throw new Error();
+			const result = getNpmCommand();
+			expect(result).toEqualRight('yarn');
 		});
 
 		it('is pnpm', () => {
 			getCwdMock.mockImplementation(() =>
-				path.join(getNpmCommandBaseDir, 'yarn')
+				path.join(getNpmCommandBaseDir, 'pnpm')
 			);
-			throw new Error();
+			const result = getNpmCommand();
+			expect(result).toEqualRight('pnpm');
 		});
 
 		it('is unknown', () => {
 			getCwdMock.mockImplementation(() => getNpmCommandBaseDir);
-			throw new Error();
+			const result = getNpmCommand();
+			expect(result).toEqualLeft(
+				new Error('Unable to determine the yarn command to use')
+			);
 		});
 	});
 });
