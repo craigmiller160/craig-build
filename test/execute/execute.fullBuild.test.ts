@@ -385,10 +385,45 @@ describe('execute.fullBuild', () => {
 	});
 
 	it('executes full build for release GradleLibrary', async () => {
+		const context: BuildContext = {
+			...baseContext,
+			commandInfo: {
+				type: CommandType.FullBuild
+			},
+			projectType: ProjectType.GradleLibrary,
+			projectInfo: {
+				...baseContext.projectInfo,
+				versionType: VersionType.Release
+			},
+			hasTerraform: false
+		};
+
+		prepareStageExecutionMock(context);
+
+		const result = await execute(context)();
+		expect(result).toEqualRight(context);
 		throw new Error();
 	});
 
 	it('executes full build for pre-release GradleLibrary', async () => {
+		const context: BuildContext = {
+			...baseContext,
+			commandInfo: {
+				type: CommandType.FullBuild
+			},
+			projectType: ProjectType.GradleLibrary,
+			projectInfo: {
+				...baseContext.projectInfo,
+				version: '1.0.0-SNAPSHOT',
+				versionType: VersionType.PreRelease
+			},
+			hasTerraform: false
+		};
+
+		prepareStageExecutionMock(context);
+
+		const result = await execute(context)();
+		expect(result).toEqualRight(context);
 		throw new Error();
 	});
 });
