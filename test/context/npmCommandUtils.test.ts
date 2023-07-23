@@ -14,6 +14,34 @@ describe('npmCommandUtils', () => {
 		jest.resetAllMocks();
 	});
 
+	describe('getNpmBuildCommand', () => {
+		it('for npm', () => {
+			throw new Error();
+		});
+
+		it('for yarn', () => {
+			throw new Error();
+		});
+
+		it('for pnpm', () => {
+			throw new Error();
+		});
+	});
+
+	describe('getNpmPublishCommand', () => {
+		it('for npm', () => {
+			throw new Error();
+		});
+
+		it('for yarn', () => {
+			throw new Error();
+		});
+
+		it('for pnpm', () => {
+			throw new Error();
+		});
+	});
+
 	describe('getNpmBuildTool', () => {
 		it('is npm', () => {
 			getCwdMock.mockImplementation(() =>
