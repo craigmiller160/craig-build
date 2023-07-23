@@ -21,6 +21,10 @@ import { VersionType } from '../../src/context/VersionType';
 import { fullBuild_release_helmLibrary } from '../expectedExecutions/fullBuild_release_helmLibrary';
 import { fullBuild_release_helmApplication } from '../expectedExecutions/fullBuild_release_helmApplication';
 import { fullBuild_release_mavenApplication_terraform } from '../expectedExecutions/fullBuild_release_mavenApplication_terraform';
+import { fullBuild_preRelease_gradleApplication } from '../expectedExecutions/fullBuild_preRelease_gradleApplication';
+import { fullBuild_preRelease_gradleLibrary } from '../expectedExecutions/fullBuild_preRelease_gradleLibrary';
+import { fullBuild_release_gradleLibrary } from '../expectedExecutions/fullBuild_release_gradleLibrary';
+import { fullBuild_release_gradleApplication } from '../expectedExecutions/fullBuild_release_gradleApplication';
 
 const baseContext = createBuildContext();
 
@@ -339,5 +343,91 @@ describe('execute.fullBuild', () => {
 		expect(result).toEqualRight(context);
 
 		validateStages(fullBuild_release_mavenApplication_terraform);
+	});
+
+	it('executes full build for release GradleApplication', async () => {
+		const context: BuildContext = {
+			...baseContext,
+			commandInfo: {
+				type: CommandType.FullBuild
+			},
+			projectType: ProjectType.GradleApplication,
+			projectInfo: {
+				...baseContext.projectInfo,
+				versionType: VersionType.Release
+			},
+			hasTerraform: false
+		};
+
+		prepareStageExecutionMock(context);
+
+		const result = await execute(context)();
+		expect(result).toEqualRight(context);
+		validateStages(fullBuild_release_gradleApplication);
+	});
+
+	it('executes full build for pre-release GradleApplication', async () => {
+		const context: BuildContext = {
+			...baseContext,
+			commandInfo: {
+				type: CommandType.FullBuild
+			},
+			projectType: ProjectType.GradleApplication,
+			projectInfo: {
+				...baseContext.projectInfo,
+				version: '1.0.0-SNAPSHOT',
+				versionType: VersionType.PreRelease
+			},
+			hasTerraform: false
+		};
+
+		prepareStageExecutionMock(context);
+
+		const result = await execute(context)();
+		expect(result).toEqualRight(context);
+		validateStages(fullBuild_preRelease_gradleApplication);
+	});
+
+	it('executes full build for release GradleLibrary', async () => {
+		const context: BuildContext = {
+			...baseContext,
+			commandInfo: {
+				type: CommandType.FullBuild
+			},
+			projectType: ProjectType.GradleLibrary,
+			projectInfo: {
+				...baseContext.projectInfo,
+				versionType: VersionType.Release
+			},
+			hasTerraform: false
+		};
+
+		prepareStageExecutionMock(context);
+
+		const result = await execute(context)();
+		expect(result).toEqualRight(context);
+		validateStages(fullBuild_release_gradleLibrary);
+	});
+
+	it('executes full build for pre-release GradleLibrary', async () => {
+		const context: BuildContext = {
+			...baseContext,
+			commandInfo: {
+				type: CommandType.FullBuild
+			},
+			projectType: ProjectType.GradleLibrary,
+			projectInfo: {
+				...baseContext.projectInfo,
+				version: '1.0.0-SNAPSHOT',
+				versionType: VersionType.PreRelease
+			},
+			hasTerraform: false
+		};
+
+		prepareStageExecutionMock(context);
+
+		const result = await execute(context)();
+		expect(result).toEqualRight(context);
+		validateStages(fullBuild_preRelease_gradleLibrary);
 	});
 });
