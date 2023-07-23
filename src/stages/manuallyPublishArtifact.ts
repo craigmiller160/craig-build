@@ -20,7 +20,7 @@ import { ProjectType } from '../context/ProjectType';
 import { getNexusCredentials } from '../utils/getNexusCredentials';
 
 export const getNpmPublishCommand = (version: string): string =>
-	`npm version --no-git-tag-version ${version} && npm publish`;
+	`npm version --allow-same-version --no-git-tag-version ${version} && npm publish`;
 
 export const CLEAR_FILES_COMMAND = 'git checkout .';
 

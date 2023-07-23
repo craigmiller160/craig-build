@@ -53,7 +53,7 @@ describe('manuallyPublishArtifact', () => {
 		expect(runCommandMock).toHaveBeenCalledTimes(2);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			1,
-			'npm version --no-git-tag-version 1.0.0 && npm publish',
+			'npm version --allow-same-version --no-git-tag-version 1.0.0 && npm publish',
 			{ printOutput: true, cwd: projectPath }
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(2, CLEAR_FILES_COMMAND);
@@ -81,7 +81,7 @@ describe('manuallyPublishArtifact', () => {
 		expect(runCommandMock).toHaveBeenCalledTimes(2);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			1,
-			'npm version --no-git-tag-version 1.0.0 && npm publish',
+			'npm version --allow-same-version --no-git-tag-version 1.0.0 && npm publish',
 			{
 				printOutput: true,
 				cwd: path.join(projectPath, 'lib')
