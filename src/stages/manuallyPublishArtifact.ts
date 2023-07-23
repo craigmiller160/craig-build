@@ -19,8 +19,8 @@ import { logger } from '../logger';
 import { ProjectType } from '../context/ProjectType';
 import { getNexusCredentials } from '../utils/getNexusCredentials';
 
-export const NPM_PUBLISH_COMMAND =
-	'yarn publish --no-git-tag-version --new-version';
+export const getNpmPublishCommand = (version: string): string =>
+	`npm version --no-git-tag-version ${version} && npm publish`;
 
 export const CLEAR_FILES_COMMAND = 'git checkout .';
 
@@ -46,7 +46,7 @@ const publishNpmArtifact = (
 		'To change publish directory, set the "publishDirectory" property in the package.json'
 	);
 	return pipe(
-		runCommand(`${NPM_PUBLISH_COMMAND} ${context.projectInfo.version}`, {
+		runCommand(getNpmPublishCommand(context.projectInfo.version), {
 			printOutput: true,
 			cwd: publishDir
 		}),

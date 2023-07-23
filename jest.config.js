@@ -4,7 +4,7 @@ const path = require('path');
 module.exports = {
 	preset: 'ts-jest',
 	bail: false,
-	collectCoverage: true,
+	collectCoverage: false,
 	testEnvironment: 'node',
 	roots: [process.cwd()],
 	modulePaths: [path.resolve(process.cwd(), 'src')],

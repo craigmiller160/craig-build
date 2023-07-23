@@ -34,7 +34,8 @@ describe('caching raw project data', () => {
 				group: 'craigmiller160',
 				name: 'craig-build',
 				version: '1.0.0',
-				versionType: VersionType.Release
+				versionType: VersionType.Release,
+				npmBuildTool: 'yarn'
 			}
 		};
 		// Reads the actual project file
@@ -42,7 +43,7 @@ describe('caching raw project data', () => {
 		expect(result).toEqualRight(expectedContext);
 
 		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDir, 'npmPreReleaseLibrary')
+			path.resolve(baseWorkingDir, 'npmBetaLibrary')
 		);
 
 		const differentBuildContext: BuildContext = {

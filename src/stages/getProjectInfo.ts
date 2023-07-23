@@ -4,6 +4,7 @@ import { ProjectType } from '../context/ProjectType';
 import { ProjectInfo } from '../context/ProjectInfo';
 import { match } from 'ts-pattern';
 import * as TE from 'fp-ts/TaskEither';
+import * as Either from 'fp-ts/Either';
 import * as Pred from 'fp-ts/Predicate';
 import {
 	isDocker,
@@ -22,6 +23,7 @@ import { regexTest } from '../functions/RegExp';
 import { GradleProject } from '../special/gradle';
 import { getRawProjectData } from '../projectCache';
 import { HelmJson } from '../configFileTypes/HelmJson';
+import { getNpmBuildTool } from '../context/npmCommandUtils';
 
 const BETA_VERSION_REGEX = /^.*-beta/;
 const SNAPSHOT_VERSION_REGEX = /^.*-SNAPSHOT/;
@@ -55,6 +57,19 @@ const readMavenProjectInfo = (
 		})
 	);
 
+const addNpmCommand = (
+	projectInfo: ProjectInfo
+): Either.Either<Error, ProjectInfo> =>
+	pipe(
+		getNpmBuildTool(),
+		Either.map(
+			(npmCommand): ProjectInfo => ({
+				...projectInfo,
+				npmBuildTool: npmCommand
+			})
+		)
+	);
+
 const readNpmProjectInfo = (
 	projectType: ProjectType
 ): TE.TaskEither<Error, ProjectInfo> =>
@@ -68,7 +83,8 @@ const readNpmProjectInfo = (
 				version: packageJson.version,
 				versionType: getVersionType(packageJson.version)
 			};
-		})
+		}),
+		TE.chainEitherK(addNpmCommand)
 	);
 
 const readDockerProjectInfo = (

@@ -5,8 +5,6 @@ import {
 	isKubernetesOnly
 } from '../../src/context/commandTypeUtils';
 
-export {};
-
 const verifyFullBuild = (results: boolean[], value: boolean) => {
 	expect(results[0]).toEqual(value);
 };
