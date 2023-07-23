@@ -14,7 +14,7 @@ describe('npmCommandUtils', () => {
 		jest.resetAllMocks();
 	});
 
-	describe('getNpmCommand', () => {
+	describe('getNpmBuildTool', () => {
 		it('is npm', () => {
 			getCwdMock.mockImplementation(() =>
 				path.join(getNpmCommandBaseDir, 'npm')
