@@ -21,6 +21,10 @@ import { VersionType } from '../../src/context/VersionType';
 import { kubernetesOnly_release_helmLibrary } from '../expectedExecutions/kubernetesOnly_release_helmLibrary';
 import { kubernetesOnly_release_helmApplication } from '../expectedExecutions/kubernetesOnly_release_helmApplication';
 import { kubernetesOnly_release_mavenApplication_terraform } from '../expectedExecutions/kubernetesOnly_release_mavenApplication_terraform';
+import { kubernetesOnly_release_gradleApplication } from '../expectedExecutions/kubernetesOnly_release_gradleApplication';
+import { kubernetesOnly_preRelease_gradleApplication } from '../expectedExecutions/kubernetesOnly_preRelease_gradleApplication';
+import { kubernetesOnly_release_gradleLibrary } from '../expectedExecutions/kubernetesOnly_release_gradleLibrary';
+import { kubernetesOnly_preRelease_gradleLibrary } from '../expectedExecutions/kubernetesOnly_preRelease_gradleLibrary';
 
 const baseContext = createBuildContext();
 
@@ -339,5 +343,91 @@ describe('execute.kubernetesOnly', () => {
 		expect(result).toEqualRight(context);
 
 		validateStages(kubernetesOnly_release_mavenApplication_terraform);
+	});
+
+	it('executes kubernetes only for release GradleApplication', async () => {
+		const context: BuildContext = {
+			...baseContext,
+			commandInfo: {
+				type: CommandType.KubernetesOnly
+			},
+			projectType: ProjectType.GradleApplication,
+			projectInfo: {
+				...baseContext.projectInfo,
+				versionType: VersionType.Release
+			},
+			hasTerraform: false
+		};
+
+		prepareStageExecutionMock(context);
+
+		const result = await execute(context)();
+		expect(result).toEqualRight(context);
+		validateStages(kubernetesOnly_release_gradleApplication);
+	});
+
+	it('executes kubernetes only for pre-release GradleApplication', async () => {
+		const context: BuildContext = {
+			...baseContext,
+			commandInfo: {
+				type: CommandType.KubernetesOnly
+			},
+			projectType: ProjectType.GradleApplication,
+			projectInfo: {
+				...baseContext.projectInfo,
+				version: '1.0.0-SNAPSHOT',
+				versionType: VersionType.PreRelease
+			},
+			hasTerraform: false
+		};
+
+		prepareStageExecutionMock(context);
+
+		const result = await execute(context)();
+		expect(result).toEqualRight(context);
+		validateStages(kubernetesOnly_preRelease_gradleApplication);
+	});
+
+	it('executes kubernetes only for release GradleLibrary', async () => {
+		const context: BuildContext = {
+			...baseContext,
+			commandInfo: {
+				type: CommandType.KubernetesOnly
+			},
+			projectType: ProjectType.GradleLibrary,
+			projectInfo: {
+				...baseContext.projectInfo,
+				versionType: VersionType.Release
+			},
+			hasTerraform: false
+		};
+
+		prepareStageExecutionMock(context);
+
+		const result = await execute(context)();
+		expect(result).toEqualRight(context);
+		validateStages(kubernetesOnly_release_gradleLibrary);
+	});
+
+	it('executes kubernetes only for pre-release GradleLibrary', async () => {
+		const context: BuildContext = {
+			...baseContext,
+			commandInfo: {
+				type: CommandType.KubernetesOnly
+			},
+			projectType: ProjectType.GradleLibrary,
+			projectInfo: {
+				...baseContext.projectInfo,
+				version: '1.0.0-SNAPSHOT',
+				versionType: VersionType.PreRelease
+			},
+			hasTerraform: false
+		};
+
+		prepareStageExecutionMock(context);
+
+		const result = await execute(context)();
+		expect(result).toEqualRight(context);
+		validateStages(kubernetesOnly_preRelease_gradleLibrary);
 	});
 });
