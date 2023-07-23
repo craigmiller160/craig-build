@@ -131,4 +131,8 @@ describe('manuallyPublishArtifact', () => {
 			}
 		);
 	});
+
+	it('publishes Gradle project', async () => {
+		throw new Error();
+	});
 });
