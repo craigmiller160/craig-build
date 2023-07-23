@@ -30,7 +30,8 @@ describe('getProjectInfo', () => {
 				group: 'craigmiller160',
 				name: 'craig-build',
 				version: '1.0.0',
-				versionType: VersionType.Release
+				versionType: VersionType.Release,
+				npmCommand: 'yarn'
 			}
 		};
 		const result = await getProjectInfo.execute(buildContext)();
@@ -51,7 +52,8 @@ describe('getProjectInfo', () => {
 				group: 'craigmiller160',
 				name: 'craig-build',
 				version: '1.0.0-beta',
-				versionType: VersionType.PreRelease
+				versionType: VersionType.PreRelease,
+				npmCommand: 'yarn'
 			}
 		};
 		const result = await getProjectInfo.execute(buildContext)();
