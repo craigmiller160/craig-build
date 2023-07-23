@@ -16,8 +16,8 @@
     "lint": "eslint . --fix --max-warnings=0",
     "forceBuild": "rm -rf ./build && tsc",
     "test": "jest",
-    "build": "yarn lint && yarn test && yarn forceBuild",
-    "validate": "yarn lint && yarn test",
+    "build": "npm run lint && npm run test && npm run forceBuild",
+    "validate": "npm run lint && npm run test",
     "prepare": "husky install",
     "install": "node libScripts/gradle-install.js"
   },
