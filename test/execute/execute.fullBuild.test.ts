@@ -340,4 +340,20 @@ describe('execute.fullBuild', () => {
 
 		validateStages(fullBuild_release_mavenApplication_terraform);
 	});
+
+	it('executes full build for release GradleApplication', async () => {
+		throw new Error();
+	});
+
+	it('executes full build for pre-release GradleLibrary', async () => {
+		throw new Error();
+	});
+
+	it('executes full build for release GradleLibrary', async () => {
+		throw new Error();
+	});
+
+	it('executes full build for pre-release GradleLibrary', async () => {
+		throw new Error();
+	});
 });

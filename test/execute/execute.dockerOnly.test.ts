@@ -342,4 +342,20 @@ describe('execute.fullBuild', () => {
 
 		validateStages(dockerOnly_release_mavenApplication_terraform);
 	});
+
+	it('executes docker only for release GradleApplication', async () => {
+		throw new Error();
+	});
+
+	it('executes docker only for pre-release GradleLibrary', async () => {
+		throw new Error();
+	});
+
+	it('executes docker only for release GradleLibrary', async () => {
+		throw new Error();
+	});
+
+	it('executes docker only for pre-release GradleLibrary', async () => {
+		throw new Error();
+	});
 });

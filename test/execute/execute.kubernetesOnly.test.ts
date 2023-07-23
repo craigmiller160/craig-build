@@ -340,4 +340,20 @@ describe('execute.kubernetesOnly', () => {
 
 		validateStages(kubernetesOnly_release_mavenApplication_terraform);
 	});
+
+	it('executes kubernetes only for release GradleApplication', async () => {
+		throw new Error();
+	});
+
+	it('executes kubernetes only for pre-release GradleLibrary', async () => {
+		throw new Error();
+	});
+
+	it('executes kubernetes only for release GradleLibrary', async () => {
+		throw new Error();
+	});
+
+	it('executes kubernetes only for pre-release GradleLibrary', async () => {
+		throw new Error();
+	});
 });
