@@ -43,7 +43,7 @@ describe('npmCommandUtils', () => {
 			getCwdMock.mockImplementation(() => getNpmCommandBaseDir);
 			const result = getNpmCommand();
 			expect(result).toEqualLeft(
-				new Error('Unable to determine the yarn command to use')
+				new Error('Unable to determine the NPM command to use')
 			);
 		});
 	});
