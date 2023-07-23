@@ -9,7 +9,6 @@ import {
 	manuallyPublishArtifact
 } from '../../src/stages/manuallyPublishArtifact';
 import * as TE from 'fp-ts/TaskEither';
-import { NPM_PUBLISH_COMMAND } from '../../src/stages/manuallyPublishArtifact';
 import path from 'path';
 import { baseWorkingDir } from '../testutils/baseWorkingDir';
 import shellEnv from 'shell-env';
@@ -54,7 +53,7 @@ describe('manuallyPublishArtifact', () => {
 		expect(runCommandMock).toHaveBeenCalledTimes(2);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			1,
-			`${NPM_PUBLISH_COMMAND} 1.0.0`,
+			'npm version --no-git-tag-version 1.0.0 && npm publish',
 			{ printOutput: true, cwd: projectPath }
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(2, CLEAR_FILES_COMMAND);
@@ -82,7 +81,7 @@ describe('manuallyPublishArtifact', () => {
 		expect(runCommandMock).toHaveBeenCalledTimes(2);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			1,
-			`${NPM_PUBLISH_COMMAND} 1.0.0`,
+			'npm version --no-git-tag-version 1.0.0 && npm publish',
 			{
 				printOutput: true,
 				cwd: path.join(projectPath, 'lib')
