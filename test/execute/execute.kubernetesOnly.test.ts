@@ -21,6 +21,10 @@ import { VersionType } from '../../src/context/VersionType';
 import { kubernetesOnly_release_helmLibrary } from '../expectedExecutions/kubernetesOnly_release_helmLibrary';
 import { kubernetesOnly_release_helmApplication } from '../expectedExecutions/kubernetesOnly_release_helmApplication';
 import { kubernetesOnly_release_mavenApplication_terraform } from '../expectedExecutions/kubernetesOnly_release_mavenApplication_terraform';
+import { kubernetesOnly_release_gradleApplication } from '../expectedExecutions/kubernetesOnly_release_gradleApplication';
+import { kubernetesOnly_preRelease_gradleApplication } from '../expectedExecutions/kubernetesOnly_preRelease_gradleApplication';
+import { kubernetesOnly_release_gradleLibrary } from '../expectedExecutions/kubernetesOnly_release_gradleLibrary';
+import { kubernetesOnly_preRelease_gradleLibrary } from '../expectedExecutions/kubernetesOnly_preRelease_gradleLibrary';
 
 const baseContext = createBuildContext();
 
@@ -359,7 +363,7 @@ describe('execute.kubernetesOnly', () => {
 
 		const result = await execute(context)();
 		expect(result).toEqualRight(context);
-		throw new Error();
+		validateStages(kubernetesOnly_release_gradleApplication);
 	});
 
 	it('executes kubernetes only for pre-release GradleApplication', async () => {
@@ -381,7 +385,7 @@ describe('execute.kubernetesOnly', () => {
 
 		const result = await execute(context)();
 		expect(result).toEqualRight(context);
-		throw new Error();
+		validateStages(kubernetesOnly_preRelease_gradleApplication);
 	});
 
 	it('executes kubernetes only for release GradleLibrary', async () => {
@@ -402,7 +406,7 @@ describe('execute.kubernetesOnly', () => {
 
 		const result = await execute(context)();
 		expect(result).toEqualRight(context);
-		throw new Error();
+		validateStages(kubernetesOnly_release_gradleLibrary);
 	});
 
 	it('executes kubernetes only for pre-release GradleLibrary', async () => {
@@ -424,6 +428,6 @@ describe('execute.kubernetesOnly', () => {
 
 		const result = await execute(context)();
 		expect(result).toEqualRight(context);
-		throw new Error();
+		validateStages(kubernetesOnly_preRelease_gradleLibrary);
 	});
 });
