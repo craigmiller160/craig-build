@@ -21,6 +21,8 @@ import { VersionType } from '../../src/context/VersionType';
 import { fullBuild_release_helmLibrary } from '../expectedExecutions/fullBuild_release_helmLibrary';
 import { fullBuild_release_helmApplication } from '../expectedExecutions/fullBuild_release_helmApplication';
 import { fullBuild_release_mavenApplication_terraform } from '../expectedExecutions/fullBuild_release_mavenApplication_terraform';
+import { fullBuild_preRelease_gradleApplication } from '../expectedExecutions/fullBuild_preRelease_gradleApplication';
+import { fullBuild_preRelease_gradleLibrary } from '../expectedExecutions/fullBuild_preRelease_gradleLibrary';
 
 const baseContext = createBuildContext();
 
@@ -381,7 +383,7 @@ describe('execute.fullBuild', () => {
 
 		const result = await execute(context)();
 		expect(result).toEqualRight(context);
-		throw new Error();
+		validateStages(fullBuild_preRelease_gradleApplication);
 	});
 
 	it('executes full build for release GradleLibrary', async () => {
@@ -424,6 +426,6 @@ describe('execute.fullBuild', () => {
 
 		const result = await execute(context)();
 		expect(result).toEqualRight(context);
-		throw new Error();
+		validateStages(fullBuild_preRelease_gradleLibrary);
 	});
 });
