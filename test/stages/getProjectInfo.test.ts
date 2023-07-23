@@ -31,7 +31,7 @@ describe('getProjectInfo', () => {
 				name: 'craig-build',
 				version: '1.0.0',
 				versionType: VersionType.Release,
-				npmCommand: 'yarn'
+				npmBuildTool: 'yarn'
 			}
 		};
 		const result = await getProjectInfo.execute(buildContext)();
@@ -53,7 +53,7 @@ describe('getProjectInfo', () => {
 				name: 'craig-build',
 				version: '1.0.0-beta',
 				versionType: VersionType.PreRelease,
-				npmCommand: 'yarn'
+				npmBuildTool: 'yarn'
 			}
 		};
 		const result = await getProjectInfo.execute(buildContext)();

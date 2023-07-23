@@ -1,4 +1,4 @@
-import { NpmCommand } from './NpmCommand';
+import { NpmBuildTool } from './NpmBuildTool';
 import path from 'path';
 import fs from 'fs';
 import { getCwd } from '../command/getCwd';
@@ -8,7 +8,7 @@ const getPackageLockJsonPath = () => path.join(getCwd(), 'package-lock.json');
 const getYarnLockPath = () => path.join(getCwd(), 'yarn.lock');
 const getPnpmLockYaml = () => path.join(getCwd(), 'pnpm-lock.yaml');
 
-export const getNpmCommand = (): Either.Either<Error, NpmCommand> => {
+export const getNpmBuildTool = (): Either.Either<Error, NpmBuildTool> => {
 	if (fs.existsSync(getPackageLockJsonPath())) {
 		return Either.right('npm');
 	}
@@ -23,3 +23,6 @@ export const getNpmCommand = (): Either.Either<Error, NpmCommand> => {
 
 	return Either.left(new Error('Unable to determine the NPM command to use'));
 };
+
+export const getNpmBuildCommand = (npmBuildTool: NpmBuildTool): string => '';
+export const getNpmPublishCommand = (npmBuildTool: NpmBuildTool): string => '';

@@ -23,7 +23,7 @@ import { regexTest } from '../functions/RegExp';
 import { GradleProject } from '../special/gradle';
 import { getRawProjectData } from '../projectCache';
 import { HelmJson } from '../configFileTypes/HelmJson';
-import { getNpmCommand } from '../context/npmCommandUtils';
+import { getNpmBuildTool } from '../context/npmCommandUtils';
 
 const BETA_VERSION_REGEX = /^.*-beta/;
 const SNAPSHOT_VERSION_REGEX = /^.*-SNAPSHOT/;
@@ -61,11 +61,11 @@ const addNpmCommand = (
 	projectInfo: ProjectInfo
 ): Either.Either<Error, ProjectInfo> =>
 	pipe(
-		getNpmCommand(),
+		getNpmBuildTool(),
 		Either.map(
 			(npmCommand): ProjectInfo => ({
 				...projectInfo,
-				npmCommand
+				npmBuildTool: npmCommand
 			})
 		)
 	);
