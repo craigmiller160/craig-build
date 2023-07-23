@@ -8,7 +8,6 @@ const getPackageLockJsonPath = () => path.join(getCwd(), 'package-lock.json');
 const getYarnLockPath = () => path.join(getCwd(), 'yarn.lock');
 const getPnpmLockYaml = () => path.join(getCwd(), 'pnpm-lock.yaml');
 
-// TODO needs tests
 export const getNpmCommand = (): Either.Either<Error, NpmCommand> => {
 	if (fs.existsSync(getPackageLockJsonPath())) {
 		return Either.right('npm');
