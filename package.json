@@ -15,6 +15,7 @@
   "scripts": {
     "lint": "eslint . --fix --max-warnings=0",
     "forceBuild": "rm -rf ./build && tsc",
+    "typeCheck": "tsc --noEmit",
     "test": "jest",
     "build": "npm run lint && npm run test && npm run forceBuild",
     "validate": "npm run lint && npm run test",
