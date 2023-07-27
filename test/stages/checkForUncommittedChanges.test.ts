@@ -33,9 +33,7 @@ describe('checkForUncommittedChanges', () => {
 		};
 
 		const result = await checkForUncommittedChanges.execute(buildContext)();
-		expect(result).toEqualLeft(
-			new Error('Cannot run with uncommitted changes')
-		);
+		expect(result).toEqualRight(buildContext);
 
 		expect(runCommandMock).toHaveBeenCalledWith(GIT_COMMAND);
 		expect(readUserInputMock).toHaveBeenCalledWith(
@@ -55,9 +53,7 @@ describe('checkForUncommittedChanges', () => {
 		};
 
 		const result = await checkForUncommittedChanges.execute(buildContext)();
-		expect(result).toEqualLeft(
-			new Error('Cannot run with uncommitted changes')
-		);
+		expect(result).toEqualRight(buildContext);
 
 		expect(runCommandMock).toHaveBeenCalledWith(GIT_COMMAND);
 		expect(readUserInputMock).toHaveBeenCalledWith(
