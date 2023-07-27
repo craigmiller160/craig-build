@@ -171,7 +171,7 @@ export const downloadArtifact = (
 			unknownToError
 		),
 		taskEither.chain((res) =>
-			streamTask(res.data.func.pipe(fs.createWriteStream(targetPath)))
+			streamTask(res.data.pipe(fs.createWriteStream(targetPath)))
 		),
 		taskEither.map(() => targetPath)
 	);
