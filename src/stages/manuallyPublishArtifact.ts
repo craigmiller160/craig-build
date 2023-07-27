@@ -25,13 +25,13 @@ export const getNpmPublishCommand = (version: string): string =>
 export const CLEAR_FILES_COMMAND = 'git checkout .';
 
 const getPublishDir = (): string =>
-	pipe(
+	func.pipe(
 		readFile(path.resolve(getCwd(), NPM_PROJECT_FILE)),
-		E.chain((_) => parseJson<PackageJson>(_)),
-		E.map((_) => O.fromNullable(_.publishDirectory)),
-		O.fromEither,
-		O.flatten,
-		O.fold(
+		either.chain((_) => parseJson<PackageJson>(_)),
+		either.map((_) => option.fromNullable(_.publishDirectory)),
+		option.fromEither,
+		option.flatten,
+		option.fold(
 			() => getCwd(),
 			(_) => path.join(getCwd(), _)
 		)
@@ -39,26 +39,26 @@ const getPublishDir = (): string =>
 
 const publishNpmArtifact = (
 	context: BuildContext
-): TE.TaskEither<Error, BuildContext> => {
+): taskEither.TaskEither<Error, BuildContext> => {
 	const publishDir = getPublishDir();
 	logger.debug(`NPM artifact publish directory: ${publishDir}`);
 	logger.debug(
 		'To change publish directory, set the "publishDirectory" property in the package.json'
 	);
-	return pipe(
+	return func.pipe(
 		runCommand(getNpmPublishCommand(context.projectInfo.version), {
 			printOutput: true,
 			cwd: publishDir
 		}),
-		TE.chain(() => runCommand(CLEAR_FILES_COMMAND)),
-		TE.map(() => context)
+		taskEither.chain(() => runCommand(CLEAR_FILES_COMMAND)),
+		taskEither.map(() => context)
 	);
 };
 
 const publishHelmArtifact = (
 	context: BuildContext
-): TE.TaskEither<Error, BuildContext> =>
-	pipe(
+): taskEither.TaskEither<Error, BuildContext> =>
+	func.pipe(
 		runCommand(
 			`helm package ./chart --version ${context.projectInfo.version}`,
 			{
@@ -66,8 +66,8 @@ const publishHelmArtifact = (
 				cwd: path.join(getCwd(), 'deploy')
 			}
 		),
-		TE.chainEitherK(() => getNexusCredentials()),
-		TE.chain(({ userName, password }) => {
+		taskEither.chainEitherK(() => getNexusCredentials()),
+		taskEither.chain(({ userName, password }) => {
 			const tarFile = path.join(
 				getCwd(),
 				'deploy',
@@ -81,26 +81,26 @@ const publishHelmArtifact = (
 				}
 			);
 		}),
-		TE.map(() => context)
+		taskEither.map(() => context)
 	);
 
 const handlePublishByProject = (
 	context: BuildContext
-): TE.TaskEither<Error, BuildContext> =>
+): taskEither.TaskEither<Error, BuildContext> =>
 	match(context)
 		.with({ projectType: P.when(isNpm) }, publishNpmArtifact)
 		.with({ projectType: P.when(isHelm) }, publishHelmArtifact)
 		.run();
 
-const isAnyNpmOrHelmLibrary: Pred.Predicate<ProjectType> = pipe(
+const isAnyNpmOrHelmLibrary: predicate.Predicate<ProjectType> = func.pipe(
 	isNpm,
-	Pred.or((_) => ProjectType.HelmLibrary === _)
+	predicate.or((_) => ProjectType.HelmLibrary === _)
 );
 
 const execute: StageExecuteFn = (context) => handlePublishByProject(context);
-const shouldStageExecute: Pred.Predicate<BuildContext> = pipe(
+const shouldStageExecute: predicate.Predicate<BuildContext> = func.pipe(
 	(_: BuildContext) => isAnyNpmOrHelmLibrary(_.projectType),
-	Pred.and((_) => isFullBuild(_.commandInfo.type))
+	predicate.and((_) => isFullBuild(_.commandInfo.type))
 );
 
 export const manuallyPublishArtifact: Stage = {
