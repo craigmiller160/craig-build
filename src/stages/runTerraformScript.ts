@@ -1,6 +1,5 @@
 import { Stage, StageExecuteFn } from './Stage';
-import * as TaskEither from 'fp-ts/TaskEither';
-import { predicate } from 'fp-ts';
+import { predicate, taskEither } from 'fp-ts';
 import { BuildContext } from '../context/BuildContext';
 import { function as func } from 'fp-ts';
 import { isApplication } from '../context/projectTypeUtils';
@@ -28,19 +27,19 @@ const terraformJsonToVariableString = (json: TerraformJson): string =>
 		.map(([key, value]) => `-var=${key}=${value}`)
 		.join(' ');
 
-const getTerraformVariableString = (): Either.Either<Error, string> => {
+const getTerraformVariableString = (): either.Either<Error, string> => {
 	if (fs.existsSync(path.join(getCwd(), TERRAFORM_JSON_PATH))) {
-		return pipe(
+		return func.pipe(
 			readTerraformProject(),
-			Either.map(terraformJsonToVariableString)
+			either.map(terraformJsonToVariableString)
 		);
 	}
-	return Either.right('');
+	return either.right('');
 };
 
 const applyTerraform = (
 	variableString: string
-): TaskEither.TaskEither<Error, string> => {
+): taskEither.TaskEither<Error, string> => {
 	const env = shellEnv.sync();
 	return runCommand(`terraform apply -auto-approve ${variableString}`, {
 		cwd: path.join(getCwd(), TERRAFORM_DEPLOY_PATH),
@@ -50,7 +49,7 @@ const applyTerraform = (
 };
 const planTerraform = (
 	variableString: string
-): TaskEither.TaskEither<Error, string> => {
+): taskEither.TaskEither<Error, string> => {
 	const env = shellEnv.sync();
 	return runCommand(`terraform plan ${variableString}`, {
 		cwd: path.join(getCwd(), TERRAFORM_DEPLOY_PATH),
@@ -66,53 +65,53 @@ type PromptResultArgs = {
 const handlePromptResult = ({
 	variableString,
 	promptResult
-}: PromptResultArgs): TaskEither.TaskEither<Error, string> =>
+}: PromptResultArgs): taskEither.TaskEither<Error, string> =>
 	match(promptResult)
 		.with('y', () => applyTerraform(variableString))
-		.otherwise(() => TaskEither.right(''));
+		.otherwise(() => taskEither.right(''));
 
 const promptAndRunIfChanges = (
 	planOutput: string,
 	variableString: string
-): TaskEither.TaskEither<Error, string> => {
+): taskEither.TaskEither<Error, string> => {
 	if (HAS_NO_CHANGES.test(planOutput)) {
 		logger.debug('No terraform changes to apply');
-		return TaskEither.right('');
+		return taskEither.right('');
 	}
 
-	return pipe(
-		TaskEither.fromTask<string, Error>(
+	return func.pipe(
+		taskEither.fromTask<string, Error>(
 			readUserInput(
 				'Do you want to execute the terraform script? (y/n): '
 			)
 		),
-		TaskEither.chain((promptResult) =>
+		taskEither.chain((promptResult) =>
 			handlePromptResult({ promptResult, variableString })
 		)
 	);
 };
 
-const askAndRunTerraform = (): TaskEither.TaskEither<Error, string> =>
-	pipe(
+const askAndRunTerraform = (): taskEither.TaskEither<Error, string> =>
+	func.pipe(
 		getTerraformVariableString(),
-		TaskEither.fromEither,
-		TaskEither.bindTo('variableString'),
-		TaskEither.bind('planOutput', ({ variableString }) =>
+		taskEither.fromEither,
+		taskEither.bindTo('variableString'),
+		taskEither.bind('planOutput', ({ variableString }) =>
 			planTerraform(variableString)
 		),
-		TaskEither.chain(({ planOutput, variableString }) =>
+		taskEither.chain(({ planOutput, variableString }) =>
 			promptAndRunIfChanges(planOutput, variableString)
 		)
 	);
 
 const execute: StageExecuteFn = (context) =>
-	pipe(
+	func.pipe(
 		askAndRunTerraform(),
-		TaskEither.map(() => context)
+		taskEither.map(() => context)
 	);
-const shouldStageExecute: Pred.Predicate<BuildContext> = pipe(
+const shouldStageExecute: predicate.Predicate<BuildContext> = func.pipe(
 	(_: BuildContext) => isApplication(_.projectType),
-	Pred.and((_) => _.hasTerraform)
+	predicate.and((_) => _.hasTerraform)
 );
 
 export const runTerraformScript: Stage = {
