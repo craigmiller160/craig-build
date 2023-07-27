@@ -43,8 +43,8 @@ dependencies:
     specifier: ^3.2.0
     version: 3.2.2
   ts-pattern:
-    specifier: ^4.0.2
-    version: 4.0.5
+    specifier: ^4.3.0
+    version: 4.3.0
   winston:
     specifier: ^3.3.3
     version: 3.8.1
@@ -4970,8 +4970,8 @@ packages:
       yn: 3.1.1
     dev: true
 
-  /ts-pattern@4.0.5:
-    resolution: {integrity: sha512-Bq44KCEt7JVaNLa148mBCJkcQf4l7jtLEBDuDdeuLynWDA+1a60P4D0rMkqSM9mOKLQbIWUddE9h3XKyKwBeqA==}
+  /ts-pattern@4.3.0:
+    resolution: {integrity: sha512-pefrkcd4lmIVR0LA49Imjf9DYLK8vtWhqBPA3Ya1ir8xCW0O2yjL9dsCVvI7pCodLC5q7smNpEtDR2yVulQxOg==}
     dev: false
 
   /tslib@1.14.1:
