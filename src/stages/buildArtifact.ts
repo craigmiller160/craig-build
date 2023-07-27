@@ -8,6 +8,7 @@ import * as Pred from 'fp-ts/Predicate';
 import { ProjectType } from '../context/ProjectType';
 import { Stage, StageExecuteFn } from './Stage';
 import { isFullBuild } from '../context/commandTypeUtils';
+import { getNpmBuildToolInstallCommand } from '../context/npmCommandUtils';
 
 export const MAVEN_BUILD_CMD = 'mvn clean deploy -Ddependency-check.skip=true';
 export const NPM_BUILD_CMD = 'npm run build';
@@ -22,6 +23,19 @@ const runBuildCommand = (
 		TE.map(() => context)
 	);
 
+const buildNpmProject = (
+	context: BuildContext
+): TE.TaskEither<Error, BuildContext> => {
+	const installCommand = getNpmBuildToolInstallCommand(
+		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+		context.projectInfo.npmBuildTool!
+	);
+	return pipe(
+		runCommand(installCommand, { printOutput: true }),
+		TE.chain(() => runBuildCommand(context, NPM_BUILD_CMD))
+	);
+};
+
 const handleBuildingArtifactByProject = (
 	context: BuildContext
 ): TE.TaskEither<Error, BuildContext> =>
@@ -29,9 +43,7 @@ const handleBuildingArtifactByProject = (
 		.with({ projectType: P.when(isMaven) }, (_) =>
 			runBuildCommand(_, MAVEN_BUILD_CMD)
 		)
-		.with({ projectType: P.when(isNpm) }, (_) =>
-			runBuildCommand(_, NPM_BUILD_CMD)
-		)
+		.with({ projectType: P.when(isNpm) }, buildNpmProject)
 		.with({ projectType: P.when(isGradle) }, (_) =>
 			runBuildCommand(_, GRADLE_BUILD_COMMAND)
 		)
