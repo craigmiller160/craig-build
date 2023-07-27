@@ -21,8 +21,9 @@ describe('checkForUncommittedChanges', () => {
 		jest.resetAllMocks();
 	});
 
-	it('uncommitted changes found for FullBuild build', async () => {
+	it('uncommitted changes found for FullBuild build, approve to proceed', async () => {
 		runCommandMock.mockImplementation(() => taskEither.right('abc'));
+		readUserInputMock.mockImplementation(() => task.of('y'));
 		const buildContext: BuildContext = {
 			...baseBuildContext,
 			commandInfo: {
@@ -32,16 +33,17 @@ describe('checkForUncommittedChanges', () => {
 		};
 
 		const result = await checkForUncommittedChanges.execute(buildContext)();
-		expect(result).toEqualLeft(
-			new Error('Cannot run with uncommitted changes')
-		);
+		expect(result).toEqualRight(buildContext);
 
 		expect(runCommandMock).toHaveBeenCalledWith(GIT_COMMAND);
-		expect(readUserInputMock).not.toHaveBeenCalled();
+		expect(readUserInputMock).toHaveBeenCalledWith(
+			'Uncommitted changes found, do you want to proceed? (y/n): '
+		);
 	});
 
-	it('uncommitted changes found for DockerOnly build', async () => {
+	it('uncommitted changes found for DockerOnly build, approve to proceed', async () => {
 		runCommandMock.mockImplementation(() => taskEither.right('abc'));
+		readUserInputMock.mockImplementation(() => task.of('y'));
 		const buildContext: BuildContext = {
 			...baseBuildContext,
 			commandInfo: {
@@ -51,12 +53,12 @@ describe('checkForUncommittedChanges', () => {
 		};
 
 		const result = await checkForUncommittedChanges.execute(buildContext)();
-		expect(result).toEqualLeft(
-			new Error('Cannot run with uncommitted changes')
-		);
+		expect(result).toEqualRight(buildContext);
 
 		expect(runCommandMock).toHaveBeenCalledWith(GIT_COMMAND);
-		expect(readUserInputMock).not.toHaveBeenCalled();
+		expect(readUserInputMock).toHaveBeenCalledWith(
+			'Uncommitted changes found, do you want to proceed? (y/n): '
+		);
 	});
 
 	it('uncommitted changes not found', async () => {
