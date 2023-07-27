@@ -23,7 +23,7 @@ const formatCommand = (command: string, variables: Variables): string =>
 export const runCommand = (
 	command: string,
 	options?: Partial<CommandOptions>
-): TE.TaskEither<Error, string> => {
+): taskEither.TaskEither<Error, string> => {
 	const printOutput = options?.printOutput ?? false;
 	const cwd = options?.cwd ?? getCwd();
 	const variables = options?.variables ?? {};
@@ -31,7 +31,7 @@ export const runCommand = (
 	logger.debug(`Command: ${command}`);
 	const formattedCommand = formatCommand(command, variables);
 
-	return TE.tryCatch(
+	return taskEither.tryCatch(
 		() =>
 			new Promise((resolve, reject) => {
 				const childProcess = spawn('bash', ['-c', formattedCommand], {
