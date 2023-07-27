@@ -24,7 +24,7 @@ const getCmdSudo = (): string =>
 		.with('Darwin', () => '')
 		.otherwise(() => 'sudo ');
 
-const isDockerOrApplication: predicate.Predicate<ProjectType> = pipe(
+const isDockerOrApplication: predicate.Predicate<ProjectType> = func.pipe(
 	isApplication,
 	predicate.or(isDocker)
 );
@@ -84,7 +84,9 @@ const removeExistingImagesIfExist = (
 		)
 		.otherwise(() => taskEither.right(''));
 
-const buildDockerImage = (dockerTag: string): taskEither.TaskEither<Error, string> =>
+const buildDockerImage = (
+	dockerTag: string
+): taskEither.TaskEither<Error, string> =>
 	runCommand(
 		`${getCmdSudo()}docker build --platform linux/amd64 --network=host -t ${dockerTag} .`,
 		{
@@ -93,7 +95,9 @@ const buildDockerImage = (dockerTag: string): taskEither.TaskEither<Error, strin
 		}
 	);
 
-const pushDockerImage = (dockerTag: string): taskEither.TaskEither<Error, string> =>
+const pushDockerImage = (
+	dockerTag: string
+): taskEither.TaskEither<Error, string> =>
 	runCommand(`${getCmdSudo()}docker push ${dockerTag}`, {
 		printOutput: true
 	});
@@ -102,7 +106,7 @@ const runDockerBuild = (
 	context: BuildContext
 ): taskEither.TaskEither<Error, BuildContext> => {
 	const dockerTag = createDockerImageTag(context.projectInfo);
-	return pipe(
+	return func.pipe(
 		getNexusCredentials(),
 		taskEither.fromEither,
 		taskEither.chain(loginToNexusDocker),
@@ -127,7 +131,7 @@ const isNotHelm: predicate.Predicate<ProjectType> = predicate.not(isHelm);
 const isNotTerraformOnly: predicate.Predicate<CommandType> =
 	predicate.not(isTerraformOnly);
 
-const shouldStageExecute: predicate.Predicate<BuildContext> = pipe(
+const shouldStageExecute: predicate.Predicate<BuildContext> = func.pipe(
 	(_: BuildContext) => isDockerOrApplication(_.projectType),
 	predicate.and((_) => isNotKubernetesOnly(_.commandInfo.type)),
 	predicate.and((_) => isNotHelm(_.projectType)),

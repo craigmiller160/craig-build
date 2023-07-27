@@ -23,7 +23,7 @@ type RunCommandType = typeof runCommand;
 export const createReadGradleProject =
 	(doRunCommand: RunCommandType) =>
 	(projectDirectory: string): taskEither.TaskEither<Error, GradleProject> =>
-		pipe(
+		func.pipe(
 			doRunCommand(createCommand(projectDirectory)),
 			taskEither.chainEitherK((_) => parseJson<GradleProject>(_))
 		);

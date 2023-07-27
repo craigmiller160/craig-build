@@ -18,7 +18,7 @@ const runBuildCommand = (
 	context: BuildContext,
 	command: string
 ): taskEither.TaskEither<Error, BuildContext> =>
-func.pipe(
+	func.pipe(
 		runCommand(command, { printOutput: true }),
 		taskEither.map(() => context)
 	);
@@ -30,7 +30,7 @@ const buildNpmProject = (
 		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 		context.projectInfo.npmBuildTool!
 	);
-	return pipe(
+	return func.pipe(
 		runCommand(installCommand, { printOutput: true }),
 		taskEither.chain(() => runBuildCommand(context, NPM_BUILD_CMD))
 	);
@@ -49,7 +49,7 @@ const handleBuildingArtifactByProject = (
 		)
 		.run();
 
-const isMavenGradleNpm: predicate.Predicate<ProjectType> = pipe(
+const isMavenGradleNpm: predicate.Predicate<ProjectType> = func.pipe(
 	isMaven,
 	predicate.or(isNpm),
 	predicate.or(isGradle)
@@ -58,7 +58,7 @@ const isMavenGradleNpm: predicate.Predicate<ProjectType> = pipe(
 const execute: StageExecuteFn = (context) =>
 	handleBuildingArtifactByProject(context);
 
-const shouldStageExecute: predicate.Predicate<BuildContext> = pipe(
+const shouldStageExecute: predicate.Predicate<BuildContext> = func.pipe(
 	(_: BuildContext) => isMavenGradleNpm(_.projectType),
 	predicate.and((_) => isFullBuild(_.commandInfo.type))
 );

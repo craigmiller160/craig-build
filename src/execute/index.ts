@@ -54,7 +54,8 @@ export const execute = (
 ): taskEither.TaskEither<Error, BuildContext> =>
 	func.pipe(
 		stages,
-		A.reduce(taskEither.right<Error, BuildContext>(context), (ctxTE, stage) =>
-			executeStage(ctxTE, stage)
+		array.reduce(
+			taskEither.right<Error, BuildContext>(context),
+			(ctxTE, stage) => executeStage(ctxTE, stage)
 		)
 	);

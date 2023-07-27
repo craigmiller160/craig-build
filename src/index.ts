@@ -15,7 +15,7 @@ import { logger } from './logger';
 import { task } from 'fp-ts';
 import { NPM_PROJECT_FILE } from './configFileTypes/constants';
 
-const packageJson: PackageJson = pipe(
+const packageJson: PackageJson = func.pipe(
 	readFile(path.resolve(__dirname, '..', NPM_PROJECT_FILE)),
 	either.chain((_) => parseJson<PackageJson>(_)),
 	EU.getOrThrow
@@ -35,17 +35,17 @@ program
 	)
 	.parse(process.argv);
 
-pipe(
+func.pipe(
 	setupBuildContext(),
 	execute,
 	taskEither.fold(
 		() => {
 			logger.error('Build failed');
-			return T.of(1);
+			return task.of(1);
 		},
 		() => {
 			logger.info('Build completed');
-			return T.of(0);
+			return task.of(0);
 		}
 	)
 )().then(process.exit);
