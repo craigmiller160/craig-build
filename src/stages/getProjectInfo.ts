@@ -1,10 +1,9 @@
 import { Stage, StageExecuteFn } from './Stage';
-import { function as func } from 'fp-ts';
 import { ProjectType } from '../context/ProjectType';
 import { ProjectInfo } from '../context/ProjectInfo';
 import { match } from 'ts-pattern';
 import { taskEither } from 'fp-ts';
-import { either } from 'fp-ts';
+import { either, function as func } from 'fp-ts';
 import { predicate } from 'fp-ts';
 import {
 	isDocker,
@@ -28,7 +27,7 @@ import { getNpmBuildTool } from '../context/npmCommandUtils';
 const BETA_VERSION_REGEX = /^.*-beta/;
 const SNAPSHOT_VERSION_REGEX = /^.*-SNAPSHOT/;
 
-const matchesPreReleaseRegex: predicate.Predicate<string> = pipe(
+const matchesPreReleaseRegex: predicate.Predicate<string> = func.pipe(
 	regexTest(BETA_VERSION_REGEX),
 	predicate.or(regexTest(SNAPSHOT_VERSION_REGEX))
 );
@@ -44,7 +43,7 @@ const getVersionType = (version: string): VersionType =>
 const readMavenProjectInfo = (
 	projectType: ProjectType
 ): taskEither.TaskEither<Error, ProjectInfo> =>
-func.pipe(
+	func.pipe(
 		getRawProjectData<PomXml>(projectType),
 		taskEither.map((pomXml): ProjectInfo => {
 			const version = pomXml.project.version[0];
@@ -59,10 +58,10 @@ func.pipe(
 
 const addNpmCommand = (
 	projectInfo: ProjectInfo
-): Either.Either<Error, ProjectInfo> =>
-func.pipe(
+): either.Either<Error, ProjectInfo> =>
+	func.pipe(
 		getNpmBuildTool(),
-		Either.map(
+		either.map(
 			(npmCommand): ProjectInfo => ({
 				...projectInfo,
 				npmBuildTool: npmCommand
@@ -73,7 +72,7 @@ func.pipe(
 const readNpmProjectInfo = (
 	projectType: ProjectType
 ): taskEither.TaskEither<Error, ProjectInfo> =>
-func.pipe(
+	func.pipe(
 		getRawProjectData<PackageJson>(projectType),
 		taskEither.map((packageJson): ProjectInfo => {
 			const [group, name] = npmSeparateGroupAndName(packageJson.name);
@@ -90,7 +89,7 @@ func.pipe(
 const readDockerProjectInfo = (
 	projectType: ProjectType
 ): taskEither.TaskEither<Error, ProjectInfo> =>
-func.pipe(
+	func.pipe(
 		getRawProjectData<DockerJson>(projectType),
 		taskEither.map((dockerJson): ProjectInfo => {
 			const [group, name] = npmSeparateGroupAndName(dockerJson.name);
@@ -106,7 +105,7 @@ func.pipe(
 const readGradleProjectInfo = (
 	projectType: ProjectType
 ): taskEither.TaskEither<Error, ProjectInfo> =>
-func.pipe(
+	func.pipe(
 		getRawProjectData<GradleProject>(projectType),
 		taskEither.map((buildGradle) => ({
 			group: buildGradle.info.group,
@@ -119,7 +118,7 @@ func.pipe(
 const readHelmProjectInfo = (
 	projectType: ProjectType
 ): taskEither.TaskEither<Error, ProjectInfo> =>
-func.pipe(
+	func.pipe(
 		getRawProjectData<HelmJson>(projectType),
 		taskEither.map((helmJson): ProjectInfo => {
 			const [group, name] = npmSeparateGroupAndName(helmJson.name);
@@ -149,11 +148,13 @@ const readProjectInfoByType = (
 		.when(isGradle, readGradleProjectInfo)
 		.when(isHelm, readHelmProjectInfo)
 		.otherwise(() =>
-			taskEither.left(new Error(`Unsupported ProjectType: ${projectType}`))
+			taskEither.left(
+				new Error(`Unsupported ProjectType: ${projectType}`)
+			)
 		);
 
 const execute: StageExecuteFn = (context) =>
-func.pipe(
+	func.pipe(
 		readProjectInfoByType(context.projectType),
 		taskEither.map((_) => ({
 			...context,
