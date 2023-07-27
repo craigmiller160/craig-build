@@ -15,7 +15,7 @@
   "scripts": {
     "lint": "eslint . --fix --max-warnings=0",
     "forceBuild": "rm -rf ./build && tsc",
-    "typeCheck": "tsc --noEmit",
+    "typeCheck": "tsc --noEmit --project ./test/tsconfig.json",
     "test": "jest",
     "build": "npm run lint && npm run test && npm run forceBuild",
     "validate": "npm run typeCheck && npm run lint && npm run test",
