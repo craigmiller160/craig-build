@@ -41,7 +41,7 @@ describe('validateProjectVersionAllowed', () => {
 
 	it('allows npm release version with no conflicts', async () => {
 		searchForNpmReleasesMock.mockImplementation(() =>
-			TE.right({ items: [] })
+			taskEither.right({ items: [] })
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -60,7 +60,7 @@ describe('validateProjectVersionAllowed', () => {
 
 	it('allows maven release version with no conflicts', async () => {
 		searchForMavenReleasesMock.mockImplementation(() =>
-			TE.right({ items: [] })
+			taskEither.right({ items: [] })
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -79,7 +79,7 @@ describe('validateProjectVersionAllowed', () => {
 
 	it('allows gradle kotlin release version with no conflicts', async () => {
 		searchForMavenReleasesMock.mockImplementation(() =>
-			TE.right({ items: [] })
+			taskEither.right({ items: [] })
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -98,7 +98,7 @@ describe('validateProjectVersionAllowed', () => {
 
 	it('allows docker release version with no conflicts', async () => {
 		searchForDockerReleasesMock.mockImplementation(() =>
-			TE.right({ items: [] })
+			taskEither.right({ items: [] })
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -117,7 +117,7 @@ describe('validateProjectVersionAllowed', () => {
 
 	it('rejects npm release version with conflict', async () => {
 		searchForNpmReleasesMock.mockImplementation(() =>
-			TE.right({ items: [invalidItem] })
+			taskEither.right({ items: [invalidItem] })
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -138,7 +138,7 @@ describe('validateProjectVersionAllowed', () => {
 
 	it('rejects maven release version with conflicts', async () => {
 		searchForMavenReleasesMock.mockImplementation(() =>
-			TE.right({ items: [invalidItem] })
+			taskEither.right({ items: [invalidItem] })
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -159,7 +159,7 @@ describe('validateProjectVersionAllowed', () => {
 
 	it('rejects gradle kotlin release version with conflicts', async () => {
 		searchForMavenReleasesMock.mockImplementation(() =>
-			TE.right({ items: [invalidItem] })
+			taskEither.right({ items: [invalidItem] })
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -180,7 +180,7 @@ describe('validateProjectVersionAllowed', () => {
 
 	it('rejects docker release version with conflicts', async () => {
 		searchForDockerReleasesMock.mockImplementation(() =>
-			TE.right({ items: [invalidItem] })
+			taskEither.right({ items: [invalidItem] })
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,

@@ -19,7 +19,7 @@ describe('waitOnNexusUpdate', () => {
 	});
 
 	it('waits on non-docker application', async () => {
-		waitMock.mockImplementation(() => T.of(''));
+		waitMock.mockImplementation(() => task.of(''));
 		const buildContext: BuildContext = {
 			...baseBuildContext,
 			projectType: ProjectType.NpmApplication

@@ -20,7 +20,7 @@ jest.mock('../../src/stages', () => {
 export const prepareStageExecutionMock = (context: BuildContext) => {
 	stages.forEach((stage) => {
 		(stage.execute as jest.Mock).mockImplementation(() =>
-			TE.right(context)
+			taskEither.right(context)
 		);
 	});
 };

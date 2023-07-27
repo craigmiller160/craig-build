@@ -15,7 +15,7 @@ describe('validateGitTag', () => {
 	});
 
 	it('confirms there is no existing tag for release version', async () => {
-		runCommandMock.mockImplementation(() => TE.right(versions));
+		runCommandMock.mockImplementation(() => taskEither.right(versions));
 		const buildContext: BuildContext = {
 			...baseBuildContext,
 			projectInfo: {
@@ -32,7 +32,7 @@ describe('validateGitTag', () => {
 	});
 
 	it('finds an existing tag for release version', async () => {
-		runCommandMock.mockImplementation(() => TE.right(versions));
+		runCommandMock.mockImplementation(() => taskEither.right(versions));
 		const buildContext: BuildContext = {
 			...baseBuildContext,
 			projectInfo: {
@@ -51,7 +51,7 @@ describe('validateGitTag', () => {
 	});
 
 	it('skips execution for pre-release version', () => {
-		runCommandMock.mockImplementation(() => TE.right(versions));
+		runCommandMock.mockImplementation(() => taskEither.right(versions));
 		const buildContext: BuildContext = {
 			...baseBuildContext,
 			projectInfo: {

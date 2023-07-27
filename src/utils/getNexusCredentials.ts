@@ -13,7 +13,9 @@ export const getNexusCredentials = (): either.Either<Error, NexusCredentials> =>
 	func.pipe(
 		option.of(shellEnv.sync<EnvironmentVariables>()),
 		option.bindTo('env'),
-		option.bind('userName', ({ env }) => option.fromNullable(env.NEXUS_USER)),
+		option.bind('userName', ({ env }) =>
+			option.fromNullable(env.NEXUS_USER)
+		),
 		option.bind('password', ({ env }) =>
 			option.fromNullable(env.NEXUS_PASSWORD)
 		),

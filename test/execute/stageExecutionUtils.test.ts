@@ -15,7 +15,7 @@ import '@relmify/jest-fp-ts';
 const baseContext = createBuildContext();
 const mockStage: Stage = {
 	name: 'Mock Stage',
-	execute: () => TE.right(baseContext),
+	execute: () => taskEither.right(baseContext),
 	shouldStageExecute: jest.fn()
 };
 

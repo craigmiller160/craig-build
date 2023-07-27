@@ -10,7 +10,7 @@ const baseBuildContext = createBuildContext();
 
 describe('gitTag', () => {
 	it('creates and pushes tag for release project', async () => {
-		runCommandMock.mockImplementation(() => TE.right(''));
+		runCommandMock.mockImplementation(() => taskEither.right(''));
 		const buildContext: BuildContext = {
 			...baseBuildContext,
 			projectInfo: {

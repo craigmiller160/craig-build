@@ -55,7 +55,9 @@ describe('preparePreReleaseVersion', () => {
 		const nexusResult: NexusSearchResult = {
 			items: [createItem('1.0.0-beta.2')]
 		};
-		searchForNpmBetasMock.mockImplementation(() => TE.right(nexusResult));
+		searchForNpmBetasMock.mockImplementation(() =>
+			taskEither.right(nexusResult)
+		);
 
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -92,7 +94,9 @@ describe('preparePreReleaseVersion', () => {
 		const nexusResult: NexusSearchResult = {
 			items: [createItem('1.1.0-beta.2')]
 		};
-		searchForNpmBetasMock.mockImplementation(() => TE.right(nexusResult));
+		searchForNpmBetasMock.mockImplementation(() =>
+			taskEither.right(nexusResult)
+		);
 
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -159,7 +163,9 @@ describe('preparePreReleaseVersion', () => {
 		const nexusResult: NexusSearchResult = {
 			items: [createItem('1.0.0-beta.2')]
 		};
-		searchForNpmBetasMock.mockImplementation(() => TE.right(nexusResult));
+		searchForNpmBetasMock.mockImplementation(() =>
+			taskEither.right(nexusResult)
+		);
 
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -199,7 +205,9 @@ describe('preparePreReleaseVersion', () => {
 		const nexusResult: NexusSearchResult = {
 			items: []
 		};
-		searchForNpmBetasMock.mockImplementation(() => TE.right(nexusResult));
+		searchForNpmBetasMock.mockImplementation(() =>
+			taskEither.right(nexusResult)
+		);
 
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -233,7 +241,7 @@ describe('preparePreReleaseVersion', () => {
 
 	it('not full build, grabs pre-release version for Maven project from Nexus', async () => {
 		searchForMavenSnapshotsMock.mockImplementation(() =>
-			TE.right({ items: [createItem('1.1.0-20211225.003019-1')] })
+			taskEither.right({ items: [createItem('1.1.0-20211225.003019-1')] })
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -270,7 +278,7 @@ describe('preparePreReleaseVersion', () => {
 
 	it('not full build, grabs pre-release version for Gradle project in Nexus', async () => {
 		searchForMavenSnapshotsMock.mockImplementation(() =>
-			TE.right({ items: [createItem('1.1.0-20211225.003019-1')] })
+			taskEither.right({ items: [createItem('1.1.0-20211225.003019-1')] })
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -307,7 +315,7 @@ describe('preparePreReleaseVersion', () => {
 
 	it('is full build, grabs pre-release version for Gradle project in Nexus', async () => {
 		searchForMavenSnapshotsMock.mockImplementation(() =>
-			TE.right({ items: [createItem('1.1.0-20211225.003019-1')] })
+			taskEither.right({ items: [createItem('1.1.0-20211225.003019-1')] })
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -341,7 +349,7 @@ describe('preparePreReleaseVersion', () => {
 
 	it('not full build, cannot find pre-release version for Maven project in Nexus', async () => {
 		searchForMavenSnapshotsMock.mockImplementation(() =>
-			TE.right({ items: [] })
+			taskEither.right({ items: [] })
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -377,7 +385,7 @@ describe('preparePreReleaseVersion', () => {
 			items: [createItem('1.0.0-beta.2')]
 		};
 		searchForDockerBetasMock.mockImplementation(() =>
-			TE.right(nexusResult)
+			taskEither.right(nexusResult)
 		);
 
 		const buildContext: BuildContext = {
@@ -415,7 +423,7 @@ describe('preparePreReleaseVersion', () => {
 			items: [createItem('1.1.0-beta.2')]
 		};
 		searchForDockerBetasMock.mockImplementation(() =>
-			TE.right(nexusResult)
+			taskEither.right(nexusResult)
 		);
 
 		const buildContext: BuildContext = {
@@ -453,7 +461,7 @@ describe('preparePreReleaseVersion', () => {
 			items: [createItem('1.0.0-beta.2')]
 		};
 		searchForDockerBetasMock.mockImplementation(() =>
-			TE.right(nexusResult)
+			taskEither.right(nexusResult)
 		);
 
 		const buildContext: BuildContext = {
@@ -494,7 +502,7 @@ describe('preparePreReleaseVersion', () => {
 			items: []
 		};
 		searchForDockerBetasMock.mockImplementation(() =>
-			TE.right(nexusResult)
+			taskEither.right(nexusResult)
 		);
 
 		const buildContext: BuildContext = {

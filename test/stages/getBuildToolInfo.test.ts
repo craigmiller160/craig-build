@@ -30,7 +30,7 @@ describe('getBuildToolInfo', () => {
 
 	it('gets pre-release info', async () => {
 		readFileMock.mockImplementation(() =>
-			E.right(JSON.stringify(preReleasePackageJson))
+			either.right(JSON.stringify(preReleasePackageJson))
 		);
 		const result = await getBuildToolInfo.execute(buildContext)();
 		expect(result).toEqualRight({
@@ -46,7 +46,7 @@ describe('getBuildToolInfo', () => {
 
 	it('gets pre-release info with beta number', async () => {
 		readFileMock.mockImplementation(() =>
-			E.right(
+			either.right(
 				JSON.stringify({
 					...preReleasePackageJson,
 					version: '1.0.0-beta.1'
@@ -67,7 +67,7 @@ describe('getBuildToolInfo', () => {
 
 	it('get release info', async () => {
 		readFileMock.mockImplementation(() =>
-			E.right(JSON.stringify(releasePackageJson))
+			either.right(JSON.stringify(releasePackageJson))
 		);
 		const result = await getBuildToolInfo.execute(buildContext)();
 		expect(result).toEqualRight({
