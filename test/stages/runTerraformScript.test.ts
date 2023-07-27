@@ -8,8 +8,7 @@ import { ProjectType } from '../../src/context/ProjectType';
 import { runTerraformScript } from '../../src/stages/runTerraformScript';
 import '@relmify/jest-fp-ts';
 import { readUserInput } from '../../src/utils/readUserInput';
-import * as Task from 'fp-ts/Task';
-import * as TaskEither from 'fp-ts/TaskEither';
+import { task, taskEither } from 'fp-ts';
 import shellEnv from 'shell-env';
 
 // The no changes line includes the hidden characters that will show up when testing the output
@@ -85,9 +84,9 @@ describe('runTerraformScript', () => {
 			'mavenReleaseApplicationWithTerraform'
 		);
 		getCwdMock.mockImplementation(() => workingDir);
-		readUserInputMock.mockImplementation(() => Task.of('y'));
+		readUserInputMock.mockImplementation(() => task.of('y'));
 		runCommandMock.mockImplementation(() =>
-			TaskEither.right(HAS_CHANGES_OUTPUT)
+			taskEither.right(HAS_CHANGES_OUTPUT)
 		);
 		const buildContext: BuildContext = {
 			...createBuildContext(),
@@ -127,7 +126,7 @@ describe('runTerraformScript', () => {
 		getCwdMock.mockImplementation(() => workingDir);
 		readUserInputMock.mockImplementation(() => 'n');
 		runCommandMock.mockImplementation(() =>
-			TaskEither.right(HAS_CHANGES_OUTPUT)
+			taskEither.right(HAS_CHANGES_OUTPUT)
 		);
 		const buildContext: BuildContext = {
 			...createBuildContext(),
@@ -158,9 +157,9 @@ describe('runTerraformScript', () => {
 			'mavenReleaseApplicationWithTerraformAndSecrets'
 		);
 		getCwdMock.mockImplementation(() => workingDir);
-		readUserInputMock.mockImplementation(() => Task.of('y'));
+		readUserInputMock.mockImplementation(() => task.of('y'));
 		runCommandMock.mockImplementation(() =>
-			TaskEither.right(HAS_CHANGES_OUTPUT)
+			taskEither.right(HAS_CHANGES_OUTPUT)
 		);
 		const buildContext: BuildContext = {
 			...createBuildContext(),
@@ -205,9 +204,9 @@ describe('runTerraformScript', () => {
 			'mavenReleaseApplicationWithTerraform'
 		);
 		getCwdMock.mockImplementation(() => workingDir);
-		readUserInputMock.mockImplementation(() => Task.of('y'));
+		readUserInputMock.mockImplementation(() => task.of('y'));
 		runCommandMock.mockImplementation(() =>
-			TaskEither.right(NO_CHANGES_OUTPUT)
+			taskEither.right(NO_CHANGES_OUTPUT)
 		);
 		const buildContext: BuildContext = {
 			...createBuildContext(),
