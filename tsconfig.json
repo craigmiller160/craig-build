@@ -22,7 +22,7 @@
     "isolatedModules": true,
     "jsx": "react",
     "declaration": false,
-    "module": "commonjs"
+    "module": "Node16"
   },
   "include": [
     "src/**/*"
