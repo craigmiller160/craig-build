@@ -8,9 +8,9 @@ export const regexTest =
 
 export const regexExecGroups =
 	<Groups extends object>(regex: RegExp) =>
-	(value: string): O.Option<Groups> =>
-		pipe(
-			O.fromNullable(regex.exec(value)),
-			O.chain((_) => O.fromNullable(_.groups)),
-			O.map((_) => _ as Groups)
+	(value: string): option.Option<Groups> =>
+		func.pipe(
+			option.fromNullable(regex.exec(value)),
+			option.chain((_) => option.fromNullable(_.groups)),
+			option.map((_) => _ as Groups)
 		);

@@ -4,21 +4,21 @@ import { Parser } from 'xml2js';
 import { option } from 'fp-ts';
 import { function as func } from 'fp-ts';
 
-export const parseXml = <T>(xml: string): E.Either<Error, T> =>
-	pipe(
-		E.tryCatch(() => {
-			let parsed: O.Option<T> = O.none;
+export const parseXml = <T>(xml: string): either.Either<Error, T> =>
+	func.pipe(
+		either.tryCatch(() => {
+			let parsed: option.Option<T> = option.none;
 			const parser = new Parser();
 			parser.parseString(xml, (error: Error | null, result: T) => {
 				if (error) {
 					throw error;
 				}
-				parsed = O.some(result);
+				parsed = option.some(result);
 			});
-			return pipe(
+			return func.pipe(
 				parsed,
-				E.fromOption(() => new Error('No parsed XML to return'))
+				either.fromOption(() => new Error('No parsed XML to return'))
 			);
 		}, unknownToError),
-		E.flatten
+		either.flatten
 	);
