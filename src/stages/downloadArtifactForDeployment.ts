@@ -19,7 +19,6 @@ import {
 } from '../context/projectTypeUtils';
 import { isPreRelease, isRelease } from '../context/projectInfoUtils';
 import { ProjectType } from '../context/ProjectType';
-import { flow, pipe } from 'fp-ts/function';
 import {
 	NexusSearchResultAsset,
 	NexusSearchResultItem
@@ -35,24 +34,31 @@ import { predicate } from 'fp-ts';
 import { Stage, StageExecuteFn } from './Stage';
 import { CommandType } from '../context/CommandType';
 import { isKubernetesOnly, isTerraformOnly } from '../context/commandTypeUtils';
+import { function as func } from 'fp-ts';
+
+const { pipe, flow } = func;
 
 const isMavenOrGradle: predicate.Predicate<ProjectType> = pipe(
 	isMaven,
 	predicate.or(isGradle)
 );
 
-const getExtension = (projectType: ProjectType): taskEither.TaskEither<Error, string> =>
+const getExtension = (
+	projectType: ProjectType
+): taskEither.TaskEither<Error, string> =>
 	match(projectType)
 		.when(isMavenOrGradle, () => taskEither.right('jar'))
 		.when(isNpm, () => taskEither.right('tgz'))
 		.otherwise(() =>
-			taskEither.left(new Error(`No extension for ProjectType: ${projectType}`))
+			taskEither.left(
+				new Error(`No extension for ProjectType: ${projectType}`)
+			)
 		);
 
 const createTargetDirPath = () => path.join(getCwd(), 'deploy', 'build');
 
 const createTargetDir = (): taskEither.TaskEither<Error, string> =>
-func.pipe(
+	func.pipe(
 		either.right(createTargetDirPath()),
 		either.bindTo('targetDir'),
 		either.chainFirst(({ targetDir }) => rmDirIfExists(targetDir)),
@@ -64,14 +70,14 @@ type GetFirstItem = (
 	items: NexusSearchResultItem[]
 ) => taskEither.TaskEither<Error, NexusSearchResultItem>;
 const getFirstItem: GetFirstItem = flow(
-	A.head,
+	array.head,
 	taskEither.fromOption(() => new Error('No results for artifact search'))
 );
 
 const getDownloadUrl = (assets: NexusSearchResultAsset[], ext: string) =>
-func.pipe(
+	func.pipe(
 		assets,
-		A.findFirst((asset) => asset.downloadUrl.endsWith(ext)),
+		array.findFirst((asset) => asset.downloadUrl.endsWith(ext)),
 		option.map((asset) => asset.downloadUrl),
 		taskEither.fromOption(
 			() => new Error('Unable to find correct downloadUrl for artifact')
@@ -82,7 +88,7 @@ const createTargetFilePath = (
 	projectInfo: ProjectInfo,
 	ext: string
 ): taskEither.TaskEither<Error, string> =>
-func.pipe(
+	func.pipe(
 		`${projectInfo.name}-${projectInfo.version}.${ext}`,
 		(_) => path.join(createTargetDirPath(), _),
 		taskEither.right
@@ -94,7 +100,7 @@ const doDownloadArtifact = (
 	context: BuildContext,
 	searchFn: NexusRepoGroupSearchFn
 ): taskEither.TaskEither<Error, BuildContext> =>
-func.pipe(
+	func.pipe(
 		createTargetDir(),
 		taskEither.chain(() => getExtension(context.projectType)),
 		taskEither.bindTo('ext'),
@@ -105,7 +111,9 @@ func.pipe(
 				context.projectInfo.version
 			)
 		),
-		taskEither.bind('firstItem', ({ result }) => getFirstItem(result.items)),
+		taskEither.bind('firstItem', ({ result }) =>
+			getFirstItem(result.items)
+		),
 		taskEither.bind('downloadUrl', ({ firstItem, ext }) =>
 			getDownloadUrl(firstItem.assets, ext)
 		),

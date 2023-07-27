@@ -2,22 +2,19 @@ import { BuildContext } from '../context/BuildContext';
 import { taskEither } from 'fp-ts';
 import { match, P } from 'ts-pattern';
 import { isApplication, isHelm } from '../context/projectTypeUtils';
-import { flow, pipe } from 'fp-ts/function';
 import path from 'path';
 import { getCwd } from '../command/getCwd';
-import { either } from 'fp-ts';
+import { either, monoid, readonlyArray, function as func } from 'fp-ts';
 import { runCommand } from '../command/runCommand';
 import { predicate } from 'fp-ts';
 import { Stage, StageExecuteFn } from './Stage';
 import { createDockerImageTag } from '../utils/dockerUtils';
 import { getAndCacheHelmProject } from '../projectCache';
-import * as RArray from 'fp-ts/ReadonlyArray';
-import * as Monoid from 'fp-ts/Monoid';
 import shellEnv from 'shell-env';
 import { CommandType } from '../context/CommandType';
 import { isTerraformOnly } from '../context/commandTypeUtils';
 
-const setValuesMonoid: Monoid.Monoid<string> = {
+const setValuesMonoid: monoid.Monoid<string> = {
 	empty: '',
 	concat: (a, b) => {
 		if (!a) {
@@ -42,7 +39,7 @@ const getNamespace = (context: BuildContext): either.Either<Error, string> => {
 		return either.right(K8S_NS);
 	}
 
-	return pipe(
+	return func.pipe(
 		getAndCacheHelmProject(),
 		either.map((_) => _.namespace)
 	);
@@ -56,14 +53,14 @@ const createHelmSetValues = (
 		return either.right(`--set app_deployment.image=${image}`);
 	}
 
-	return pipe(
+	return func.pipe(
 		getAndCacheHelmProject(),
 		either.map((_) => _.setValues ?? {}),
 		either.map(
-			flow(
+			func.flow(
 				Object.entries,
-				RArray.map(([key, value]) => `--set ${key}=${value}`),
-				Monoid.concatAll(setValuesMonoid)
+				readonlyArray.map(([key, value]) => `--set ${key}=${value}`),
+				monoid.concatAll(setValuesMonoid)
 			)
 		)
 	);
@@ -87,7 +84,7 @@ const doDeploy = (
 		deployDir,
 		`${context.projectInfo.name}-${context.projectInfo.version}.tgz`
 	);
-	const deployTE = pipe(
+	const deployTE = func.pipe(
 		getNamespace(context),
 		either.bindTo('namespace'),
 		either.bind('setValues', () => createHelmSetValues(context)),
@@ -141,7 +138,7 @@ const doDeploy = (
 		)
 	);
 
-	return pipe(
+	return func.pipe(
 		deployTE,
 		taskEither.map(() => context)
 	);
@@ -158,7 +155,7 @@ const isNotTerraformOnly: predicate.Predicate<CommandType> =
 	predicate.not(isTerraformOnly);
 
 const execute: StageExecuteFn = (context) => handleDeployByProject(context);
-const shouldStageExecute: predicate.Predicate<BuildContext> = pipe(
+const shouldStageExecute: predicate.Predicate<BuildContext> = func.pipe(
 	(_: BuildContext) => isApplication(_.projectType),
 	predicate.and((_) => isNotTerraformOnly(_.commandInfo.type))
 );

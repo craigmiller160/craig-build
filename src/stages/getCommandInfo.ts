@@ -3,8 +3,7 @@ import { match } from 'ts-pattern';
 import { OptionValues, program } from 'commander';
 import { CommandInfo } from '../context/CommandInfo';
 import { CommandType } from '../context/CommandType';
-import { taskEither } from 'fp-ts';
-import * as P from 'fp-ts/Predicate';
+import { taskEither, predicate } from 'fp-ts';
 import { BuildContext } from '../context/BuildContext';
 
 const constructCommandInfo = (options: OptionValues): CommandInfo =>
@@ -24,7 +23,7 @@ const execute: StageExecuteFn = (context) =>
 		...context,
 		commandInfo: constructCommandInfo(program.opts())
 	});
-const shouldStageExecute: P.Predicate<BuildContext> = () => true;
+const shouldStageExecute: predicate.Predicate<BuildContext> = () => true;
 
 export const getCommandInfo: Stage = {
 	name: 'Get Command Info',

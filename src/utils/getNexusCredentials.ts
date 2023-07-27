@@ -10,7 +10,7 @@ export interface NexusCredentials {
 }
 
 export const getNexusCredentials = (): either.Either<Error, NexusCredentials> =>
-	func.func.pipe(
+	func.pipe(
 		option.of(shellEnv.sync<EnvironmentVariables>()),
 		option.bindTo('env'),
 		option.bind('userName', ({ env }) =>
