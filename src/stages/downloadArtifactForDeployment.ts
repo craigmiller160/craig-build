@@ -24,7 +24,7 @@ import {
 	NexusSearchResultAsset,
 	NexusSearchResultItem
 } from '../services/NexusSearchResult';
-import * as A from 'fp-ts/Array';
+import { array } from 'fp-ts';
 import { ProjectInfo } from '../context/ProjectInfo';
 import path from 'path';
 import { option } from 'fp-ts';

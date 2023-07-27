@@ -1,6 +1,6 @@
 import { BuildContext } from '../context/BuildContext';
 import { taskEither } from 'fp-ts';
-import * as A from 'fp-ts/Array';
+import { array } from 'fp-ts';
 import { function as func } from 'fp-ts';
 import { logger } from '../logger';
 import * as EU from '../functions/EitherUtils';

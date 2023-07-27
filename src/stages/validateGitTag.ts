@@ -4,7 +4,7 @@ import { function as func } from 'fp-ts';
 import { match, P } from 'ts-pattern';
 import { isRelease } from '../context/projectInfoUtils';
 import { runCommand } from '../command/runCommand';
-import * as A from 'fp-ts/Array';
+import { array } from 'fp-ts';
 import { predicate } from 'fp-ts';
 import { Stage, StageExecuteFn } from './Stage';
 import { isFullBuild } from '../context/commandTypeUtils';

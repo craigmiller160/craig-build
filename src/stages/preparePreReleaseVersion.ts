@@ -17,7 +17,7 @@ import {
 import { NexusSearchResult } from '../services/NexusSearchResult';
 import { option } from 'fp-ts';
 import { isNone, isSome } from 'fp-ts/Option';
-import * as A from 'fp-ts/Array';
+import { array } from 'fp-ts';
 import { readFile } from '../functions/File';
 import { homedir } from 'os';
 import { either } from 'fp-ts';

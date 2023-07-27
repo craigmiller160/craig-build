@@ -12,7 +12,7 @@ import { taskEither } from 'fp-ts';
 import * as S from 'fp-ts/string';
 import { getCwd } from '../command/getCwd';
 import { MavenArtifact, PomXml } from '../configFileTypes/PomXml';
-import * as A from 'fp-ts/Array';
+import { array } from 'fp-ts';
 import * as RArray from 'fp-ts/ReadonlyArray';
 import * as RNonEmptyArray from 'fp-ts/ReadonlyNonEmptyArray';
 import { option } from 'fp-ts';

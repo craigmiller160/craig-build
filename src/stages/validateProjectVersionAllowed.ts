@@ -10,7 +10,7 @@ import {
 	searchForNpmReleases
 } from '../services/NexusRepoApi';
 import { NexusSearchResult } from '../services/NexusSearchResult';
-import * as A from 'fp-ts/Array';
+import { array } from 'fp-ts';
 import { isRelease } from '../context/projectInfoUtils';
 import { Stage, StageExecuteFn } from './Stage';
 import { predicate } from 'fp-ts';
@@ -21,18 +21,18 @@ const isReleaseVersionUnique = (
 	nexusResult: NexusSearchResult,
 	version: string
 ): boolean =>
-	pipe(
+	func.pipe(
 		nexusResult.items,
-		A.filter((_) => _.version === version)
+		array.filter((_) => _.version === version)
 	).length === 0;
 
 const validateReleaseVersion = (
 	context: BuildContext,
 	searchFn: NexusRepoGroupSearchFn
-): TE.TaskEither<Error, BuildContext> =>
-	pipe(
+): taskEither.TaskEither<Error, BuildContext> =>
+	func.pipe(
 		searchFn(context.projectInfo.group, context.projectInfo.name),
-		TE.filterOrElse(
+		taskEither.filterOrElse(
 			(nexusResult) =>
 				isReleaseVersionUnique(
 					nexusResult,
@@ -40,12 +40,12 @@ const validateReleaseVersion = (
 				),
 			() => new Error('Project release version is not unique')
 		),
-		TE.map(() => context)
+		taskEither.map(() => context)
 	);
 
 const handleValidationByProject = (
 	context: BuildContext
-): TE.TaskEither<Error, BuildContext> =>
+): taskEither.TaskEither<Error, BuildContext> =>
 	match(context)
 		.with(
 			{ projectType: P.when(isJvm), projectInfo: P.when(isRelease) },
@@ -62,29 +62,30 @@ const handleValidationByProject = (
 		.run();
 
 const execute: StageExecuteFn = (context) =>
-	pipe(
+	func.pipe(
 		handleValidationByProject(context),
-		TE.map(() => context)
+		taskEither.map(() => context)
 	);
 
-const isNotHelm: Pred.Predicate<ProjectType> = Pred.not(isHelm);
+const isNotHelm: predicate.Predicate<ProjectType> = predicate.not(isHelm);
 
-const isNonHelmFullBuildAndRelease: Pred.Predicate<BuildContext> = pipe(
-	(_: BuildContext) => isRelease(_.projectInfo),
-	Pred.and((_) => isFullBuild(_.commandInfo.type)),
-	Pred.and((_) => isNotHelm(_.projectType))
-);
+const isNonHelmFullBuildAndRelease: predicate.Predicate<BuildContext> =
+	func.pipe(
+		(_: BuildContext) => isRelease(_.projectInfo),
+		predicate.and((_) => isFullBuild(_.commandInfo.type)),
+		predicate.and((_) => isNotHelm(_.projectType))
+	);
 
-const isDockerOnlyAndDockerProjectAndRelease: Pred.Predicate<BuildContext> =
-	pipe(
+const isDockerOnlyAndDockerProjectAndRelease: predicate.Predicate<BuildContext> =
+	func.pipe(
 		(_: BuildContext) => isDockerOnly(_.commandInfo.type),
-		Pred.and((_) => isDocker(_.projectType)),
-		Pred.and((_) => isRelease(_.projectInfo))
+		predicate.and((_) => isDocker(_.projectType)),
+		predicate.and((_) => isRelease(_.projectInfo))
 	);
 
-const shouldStageExecute: Pred.Predicate<BuildContext> = pipe(
+const shouldStageExecute: predicate.Predicate<BuildContext> = func.pipe(
 	isNonHelmFullBuildAndRelease,
-	Pred.or(isDockerOnlyAndDockerProjectAndRelease)
+	predicate.or(isDockerOnlyAndDockerProjectAndRelease)
 );
 
 export const validateProjectVersionAllowed: Stage = {
