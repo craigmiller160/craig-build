@@ -36,44 +36,44 @@ import { Stage, StageExecuteFn } from './Stage';
 import { CommandType } from '../context/CommandType';
 import { isKubernetesOnly, isTerraformOnly } from '../context/commandTypeUtils';
 
-const isMavenOrGradle: Pred.Predicate<ProjectType> = pipe(
+const isMavenOrGradle: predicate.Predicate<ProjectType> = pipe(
 	isMaven,
-	Pred.or(isGradle)
+	predicate.or(isGradle)
 );
 
-const getExtension = (projectType: ProjectType): TE.TaskEither<Error, string> =>
+const getExtension = (projectType: ProjectType): taskEither.TaskEither<Error, string> =>
 	match(projectType)
-		.when(isMavenOrGradle, () => TE.right('jar'))
-		.when(isNpm, () => TE.right('tgz'))
+		.when(isMavenOrGradle, () => taskEither.right('jar'))
+		.when(isNpm, () => taskEither.right('tgz'))
 		.otherwise(() =>
-			TE.left(new Error(`No extension for ProjectType: ${projectType}`))
+			taskEither.left(new Error(`No extension for ProjectType: ${projectType}`))
 		);
 
 const createTargetDirPath = () => path.join(getCwd(), 'deploy', 'build');
 
-const createTargetDir = (): TE.TaskEither<Error, string> =>
-	pipe(
-		E.right(createTargetDirPath()),
-		E.bindTo('targetDir'),
-		E.chainFirst(({ targetDir }) => rmDirIfExists(targetDir)),
-		E.chain(({ targetDir }) => mkdir(targetDir)),
-		TE.fromEither
+const createTargetDir = (): taskEither.TaskEither<Error, string> =>
+func.pipe(
+		either.right(createTargetDirPath()),
+		either.bindTo('targetDir'),
+		either.chainFirst(({ targetDir }) => rmDirIfExists(targetDir)),
+		either.chain(({ targetDir }) => mkdir(targetDir)),
+		taskEither.fromEither
 	);
 
 type GetFirstItem = (
 	items: NexusSearchResultItem[]
-) => TE.TaskEither<Error, NexusSearchResultItem>;
+) => taskEither.TaskEither<Error, NexusSearchResultItem>;
 const getFirstItem: GetFirstItem = flow(
 	A.head,
-	TE.fromOption(() => new Error('No results for artifact search'))
+	taskEither.fromOption(() => new Error('No results for artifact search'))
 );
 
 const getDownloadUrl = (assets: NexusSearchResultAsset[], ext: string) =>
-	pipe(
+func.pipe(
 		assets,
 		A.findFirst((asset) => asset.downloadUrl.endsWith(ext)),
-		O.map((asset) => asset.downloadUrl),
-		TE.fromOption(
+		option.map((asset) => asset.downloadUrl),
+		taskEither.fromOption(
 			() => new Error('Unable to find correct downloadUrl for artifact')
 		)
 	);
@@ -81,11 +81,11 @@ const getDownloadUrl = (assets: NexusSearchResultAsset[], ext: string) =>
 const createTargetFilePath = (
 	projectInfo: ProjectInfo,
 	ext: string
-): TE.TaskEither<Error, string> =>
-	pipe(
+): taskEither.TaskEither<Error, string> =>
+func.pipe(
 		`${projectInfo.name}-${projectInfo.version}.${ext}`,
 		(_) => path.join(createTargetDirPath(), _),
-		TE.right
+		taskEither.right
 	);
 
 // TODO baseVersion does not work for maven, version does
@@ -93,34 +93,34 @@ const createTargetFilePath = (
 const doDownloadArtifact = (
 	context: BuildContext,
 	searchFn: NexusRepoGroupSearchFn
-): TE.TaskEither<Error, BuildContext> =>
-	pipe(
+): taskEither.TaskEither<Error, BuildContext> =>
+func.pipe(
 		createTargetDir(),
-		TE.chain(() => getExtension(context.projectType)),
-		TE.bindTo('ext'),
-		TE.bind('result', () =>
+		taskEither.chain(() => getExtension(context.projectType)),
+		taskEither.bindTo('ext'),
+		taskEither.bind('result', () =>
 			searchFn(
 				context.projectInfo.group,
 				context.projectInfo.name,
 				context.projectInfo.version
 			)
 		),
-		TE.bind('firstItem', ({ result }) => getFirstItem(result.items)),
-		TE.bind('downloadUrl', ({ firstItem, ext }) =>
+		taskEither.bind('firstItem', ({ result }) => getFirstItem(result.items)),
+		taskEither.bind('downloadUrl', ({ firstItem, ext }) =>
 			getDownloadUrl(firstItem.assets, ext)
 		),
-		TE.bind('targetFilePath', ({ ext }) =>
+		taskEither.bind('targetFilePath', ({ ext }) =>
 			createTargetFilePath(context.projectInfo, ext)
 		),
-		TE.chain(({ downloadUrl, targetFilePath }) =>
+		taskEither.chain(({ downloadUrl, targetFilePath }) =>
 			downloadArtifact(downloadUrl, targetFilePath)
 		),
-		TE.map(() => context)
+		taskEither.map(() => context)
 	);
 
 const downloadArtifactByProject = (
 	context: BuildContext
-): TE.TaskEither<Error, BuildContext> =>
+): taskEither.TaskEither<Error, BuildContext> =>
 	match(context)
 		.with(
 			{
@@ -146,22 +146,22 @@ const downloadArtifactByProject = (
 		)
 		.run();
 
-const isNotDocker: Pred.Predicate<ProjectType> = Pred.not(isDocker);
-const isNotKubernetesOnly: Pred.Predicate<CommandType> =
-	Pred.not(isKubernetesOnly);
-const isNotTerraformOnly: Pred.Predicate<CommandType> =
-	Pred.not(isTerraformOnly);
+const isNotDocker: predicate.Predicate<ProjectType> = predicate.not(isDocker);
+const isNotKubernetesOnly: predicate.Predicate<CommandType> =
+	predicate.not(isKubernetesOnly);
+const isNotTerraformOnly: predicate.Predicate<CommandType> =
+	predicate.not(isTerraformOnly);
 
 const execute: StageExecuteFn = (context) => downloadArtifactByProject(context);
-const isNonDockerNonHelmApplication: Pred.Predicate<BuildContext> = pipe(
+const isNonDockerNonHelmApplication: predicate.Predicate<BuildContext> = pipe(
 	(_: BuildContext) => isNotDocker(_.projectType),
-	Pred.and(Pred.not((_) => isHelm(_.projectType))),
-	Pred.and((_) => isApplication(_.projectType))
+	predicate.and(predicate.not((_) => isHelm(_.projectType))),
+	predicate.and((_) => isApplication(_.projectType))
 );
-const shouldStageExecute: Pred.Predicate<BuildContext> = pipe(
+const shouldStageExecute: predicate.Predicate<BuildContext> = pipe(
 	isNonDockerNonHelmApplication,
-	Pred.and((_) => isNotKubernetesOnly(_.commandInfo.type)),
-	Pred.and((_) => isNotTerraformOnly(_.commandInfo.type))
+	predicate.and((_) => isNotKubernetesOnly(_.commandInfo.type)),
+	predicate.and((_) => isNotTerraformOnly(_.commandInfo.type))
 );
 
 export const downloadArtifactForDeployment: Stage = {

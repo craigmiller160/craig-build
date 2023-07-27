@@ -17,28 +17,28 @@ export const GRADLE_BUILD_COMMAND = 'gradle clean build && gradle publish';
 const runBuildCommand = (
 	context: BuildContext,
 	command: string
-): TE.TaskEither<Error, BuildContext> =>
-	pipe(
+): taskEither.TaskEither<Error, BuildContext> =>
+func.pipe(
 		runCommand(command, { printOutput: true }),
-		TE.map(() => context)
+		taskEither.map(() => context)
 	);
 
 const buildNpmProject = (
 	context: BuildContext
-): TE.TaskEither<Error, BuildContext> => {
+): taskEither.TaskEither<Error, BuildContext> => {
 	const installCommand = getNpmBuildToolInstallCommand(
 		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 		context.projectInfo.npmBuildTool!
 	);
 	return pipe(
 		runCommand(installCommand, { printOutput: true }),
-		TE.chain(() => runBuildCommand(context, NPM_BUILD_CMD))
+		taskEither.chain(() => runBuildCommand(context, NPM_BUILD_CMD))
 	);
 };
 
 const handleBuildingArtifactByProject = (
 	context: BuildContext
-): TE.TaskEither<Error, BuildContext> =>
+): taskEither.TaskEither<Error, BuildContext> =>
 	match(context)
 		.with({ projectType: P.when(isMaven) }, (_) =>
 			runBuildCommand(_, MAVEN_BUILD_CMD)
@@ -49,18 +49,18 @@ const handleBuildingArtifactByProject = (
 		)
 		.run();
 
-const isMavenGradleNpm: Pred.Predicate<ProjectType> = pipe(
+const isMavenGradleNpm: predicate.Predicate<ProjectType> = pipe(
 	isMaven,
-	Pred.or(isNpm),
-	Pred.or(isGradle)
+	predicate.or(isNpm),
+	predicate.or(isGradle)
 );
 
 const execute: StageExecuteFn = (context) =>
 	handleBuildingArtifactByProject(context);
 
-const shouldStageExecute: Pred.Predicate<BuildContext> = pipe(
+const shouldStageExecute: predicate.Predicate<BuildContext> = pipe(
 	(_: BuildContext) => isMavenGradleNpm(_.projectType),
-	Pred.and((_) => isFullBuild(_.commandInfo.type))
+	predicate.and((_) => isFullBuild(_.commandInfo.type))
 );
 
 export const buildArtifact: Stage = {

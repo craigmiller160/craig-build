@@ -17,7 +17,7 @@ import { NPM_PROJECT_FILE } from './configFileTypes/constants';
 
 const packageJson: PackageJson = pipe(
 	readFile(path.resolve(__dirname, '..', NPM_PROJECT_FILE)),
-	E.chain((_) => parseJson<PackageJson>(_)),
+	either.chain((_) => parseJson<PackageJson>(_)),
 	EU.getOrThrow
 );
 
@@ -38,7 +38,7 @@ program
 pipe(
 	setupBuildContext(),
 	execute,
-	TE.fold(
+	taskEither.fold(
 		() => {
 			logger.error('Build failed');
 			return T.of(1);

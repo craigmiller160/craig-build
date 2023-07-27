@@ -11,31 +11,31 @@ import { readUserInput } from '../utils/readUserInput';
 const ERROR_MESSAGE = 'Cannot run with uncommitted changes';
 export const GIT_COMMAND = 'git status --porcelain';
 
-const isUserPromptCommand: Pred.Predicate<CommandType> = (type) =>
+const isUserPromptCommand: predicate.Predicate<CommandType> = (type) =>
 	[CommandType.TerraformOnly, CommandType.KubernetesOnly].includes(type);
-const hasUncommittedChanges: Pred.Predicate<string> = (message) =>
+const hasUncommittedChanges: predicate.Predicate<string> = (message) =>
 	message.length > 0;
 
-const handlePromptResult = (result: string): TE.TaskEither<Error, string> => {
+const handlePromptResult = (result: string): taskEither.TaskEither<Error, string> => {
 	if (result.trim().toLowerCase() === 'y') {
-		return TE.right('');
+		return taskEither.right('');
 	}
-	return TE.left(new Error(ERROR_MESSAGE));
+	return taskEither.left(new Error(ERROR_MESSAGE));
 };
 
-const promptToProceed = (): TE.TaskEither<Error, string> =>
-	pipe(
+const promptToProceed = (): taskEither.TaskEither<Error, string> =>
+func.pipe(
 		readUserInput(
 			'Uncommitted changes found, do you want to proceed? (y/n): '
 		),
-		TE.fromTask,
-		TE.chain(handlePromptResult)
+		taskEither.fromTask,
+		taskEither.chain(handlePromptResult)
 	);
 
 const handleCommandResult = (
 	context: BuildContext,
 	message: string
-): TE.TaskEither<Error, string> =>
+): taskEither.TaskEither<Error, string> =>
 	match({ commandType: context.commandInfo.type, message })
 		.with(
 			{
@@ -46,20 +46,20 @@ const handleCommandResult = (
 		)
 		.with(
 			{
-				commandType: P.when(Pred.not(isUserPromptCommand)),
+				commandType: P.when(predicate.not(isUserPromptCommand)),
 				message: P.when(hasUncommittedChanges)
 			},
-			() => TE.left(new Error(ERROR_MESSAGE))
+			() => taskEither.left(new Error(ERROR_MESSAGE))
 		)
-		.otherwise(() => TE.right(''));
+		.otherwise(() => taskEither.right(''));
 
 const execute: StageExecuteFn = (context) =>
-	pipe(
+func.pipe(
 		runCommand(GIT_COMMAND),
-		TE.chain((_) => handleCommandResult(context, _)),
-		TE.map(() => context)
+		taskEither.chain((_) => handleCommandResult(context, _)),
+		taskEither.map(() => context)
 	);
-const shouldStageExecute: Pred.Predicate<BuildContext> = () => true;
+const shouldStageExecute: predicate.Predicate<BuildContext> = () => true;
 
 export const checkForUncommittedChanges: Stage = {
 	name: 'Check For Uncommitted Changes',

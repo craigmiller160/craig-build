@@ -22,10 +22,10 @@ type RunCommandType = typeof runCommand;
 
 export const createReadGradleProject =
 	(doRunCommand: RunCommandType) =>
-	(projectDirectory: string): TE.TaskEither<Error, GradleProject> =>
+	(projectDirectory: string): taskEither.TaskEither<Error, GradleProject> =>
 		pipe(
 			doRunCommand(createCommand(projectDirectory)),
-			TE.chainEitherK((_) => parseJson<GradleProject>(_))
+			taskEither.chainEitherK((_) => parseJson<GradleProject>(_))
 		);
 
 export const readGradleProject = createReadGradleProject(runCommand);

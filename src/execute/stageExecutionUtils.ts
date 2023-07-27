@@ -26,12 +26,12 @@ export const shouldStageExecute =
 
 export const executeIfAllowed =
 	(context: BuildContext) =>
-	(execution: StageExecution): TE.TaskEither<Error, BuildContext> =>
+	(execution: StageExecution): taskEither.TaskEither<Error, BuildContext> =>
 		match(execution)
 			.with({ status: StageExecutionStatus.Proceed }, (_) =>
 				_.stage.execute(context)
 			)
 			.otherwise(() => {
 				logger.debug('Skipping stage');
-				return TE.right(context);
+				return taskEither.right(context);
 			});

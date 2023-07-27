@@ -23,14 +23,14 @@ const getVersionType = (version: string): VersionType =>
 		.otherwise(() => VersionType.Release);
 
 const execute: StageExecuteFn = (context) =>
-	pipe(
+func.pipe(
 		readFile(path.resolve(__dirname, '..', '..', NPM_PROJECT_FILE)),
-		E.chain((_) => parseJson<PackageJson>(_)),
-		E.map((_) => {
+		either.chain((_) => parseJson<PackageJson>(_)),
+		either.map((_) => {
 			const [group, name] = npmSeparateGroupAndName(_.name);
 			return [group, name, _.version];
 		}),
-		E.map(
+		either.map(
 			([group, name, version]): BuildToolInfo => ({
 				group,
 				name,
@@ -38,15 +38,15 @@ const execute: StageExecuteFn = (context) =>
 				versionType: getVersionType(version)
 			})
 		),
-		E.map(
+		either.map(
 			(_): BuildContext => ({
 				...context,
 				buildToolInfo: _
 			})
 		),
-		TE.fromEither
+		taskEither.fromEither
 	);
-const shouldStageExecute: Pred.Predicate<BuildContext> = () => true;
+const shouldStageExecute: predicate.Predicate<BuildContext> = () => true;
 
 export const getBuildToolInfo: Stage = {
 	name: 'Get Build Tool Info',

@@ -20,7 +20,7 @@ const constructCommandInfo = (options: OptionValues): CommandInfo =>
 		.run();
 
 const execute: StageExecuteFn = (context) =>
-	TE.right({
+	taskEither.right({
 		...context,
 		commandInfo: constructCommandInfo(program.opts())
 	});

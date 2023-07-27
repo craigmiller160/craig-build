@@ -28,9 +28,9 @@ import { getNpmBuildTool } from '../context/npmCommandUtils';
 const BETA_VERSION_REGEX = /^.*-beta/;
 const SNAPSHOT_VERSION_REGEX = /^.*-SNAPSHOT/;
 
-const matchesPreReleaseRegex: Pred.Predicate<string> = pipe(
+const matchesPreReleaseRegex: predicate.Predicate<string> = pipe(
 	regexTest(BETA_VERSION_REGEX),
-	Pred.or(regexTest(SNAPSHOT_VERSION_REGEX))
+	predicate.or(regexTest(SNAPSHOT_VERSION_REGEX))
 );
 
 const getVersionType = (version: string): VersionType =>
@@ -43,10 +43,10 @@ const getVersionType = (version: string): VersionType =>
 
 const readMavenProjectInfo = (
 	projectType: ProjectType
-): TE.TaskEither<Error, ProjectInfo> =>
-	pipe(
+): taskEither.TaskEither<Error, ProjectInfo> =>
+func.pipe(
 		getRawProjectData<PomXml>(projectType),
-		TE.map((pomXml): ProjectInfo => {
+		taskEither.map((pomXml): ProjectInfo => {
 			const version = pomXml.project.version[0];
 			return {
 				group: pomXml.project.groupId[0],
@@ -60,7 +60,7 @@ const readMavenProjectInfo = (
 const addNpmCommand = (
 	projectInfo: ProjectInfo
 ): Either.Either<Error, ProjectInfo> =>
-	pipe(
+func.pipe(
 		getNpmBuildTool(),
 		Either.map(
 			(npmCommand): ProjectInfo => ({
@@ -72,10 +72,10 @@ const addNpmCommand = (
 
 const readNpmProjectInfo = (
 	projectType: ProjectType
-): TE.TaskEither<Error, ProjectInfo> =>
-	pipe(
+): taskEither.TaskEither<Error, ProjectInfo> =>
+func.pipe(
 		getRawProjectData<PackageJson>(projectType),
-		TE.map((packageJson): ProjectInfo => {
+		taskEither.map((packageJson): ProjectInfo => {
 			const [group, name] = npmSeparateGroupAndName(packageJson.name);
 			return {
 				group,
@@ -84,15 +84,15 @@ const readNpmProjectInfo = (
 				versionType: getVersionType(packageJson.version)
 			};
 		}),
-		TE.chainEitherK(addNpmCommand)
+		taskEither.chainEitherK(addNpmCommand)
 	);
 
 const readDockerProjectInfo = (
 	projectType: ProjectType
-): TE.TaskEither<Error, ProjectInfo> =>
-	pipe(
+): taskEither.TaskEither<Error, ProjectInfo> =>
+func.pipe(
 		getRawProjectData<DockerJson>(projectType),
-		TE.map((dockerJson): ProjectInfo => {
+		taskEither.map((dockerJson): ProjectInfo => {
 			const [group, name] = npmSeparateGroupAndName(dockerJson.name);
 			return {
 				group,
@@ -105,10 +105,10 @@ const readDockerProjectInfo = (
 
 const readGradleProjectInfo = (
 	projectType: ProjectType
-): TE.TaskEither<Error, ProjectInfo> =>
-	pipe(
+): taskEither.TaskEither<Error, ProjectInfo> =>
+func.pipe(
 		getRawProjectData<GradleProject>(projectType),
-		TE.map((buildGradle) => ({
+		taskEither.map((buildGradle) => ({
 			group: buildGradle.info.group,
 			name: buildGradle.info.name,
 			version: buildGradle.info.version,
@@ -118,10 +118,10 @@ const readGradleProjectInfo = (
 
 const readHelmProjectInfo = (
 	projectType: ProjectType
-): TE.TaskEither<Error, ProjectInfo> =>
-	pipe(
+): taskEither.TaskEither<Error, ProjectInfo> =>
+func.pipe(
 		getRawProjectData<HelmJson>(projectType),
-		TE.map((helmJson): ProjectInfo => {
+		taskEither.map((helmJson): ProjectInfo => {
 			const [group, name] = npmSeparateGroupAndName(helmJson.name);
 			return {
 				group,
@@ -130,7 +130,7 @@ const readHelmProjectInfo = (
 				versionType: getVersionType(helmJson.version)
 			};
 		}),
-		TE.filterOrElse(
+		taskEither.filterOrElse(
 			(projectInfo) => projectInfo.versionType === VersionType.Release,
 			() =>
 				new Error(
@@ -141,7 +141,7 @@ const readHelmProjectInfo = (
 
 const readProjectInfoByType = (
 	projectType: ProjectType
-): TE.TaskEither<Error, ProjectInfo> =>
+): taskEither.TaskEither<Error, ProjectInfo> =>
 	match(projectType)
 		.when(isMaven, readMavenProjectInfo)
 		.when(isNpm, readNpmProjectInfo)
@@ -149,18 +149,18 @@ const readProjectInfoByType = (
 		.when(isGradle, readGradleProjectInfo)
 		.when(isHelm, readHelmProjectInfo)
 		.otherwise(() =>
-			TE.left(new Error(`Unsupported ProjectType: ${projectType}`))
+			taskEither.left(new Error(`Unsupported ProjectType: ${projectType}`))
 		);
 
 const execute: StageExecuteFn = (context) =>
-	pipe(
+func.pipe(
 		readProjectInfoByType(context.projectType),
-		TE.map((_) => ({
+		taskEither.map((_) => ({
 			...context,
 			projectInfo: _
 		}))
 	);
-const shouldStageExecute: Pred.Predicate<BuildContext> = () => true;
+const shouldStageExecute: predicate.Predicate<BuildContext> = () => true;
 
 export const getProjectInfo: Stage = {
 	name: 'Get Project Info',

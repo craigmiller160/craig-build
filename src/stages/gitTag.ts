@@ -9,35 +9,40 @@ import { predicate } from 'fp-ts';
 import { isFullBuild, isKubernetesOnly } from '../context/commandTypeUtils';
 import { isDocker } from '../context/projectTypeUtils';
 
-const doGitTag = (context: BuildContext): TE.TaskEither<Error, BuildContext> =>
-	pipe(
+const doGitTag = (
+	context: BuildContext
+): taskEither.TaskEither<Error, BuildContext> =>
+	func.pipe(
 		runCommand(`git tag v${context.projectInfo.version}`),
-		TE.chain(() => runCommand('git push --tags')),
-		TE.map(() => context)
+		taskEither.chain(() => runCommand('git push --tags')),
+		taskEither.map(() => context)
 	);
 
 const handleGitTagByProject = (
 	context: BuildContext
-): TE.TaskEither<Error, BuildContext> =>
+): taskEither.TaskEither<Error, BuildContext> =>
 	match(context)
 		.with({ projectInfo: P.when(isRelease) }, doGitTag)
 		.run();
 
-const isFullBuildAndReleaseVersion: Pred.Predicate<BuildContext> = pipe(
-	(_: BuildContext) => isFullBuild(_.commandInfo.type),
-	Pred.and((_) => isRelease(_.projectInfo))
-);
-const isDockerReleaseProjectNoKubernetesOnly: Pred.Predicate<BuildContext> =
-	pipe(
+const isFullBuildAndReleaseVersion: predicate.Predicate<BuildContext> =
+	func.pipe(
+		(_: BuildContext) => isFullBuild(_.commandInfo.type),
+		predicate.and((_) => isRelease(_.projectInfo))
+	);
+const isDockerReleaseProjectNoKubernetesOnly: predicate.Predicate<BuildContext> =
+	func.pipe(
 		(_: BuildContext) => isDocker(_.projectType),
-		Pred.and((_) => isRelease(_.projectInfo)),
-		Pred.and(Pred.not((_) => isKubernetesOnly(_.commandInfo.type)))
+		predicate.and((_) => isRelease(_.projectInfo)),
+		predicate.and(
+			predicate.not((_) => isKubernetesOnly(_.commandInfo.type))
+		)
 	);
 
 const execute: StageExecuteFn = (context) => handleGitTagByProject(context);
-const shouldStageExecute: Pred.Predicate<BuildContext> = pipe(
+const shouldStageExecute: predicate.Predicate<BuildContext> = func.pipe(
 	isFullBuildAndReleaseVersion,
-	Pred.or(isDockerReleaseProjectNoKubernetesOnly)
+	predicate.or(isDockerReleaseProjectNoKubernetesOnly)
 );
 
 export const gitTag: Stage = {
