@@ -54,7 +54,7 @@ describe('deployToKubernetes', () => {
 		const deployDir = path.join(baseCwd, 'deploy');
 		const image = createDockerImageTag(buildContext.projectInfo);
 
-		runCommandMock.mockImplementation(() => TE.right(''));
+		runCommandMock.mockImplementation(() => taskEither.right(''));
 
 		const result = await deployToKubernetes.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
@@ -96,7 +96,7 @@ describe('deployToKubernetes', () => {
 
 		const deployDir = path.join(baseCwd, 'deploy');
 
-		runCommandMock.mockImplementation(() => TE.right(''));
+		runCommandMock.mockImplementation(() => taskEither.right(''));
 
 		const result = await deployToKubernetes.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
@@ -141,7 +141,7 @@ describe('deployToKubernetes', () => {
 
 		const deployDir = path.join(baseCwd, 'deploy');
 
-		runCommandMock.mockImplementation(() => TE.right(''));
+		runCommandMock.mockImplementation(() => taskEither.right(''));
 
 		const result = await deployToKubernetes.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);

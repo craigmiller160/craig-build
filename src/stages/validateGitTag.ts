@@ -11,37 +11,38 @@ import { isFullBuild } from '../context/commandTypeUtils';
 
 const executeGitTagValidation = (
 	context: BuildContext
-): TE.TaskEither<Error, BuildContext> =>
-	pipe(
+): taskEither.TaskEither<Error, BuildContext> =>
+	func.pipe(
 		runCommand('git tag'),
-		TE.filterOrElse(
+		taskEither.filterOrElse(
 			(output) =>
-				pipe(
+				func.pipe(
 					output.split('\n'),
-					A.filter(
+					array.filter(
 						(_) => _.trim() === `v${context.projectInfo.version}`
 					)
 				).length === 0,
 			() =>
 				new Error('Git tag for project release version already exists')
 		),
-		TE.map(() => context)
+		taskEither.map(() => context)
 	);
 
 const handleValidationByProject = (
 	context: BuildContext
-): TE.TaskEither<Error, BuildContext> =>
+): taskEither.TaskEither<Error, BuildContext> =>
 	match(context)
 		.with({ projectInfo: P.when(isRelease) }, executeGitTagValidation)
 		.run();
 
-const isFullBuildAndReleaseVersion: Pred.Predicate<BuildContext> = pipe(
-	(_: BuildContext) => isFullBuild(_.commandInfo.type),
-	Pred.and((_) => isRelease(_.projectInfo))
-);
+const isFullBuildAndReleaseVersion: predicate.Predicate<BuildContext> =
+	func.pipe(
+		(_: BuildContext) => isFullBuild(_.commandInfo.type),
+		predicate.and((_) => isRelease(_.projectInfo))
+	);
 
 const execute: StageExecuteFn = (context) => handleValidationByProject(context);
-const shouldStageExecute: Pred.Predicate<BuildContext> =
+const shouldStageExecute: predicate.Predicate<BuildContext> =
 	isFullBuildAndReleaseVersion;
 
 export const validateGitTag: Stage = {
