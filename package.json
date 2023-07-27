@@ -18,7 +18,7 @@
     "typeCheck": "tsc --noEmit",
     "test": "jest",
     "build": "npm run lint && npm run test && npm run forceBuild",
-    "validate": "npm run lint && npm run test",
+    "validate": "npm run typeCheck && npm run lint && npm run test",
     "prepare": "husky install",
     "install": "node libScripts/gradle-install.js"
   },
