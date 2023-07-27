@@ -37,13 +37,22 @@ describe('buildArtifact', () => {
 		runCommandMock.mockImplementation(() => TE.right(''));
 		const buildContext: BuildContext = {
 			...baseBuildContext,
-			projectType: ProjectType.NpmApplication
+			projectType: ProjectType.NpmApplication,
+			projectInfo: {
+				...baseBuildContext.projectInfo,
+				npmBuildTool: 'npm'
+			}
 		};
 
 		const result = await buildArtifact.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
 
-		expect(runCommandMock).toHaveBeenCalledWith(NPM_BUILD_CMD, {
+		expect(runCommandMock).toHaveBeenCalledTimes(2);
+
+		expect(runCommandMock).toHaveBeenNthCalledWith(1, 'npm install', {
+			printOutput: true
+		});
+		expect(runCommandMock).toHaveBeenNthCalledWith(2, NPM_BUILD_CMD, {
 			printOutput: true
 		});
 	});
