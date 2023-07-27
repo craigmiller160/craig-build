@@ -1,6 +1,6 @@
 import axios from 'axios';
-import * as TE from 'fp-ts/TaskEither';
-import { pipe } from 'fp-ts/function';
+import { taskEither } from 'fp-ts';
+import { function as func } from 'fp-ts';
 import { NexusSearchResult } from './NexusSearchResult';
 import qs from 'qs';
 import { extractResponseData } from './apiUtils';
@@ -25,15 +25,15 @@ export type NexusRepoGroupSearchFn = (
 	group: string,
 	name: string,
 	version?: string
-) => TE.TaskEither<Error, NexusSearchResult>;
+) => taskEither.TaskEither<Error, NexusSearchResult>;
 
 export const searchForMavenSnapshots: NexusRepoGroupSearchFn = (
 	groupId: string,
 	artifactId: string,
 	version?: string
 ) =>
-	pipe(
-		TE.tryCatch(() => {
+	func.pipe(
+		taskEither.tryCatch(() => {
 			const query = qs.stringify({
 				repository: 'maven-snapshots',
 				'maven.groupId': groupId,
@@ -52,8 +52,8 @@ export const searchForMavenSnapshotsExplicit: NexusRepoGroupSearchFn = (
 	artifactId: string,
 	version?: string
 ) =>
-	pipe(
-		TE.tryCatch(() => {
+	func.pipe(
+		taskEither.tryCatch(() => {
 			const query = qs.stringify({
 				repository: 'maven-snapshots',
 				'maven.groupId': groupId,
@@ -72,8 +72,8 @@ export const searchForMavenReleases: NexusRepoGroupSearchFn = (
 	artifactId: string,
 	version?: string
 ) =>
-	pipe(
-		TE.tryCatch(() => {
+	func.pipe(
+		taskEither.tryCatch(() => {
 			const query = qs.stringify({
 				repository: 'maven-releases',
 				'maven.groupId': groupId,
@@ -92,8 +92,8 @@ export const searchForNpmBetas: NexusRepoGroupSearchFn = (
 	name: string,
 	version?: string
 ) =>
-	pipe(
-		TE.tryCatch(() => {
+	func.pipe(
+		taskEither.tryCatch(() => {
 			const query = qs.stringify({
 				format: 'npm',
 				group,
@@ -113,8 +113,8 @@ export const searchForNpmReleases: NexusRepoGroupSearchFn = (
 	name: string,
 	version?: string
 ) =>
-	pipe(
-		TE.tryCatch(() => {
+	func.pipe(
+		taskEither.tryCatch(() => {
 			const query = qs.stringify({
 				format: 'npm',
 				group,
@@ -130,8 +130,8 @@ export const searchForNpmReleases: NexusRepoGroupSearchFn = (
 	);
 
 export const searchForDockerReleases = (name: string) =>
-	pipe(
-		TE.tryCatch(() => {
+	func.pipe(
+		taskEither.tryCatch(() => {
 			const query = qs.stringify({
 				repository: 'docker-private',
 				name,
@@ -144,8 +144,8 @@ export const searchForDockerReleases = (name: string) =>
 	);
 
 export const searchForDockerBetas = (name: string, version?: string) =>
-	pipe(
-		TE.tryCatch(() => {
+	func.pipe(
+		taskEither.tryCatch(() => {
 			const query = qs.stringify({
 				repository: 'docker-private',
 				name,
@@ -161,17 +161,17 @@ export const searchForDockerBetas = (name: string, version?: string) =>
 export const downloadArtifact = (
 	url: string,
 	targetPath: string
-): TE.TaskEither<Error, string> =>
-	pipe(
-		TE.tryCatch(
+): taskEither.TaskEither<Error, string> =>
+	func.pipe(
+		taskEither.tryCatch(
 			() =>
 				axios.get(url, {
 					responseType: 'stream'
 				}),
 			unknownToError
 		),
-		TE.chain((res) =>
+		taskEither.chain((res) =>
 			streamTask(res.data.pipe(fs.createWriteStream(targetPath)))
 		),
-		TE.map(() => targetPath)
+		taskEither.map(() => targetPath)
 	);

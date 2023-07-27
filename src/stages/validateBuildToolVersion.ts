@@ -1,9 +1,8 @@
 import { Stage, StageExecuteFn } from './Stage';
 import { match } from 'ts-pattern';
-import { pipe } from 'fp-ts/function';
+import { function as func } from 'fp-ts';
 import { BuildToolInfo } from '../context/BuildToolInfo';
-import * as TE from 'fp-ts/TaskEither';
-import * as P from 'fp-ts/Predicate';
+import { taskEither, predicate } from 'fp-ts';
 import { searchForNpmReleases } from '../services/NexusRepoApi';
 import semver from 'semver';
 import { semverTrimVersion } from '../utils/semverUtils';
@@ -32,50 +31,50 @@ const noMatchingReleaseVersion = (
 
 const handleReleaseVersionValidation = (
 	buildToolInfo: BuildToolInfo
-): TE.TaskEither<Error, BuildToolInfo> =>
-	pipe(
+): taskEither.TaskEither<Error, BuildToolInfo> =>
+	func.pipe(
 		searchForNpmReleases(buildToolInfo.group, buildToolInfo.name),
-		TE.filterOrElse(
+		taskEither.filterOrElse(
 			(result) => noMatchingReleaseVersion(result, buildToolInfo.version),
 			() =>
 				new Error(
 					`${buildToolInfo.name} has a newer release than ${buildToolInfo.version}. Please upgrade this tool.`
 				)
 		),
-		TE.map(() => buildToolInfo)
+		taskEither.map(() => buildToolInfo)
 	);
 
 const handlePreReleaseUserResponse = (
 	userResponse: string
-): TE.TaskEither<Error, string> =>
+): taskEither.TaskEither<Error, string> =>
 	match(userResponse.toLowerCase())
 		.with('y', () => {
 			logger.debug(
 				'User accepted running craig-build pre-release execution.'
 			);
-			return TE.right(userResponse);
+			return taskEither.right(userResponse);
 		})
 		.otherwise(() =>
-			TE.left(
+			taskEither.left(
 				new Error('User aborted craig-build pre-release execution.')
 			)
 		);
 
 const handlePreReleaseVersionValidation = (
 	buildToolInfo: BuildToolInfo
-): TE.TaskEither<Error, BuildToolInfo> =>
-	pipe(
+): taskEither.TaskEither<Error, BuildToolInfo> =>
+	func.pipe(
 		readUserInput(
 			`craig-build is currently on pre-release version ${buildToolInfo.version}. Are you sure you want to run it? (y/n): `
 		),
-		TE.fromTask,
-		TE.chain(handlePreReleaseUserResponse),
-		TE.map(() => buildToolInfo)
+		taskEither.fromTask,
+		taskEither.chain(handlePreReleaseUserResponse),
+		taskEither.map(() => buildToolInfo)
 	);
 
 const checkBuildToolInfo = (
 	buildToolInfo: BuildToolInfo
-): TE.TaskEither<Error, BuildToolInfo> =>
+): taskEither.TaskEither<Error, BuildToolInfo> =>
 	match(buildToolInfo)
 		.with(
 			{ versionType: VersionType.PreRelease },
@@ -84,11 +83,11 @@ const checkBuildToolInfo = (
 		.otherwise(handleReleaseVersionValidation);
 
 const execute: StageExecuteFn = (context) =>
-	pipe(
+	func.pipe(
 		checkBuildToolInfo(context.buildToolInfo),
-		TE.map(() => context)
+		taskEither.map(() => context)
 	);
-const shouldStageExecute: P.Predicate<BuildContext> = () => true;
+const shouldStageExecute: predicate.Predicate<BuildContext> = () => true;
 
 export const validateBuildToolVersion: Stage = {
 	name: 'Validate Build Tool Version',

@@ -11,10 +11,10 @@ import {
 	searchForNpmBetas,
 	searchForNpmReleases
 } from '../../src/services/NexusRepoApi';
-import * as TE from 'fp-ts/TaskEither';
+import { taskEither } from 'fp-ts';
 import { NexusSearchResultItem } from '../../src/services/NexusSearchResult';
 import { mkdir, rmDirIfExists } from '../../src/functions/File';
-import * as E from 'fp-ts/Either';
+import { either } from 'fp-ts';
 import { VersionType } from '../../src/context/VersionType';
 
 jest.mock('../../src/services/NexusRepoApi', () => ({
@@ -68,15 +68,15 @@ const baseBuildContext = createBuildContext({
 describe('downloadArtifactForDeployment', () => {
 	beforeEach(() => {
 		jest.resetAllMocks();
-		downloadArtifactMock.mockImplementation(() => TE.right(''));
-		mkdirMock.mockImplementation(() => E.right(''));
-		rmDirIfExistsMock.mockImplementation(() => E.right(''));
+		downloadArtifactMock.mockImplementation(() => taskEither.right(''));
+		mkdirMock.mockImplementation(() => either.right(''));
+		rmDirIfExistsMock.mockImplementation(() => either.right(''));
 	});
 
 	it('downloads maven release artifact', async () => {
 		getCwdMock.mockImplementation(() => '/foo');
 		searchForMavenReleasesMock.mockImplementation(() =>
-			TE.right({ items: [createItem('1.0.0', 'jar')] })
+			taskEither.right({ items: [createItem('1.0.0', 'jar')] })
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -112,7 +112,7 @@ describe('downloadArtifactForDeployment', () => {
 	it('downloads gradle release artifact', async () => {
 		getCwdMock.mockImplementation(() => '/foo');
 		searchForMavenReleasesMock.mockImplementation(() =>
-			TE.right({ items: [createItem('1.0.0', 'jar')] })
+			taskEither.right({ items: [createItem('1.0.0', 'jar')] })
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -148,7 +148,9 @@ describe('downloadArtifactForDeployment', () => {
 	it('downloads maven pre-release artifact', async () => {
 		getCwdMock.mockImplementation(() => '/foo');
 		searchForMavenSnapshotsExplicitMock.mockImplementation(() =>
-			TE.right({ items: [createItem('1.1.0-20211225.003019-1', 'jar')] })
+			taskEither.right({
+				items: [createItem('1.1.0-20211225.003019-1', 'jar')]
+			})
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -184,7 +186,9 @@ describe('downloadArtifactForDeployment', () => {
 	it('downloads gradle pre-release artifact', async () => {
 		getCwdMock.mockImplementation(() => '/foo');
 		searchForMavenSnapshotsExplicitMock.mockImplementation(() =>
-			TE.right({ items: [createItem('1.1.0-20211225.003019-1', 'jar')] })
+			taskEither.right({
+				items: [createItem('1.1.0-20211225.003019-1', 'jar')]
+			})
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -220,7 +224,7 @@ describe('downloadArtifactForDeployment', () => {
 	it('downloads npm release artifact', async () => {
 		getCwdMock.mockImplementation(() => '/foo');
 		searchForNpmReleasesMock.mockImplementation(() =>
-			TE.right({ items: [createItem('1.0.0', 'tgz')] })
+			taskEither.right({ items: [createItem('1.0.0', 'tgz')] })
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -256,7 +260,7 @@ describe('downloadArtifactForDeployment', () => {
 	it('downloads npm pre-release artifact', async () => {
 		getCwdMock.mockImplementation(() => '/foo');
 		searchForNpmBetasMock.mockImplementation(() =>
-			TE.right({ items: [createItem('1.0.0-beta.5', 'tgz')] })
+			taskEither.right({ items: [createItem('1.0.0-beta.5', 'tgz')] })
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,

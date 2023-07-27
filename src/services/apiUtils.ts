@@ -1,4 +1,6 @@
-import * as TE from 'fp-ts/TaskEither';
+import { taskEither } from 'fp-ts';
 import { AxiosResponse } from 'axios';
 
-export const extractResponseData = TE.map((res: AxiosResponse) => res.data);
+export const extractResponseData = taskEither.map(
+	(res: AxiosResponse) => res.data
+);

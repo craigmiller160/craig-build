@@ -1,23 +1,20 @@
 import { BuildContext } from '../context/BuildContext';
-import * as TE from 'fp-ts/TaskEither';
+import { taskEither } from 'fp-ts';
 import { match, P } from 'ts-pattern';
 import { isApplication, isHelm } from '../context/projectTypeUtils';
-import { flow, pipe } from 'fp-ts/function';
 import path from 'path';
 import { getCwd } from '../command/getCwd';
-import * as E from 'fp-ts/Either';
+import { either, monoid, readonlyArray, function as func } from 'fp-ts';
 import { runCommand } from '../command/runCommand';
-import * as Pred from 'fp-ts/Predicate';
+import { predicate } from 'fp-ts';
 import { Stage, StageExecuteFn } from './Stage';
 import { createDockerImageTag } from '../utils/dockerUtils';
 import { getAndCacheHelmProject } from '../projectCache';
-import * as RArray from 'fp-ts/ReadonlyArray';
-import * as Monoid from 'fp-ts/Monoid';
 import shellEnv from 'shell-env';
 import { CommandType } from '../context/CommandType';
 import { isTerraformOnly } from '../context/commandTypeUtils';
 
-const setValuesMonoid: Monoid.Monoid<string> = {
+const setValuesMonoid: monoid.Monoid<string> = {
 	empty: '',
 	concat: (a, b) => {
 		if (!a) {
@@ -37,33 +34,33 @@ export const K8S_NS = 'apps-prod';
 // 		E.map((_) => _['app_deployment'].appName)
 // 	);
 
-const getNamespace = (context: BuildContext): E.Either<Error, string> => {
+const getNamespace = (context: BuildContext): either.Either<Error, string> => {
 	if (!isHelm(context.projectType)) {
-		return E.right(K8S_NS);
+		return either.right(K8S_NS);
 	}
 
-	return pipe(
+	return func.pipe(
 		getAndCacheHelmProject(),
-		E.map((_) => _.namespace)
+		either.map((_) => _.namespace)
 	);
 };
 
 const createHelmSetValues = (
 	context: BuildContext
-): E.Either<Error, string> => {
+): either.Either<Error, string> => {
 	if (!isHelm(context.projectType)) {
 		const image = createDockerImageTag(context.projectInfo);
-		return E.right(`--set app_deployment.image=${image}`);
+		return either.right(`--set app_deployment.image=${image}`);
 	}
 
-	return pipe(
+	return func.pipe(
 		getAndCacheHelmProject(),
-		E.map((_) => _.setValues ?? {}),
-		E.map(
-			flow(
+		either.map((_) => _.setValues ?? {}),
+		either.map(
+			func.flow(
 				Object.entries,
-				RArray.map(([key, value]) => `--set ${key}=${value}`),
-				Monoid.concatAll(setValuesMonoid)
+				readonlyArray.map(([key, value]) => `--set ${key}=${value}`),
+				monoid.concatAll(setValuesMonoid)
 			)
 		)
 	);
@@ -80,25 +77,25 @@ const createFullHelmCommand = (
 
 const doDeploy = (
 	context: BuildContext
-): TE.TaskEither<Error, BuildContext> => {
+): taskEither.TaskEither<Error, BuildContext> => {
 	const deployDir = path.join(getCwd(), 'deploy');
 	const shellVariables = shellEnv.sync();
 	const tarFile = path.join(
 		deployDir,
 		`${context.projectInfo.name}-${context.projectInfo.version}.tgz`
 	);
-	const deployTE = pipe(
+	const deployTE = func.pipe(
 		getNamespace(context),
-		E.bindTo('namespace'),
-		E.bind('setValues', () => createHelmSetValues(context)),
-		TE.fromEither,
-		TE.chainFirst(() =>
+		either.bindTo('namespace'),
+		either.bind('setValues', () => createHelmSetValues(context)),
+		taskEither.fromEither,
+		taskEither.chainFirst(() =>
 			runCommand(`kubectl config use-context ${K8S_CTX}`, {
 				printOutput: true,
 				cwd: deployDir
 			})
 		),
-		TE.chainFirst(() =>
+		taskEither.chainFirst(() =>
 			runCommand(
 				`helm package ./chart --version ${context.projectInfo.version} --app-version ${context.projectInfo.version}`,
 				{
@@ -107,7 +104,7 @@ const doDeploy = (
 				}
 			)
 		),
-		TE.chainFirst(({ setValues, namespace }) =>
+		taskEither.chainFirst(({ setValues, namespace }) =>
 			runCommand(
 				createFullHelmCommand(
 					context.projectInfo.name,
@@ -123,7 +120,7 @@ const doDeploy = (
 				}
 			)
 		),
-		TE.chainFirst(({ setValues, namespace }) =>
+		taskEither.chainFirst(({ setValues, namespace }) =>
 			runCommand(
 				createFullHelmCommand(
 					context.projectInfo.name,
@@ -141,26 +138,26 @@ const doDeploy = (
 		)
 	);
 
-	return pipe(
+	return func.pipe(
 		deployTE,
-		TE.map(() => context)
+		taskEither.map(() => context)
 	);
 };
 
 const handleDeployByProject = (
 	context: BuildContext
-): TE.TaskEither<Error, BuildContext> =>
+): taskEither.TaskEither<Error, BuildContext> =>
 	match(context)
 		.with({ projectType: P.when(isApplication) }, doDeploy)
 		.run();
 
-const isNotTerraformOnly: Pred.Predicate<CommandType> =
-	Pred.not(isTerraformOnly);
+const isNotTerraformOnly: predicate.Predicate<CommandType> =
+	predicate.not(isTerraformOnly);
 
 const execute: StageExecuteFn = (context) => handleDeployByProject(context);
-const shouldStageExecute: Pred.Predicate<BuildContext> = pipe(
+const shouldStageExecute: predicate.Predicate<BuildContext> = func.pipe(
 	(_: BuildContext) => isApplication(_.projectType),
-	Pred.and((_) => isNotTerraformOnly(_.commandInfo.type))
+	predicate.and((_) => isNotTerraformOnly(_.commandInfo.type))
 );
 
 export const deployToKubernetes: Stage = {

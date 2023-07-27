@@ -4,10 +4,10 @@ import { getCwd } from '../command/getCwd';
 import fs from 'fs';
 import { match } from 'ts-pattern';
 import { ProjectType } from '../context/ProjectType';
-import * as E from 'fp-ts/Either';
-import { pipe } from 'fp-ts/function';
-import * as Pred from 'fp-ts/Predicate';
-import * as TE from 'fp-ts/TaskEither';
+import { either } from 'fp-ts';
+import { function as func } from 'fp-ts';
+import { predicate } from 'fp-ts';
+import { taskEither } from 'fp-ts';
 import { BuildContext } from '../context/BuildContext';
 import {
 	DOCKER_PROJECT_FILE,
@@ -24,76 +24,78 @@ const fileExists = (cwd: string, file: string): boolean =>
 	fs.existsSync(path.resolve(cwd, file));
 
 const isHelmApplication = (): boolean =>
-	pipe(
+	func.pipe(
 		getAndCacheHelmProject(),
-		E.exists((helmJson) => helmJson.type === 'application')
+		either.exists((helmJson) => helmJson.type === 'application')
 	);
 
-const checkProjectFilesForType = (): E.Either<Error, ProjectType> =>
+const checkProjectFilesForType = (): either.Either<Error, ProjectType> =>
 	match(getCwd())
 		.when(
 			(_) =>
 				fileExists(_, NPM_PROJECT_FILE) &&
 				fileExists(_, HELM_DEPLOY_FILE),
-			() => E.right(ProjectType.NpmApplication)
+			() => either.right(ProjectType.NpmApplication)
 		)
 		.when(
 			(_) => fileExists(_, NPM_PROJECT_FILE),
-			() => E.right(ProjectType.NpmLibrary)
+			() => either.right(ProjectType.NpmLibrary)
 		)
 		.when(
 			(_) =>
 				(fileExists(_, GRADLE_KOTLIN_PROJECT_FILE) ||
 					fileExists(_, GRADLE_GROOVY_PROJECT_FILE)) &&
 				fileExists(_, HELM_DEPLOY_FILE),
-			() => E.right(ProjectType.GradleApplication)
+			() => either.right(ProjectType.GradleApplication)
 		)
 		.when(
 			(_) =>
 				fileExists(_, GRADLE_KOTLIN_PROJECT_FILE) ||
 				fileExists(_, GRADLE_GROOVY_PROJECT_FILE),
-			() => E.right(ProjectType.GradleLibrary)
+			() => either.right(ProjectType.GradleLibrary)
 		)
 		.when(
 			(_) =>
 				fileExists(_, MAVEN_PROJECT_FILE) &&
 				fileExists(_, HELM_DEPLOY_FILE),
-			() => E.right(ProjectType.MavenApplication)
+			() => either.right(ProjectType.MavenApplication)
 		)
 		.when(
 			(_) => fileExists(_, MAVEN_PROJECT_FILE),
-			() => E.right(ProjectType.MavenLibrary)
+			() => either.right(ProjectType.MavenLibrary)
 		)
 		.when(
 			(_) =>
 				fileExists(_, DOCKER_PROJECT_FILE) &&
 				fileExists(_, HELM_DEPLOY_FILE),
-			() => E.right(ProjectType.DockerApplication)
+			() => either.right(ProjectType.DockerApplication)
 		)
 		.when(
 			(_) => fileExists(_, DOCKER_PROJECT_FILE),
-			() => E.right(ProjectType.DockerImage)
+			() => either.right(ProjectType.DockerImage)
 		)
 		.when(
 			(_) => fileExists(_, HELM_PROJECT_FILE) && isHelmApplication(),
-			() => E.right(ProjectType.HelmApplication)
+			() => either.right(ProjectType.HelmApplication)
 		)
 		.when(
 			(_) => fileExists(_, HELM_PROJECT_FILE) && !isHelmApplication(),
-			() => E.right(ProjectType.HelmLibrary)
+			() => either.right(ProjectType.HelmLibrary)
 		)
-		.otherwise(() => E.left(new Error('Unable to identify ProjectType')));
+		.otherwise(() =>
+			either.left(new Error('Unable to identify ProjectType'))
+		);
 
 const execute: StageExecuteFn = (context) =>
-	pipe(
+	func.pipe(
 		checkProjectFilesForType(),
-		E.map((projectType) => ({
+		either.map((projectType) => ({
 			...context,
 			projectType: projectType
 		})),
-		TE.fromEither
+		taskEither.fromEither
 	);
-const shouldStageExecute: Pred.Predicate<BuildContext> = () => true;
+const shouldStageExecute: predicate.Predicate<BuildContext> = () => true;
 
 export const getProjectType: Stage = {
 	name: 'Get Project Type',

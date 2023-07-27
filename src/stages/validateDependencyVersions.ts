@@ -1,5 +1,5 @@
 import { BuildContext } from '../context/BuildContext';
-import { flow, pipe } from 'fp-ts/function';
+import { function as func } from 'fp-ts';
 import { match, P } from 'ts-pattern';
 import {
 	isDocker,
@@ -8,15 +8,17 @@ import {
 	isMaven,
 	isNpm
 } from '../context/projectTypeUtils';
-import * as TE from 'fp-ts/TaskEither';
-import * as S from 'fp-ts/string';
+import {
+	taskEither,
+	string,
+	readonlyArray,
+	readonlyNonEmptyArray
+} from 'fp-ts';
 import { getCwd } from '../command/getCwd';
 import { MavenArtifact, PomXml } from '../configFileTypes/PomXml';
-import * as A from 'fp-ts/Array';
-import * as RArray from 'fp-ts/ReadonlyArray';
-import * as RNonEmptyArray from 'fp-ts/ReadonlyNonEmptyArray';
-import * as O from 'fp-ts/Option';
-import * as Pred from 'fp-ts/Predicate';
+import { array } from 'fp-ts';
+import { option } from 'fp-ts';
+import { predicate } from 'fp-ts';
 import { PackageJson } from '../configFileTypes/PackageJson';
 import { isRelease } from '../context/projectInfoUtils';
 import { Stage, StageExecuteFn } from './Stage';
@@ -32,30 +34,30 @@ type PomAndProps = [PomXml, MavenProperties];
 type JsEntries = [string, string][];
 
 const getMavenProperties = (pomXml: PomXml): MavenProperties =>
-	pipe(
-		O.fromNullable(pomXml.project.properties),
-		O.chain(A.head),
-		O.map((props) =>
+	func.pipe(
+		option.fromNullable(pomXml.project.properties),
+		option.chain(array.head),
+		option.map((props) =>
 			Object.entries(props).reduce(
 				(mvnProps: MavenProperties, [key, value]) => {
-					mvnProps[key] = pipe(
+					mvnProps[key] = func.pipe(
 						value,
-						A.head,
-						O.getOrElse(() => '')
+						array.head,
+						option.getOrElse(() => '')
 					);
 					return mvnProps;
 				},
 				{}
 			)
 		),
-		O.getOrElse(() => ({}))
+		option.getOrElse(() => ({}))
 	);
 
 const mavenFormatArtifactVersion = (dependency: MavenArtifact): string =>
-	pipe(
-		O.fromNullable(dependency.version),
-		O.chain(A.head),
-		O.getOrElse(() => '')
+	func.pipe(
+		option.fromNullable(dependency.version),
+		option.chain(array.head),
+		option.getOrElse(() => '')
 	);
 
 const mavenReplaceVersionProperty = (
@@ -77,20 +79,20 @@ const mavenHasNoSnapshotDependencies = ([
 		return true;
 	}
 	const hasNoSnapshotDependencies =
-		pipe(
+		func.pipe(
 			pomXml.project.dependencies[0].dependency,
-			A.map(mavenFormatArtifactVersion),
-			A.filter((version) =>
+			array.map(mavenFormatArtifactVersion),
+			array.filter((version) =>
 				mavenReplaceVersionProperty(mvnProps, version).includes(
 					'SNAPSHOT'
 				)
 			)
 		).length === 0;
 	const hasNoSnapshotPlugins =
-		pipe(
+		func.pipe(
 			pomXml.project.build?.[0].plugins?.[0].plugin ?? [],
-			A.map(mavenFormatArtifactVersion),
-			A.filter((version) =>
+			array.map(mavenFormatArtifactVersion),
+			array.filter((version) =>
 				mavenReplaceVersionProperty(mvnProps, version).includes(
 					'SNAPSHOT'
 				)
@@ -102,87 +104,91 @@ const mavenHasNoSnapshotDependencies = ([
 
 const validateMavenReleaseDependencies = (
 	context: BuildContext
-): TE.TaskEither<Error, BuildContext> =>
-	pipe(
+): taskEither.TaskEither<Error, BuildContext> =>
+	func.pipe(
 		getRawProjectData<PomXml>(context.projectType),
-		TE.map((pomXml): PomAndProps => [pomXml, getMavenProperties(pomXml)]),
-		TE.filterOrElse(
+		taskEither.map(
+			(pomXml): PomAndProps => [pomXml, getMavenProperties(pomXml)]
+		),
+		taskEither.filterOrElse(
 			mavenHasNoSnapshotDependencies,
 			() =>
 				new Error(
 					'Cannot have SNAPSHOT dependencies or plugins in Maven release'
 				)
 		),
-		TE.map(() => context)
+		taskEither.map(() => context)
 	);
 
 const entries = (obj?: { [key: string]: string }): JsEntries =>
-	pipe(
-		O.fromNullable(obj),
-		O.map(Object.entries),
-		O.getOrElse((): JsEntries => [])
+	func.pipe(
+		option.fromNullable(obj),
+		option.map(Object.entries),
+		option.getOrElse((): JsEntries => [])
 	);
 
 const npmHasNoBetaDependencies = (dependencyEntries: JsEntries): boolean =>
-	pipe(
+	func.pipe(
 		dependencyEntries,
-		A.filter(([, value]) => value.includes('beta'))
+		array.filter(([, value]) => value.includes('beta'))
 	).length === 0;
 
 const validateNpmReleaseDependencies = (
 	context: BuildContext
-): TE.TaskEither<Error, BuildContext> =>
-	pipe(
+): taskEither.TaskEither<Error, BuildContext> =>
+	func.pipe(
 		getRawProjectData<PackageJson>(context.projectType),
-		TE.map((_) =>
+		taskEither.map((_) =>
 			entries(_.dependencies).concat(entries(_.devDependencies))
 		),
-		TE.filterOrElse(
+		taskEither.filterOrElse(
 			npmHasNoBetaDependencies,
 			() => new Error('Cannot have beta dependencies in NPM release')
 		),
-		TE.map(() => context)
+		taskEither.map(() => context)
 	);
 
 const extractGradleVersions = (output: string): ReadonlyArray<string> =>
-	pipe(
+	func.pipe(
 		output,
-		S.split('\n'),
-		RArray.filter((_) => /^.*?--- /.test(_)),
-		RArray.map(S.trim),
-		RArray.map(S.replace(/^.*?---/, '')),
-		RArray.map(S.replace(/\([*|c]\)$/, '')),
-		RArray.map(S.replace(/ -> /, ':')),
-		RArray.filter(Pred.not(S.isEmpty)),
-		RArray.map(flow(S.split(':'), RNonEmptyArray.last))
+		string.split('\n'),
+		readonlyArray.filter((_) => /^.*?--- /.test(_)),
+		readonlyArray.map(string.trim),
+		readonlyArray.map(string.replace(/^.*?---/, '')),
+		readonlyArray.map(string.replace(/\([*|c]\)$/, '')),
+		readonlyArray.map(string.replace(/ -> /, ':')),
+		readonlyArray.filter(predicate.not(string.isEmpty)),
+		readonlyArray.map(
+			func.flow(string.split(':'), readonlyNonEmptyArray.last)
+		)
 	);
 
 const hasSnapshotVersion = (output: string): boolean =>
-	pipe(
+	func.pipe(
 		extractGradleVersions(output),
-		RArray.filter((version) => version.endsWith('SNAPSHOT'))
+		readonlyArray.filter((version) => version.endsWith('SNAPSHOT'))
 	).length === 0;
 
 const validateGradleReleaseDependencies = (
 	context: BuildContext
-): TE.TaskEither<Error, BuildContext> => {
-	const hasSnapshotDependency = pipe(
+): taskEither.TaskEither<Error, BuildContext> => {
+	const hasSnapshotDependency = func.pipe(
 		runCommand('gradle dependencies', {
 			cwd: getCwd()
 		}),
-		TE.map(hasSnapshotVersion)
+		taskEither.map(hasSnapshotVersion)
 	);
 
-	const hasSnapshotPlugin = pipe(
+	const hasSnapshotPlugin = func.pipe(
 		runCommand('gradle buildEnvironment', {
 			cwd: getCwd()
 		}),
-		TE.map(hasSnapshotVersion)
+		taskEither.map(hasSnapshotVersion)
 	);
 
-	return pipe(
-		TE.sequenceArray([hasSnapshotDependency, hasSnapshotPlugin]),
-		TE.filterOrElse(
+	return func.pipe(
+		taskEither.sequenceArray([hasSnapshotDependency, hasSnapshotPlugin]),
+		taskEither.filterOrElse(
 			([dependencyResult, pluginResult]) =>
 				dependencyResult && pluginResult,
 			() =>
@@ -190,13 +196,13 @@ const validateGradleReleaseDependencies = (
 					'Cannot have SNAPSHOT dependencies or plugins in Gradle release'
 				)
 		),
-		TE.map(() => context)
+		taskEither.map(() => context)
 	);
 };
 
 const handleValidationByProject = (
 	context: BuildContext
-): TE.TaskEither<Error, BuildContext> =>
+): taskEither.TaskEither<Error, BuildContext> =>
 	match(context)
 		.with(
 			{ projectType: P.when(isMaven), projectInfo: P.when(isRelease) },
@@ -212,18 +218,18 @@ const handleValidationByProject = (
 		)
 		.run();
 
-const isNotDocker: Pred.Predicate<ProjectType> = Pred.not(isDocker);
-const isNotHelm: Pred.Predicate<ProjectType> = Pred.not(isHelm);
+const isNotDocker: predicate.Predicate<ProjectType> = predicate.not(isDocker);
+const isNotHelm: predicate.Predicate<ProjectType> = predicate.not(isHelm);
 
 const execute: StageExecuteFn = (context) => handleValidationByProject(context);
-const isNonDockerNonHelmRelease: Pred.Predicate<BuildContext> = pipe(
+const isNonDockerNonHelmRelease: predicate.Predicate<BuildContext> = func.pipe(
 	(_: BuildContext) => isNotDocker(_.projectType),
-	Pred.and((_) => isNotHelm(_.projectType)),
-	Pred.and((_) => isRelease(_.projectInfo))
+	predicate.and((_) => isNotHelm(_.projectType)),
+	predicate.and((_) => isRelease(_.projectInfo))
 );
-const shouldStageExecute: Pred.Predicate<BuildContext> = pipe(
+const shouldStageExecute: predicate.Predicate<BuildContext> = func.pipe(
 	isNonDockerNonHelmRelease,
-	Pred.and((_) => isFullBuild(_.commandInfo.type))
+	predicate.and((_) => isFullBuild(_.commandInfo.type))
 );
 
 export const validateDependencyVersions: Stage = {

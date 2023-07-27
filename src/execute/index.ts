@@ -1,7 +1,7 @@
 import { BuildContext } from '../context/BuildContext';
-import * as TE from 'fp-ts/TaskEither';
-import * as A from 'fp-ts/Array';
-import { pipe } from 'fp-ts/function';
+import { taskEither } from 'fp-ts';
+import { array } from 'fp-ts';
+import { function as func } from 'fp-ts';
 import { logger } from '../logger';
 import * as EU from '../functions/EitherUtils';
 import { stringifyJson } from '../functions/Json';
@@ -16,12 +16,12 @@ import {
 const conditionallyExecuteStage = (
 	context: BuildContext,
 	stage: Stage
-): TE.TaskEither<Error, BuildContext> =>
-	pipe(
+): taskEither.TaskEither<Error, BuildContext> =>
+	func.pipe(
 		createStageExecution(stage),
 		shouldStageExecute(context),
 		executeIfAllowed(context),
-		TE.map((_) => {
+		taskEither.map((_) => {
 			logger.info(
 				`Completed stage: ${stage.name} ${EU.getOrThrow(
 					stringifyJson(_, 2)
@@ -29,7 +29,7 @@ const conditionallyExecuteStage = (
 			);
 			return _;
 		}),
-		TE.mapLeft((_) => {
+		taskEither.mapLeft((_) => {
 			logger.error(`Error in stage: ${stage.name}`);
 			logger.error(_);
 			return _;
@@ -37,24 +37,25 @@ const conditionallyExecuteStage = (
 	);
 
 const executeStage = (
-	contextTE: TE.TaskEither<Error, BuildContext>,
+	contextTE: taskEither.TaskEither<Error, BuildContext>,
 	stage: Stage
-): TE.TaskEither<Error, BuildContext> =>
-	pipe(
+): taskEither.TaskEither<Error, BuildContext> =>
+	func.pipe(
 		contextTE,
-		TE.map((_) => {
+		taskEither.map((_) => {
 			logger.info(`Starting stage: ${stage.name}`);
 			return _;
 		}),
-		TE.chain((_) => conditionallyExecuteStage(_, stage))
+		taskEither.chain((_) => conditionallyExecuteStage(_, stage))
 	);
 
 export const execute = (
 	context: BuildContext
-): TE.TaskEither<Error, BuildContext> =>
-	pipe(
+): taskEither.TaskEither<Error, BuildContext> =>
+	func.pipe(
 		stages,
-		A.reduce(TE.right<Error, BuildContext>(context), (ctxTE, stage) =>
-			executeStage(ctxTE, stage)
+		array.reduce(
+			taskEither.right<Error, BuildContext>(context),
+			(ctxTE, stage) => executeStage(ctxTE, stage)
 		)
 	);

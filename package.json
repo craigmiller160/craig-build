@@ -15,9 +15,10 @@
   "scripts": {
     "lint": "eslint . --fix --max-warnings=0",
     "forceBuild": "rm -rf ./build && tsc",
+    "typeCheck": "tsc --noEmit",
     "test": "jest",
     "build": "npm run lint && npm run test && npm run forceBuild",
-    "validate": "npm run lint && npm run test",
+    "validate": "npm run typeCheck && npm run lint && npm run test",
     "prepare": "husky install",
     "install": "node libScripts/gradle-install.js"
   },
@@ -57,7 +58,7 @@
     "axios": "^0.21.1",
     "commander": "^7.1.0",
     "cross-spawn": "^7.0.3",
-    "fp-ts": "^2.9.3",
+    "fp-ts": "^2.16.0",
     "immer": "^9.0.12",
     "nanoid": "^3.1.30",
     "os": "^0.1.2",
@@ -67,7 +68,7 @@
     "simple-git": "^2.35.1",
     "sync-env": "^1.0.5",
     "ts-custom-error": "^3.2.0",
-    "ts-pattern": "^4.0.2",
+    "ts-pattern": "^4.3.0",
     "winston": "^3.3.3",
     "xml2js": "^0.4.23",
     "yaml": "^1.10.0"

@@ -1,6 +1,6 @@
-import * as T from 'fp-ts/Task';
+import { task } from 'fp-ts';
 
 export const wait =
-	(millis: number): T.Task<unknown> =>
+	(millis: number): task.Task<unknown> =>
 	() =>
 		new Promise((resolve) => setTimeout(resolve, millis));

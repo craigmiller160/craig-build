@@ -1,13 +1,13 @@
 import { PackageJson } from '../configFileTypes/PackageJson';
-import { pipe } from 'fp-ts/function';
+import { function as func } from 'fp-ts';
 import { readFile } from '../functions/File';
 import path from 'path';
-import * as E from 'fp-ts/Either';
+import { either } from 'fp-ts';
 import { parseJson } from '../functions/Json';
 import { npmSeparateGroupAndName } from '../utils/npmSeparateGroupAndName';
 import { BuildToolInfo } from '../context/BuildToolInfo';
-import * as Pred from 'fp-ts/Predicate';
-import * as TE from 'fp-ts/TaskEither';
+import { predicate } from 'fp-ts';
+import { taskEither } from 'fp-ts';
 import { NPM_PROJECT_FILE } from '../configFileTypes/constants';
 import { Stage, StageExecuteFn } from './Stage';
 import { BuildContext } from '../context/BuildContext';
@@ -23,14 +23,14 @@ const getVersionType = (version: string): VersionType =>
 		.otherwise(() => VersionType.Release);
 
 const execute: StageExecuteFn = (context) =>
-	pipe(
+	func.pipe(
 		readFile(path.resolve(__dirname, '..', '..', NPM_PROJECT_FILE)),
-		E.chain((_) => parseJson<PackageJson>(_)),
-		E.map((_) => {
+		either.chain((_) => parseJson<PackageJson>(_)),
+		either.map((_) => {
 			const [group, name] = npmSeparateGroupAndName(_.name);
 			return [group, name, _.version];
 		}),
-		E.map(
+		either.map(
 			([group, name, version]): BuildToolInfo => ({
 				group,
 				name,
@@ -38,15 +38,15 @@ const execute: StageExecuteFn = (context) =>
 				versionType: getVersionType(version)
 			})
 		),
-		E.map(
+		either.map(
 			(_): BuildContext => ({
 				...context,
 				buildToolInfo: _
 			})
 		),
-		TE.fromEither
+		taskEither.fromEither
 	);
-const shouldStageExecute: Pred.Predicate<BuildContext> = () => true;
+const shouldStageExecute: predicate.Predicate<BuildContext> = () => true;
 
 export const getBuildToolInfo: Stage = {
 	name: 'Get Build Tool Info',

@@ -2,7 +2,7 @@ import { runCommandMock } from '../testutils/runCommandMock';
 import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
 import { validateGitTag } from '../../src/stages/validateGitTag';
-import * as TE from 'fp-ts/TaskEither';
+import { taskEither } from 'fp-ts';
 import '@relmify/jest-fp-ts';
 import { VersionType } from '../../src/context/VersionType';
 
@@ -15,7 +15,7 @@ describe('validateGitTag', () => {
 	});
 
 	it('confirms there is no existing tag for release version', async () => {
-		runCommandMock.mockImplementation(() => TE.right(versions));
+		runCommandMock.mockImplementation(() => taskEither.right(versions));
 		const buildContext: BuildContext = {
 			...baseBuildContext,
 			projectInfo: {
@@ -32,7 +32,7 @@ describe('validateGitTag', () => {
 	});
 
 	it('finds an existing tag for release version', async () => {
-		runCommandMock.mockImplementation(() => TE.right(versions));
+		runCommandMock.mockImplementation(() => taskEither.right(versions));
 		const buildContext: BuildContext = {
 			...baseBuildContext,
 			projectInfo: {
@@ -51,7 +51,7 @@ describe('validateGitTag', () => {
 	});
 
 	it('skips execution for pre-release version', () => {
-		runCommandMock.mockImplementation(() => TE.right(versions));
+		runCommandMock.mockImplementation(() => taskEither.right(versions));
 		const buildContext: BuildContext = {
 			...baseBuildContext,
 			projectInfo: {

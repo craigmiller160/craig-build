@@ -1,7 +1,7 @@
 import { Stage } from '../../src/stages/Stage';
 import { BuildContext } from '../../src/context/BuildContext';
 import { stages } from '../../src/stages';
-import * as TE from 'fp-ts/TaskEither';
+import { taskEither } from 'fp-ts';
 import { ExpectedExecution } from '../expectedExecutions/ExpectedExecution';
 
 jest.mock('../../src/stages', () => {
@@ -20,7 +20,7 @@ jest.mock('../../src/stages', () => {
 export const prepareStageExecutionMock = (context: BuildContext) => {
 	stages.forEach((stage) => {
 		(stage.execute as jest.Mock).mockImplementation(() =>
-			TE.right(context)
+			taskEither.right(context)
 		);
 	});
 };

@@ -1,6 +1,6 @@
 import { createBuildContext } from '../testutils/createBuildContext';
 import { Stage } from '../../src/stages/Stage';
-import * as TE from 'fp-ts/TaskEither';
+import { taskEither } from 'fp-ts';
 import {
 	createStageExecution,
 	executeIfAllowed,
@@ -15,7 +15,7 @@ import '@relmify/jest-fp-ts';
 const baseContext = createBuildContext();
 const mockStage: Stage = {
 	name: 'Mock Stage',
-	execute: () => TE.right(baseContext),
+	execute: () => taskEither.right(baseContext),
 	shouldStageExecute: jest.fn()
 };
 

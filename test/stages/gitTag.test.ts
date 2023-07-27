@@ -3,14 +3,14 @@ import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
 import { gitTag } from '../../src/stages/gitTag';
 import '@relmify/jest-fp-ts';
-import * as TE from 'fp-ts/TaskEither';
+import { taskEither } from 'fp-ts';
 import { VersionType } from '../../src/context/VersionType';
 
 const baseBuildContext = createBuildContext();
 
 describe('gitTag', () => {
 	it('creates and pushes tag for release project', async () => {
-		runCommandMock.mockImplementation(() => TE.right(''));
+		runCommandMock.mockImplementation(() => taskEither.right(''));
 		const buildContext: BuildContext = {
 			...baseBuildContext,
 			projectInfo: {

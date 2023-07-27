@@ -1,7 +1,7 @@
 import { GRADLE_TOOL_FILE } from '../../installConstants';
-import * as TE from 'fp-ts/TaskEither';
+import { taskEither } from 'fp-ts';
 import { runCommand } from '../../command/runCommand';
-import { pipe } from 'fp-ts/function';
+import { function as func } from 'fp-ts';
 import { parseJson } from '../../functions/Json';
 
 export interface GradleItem {
@@ -22,10 +22,10 @@ type RunCommandType = typeof runCommand;
 
 export const createReadGradleProject =
 	(doRunCommand: RunCommandType) =>
-	(projectDirectory: string): TE.TaskEither<Error, GradleProject> =>
-		pipe(
+	(projectDirectory: string): taskEither.TaskEither<Error, GradleProject> =>
+		func.pipe(
 			doRunCommand(createCommand(projectDirectory)),
-			TE.chainEitherK((_) => parseJson<GradleProject>(_))
+			taskEither.chainEitherK((_) => parseJson<GradleProject>(_))
 		);
 
 export const readGradleProject = createReadGradleProject(runCommand);

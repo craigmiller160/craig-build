@@ -8,7 +8,7 @@ import {
 	CLEAR_FILES_COMMAND,
 	manuallyPublishArtifact
 } from '../../src/stages/manuallyPublishArtifact';
-import * as TE from 'fp-ts/TaskEither';
+import { taskEither } from 'fp-ts';
 import path from 'path';
 import { baseWorkingDir } from '../testutils/baseWorkingDir';
 import shellEnv from 'shell-env';
@@ -37,7 +37,7 @@ describe('manuallyPublishArtifact', () => {
 		getCwdMock.mockImplementation(() =>
 			path.join(baseWorkingDir, 'npmReleaseApplication')
 		);
-		runCommandMock.mockImplementation(() => TE.right(''));
+		runCommandMock.mockImplementation(() => taskEither.right(''));
 		const buildContext: BuildContext = {
 			...baseBuildContext,
 			projectType: ProjectType.NpmApplication,
@@ -65,7 +65,7 @@ describe('manuallyPublishArtifact', () => {
 			'npmReleaseApplicationWithPublishDir'
 		);
 		getCwdMock.mockImplementation(() => projectPath);
-		runCommandMock.mockImplementation(() => TE.right(''));
+		runCommandMock.mockImplementation(() => taskEither.right(''));
 		const buildContext: BuildContext = {
 			...baseBuildContext,
 			projectType: ProjectType.NpmApplication,
@@ -94,7 +94,7 @@ describe('manuallyPublishArtifact', () => {
 		prepareEnvMock();
 		const projectPath = path.join(baseWorkingDir, 'helmReleaseLibrary');
 		getCwdMock.mockImplementation(() => projectPath);
-		runCommandMock.mockImplementation(() => TE.right(''));
+		runCommandMock.mockImplementation(() => taskEither.right(''));
 		const buildContext: BuildContext = {
 			...baseBuildContext,
 			projectType: ProjectType.HelmLibrary,

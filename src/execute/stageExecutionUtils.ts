@@ -3,7 +3,7 @@ import { BuildContext } from '../context/BuildContext';
 import { StageExecution } from './StageExecution';
 import { StageExecutionStatus } from './StageExecutionStatus';
 import { match, P } from 'ts-pattern';
-import * as TE from 'fp-ts/TaskEither';
+import { taskEither } from 'fp-ts';
 import { logger } from '../logger';
 
 export const createStageExecution = (stage: Stage): StageExecution => ({
@@ -26,12 +26,12 @@ export const shouldStageExecute =
 
 export const executeIfAllowed =
 	(context: BuildContext) =>
-	(execution: StageExecution): TE.TaskEither<Error, BuildContext> =>
+	(execution: StageExecution): taskEither.TaskEither<Error, BuildContext> =>
 		match(execution)
 			.with({ status: StageExecutionStatus.Proceed }, (_) =>
 				_.stage.execute(context)
 			)
 			.otherwise(() => {
 				logger.debug('Skipping stage');
-				return TE.right(context);
+				return taskEither.right(context);
 			});

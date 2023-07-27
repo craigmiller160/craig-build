@@ -1,9 +1,9 @@
 import { BuildContext } from '../context/BuildContext';
-import * as TE from 'fp-ts/TaskEither';
-import * as Pred from 'fp-ts/Predicate';
+import { taskEither } from 'fp-ts';
+import { predicate } from 'fp-ts';
 import { match, P } from 'ts-pattern';
 import { ProjectType } from '../context/ProjectType';
-import { pipe } from 'fp-ts/function';
+import { function as func } from 'fp-ts';
 import { isApplication, isDocker, isHelm } from '../context/projectTypeUtils';
 import { DOCKER_REPO_PREFIX } from '../configFileTypes/constants';
 import { runCommand } from '../command/runCommand';
@@ -24,14 +24,14 @@ const getCmdSudo = (): string =>
 		.with('Darwin', () => '')
 		.otherwise(() => 'sudo ');
 
-const isDockerOrApplication: Pred.Predicate<ProjectType> = pipe(
+const isDockerOrApplication: predicate.Predicate<ProjectType> = func.pipe(
 	isApplication,
-	Pred.or(isDocker)
+	predicate.or(isDocker)
 );
 
 const loginToNexusDocker = (
 	creds: NexusCredentials
-): TE.TaskEither<Error, string> =>
+): taskEither.TaskEither<Error, string> =>
 	runCommand(
 		`${getCmdSudo()}docker login ${DOCKER_REPO_PREFIX} -u \${user} -p \${password}`,
 		{
@@ -45,7 +45,7 @@ const loginToNexusDocker = (
 
 const checkForExistingImages = (
 	context: BuildContext
-): TE.TaskEither<Error, string> => {
+): taskEither.TaskEither<Error, string> => {
 	const baseCommand = [
 		`${getCmdSudo()}docker image ls`,
 		`grep ${context.projectInfo.name}`,
@@ -59,7 +59,7 @@ const checkForExistingImages = (
 
 const removeExistingImages = (
 	context: BuildContext
-): TE.TaskEither<Error, string> =>
+): taskEither.TaskEither<Error, string> =>
 	runCommand(
 		[
 			`${getCmdSudo()}docker image ls`,
@@ -76,15 +76,17 @@ const removeExistingImages = (
 const removeExistingImagesIfExist = (
 	existingImages: string,
 	context: BuildContext
-): TE.TaskEither<Error, string> =>
+): taskEither.TaskEither<Error, string> =>
 	match(existingImages)
 		.when(
 			(_) => _.length > 0,
 			() => removeExistingImages(context)
 		)
-		.otherwise(() => TE.right(''));
+		.otherwise(() => taskEither.right(''));
 
-const buildDockerImage = (dockerTag: string): TE.TaskEither<Error, string> =>
+const buildDockerImage = (
+	dockerTag: string
+): taskEither.TaskEither<Error, string> =>
 	runCommand(
 		`${getCmdSudo()}docker build --platform linux/amd64 --network=host -t ${dockerTag} .`,
 		{
@@ -93,45 +95,47 @@ const buildDockerImage = (dockerTag: string): TE.TaskEither<Error, string> =>
 		}
 	);
 
-const pushDockerImage = (dockerTag: string): TE.TaskEither<Error, string> =>
+const pushDockerImage = (
+	dockerTag: string
+): taskEither.TaskEither<Error, string> =>
 	runCommand(`${getCmdSudo()}docker push ${dockerTag}`, {
 		printOutput: true
 	});
 
 const runDockerBuild = (
 	context: BuildContext
-): TE.TaskEither<Error, BuildContext> => {
+): taskEither.TaskEither<Error, BuildContext> => {
 	const dockerTag = createDockerImageTag(context.projectInfo);
-	return pipe(
+	return func.pipe(
 		getNexusCredentials(),
-		TE.fromEither,
-		TE.chain(loginToNexusDocker),
-		TE.chain(() => checkForExistingImages(context)),
-		TE.chain((_) => removeExistingImagesIfExist(_, context)),
-		TE.chain(() => buildDockerImage(dockerTag)),
-		TE.chain(() => pushDockerImage(dockerTag)),
-		TE.map(() => context)
+		taskEither.fromEither,
+		taskEither.chain(loginToNexusDocker),
+		taskEither.chain(() => checkForExistingImages(context)),
+		taskEither.chain((_) => removeExistingImagesIfExist(_, context)),
+		taskEither.chain(() => buildDockerImage(dockerTag)),
+		taskEither.chain(() => pushDockerImage(dockerTag)),
+		taskEither.map(() => context)
 	);
 };
 
 const handleDockerBuildByProject = (
 	context: BuildContext
-): TE.TaskEither<Error, BuildContext> =>
+): taskEither.TaskEither<Error, BuildContext> =>
 	match(context)
 		.with({ projectType: P.when(isDockerOrApplication) }, runDockerBuild)
 		.run();
 
-const isNotKubernetesOnly: Pred.Predicate<CommandType> =
-	Pred.not(isKubernetesOnly);
-const isNotHelm: Pred.Predicate<ProjectType> = Pred.not(isHelm);
-const isNotTerraformOnly: Pred.Predicate<CommandType> =
-	Pred.not(isTerraformOnly);
+const isNotKubernetesOnly: predicate.Predicate<CommandType> =
+	predicate.not(isKubernetesOnly);
+const isNotHelm: predicate.Predicate<ProjectType> = predicate.not(isHelm);
+const isNotTerraformOnly: predicate.Predicate<CommandType> =
+	predicate.not(isTerraformOnly);
 
-const shouldStageExecute: Pred.Predicate<BuildContext> = pipe(
+const shouldStageExecute: predicate.Predicate<BuildContext> = func.pipe(
 	(_: BuildContext) => isDockerOrApplication(_.projectType),
-	Pred.and((_) => isNotKubernetesOnly(_.commandInfo.type)),
-	Pred.and((_) => isNotHelm(_.projectType)),
-	Pred.and((_) => isNotTerraformOnly(_.commandInfo.type))
+	predicate.and((_) => isNotKubernetesOnly(_.commandInfo.type)),
+	predicate.and((_) => isNotHelm(_.projectType)),
+	predicate.and((_) => isNotTerraformOnly(_.commandInfo.type))
 );
 
 const execute: StageExecuteFn = (context) =>

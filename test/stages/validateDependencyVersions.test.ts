@@ -9,8 +9,8 @@ import { ProjectType } from '../../src/context/ProjectType';
 import { validateDependencyVersions } from '../../src/stages/validateDependencyVersions';
 import { VersionType } from '../../src/context/VersionType';
 import '../testutils/readGradleProjectUnmock';
-import * as E from 'fp-ts/Either';
-import * as TE from 'fp-ts/TaskEither';
+import { either } from 'fp-ts';
+import { taskEither } from 'fp-ts';
 import { match, P } from 'ts-pattern';
 import fs from 'fs';
 
@@ -39,31 +39,31 @@ type GradleSnapshot = 'none' | 'plugins' | 'dependencies';
 const runCommandMockImpl = (
 	command: string,
 	snapshot: GradleSnapshot
-): TE.TaskEither<Error, string> =>
+): taskEither.TaskEither<Error, string> =>
 	match({ command, snapshot })
 		.with(
 			{
 				command: 'gradle dependencies',
 				snapshot: P.union('none', 'plugins')
 			},
-			() => TE.right(dependencies)
+			() => taskEither.right(dependencies)
 		)
 		.with(
 			{
 				command: 'gradle buildEnvironment',
 				snapshot: P.union('none', 'dependencies')
 			},
-			() => TE.right(buildEnvironment)
+			() => taskEither.right(buildEnvironment)
 		)
 		.with(
 			{ command: 'gradle dependencies', snapshot: 'dependencies' },
-			() => TE.right(dependenciesWithSnapshot)
+			() => taskEither.right(dependenciesWithSnapshot)
 		)
 		.with({ command: 'gradle buildEnvironment', snapshot: 'plugins' }, () =>
-			TE.right(buildEnvironmentWithSnapshot)
+			taskEither.right(buildEnvironmentWithSnapshot)
 		)
 		.otherwise(() =>
-			TE.left(
+			taskEither.left(
 				new Error(`Invalid command: '${command}' Snapshot: ${snapshot}`)
 			)
 		);
@@ -233,7 +233,7 @@ describe('validateDependencyVersions', () => {
 		};
 		const result = await validateDependencyVersions.execute(buildContext)();
 		expect(result).toBeLeft();
-		const error = (result as E.Left<Error>).left;
+		const error = (result as either.Left<Error>).left;
 		expect(error.message).toMatch(
 			/UnresolvedDependencyException.*spring-web-utils/
 		);

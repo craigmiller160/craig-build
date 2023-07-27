@@ -6,7 +6,7 @@ import '@relmify/jest-fp-ts';
 import { buildAndPushDocker } from '../../src/stages/buildAndPushDocker';
 import { BuildContext } from '../../src/context/BuildContext';
 import { ProjectType } from '../../src/context/ProjectType';
-import * as TE from 'fp-ts/TaskEither';
+import { taskEither } from 'fp-ts';
 import { VersionType } from '../../src/context/VersionType';
 import path from 'path';
 import os from 'os';
@@ -83,7 +83,7 @@ const validateCommands = ({
 describe('buildAndPushDocker', () => {
 	beforeEach(() => {
 		jest.resetAllMocks();
-		runCommandMock.mockImplementation(() => TE.right('a'));
+		runCommandMock.mockImplementation(() => taskEither.right('a'));
 		getCwdMock.mockImplementation(() => '/root');
 	});
 
@@ -140,7 +140,7 @@ describe('buildAndPushDocker', () => {
 
 	it('builds and pushes docker image for maven application, with no existing images', async () => {
 		runCommandMock.mockReset();
-		runCommandMock.mockImplementation(() => TE.right(''));
+		runCommandMock.mockImplementation(() => taskEither.right(''));
 		prepareEnvMock();
 		osTypeMock.mockImplementation(() => 'Linux');
 

@@ -9,7 +9,7 @@ import {
 	NPM_BUILD_CMD
 } from '../../src/stages/buildArtifact';
 import '@relmify/jest-fp-ts';
-import * as TE from 'fp-ts/TaskEither';
+import { taskEither } from 'fp-ts';
 
 const baseBuildContext = createBuildContext();
 
@@ -19,7 +19,7 @@ describe('buildArtifact', () => {
 	});
 
 	it('builds maven artifact', async () => {
-		runCommandMock.mockImplementation(() => TE.right(''));
+		runCommandMock.mockImplementation(() => taskEither.right(''));
 		const buildContext: BuildContext = {
 			...baseBuildContext,
 			projectType: ProjectType.MavenApplication
@@ -34,7 +34,7 @@ describe('buildArtifact', () => {
 	});
 
 	it('builds npm artifact', async () => {
-		runCommandMock.mockImplementation(() => TE.right(''));
+		runCommandMock.mockImplementation(() => taskEither.right(''));
 		const buildContext: BuildContext = {
 			...baseBuildContext,
 			projectType: ProjectType.NpmApplication,
@@ -58,7 +58,7 @@ describe('buildArtifact', () => {
 	});
 
 	it('builds gradle artifact', async () => {
-		runCommandMock.mockImplementation(() => TE.right(''));
+		runCommandMock.mockImplementation(() => taskEither.right(''));
 		const buildContext: BuildContext = {
 			...baseBuildContext,
 			projectType: ProjectType.GradleApplication

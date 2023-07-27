@@ -1,7 +1,7 @@
 import readline from 'readline';
-import * as T from 'fp-ts/Task';
+import { task } from 'fp-ts';
 
-export const readUserInput = (prompt: string): T.Task<string> => {
+export const readUserInput = (prompt: string): task.Task<string> => {
 	const rl = readline.createInterface({
 		input: process.stdin,
 		output: process.stdout

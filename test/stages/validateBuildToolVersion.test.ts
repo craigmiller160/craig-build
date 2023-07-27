@@ -1,7 +1,7 @@
 import { validateBuildToolVersion } from '../../src/stages/validateBuildToolVersion';
 import { searchForNpmReleases } from '../../src/services/NexusRepoApi';
-import * as TE from 'fp-ts/TaskEither';
-import * as T from 'fp-ts/Task';
+import { taskEither } from 'fp-ts';
+import { task } from 'fp-ts';
 import '@relmify/jest-fp-ts';
 import { readUserInput } from '../../src/utils/readUserInput';
 import { createBuildContext } from '../testutils/createBuildContext';
@@ -49,7 +49,7 @@ describe('validateBuildToolVersion', () => {
 			items: [createNexusItem('1.0.0'), createNexusItem('1.1.0')]
 		};
 		searchForNpmReleasesMock.mockImplementation(() =>
-			TE.right(nexusResult)
+			taskEither.right(nexusResult)
 		);
 
 		const result = await validateBuildToolVersion.execute(buildContext)();
@@ -74,7 +74,7 @@ describe('validateBuildToolVersion', () => {
 			items: [createNexusItem('1.2.0'), createNexusItem('1.1.0')]
 		};
 		searchForNpmReleasesMock.mockImplementation(() =>
-			TE.right(nexusResult)
+			taskEither.right(nexusResult)
 		);
 
 		const result = await validateBuildToolVersion.execute(buildContext)();
@@ -99,7 +99,7 @@ describe('validateBuildToolVersion', () => {
 				versionType: VersionType.PreRelease
 			}
 		});
-		readUserInputMock.mockImplementation(() => T.of('y'));
+		readUserInputMock.mockImplementation(() => task.of('y'));
 		const result = await validateBuildToolVersion.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
 
@@ -115,7 +115,7 @@ describe('validateBuildToolVersion', () => {
 				versionType: VersionType.PreRelease
 			}
 		});
-		readUserInputMock.mockImplementation(() => T.of('n'));
+		readUserInputMock.mockImplementation(() => task.of('n'));
 		const result = await validateBuildToolVersion.execute(buildContext)();
 		expect(result).toEqualLeft(
 			new Error('User aborted craig-build pre-release execution.')

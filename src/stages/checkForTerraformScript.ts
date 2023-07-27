@@ -1,5 +1,5 @@
 import { Stage, StageExecuteFn } from './Stage';
-import * as TaskEither from 'fp-ts/TaskEither';
+import { taskEither } from 'fp-ts';
 import { BuildContext } from '../context/BuildContext';
 import { isApplication } from '../context/projectTypeUtils';
 import fs from 'fs';
@@ -17,7 +17,7 @@ const hasTerraformDirectory = (): boolean => {
 };
 
 const execute: StageExecuteFn = (context) =>
-	TaskEither.right({
+	taskEither.right({
 		...context,
 		hasTerraform: hasTerraformDirectory()
 	});
