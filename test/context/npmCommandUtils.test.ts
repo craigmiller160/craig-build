@@ -17,7 +17,7 @@ describe('npmCommandUtils', () => {
 		jest.resetAllMocks();
 	});
 
-	it('getNpmBuildToolInstallCommand', () => {
+	describe('getNpmBuildToolInstallCommand', () => {
 		it('npm', () => {
 			expect(getNpmBuildToolInstallCommand('npm')).toEqual('npm install');
 		});
