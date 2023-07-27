@@ -1,9 +1,9 @@
 import { ProjectInfo } from './ProjectInfo';
-import * as P from 'fp-ts/Predicate';
+import { predicate } from 'fp-ts';
 import { VersionType } from './VersionType';
 
-export const isRelease: P.Predicate<ProjectInfo> = (projectInfo) =>
+export const isRelease: predicate.Predicate<ProjectInfo> = (projectInfo) =>
 	VersionType.Release === projectInfo.versionType;
 
-export const isPreRelease: P.Predicate<ProjectInfo> = (projectInfo) =>
+export const isPreRelease: predicate.Predicate<ProjectInfo> = (projectInfo) =>
 	VersionType.PreRelease === projectInfo.versionType;
