@@ -1,18 +1,18 @@
 #!/usr/bin/env node
 
-import { pipe } from 'fp-ts/function';
+import { function as func } from 'fp-ts';
 import { program } from 'commander';
 import { parseJson } from './functions/Json';
 import path from 'path';
 import { readFile } from './functions/File';
-import * as E from 'fp-ts/Either';
+import { either } from 'fp-ts';
 import { PackageJson } from './configFileTypes/PackageJson';
 import * as EU from './functions/EitherUtils';
 import { setupBuildContext } from './setup';
 import { execute } from './execute';
-import * as TE from 'fp-ts/TaskEither';
+import { taskEither } from 'fp-ts';
 import { logger } from './logger';
-import * as T from 'fp-ts/Task';
+import { task } from 'fp-ts';
 import { NPM_PROJECT_FILE } from './configFileTypes/constants';
 
 const packageJson: PackageJson = pipe(

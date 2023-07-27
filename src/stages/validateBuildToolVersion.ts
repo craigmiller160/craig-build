@@ -1,8 +1,8 @@
 import { Stage, StageExecuteFn } from './Stage';
 import { match } from 'ts-pattern';
-import { pipe } from 'fp-ts/function';
+import { function as func } from 'fp-ts';
 import { BuildToolInfo } from '../context/BuildToolInfo';
-import * as TE from 'fp-ts/TaskEither';
+import { taskEither } from 'fp-ts';
 import * as P from 'fp-ts/Predicate';
 import { searchForNpmReleases } from '../services/NexusRepoApi';
 import semver from 'semver';

@@ -1,4 +1,4 @@
-import * as TE from 'fp-ts/TaskEither';
+import { taskEither } from 'fp-ts';
 import { BuildContext } from '../context/BuildContext';
 import { match, P } from 'ts-pattern';
 import {
@@ -8,19 +8,19 @@ import {
 	isNpm
 } from '../context/projectTypeUtils';
 import { isPreRelease } from '../context/projectInfoUtils';
-import { pipe } from 'fp-ts/function';
+import { function as func } from 'fp-ts';
 import {
 	searchForDockerBetas,
 	searchForMavenSnapshots,
 	searchForNpmBetas
 } from '../services/NexusRepoApi';
 import { NexusSearchResult } from '../services/NexusSearchResult';
-import * as O from 'fp-ts/Option';
+import { option } from 'fp-ts';
 import { isNone, isSome } from 'fp-ts/Option';
 import * as A from 'fp-ts/Array';
 import { readFile } from '../functions/File';
 import { homedir } from 'os';
-import * as E from 'fp-ts/Either';
+import { either } from 'fp-ts';
 import path from 'path';
 import * as Pred from 'fp-ts/Predicate';
 import { parseXml } from '../functions/Xml';

@@ -4,7 +4,7 @@ import { BuildContext } from '../../src/context/BuildContext';
 import { ProjectType } from '../../src/context/ProjectType';
 import { waitOnNexusUpdate } from '../../src/stages/waitOnNexusUpdate';
 import '@relmify/jest-fp-ts';
-import * as T from 'fp-ts/Task';
+import { task } from 'fp-ts';
 
 jest.mock('../../src/utils/wait', () => ({
 	wait: jest.fn()

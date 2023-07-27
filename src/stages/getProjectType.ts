@@ -4,10 +4,10 @@ import { getCwd } from '../command/getCwd';
 import fs from 'fs';
 import { match } from 'ts-pattern';
 import { ProjectType } from '../context/ProjectType';
-import * as E from 'fp-ts/Either';
-import { pipe } from 'fp-ts/function';
+import { either } from 'fp-ts';
+import { function as func } from 'fp-ts';
 import * as Pred from 'fp-ts/Predicate';
-import * as TE from 'fp-ts/TaskEither';
+import { taskEither } from 'fp-ts';
 import { BuildContext } from '../context/BuildContext';
 import {
 	DOCKER_PROJECT_FILE,

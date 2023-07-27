@@ -9,7 +9,7 @@ import { BuildContext } from '../../src/context/BuildContext';
 import { ProjectType } from '../../src/context/ProjectType';
 import { validateProjectVersionAllowed } from '../../src/stages/validateProjectVersionAllowed';
 import { NexusSearchResultItem } from '../../src/services/NexusSearchResult';
-import * as TE from 'fp-ts/TaskEither';
+import { taskEither } from 'fp-ts';
 import { VersionType } from '../../src/context/VersionType';
 
 jest.mock('../../src/services/NexusRepoApi', () => ({

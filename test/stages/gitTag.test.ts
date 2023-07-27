@@ -3,7 +3,7 @@ import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
 import { gitTag } from '../../src/stages/gitTag';
 import '@relmify/jest-fp-ts';
-import * as TE from 'fp-ts/TaskEither';
+import { taskEither } from 'fp-ts';
 import { VersionType } from '../../src/context/VersionType';
 
 const baseBuildContext = createBuildContext();

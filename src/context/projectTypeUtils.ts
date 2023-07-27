@@ -1,6 +1,6 @@
 import { ProjectType } from './ProjectType';
 import * as P from 'fp-ts/Predicate';
-import { pipe } from 'fp-ts/function';
+import { function as func } from 'fp-ts';
 
 export const isMaven: P.Predicate<ProjectType> = (projectType) =>
 	[ProjectType.MavenApplication, ProjectType.MavenLibrary].includes(

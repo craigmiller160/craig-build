@@ -1,8 +1,8 @@
-import * as E from 'fp-ts/Either';
+import { either } from 'fp-ts';
 import { unknownToError } from './unknownToError';
 import { Parser } from 'xml2js';
-import * as O from 'fp-ts/Option';
-import { pipe } from 'fp-ts/function';
+import { option } from 'fp-ts';
+import { function as func } from 'fp-ts';
 
 export const parseXml = <T>(xml: string): E.Either<Error, T> =>
 	pipe(

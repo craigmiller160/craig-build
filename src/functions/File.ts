@@ -1,8 +1,8 @@
 import fs from 'fs';
-import * as E from 'fp-ts/Either';
-import * as O from 'fp-ts/Option';
+import { either } from 'fp-ts';
+import { option } from 'fp-ts';
 import { unknownToError } from './unknownToError';
-import { pipe } from 'fp-ts/function';
+import { function as func } from 'fp-ts';
 import { identity } from 'fp-ts/function';
 
 export const readFile = (filePath: string): E.Either<Error, string> =>

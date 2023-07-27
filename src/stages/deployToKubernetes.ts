@@ -1,11 +1,11 @@
 import { BuildContext } from '../context/BuildContext';
-import * as TE from 'fp-ts/TaskEither';
+import { taskEither } from 'fp-ts';
 import { match, P } from 'ts-pattern';
 import { isApplication, isHelm } from '../context/projectTypeUtils';
 import { flow, pipe } from 'fp-ts/function';
 import path from 'path';
 import { getCwd } from '../command/getCwd';
-import * as E from 'fp-ts/Either';
+import { either } from 'fp-ts';
 import { runCommand } from '../command/runCommand';
 import * as Pred from 'fp-ts/Predicate';
 import { Stage, StageExecuteFn } from './Stage';

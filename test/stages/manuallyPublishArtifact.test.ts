@@ -8,7 +8,7 @@ import {
 	CLEAR_FILES_COMMAND,
 	manuallyPublishArtifact
 } from '../../src/stages/manuallyPublishArtifact';
-import * as TE from 'fp-ts/TaskEither';
+import { taskEither } from 'fp-ts';
 import path from 'path';
 import { baseWorkingDir } from '../testutils/baseWorkingDir';
 import shellEnv from 'shell-env';

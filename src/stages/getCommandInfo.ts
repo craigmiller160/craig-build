@@ -3,7 +3,7 @@ import { match } from 'ts-pattern';
 import { OptionValues, program } from 'commander';
 import { CommandInfo } from '../context/CommandInfo';
 import { CommandType } from '../context/CommandType';
-import * as TE from 'fp-ts/TaskEither';
+import { taskEither } from 'fp-ts';
 import * as P from 'fp-ts/Predicate';
 import { BuildContext } from '../context/BuildContext';
 

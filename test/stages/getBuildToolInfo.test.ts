@@ -1,4 +1,4 @@
-import * as E from 'fp-ts/Either';
+import { either } from 'fp-ts';
 import { PackageJson } from '../../src/configFileTypes/PackageJson';
 import { readFile } from '../../src/functions/File';
 import { getBuildToolInfo } from '../../src/stages/getBuildToolInfo';

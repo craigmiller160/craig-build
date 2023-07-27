@@ -1,8 +1,8 @@
 import { BuildContext } from '../context/BuildContext';
-import * as TE from 'fp-ts/TaskEither';
+import { taskEither } from 'fp-ts';
 import { match, P } from 'ts-pattern';
 import { isRelease } from '../context/projectInfoUtils';
-import { pipe } from 'fp-ts/function';
+import { function as func } from 'fp-ts';
 import { runCommand } from '../command/runCommand';
 import { Stage, StageExecuteFn } from './Stage';
 import * as Pred from 'fp-ts/Predicate';

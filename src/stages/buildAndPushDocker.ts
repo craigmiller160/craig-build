@@ -1,9 +1,9 @@
 import { BuildContext } from '../context/BuildContext';
-import * as TE from 'fp-ts/TaskEither';
+import { taskEither } from 'fp-ts';
 import * as Pred from 'fp-ts/Predicate';
 import { match, P } from 'ts-pattern';
 import { ProjectType } from '../context/ProjectType';
-import { pipe } from 'fp-ts/function';
+import { function as func } from 'fp-ts';
 import { isApplication, isDocker, isHelm } from '../context/projectTypeUtils';
 import { DOCKER_REPO_PREFIX } from '../configFileTypes/constants';
 import { runCommand } from '../command/runCommand';

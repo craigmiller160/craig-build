@@ -3,7 +3,7 @@ import { BuildContext } from '../context/BuildContext';
 import { StageExecution } from './StageExecution';
 import { StageExecutionStatus } from './StageExecutionStatus';
 import { match, P } from 'ts-pattern';
-import * as TE from 'fp-ts/TaskEither';
+import { taskEither } from 'fp-ts';
 import { logger } from '../logger';
 
 export const createStageExecution = (stage: Stage): StageExecution => ({

@@ -1,9 +1,9 @@
 import { BuildContext } from '../context/BuildContext';
 import { match, P } from 'ts-pattern';
 import { isApplication } from '../context/projectTypeUtils';
-import * as E from 'fp-ts/Either';
-import { pipe } from 'fp-ts/function';
-import * as TE from 'fp-ts/TaskEither';
+import { either } from 'fp-ts';
+import { function as func } from 'fp-ts';
+import { taskEither } from 'fp-ts';
 import { readFile } from '../functions/File';
 import path from 'path';
 import { getCwd } from '../command/getCwd';

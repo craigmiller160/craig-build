@@ -6,7 +6,7 @@ import '@relmify/jest-fp-ts';
 import { buildAndPushDocker } from '../../src/stages/buildAndPushDocker';
 import { BuildContext } from '../../src/context/BuildContext';
 import { ProjectType } from '../../src/context/ProjectType';
-import * as TE from 'fp-ts/TaskEither';
+import { taskEither } from 'fp-ts';
 import { VersionType } from '../../src/context/VersionType';
 import path from 'path';
 import os from 'os';

@@ -2,7 +2,7 @@ import { NpmBuildTool } from './NpmBuildTool';
 import path from 'path';
 import fs from 'fs';
 import { getCwd } from '../command/getCwd';
-import * as Either from 'fp-ts/Either';
+import { either } from 'fp-ts';
 import { match } from 'ts-pattern';
 
 const getPackageLockJsonPath = () => path.join(getCwd(), 'package-lock.json');

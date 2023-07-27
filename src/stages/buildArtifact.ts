@@ -1,6 +1,6 @@
 import { BuildContext } from '../context/BuildContext';
-import * as TE from 'fp-ts/TaskEither';
-import { pipe } from 'fp-ts/function';
+import { taskEither } from 'fp-ts';
+import { function as func } from 'fp-ts';
 import { match, P } from 'ts-pattern';
 import { isGradle, isMaven, isNpm } from '../context/projectTypeUtils';
 import { runCommand } from '../command/runCommand';

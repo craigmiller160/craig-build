@@ -12,7 +12,7 @@ import {
 	NexusSearchResultItem
 } from '../../src/services/NexusSearchResult';
 import { ProjectType } from '../../src/context/ProjectType';
-import * as TE from 'fp-ts/TaskEither';
+import { taskEither } from 'fp-ts';
 import { baseWorkingDir } from '../testutils/baseWorkingDir';
 import path from 'path';
 import { homedir } from 'os';

@@ -1,5 +1,5 @@
-import * as O from 'fp-ts/Option';
-import { pipe } from 'fp-ts/function';
+import { option } from 'fp-ts';
+import { function as func } from 'fp-ts';
 
 export const regexTest =
 	(regex: RegExp) =>

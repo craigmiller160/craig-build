@@ -2,7 +2,7 @@ import { runCommandMock } from '../testutils/runCommandMock';
 import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
 import { validateGitTag } from '../../src/stages/validateGitTag';
-import * as TE from 'fp-ts/TaskEither';
+import { taskEither } from 'fp-ts';
 import '@relmify/jest-fp-ts';
 import { VersionType } from '../../src/context/VersionType';
 

@@ -1,6 +1,6 @@
 import axios from 'axios';
-import * as TE from 'fp-ts/TaskEither';
-import { pipe } from 'fp-ts/function';
+import { taskEither } from 'fp-ts';
+import { function as func } from 'fp-ts';
 import { NexusSearchResult } from './NexusSearchResult';
 import qs from 'qs';
 import { extractResponseData } from './apiUtils';

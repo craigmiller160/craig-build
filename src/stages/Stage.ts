@@ -1,5 +1,5 @@
 import { BuildContext } from '../context/BuildContext';
-import * as TE from 'fp-ts/TaskEither';
+import { taskEither } from 'fp-ts';
 import * as P from 'fp-ts/Predicate';
 
 export type StageExecuteFn = (

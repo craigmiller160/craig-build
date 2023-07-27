@@ -1,13 +1,13 @@
 import { PackageJson } from '../configFileTypes/PackageJson';
-import { pipe } from 'fp-ts/function';
+import { function as func } from 'fp-ts';
 import { readFile } from '../functions/File';
 import path from 'path';
-import * as E from 'fp-ts/Either';
+import { either } from 'fp-ts';
 import { parseJson } from '../functions/Json';
 import { npmSeparateGroupAndName } from '../utils/npmSeparateGroupAndName';
 import { BuildToolInfo } from '../context/BuildToolInfo';
 import * as Pred from 'fp-ts/Predicate';
-import * as TE from 'fp-ts/TaskEither';
+import { taskEither } from 'fp-ts';
 import { NPM_PROJECT_FILE } from '../configFileTypes/constants';
 import { Stage, StageExecuteFn } from './Stage';
 import { BuildContext } from '../context/BuildContext';

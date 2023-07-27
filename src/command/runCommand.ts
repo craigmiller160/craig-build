@@ -1,5 +1,5 @@
 import spawn from 'cross-spawn';
-import * as TE from 'fp-ts/TaskEither';
+import { taskEither } from 'fp-ts';
 import { getCwd } from './getCwd';
 import { match } from 'ts-pattern';
 import { unknownToError } from '../functions/unknownToError';

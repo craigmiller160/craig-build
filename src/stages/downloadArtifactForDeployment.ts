@@ -1,5 +1,5 @@
 import { BuildContext } from '../context/BuildContext';
-import * as TE from 'fp-ts/TaskEither';
+import { taskEither } from 'fp-ts';
 import { match, P } from 'ts-pattern';
 import {
 	downloadArtifact,
@@ -27,10 +27,10 @@ import {
 import * as A from 'fp-ts/Array';
 import { ProjectInfo } from '../context/ProjectInfo';
 import path from 'path';
-import * as O from 'fp-ts/Option';
+import { option } from 'fp-ts';
 import { getCwd } from '../command/getCwd';
 import { mkdir, rmDirIfExists } from '../functions/File';
-import * as E from 'fp-ts/Either';
+import { either } from 'fp-ts';
 import * as Pred from 'fp-ts/Predicate';
 import { Stage, StageExecuteFn } from './Stage';
 import { CommandType } from '../context/CommandType';

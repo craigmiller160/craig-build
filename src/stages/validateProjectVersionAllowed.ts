@@ -1,6 +1,6 @@
 import { BuildContext } from '../context/BuildContext';
-import { pipe } from 'fp-ts/function';
-import * as TE from 'fp-ts/TaskEither';
+import { function as func } from 'fp-ts';
+import { taskEither } from 'fp-ts';
 import { match, P } from 'ts-pattern';
 import { isDocker, isHelm, isJvm, isNpm } from '../context/projectTypeUtils';
 import {

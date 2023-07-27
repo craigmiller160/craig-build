@@ -1,10 +1,10 @@
 import { Stage, StageExecuteFn } from './Stage';
-import { pipe } from 'fp-ts/function';
+import { function as func } from 'fp-ts';
 import { ProjectType } from '../context/ProjectType';
 import { ProjectInfo } from '../context/ProjectInfo';
 import { match } from 'ts-pattern';
-import * as TE from 'fp-ts/TaskEither';
-import * as Either from 'fp-ts/Either';
+import { taskEither } from 'fp-ts';
+import { either } from 'fp-ts';
 import * as Pred from 'fp-ts/Predicate';
 import {
 	isDocker,

@@ -1,8 +1,8 @@
-import * as O from 'fp-ts/Option';
-import * as TE from 'fp-ts/TaskEither';
-import * as E from 'fp-ts/Either';
+import { option } from 'fp-ts';
+import { taskEither } from 'fp-ts';
+import { either } from 'fp-ts';
 import { ProjectType } from '../context/ProjectType';
-import { pipe } from 'fp-ts/function';
+import { function as func } from 'fp-ts';
 import path from 'path';
 import { readFile } from '../functions/File';
 import { getCwd } from '../command/getCwd';

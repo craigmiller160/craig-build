@@ -9,7 +9,7 @@ import {
 	NPM_BUILD_CMD
 } from '../../src/stages/buildArtifact';
 import '@relmify/jest-fp-ts';
-import * as TE from 'fp-ts/TaskEither';
+import { taskEither } from 'fp-ts';
 
 const baseBuildContext = createBuildContext();
 

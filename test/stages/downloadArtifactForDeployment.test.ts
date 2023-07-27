@@ -11,10 +11,10 @@ import {
 	searchForNpmBetas,
 	searchForNpmReleases
 } from '../../src/services/NexusRepoApi';
-import * as TE from 'fp-ts/TaskEither';
+import { taskEither } from 'fp-ts';
 import { NexusSearchResultItem } from '../../src/services/NexusSearchResult';
 import { mkdir, rmDirIfExists } from '../../src/functions/File';
-import * as E from 'fp-ts/Either';
+import { either } from 'fp-ts';
 import { VersionType } from '../../src/context/VersionType';
 
 jest.mock('../../src/services/NexusRepoApi', () => ({

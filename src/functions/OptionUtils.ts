@@ -1,4 +1,4 @@
-import * as O from 'fp-ts/Option';
+import { option } from 'fp-ts';
 import { match } from 'ts-pattern';
 
 export const getOrNull = <T>(option: O.Option<T>): T | null =>

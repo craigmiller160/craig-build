@@ -7,7 +7,7 @@ import {
 	K8S_NS
 } from '../../src/stages/deployToKubernetes';
 import '@relmify/jest-fp-ts';
-import * as TE from 'fp-ts/TaskEither';
+import { taskEither } from 'fp-ts';
 import { VersionType } from '../../src/context/VersionType';
 import { BuildContext } from '../../src/context/BuildContext';
 import { baseWorkingDir } from '../testutils/baseWorkingDir';

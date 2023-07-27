@@ -1,7 +1,7 @@
 import { BuildContext } from '../context/BuildContext';
-import * as TE from 'fp-ts/TaskEither';
+import { taskEither } from 'fp-ts';
 import * as A from 'fp-ts/Array';
-import { pipe } from 'fp-ts/function';
+import { function as func } from 'fp-ts';
 import { logger } from '../logger';
 import * as EU from '../functions/EitherUtils';
 import { stringifyJson } from '../functions/Json';

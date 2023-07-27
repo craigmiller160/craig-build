@@ -1,4 +1,4 @@
-import * as E from 'fp-ts/Either';
+import { either } from 'fp-ts';
 import { match } from 'ts-pattern';
 
 export const getOrThrow = <T>(either: E.Either<Error, T>): T =>

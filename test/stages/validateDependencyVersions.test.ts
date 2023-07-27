@@ -9,8 +9,8 @@ import { ProjectType } from '../../src/context/ProjectType';
 import { validateDependencyVersions } from '../../src/stages/validateDependencyVersions';
 import { VersionType } from '../../src/context/VersionType';
 import '../testutils/readGradleProjectUnmock';
-import * as E from 'fp-ts/Either';
-import * as TE from 'fp-ts/TaskEither';
+import { either } from 'fp-ts';
+import { taskEither } from 'fp-ts';
 import { match, P } from 'ts-pattern';
 import fs from 'fs';
 

@@ -1,4 +1,4 @@
-import * as E from 'fp-ts/Either';
+import { either } from 'fp-ts';
 import { unknownToError } from './unknownToError';
 
 export const parseJson = <T>(json: string): E.Either<Error, T> =>

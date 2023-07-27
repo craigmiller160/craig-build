@@ -8,14 +8,14 @@ import {
 	isMaven,
 	isNpm
 } from '../context/projectTypeUtils';
-import * as TE from 'fp-ts/TaskEither';
+import { taskEither } from 'fp-ts';
 import * as S from 'fp-ts/string';
 import { getCwd } from '../command/getCwd';
 import { MavenArtifact, PomXml } from '../configFileTypes/PomXml';
 import * as A from 'fp-ts/Array';
 import * as RArray from 'fp-ts/ReadonlyArray';
 import * as RNonEmptyArray from 'fp-ts/ReadonlyNonEmptyArray';
-import * as O from 'fp-ts/Option';
+import { option } from 'fp-ts';
 import * as Pred from 'fp-ts/Predicate';
 import { PackageJson } from '../configFileTypes/PackageJson';
 import { isRelease } from '../context/projectInfoUtils';

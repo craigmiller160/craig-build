@@ -1,4 +1,4 @@
-import * as E from 'fp-ts/Either';
+import { either } from 'fp-ts';
 import yaml from 'yaml';
 import { unknownToError } from './unknownToError';
 

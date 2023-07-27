@@ -1,7 +1,7 @@
 import { Stage, StageExecuteFn } from './Stage';
 import { runCommand } from '../command/runCommand';
-import { pipe } from 'fp-ts/function';
-import * as TE from 'fp-ts/TaskEither';
+import { function as func } from 'fp-ts';
+import { taskEither } from 'fp-ts';
 import { match, P } from 'ts-pattern';
 import * as Pred from 'fp-ts/Predicate';
 import { BuildContext } from '../context/BuildContext';
