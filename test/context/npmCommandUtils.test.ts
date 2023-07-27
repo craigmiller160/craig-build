@@ -1,7 +1,10 @@
 import { getCwdMock } from '../testutils/getCwdMock';
 import path from 'path';
 import '@relmify/jest-fp-ts';
-import { getNpmBuildTool } from '../../src/context/npmCommandUtils';
+import {
+	getNpmBuildTool,
+	getNpmBuildToolInstallCommand
+} from '../../src/context/npmCommandUtils';
 
 const getNpmCommandBaseDir = path.join(
 	process.cwd(),
@@ -12,6 +15,24 @@ const getNpmCommandBaseDir = path.join(
 describe('npmCommandUtils', () => {
 	beforeEach(() => {
 		jest.resetAllMocks();
+	});
+
+	describe('getNpmBuildToolInstallCommand', () => {
+		it('npm', () => {
+			expect(getNpmBuildToolInstallCommand('npm')).toEqual('npm install');
+		});
+
+		it('yarn', () => {
+			expect(getNpmBuildToolInstallCommand('yarn')).toEqual(
+				'yarn install'
+			);
+		});
+
+		it('pnpm', () => {
+			expect(getNpmBuildToolInstallCommand('pnpm')).toEqual(
+				'pnpm install'
+			);
+		});
 	});
 
 	describe('getNpmBuildTool', () => {
