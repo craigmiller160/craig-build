@@ -17,12 +17,12 @@
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "node",
+    "moduleResolution": "Node16",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "react",
     "declaration": false,
-    "module": "commonjs"
+    "module": "Node16"
   },
   "include": [
     "src/**/*"
