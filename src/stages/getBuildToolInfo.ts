@@ -23,7 +23,7 @@ const getVersionType = (version: string): VersionType =>
 		.otherwise(() => VersionType.Release);
 
 const execute: StageExecuteFn = (context) =>
-func.pipe(
+	func.pipe(
 		readFile(path.resolve(__dirname, '..', '..', NPM_PROJECT_FILE)),
 		either.chain((_) => parseJson<PackageJson>(_)),
 		either.map((_) => {

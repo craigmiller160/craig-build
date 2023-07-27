@@ -16,7 +16,9 @@ const isUserPromptCommand: predicate.Predicate<CommandType> = (type) =>
 const hasUncommittedChanges: predicate.Predicate<string> = (message) =>
 	message.length > 0;
 
-const handlePromptResult = (result: string): taskEither.TaskEither<Error, string> => {
+const handlePromptResult = (
+	result: string
+): taskEither.TaskEither<Error, string> => {
 	if (result.trim().toLowerCase() === 'y') {
 		return taskEither.right('');
 	}
@@ -24,7 +26,7 @@ const handlePromptResult = (result: string): taskEither.TaskEither<Error, string
 };
 
 const promptToProceed = (): taskEither.TaskEither<Error, string> =>
-func.pipe(
+	func.pipe(
 		readUserInput(
 			'Uncommitted changes found, do you want to proceed? (y/n): '
 		),
@@ -54,7 +56,7 @@ const handleCommandResult = (
 		.otherwise(() => taskEither.right(''));
 
 const execute: StageExecuteFn = (context) =>
-func.pipe(
+	func.pipe(
 		runCommand(GIT_COMMAND),
 		taskEither.chain((_) => handleCommandResult(context, _)),
 		taskEither.map(() => context)

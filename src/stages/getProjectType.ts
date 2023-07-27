@@ -24,7 +24,7 @@ const fileExists = (cwd: string, file: string): boolean =>
 	fs.existsSync(path.resolve(cwd, file));
 
 const isHelmApplication = (): boolean =>
-func.pipe(
+	func.pipe(
 		getAndCacheHelmProject(),
 		either.exists((helmJson) => helmJson.type === 'application')
 	);
@@ -82,10 +82,12 @@ const checkProjectFilesForType = (): either.Either<Error, ProjectType> =>
 			(_) => fileExists(_, HELM_PROJECT_FILE) && !isHelmApplication(),
 			() => either.right(ProjectType.HelmLibrary)
 		)
-		.otherwise(() => either.left(new Error('Unable to identify ProjectType')));
+		.otherwise(() =>
+			either.left(new Error('Unable to identify ProjectType'))
+		);
 
 const execute: StageExecuteFn = (context) =>
-func.pipe(
+	func.pipe(
 		checkProjectFilesForType(),
 		either.map((projectType) => ({
 			...context,
