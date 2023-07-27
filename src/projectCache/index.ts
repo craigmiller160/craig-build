@@ -30,72 +30,74 @@ import { readGradleProject } from '../special/gradle';
 import { HelmJson } from '../configFileTypes/HelmJson';
 import { TerraformJson } from '../configFileTypes/TerraformJson';
 
-let project: O.Option<unknown> = O.none;
+let project: option.Option<unknown> = option.none;
 
-const readMavenProject = (): E.Either<Error, PomXml> =>
-	pipe(
+const readMavenProject = (): either.Either<Error, PomXml> =>
+	func.pipe(
 		readFile(path.join(getCwd(), MAVEN_PROJECT_FILE)),
-		E.chain((_) => parseXml<PomXml>(_))
+		either.chain((_) => parseXml<PomXml>(_))
 	);
 
-const readNpmProject = (): E.Either<Error, PackageJson> =>
-	pipe(
+const readNpmProject = (): either.Either<Error, PackageJson> =>
+	func.pipe(
 		readFile(path.join(getCwd(), NPM_PROJECT_FILE)),
-		E.chain((_) => parseJson<PackageJson>(_))
+		either.chain((_) => parseJson<PackageJson>(_))
 	);
 
-const readDockerProject = (): E.Either<Error, DockerJson> =>
-	pipe(
+const readDockerProject = (): either.Either<Error, DockerJson> =>
+	func.pipe(
 		readFile(path.join(getCwd(), DOCKER_PROJECT_FILE)),
-		E.chain((_) => parseJson<DockerJson>(_))
+		either.chain((_) => parseJson<DockerJson>(_))
 	);
 
-const readHelmProject = (): E.Either<Error, HelmJson> =>
-	pipe(
+const readHelmProject = (): either.Either<Error, HelmJson> =>
+	func.pipe(
 		readFile(path.join(getCwd(), HELM_PROJECT_FILE)),
-		E.chain((_) => parseJson<HelmJson>(_))
+		either.chain((_) => parseJson<HelmJson>(_))
 	);
 
-export const readTerraformProject = (): E.Either<Error, TerraformJson> =>
-	pipe(
+export const readTerraformProject = (): either.Either<Error, TerraformJson> =>
+	func.pipe(
 		readFile(path.join(getCwd(), TERRAFORM_JSON_PATH)),
-		E.chain((_) => parseJson<TerraformJson>(_))
+		either.chain((_) => parseJson<TerraformJson>(_))
 	);
 
-export const getAndCacheHelmProject = (): E.Either<Error, HelmJson> => {
+export const getAndCacheHelmProject = (): either.Either<Error, HelmJson> => {
 	if (process.env.NODE_ENV === 'test') {
 		return readHelmProject();
 	}
-	return pipe(
+	return func.pipe(
 		project,
-		O.fold(
+		option.fold(
 			() =>
-				pipe(
+				func.pipe(
 					readHelmProject(),
-					E.map((helmProject) => {
-						project = O.some(helmProject);
+					either.map((helmProject) => {
+						project = option.some(helmProject);
 						return helmProject;
 					})
 				),
-			(_) => E.right(_ as HelmJson)
+			(_) => either.right(_ as HelmJson)
 		)
 	);
 };
 
 const readAndCacheRawProjectData = <T>(
 	projectType: ProjectType
-): TE.TaskEither<Error, T> => {
-	const rawProjectTE: TE.TaskEither<Error, unknown> = match(projectType)
-		.when(isMaven, () => TE.fromEither(readMavenProject()))
-		.when(isNpm, () => TE.fromEither(readNpmProject()))
-		.when(isDocker, () => TE.fromEither(readDockerProject()))
+): taskEither.TaskEither<Error, T> => {
+	const rawProjectTE: taskEither.TaskEither<Error, unknown> = match(
+		projectType
+	)
+		.when(isMaven, () => taskEither.fromEither(readMavenProject()))
+		.when(isNpm, () => taskEither.fromEither(readNpmProject()))
+		.when(isDocker, () => taskEither.fromEither(readDockerProject()))
 		.when(isGradle, () => readGradleProject(getCwd()))
-		.when(isHelm, () => TE.fromEither(readHelmProject()))
+		.when(isHelm, () => taskEither.fromEither(readHelmProject()))
 		.run();
-	return pipe(
+	return func.pipe(
 		rawProjectTE,
-		TE.map((data) => {
-			project = O.some(data);
+		taskEither.map((data) => {
+			project = option.some(data);
 			return data as unknown as T;
 		})
 	);
@@ -103,16 +105,16 @@ const readAndCacheRawProjectData = <T>(
 
 export const getRawProjectData = <T>(
 	projectType: ProjectType
-): TE.TaskEither<Error, T> => {
+): taskEither.TaskEither<Error, T> => {
 	if (process.env.NODE_ENV === 'test') {
 		return readAndCacheRawProjectData<T>(projectType);
 	}
 
-	return pipe(
+	return func.pipe(
 		project,
-		O.fold(
+		option.fold(
 			() => readAndCacheRawProjectData<T>(projectType),
-			(_) => TE.right(_ as T)
+			(_) => taskEither.right(_ as T)
 		)
 	);
 };
