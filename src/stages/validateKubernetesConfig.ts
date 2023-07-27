@@ -15,7 +15,7 @@ import {
 import { parseYaml } from '../functions/Yaml';
 import { KubeDeployment } from '../configFileTypes/KubeDeployment';
 import { stringifyJson } from '../functions/Json';
-import * as Pred from 'fp-ts/Predicate';
+import { predicate } from 'fp-ts';
 import { Stage, StageExecuteFn } from './Stage';
 import { logger } from '../logger';
 import * as EU from '../functions/EitherUtils';

@@ -4,7 +4,7 @@ import { function as func } from 'fp-ts';
 import { match, P } from 'ts-pattern';
 import { isGradle, isMaven, isNpm } from '../context/projectTypeUtils';
 import { runCommand } from '../command/runCommand';
-import * as Pred from 'fp-ts/Predicate';
+import { predicate } from 'fp-ts';
 import { ProjectType } from '../context/ProjectType';
 import { Stage, StageExecuteFn } from './Stage';
 import { isFullBuild } from '../context/commandTypeUtils';

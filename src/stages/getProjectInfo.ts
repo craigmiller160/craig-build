@@ -5,7 +5,7 @@ import { ProjectInfo } from '../context/ProjectInfo';
 import { match } from 'ts-pattern';
 import { taskEither } from 'fp-ts';
 import { either } from 'fp-ts';
-import * as Pred from 'fp-ts/Predicate';
+import { predicate } from 'fp-ts';
 import {
 	isDocker,
 	isGradle,

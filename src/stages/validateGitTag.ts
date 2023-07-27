@@ -5,7 +5,7 @@ import { match, P } from 'ts-pattern';
 import { isRelease } from '../context/projectInfoUtils';
 import { runCommand } from '../command/runCommand';
 import * as A from 'fp-ts/Array';
-import * as Pred from 'fp-ts/Predicate';
+import { predicate } from 'fp-ts';
 import { Stage, StageExecuteFn } from './Stage';
 import { isFullBuild } from '../context/commandTypeUtils';
 

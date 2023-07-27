@@ -6,7 +6,7 @@ import { either } from 'fp-ts';
 import { parseJson } from '../functions/Json';
 import { npmSeparateGroupAndName } from '../utils/npmSeparateGroupAndName';
 import { BuildToolInfo } from '../context/BuildToolInfo';
-import * as Pred from 'fp-ts/Predicate';
+import { predicate } from 'fp-ts';
 import { taskEither } from 'fp-ts';
 import { NPM_PROJECT_FILE } from '../configFileTypes/constants';
 import { Stage, StageExecuteFn } from './Stage';

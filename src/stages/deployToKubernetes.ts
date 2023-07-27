@@ -7,7 +7,7 @@ import path from 'path';
 import { getCwd } from '../command/getCwd';
 import { either } from 'fp-ts';
 import { runCommand } from '../command/runCommand';
-import * as Pred from 'fp-ts/Predicate';
+import { predicate } from 'fp-ts';
 import { Stage, StageExecuteFn } from './Stage';
 import { createDockerImageTag } from '../utils/dockerUtils';
 import { getAndCacheHelmProject } from '../projectCache';

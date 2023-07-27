@@ -22,7 +22,7 @@ import { readFile } from '../functions/File';
 import { homedir } from 'os';
 import { either } from 'fp-ts';
 import path from 'path';
-import * as Pred from 'fp-ts/Predicate';
+import { predicate } from 'fp-ts';
 import { parseXml } from '../functions/Xml';
 import { MavenMetadataNexus } from '../configFileTypes/MavenMetadataNexus';
 import { Stage, StageExecuteFn } from './Stage';

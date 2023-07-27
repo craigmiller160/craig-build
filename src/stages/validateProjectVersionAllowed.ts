@@ -13,7 +13,7 @@ import { NexusSearchResult } from '../services/NexusSearchResult';
 import * as A from 'fp-ts/Array';
 import { isRelease } from '../context/projectInfoUtils';
 import { Stage, StageExecuteFn } from './Stage';
-import * as Pred from 'fp-ts/Predicate';
+import { predicate } from 'fp-ts';
 import { isDockerOnly, isFullBuild } from '../context/commandTypeUtils';
 import { ProjectType } from '../context/ProjectType';
 

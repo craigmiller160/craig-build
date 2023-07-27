@@ -5,7 +5,7 @@ import { isHelm, isNpm } from '../context/projectTypeUtils';
 import { function as func } from 'fp-ts';
 import { runCommand } from '../command/runCommand';
 import { Stage, StageExecuteFn } from './Stage';
-import * as Pred from 'fp-ts/Predicate';
+import { predicate } from 'fp-ts';
 import { isFullBuild } from '../context/commandTypeUtils';
 import { readFile } from '../functions/File';
 import { getCwd } from '../command/getCwd';

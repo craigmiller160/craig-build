@@ -16,7 +16,7 @@ import * as A from 'fp-ts/Array';
 import * as RArray from 'fp-ts/ReadonlyArray';
 import * as RNonEmptyArray from 'fp-ts/ReadonlyNonEmptyArray';
 import { option } from 'fp-ts';
-import * as Pred from 'fp-ts/Predicate';
+import { predicate } from 'fp-ts';
 import { PackageJson } from '../configFileTypes/PackageJson';
 import { isRelease } from '../context/projectInfoUtils';
 import { Stage, StageExecuteFn } from './Stage';

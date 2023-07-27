@@ -1,6 +1,6 @@
 import { BuildContext } from '../context/BuildContext';
 import { taskEither } from 'fp-ts';
-import * as Pred from 'fp-ts/Predicate';
+import { predicate } from 'fp-ts';
 import { match, P } from 'ts-pattern';
 import { ProjectType } from '../context/ProjectType';
 import { function as func } from 'fp-ts';

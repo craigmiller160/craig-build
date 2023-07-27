@@ -1,6 +1,6 @@
 import { Stage, StageExecuteFn } from './Stage';
 import * as TaskEither from 'fp-ts/TaskEither';
-import * as Pred from 'fp-ts/Predicate';
+import { predicate } from 'fp-ts';
 import { BuildContext } from '../context/BuildContext';
 import { function as func } from 'fp-ts';
 import { isApplication } from '../context/projectTypeUtils';

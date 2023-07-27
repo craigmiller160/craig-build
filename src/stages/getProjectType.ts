@@ -6,7 +6,7 @@ import { match } from 'ts-pattern';
 import { ProjectType } from '../context/ProjectType';
 import { either } from 'fp-ts';
 import { function as func } from 'fp-ts';
-import * as Pred from 'fp-ts/Predicate';
+import { predicate } from 'fp-ts';
 import { taskEither } from 'fp-ts';
 import { BuildContext } from '../context/BuildContext';
 import {

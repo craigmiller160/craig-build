@@ -3,7 +3,7 @@ import { runCommand } from '../command/runCommand';
 import { function as func } from 'fp-ts';
 import { taskEither } from 'fp-ts';
 import { match, P } from 'ts-pattern';
-import * as Pred from 'fp-ts/Predicate';
+import { predicate } from 'fp-ts';
 import { BuildContext } from '../context/BuildContext';
 import { CommandType } from '../context/CommandType';
 import { readUserInput } from '../utils/readUserInput';

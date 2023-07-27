@@ -31,7 +31,7 @@ import { option } from 'fp-ts';
 import { getCwd } from '../command/getCwd';
 import { mkdir, rmDirIfExists } from '../functions/File';
 import { either } from 'fp-ts';
-import * as Pred from 'fp-ts/Predicate';
+import { predicate } from 'fp-ts';
 import { Stage, StageExecuteFn } from './Stage';
 import { CommandType } from '../context/CommandType';
 import { isKubernetesOnly, isTerraformOnly } from '../context/commandTypeUtils';

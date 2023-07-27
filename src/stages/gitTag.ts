@@ -5,7 +5,7 @@ import { isRelease } from '../context/projectInfoUtils';
 import { function as func } from 'fp-ts';
 import { runCommand } from '../command/runCommand';
 import { Stage, StageExecuteFn } from './Stage';
-import * as Pred from 'fp-ts/Predicate';
+import { predicate } from 'fp-ts';
 import { isFullBuild, isKubernetesOnly } from '../context/commandTypeUtils';
 import { isDocker } from '../context/projectTypeUtils';
 
