@@ -33,20 +33,6 @@ describe('isNpmVersionInRange', () => {
 		expect(isNpmVersionInRange('2.0.0', '~1.0.0')).toEqual(false);
 	});
 
-	describe('^/~ versions', () => {
-		it('greater than', () => {
-			throw new Error();
-		});
-
-		it('less than', () => {
-			throw new Error();
-		});
-
-		it('equal to', () => {
-			throw new Error();
-		});
-	});
-
 	describe('range versions', () => {
 		it('greater than', () => {
 			throw new Error();
