@@ -1,5 +1,5 @@
 import { BuildContext } from '../context/BuildContext';
-import { function as func } from 'fp-ts';
+import { either, function as func } from 'fp-ts';
 import { match, P } from 'ts-pattern';
 import {
 	isDocker,
@@ -31,7 +31,7 @@ const MAVEN_PROPERTY_REGEX = /\${.*}/;
 
 type MavenProperties = { [key: string]: string };
 type PomAndProps = [PomXml, MavenProperties];
-type JsEntries = [string, string][];
+type JsEntries = ReadonlyArray<[string, string]>;
 
 const getMavenProperties = (pomXml: PomXml): MavenProperties =>
 	func.pipe(
@@ -130,12 +130,39 @@ const entries = (obj?: { [key: string]: string }): JsEntries =>
 const npmHasNoBetaDependencies = (dependencyEntries: JsEntries): boolean =>
 	func.pipe(
 		dependencyEntries,
-		array.filter(([, value]) => value.includes('beta'))
+		readonlyArray.filter(([, value]) => value.includes('beta'))
 	).length === 0;
+
+const validateNoBetaDependencies = (
+	packageJson: PackageJson
+): either.Either<Error, PackageJson> => {
+	const hasBeta =
+		func.pipe(
+			entries(packageJson.dependencies),
+			readonlyArray.concat(entries(packageJson.devDependencies)),
+			readonlyArray.concat(entries(packageJson.peerDependencies)),
+			readonlyArray.filter(([, value]) => value.includes('beta'))
+		).length > 0;
+
+	if (hasBeta) {
+		return either.left(
+			new Error('Cannot have beta dependencies in NPM release')
+		);
+	}
+	return either.right(packageJson);
+};
 
 const validateNpmDependencies = (
 	context: BuildContext
-): taskEither.TaskEither<Error, BuildContext> =>
+): taskEither.TaskEither<Error, BuildContext> => {
+	const rawProjectDataTE = getRawProjectData<PackageJson>(
+		context.projectType
+	);
+
+	const noBetaDependenciesE = isRelease(context.projectInfo)
+		? taskEither.chainEitherK(validateNoBetaDependencies)(rawProjectDataTE)
+		: rawProjectDataTE;
+
 	func.pipe(
 		getRawProjectData<PackageJson>(context.projectType),
 		taskEither.map((_) =>
@@ -147,6 +174,9 @@ const validateNpmDependencies = (
 		),
 		taskEither.map(() => context)
 	);
+
+	throw new Error();
+};
 
 const extractGradleVersions = (output: string): ReadonlyArray<string> =>
 	func.pipe(
