@@ -258,8 +258,27 @@ describe('validateDependencyVersions', () => {
 	});
 
 	describe('npm peer dependencies', () => {
+		const npmPeersRoot = path.join(baseWorkingDir, '__npmPeers__');
+
 		it('invalid beta for release project', async () => {
-			throw new Error();
+			getCwdMock.mockImplementation(() =>
+				path.resolve(npmPeersRoot, 'invalidBetaForRelease')
+			);
+			const buildContext: BuildContext = {
+				...baseBuildContext,
+				projectType: ProjectType.NpmApplication,
+				projectInfo: {
+					...baseBuildContext.projectInfo,
+					versionType: VersionType.Release
+				}
+			};
+
+			const result = await validateDependencyVersions.execute(
+				buildContext
+			)();
+			expect(result).toEqualLeft(
+				new Error('Cannot have beta peer dependencies in NPM release')
+			);
 		});
 
 		it('valid beta for pre-release project', async () => {
@@ -280,6 +299,12 @@ describe('validateDependencyVersions', () => {
 
 		it('peer dependency version lower than main dependency version for release project', async () => {
 			throw new Error();
+		});
+
+		describe('version comparison', () => {
+			it('figure out tests', () => {
+				throw new Error();
+			});
 		});
 	});
 });
