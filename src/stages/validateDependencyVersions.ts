@@ -26,6 +26,7 @@ import { ProjectType } from '../context/ProjectType';
 import { isFullBuild } from '../context/commandTypeUtils';
 import { getRawProjectData } from '../projectCache';
 import { runCommand } from '../command/runCommand';
+import semver from 'semver';
 
 const MAVEN_PROPERTY_REGEX = /\${.*}/;
 
@@ -155,7 +156,7 @@ type PeerDependencyData = Readonly<{
 
 const validatePeerDependencies = (
 	packageJson: PackageJson
-): either.Either<Error, PackageJson> => {
+): either.Either<Error, PackageJson> =>
 	func.pipe(
 		entries(packageJson.peerDependencies),
 		readonlyArray.map(
@@ -165,11 +166,35 @@ const validatePeerDependencies = (
 				mainDependencyVersion: packageJson.dependencies?.[key],
 				devDependencyVersion: packageJson.devDependencies?.[key]
 			})
-		)
-	);
+		),
+		readonlyArray.map((data) => {
+			const peerRange = data.peerRange.replace(/-beta/g, '');
+			const validMainVersion =
+				!data.mainDependencyVersion ||
+				semver.satisfies(
+					data.mainDependencyVersion.replace(/-beta/g, ''),
+					peerRange
+				);
+			const validDevVersion =
+				!data.devDependencyVersion ||
+				semver.satisfies(
+					data.devDependencyVersion.replace(/-beta/g, ''),
+					peerRange
+				);
 
-	throw new Error();
-};
+			if (validMainVersion && validDevVersion) {
+				return either.right(data);
+			}
+
+			return either.left(
+				new Error(
+					`Dependency ${data.name} does not satisfy project's peer range`
+				)
+			);
+		}),
+		either.sequenceArray,
+		either.map(() => packageJson)
+	);
 
 const validateNpmDependencies = (
 	context: BuildContext
