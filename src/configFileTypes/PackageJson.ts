@@ -7,5 +7,6 @@ export interface PackageJson {
 	readonly version: string;
 	readonly dependencies?: Dependencies;
 	readonly devDependencies?: Dependencies;
+	readonly peerDependencies?: Dependencies;
 	readonly publishDirectory?: string;
 }
