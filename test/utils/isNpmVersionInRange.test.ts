@@ -17,6 +17,20 @@ describe('isNpmVersionInRange', () => {
 		});
 	});
 
+	describe('X.x versions', () => {
+		it('greater than', () => {
+			throw new Error();
+		});
+
+		it('less than', () => {
+			throw new Error();
+		});
+
+		it('equal to', () => {
+			throw new Error();
+		});
+	});
+
 	describe('^/~ versions', () => {
 		it('greater than', () => {
 			throw new Error();
