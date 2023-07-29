@@ -8,5 +8,8 @@
   "devDependencies": {
     "@craigmiller160/foo-bar": "^1.0.0",
     "@craigmiller160/abc-def": "^1.0.0"
+  },
+  "peerDependencies": {
+    "@craigmiller160/foo-bar": "^1.0.0"
   }
 }
