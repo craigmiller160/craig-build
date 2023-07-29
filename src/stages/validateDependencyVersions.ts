@@ -127,12 +127,6 @@ const entries = (obj?: { [key: string]: string }): JsEntries =>
 		option.getOrElse((): JsEntries => [])
 	);
 
-const npmHasNoBetaDependencies = (dependencyEntries: JsEntries): boolean =>
-	func.pipe(
-		dependencyEntries,
-		readonlyArray.filter(([, value]) => value.includes('beta'))
-	).length === 0;
-
 const validateNoBetaDependencies = (
 	packageJson: PackageJson
 ): either.Either<Error, PackageJson> => {
@@ -152,11 +146,28 @@ const validateNoBetaDependencies = (
 	return either.right(packageJson);
 };
 
+type PeerDependencyData = Readonly<{
+	name: string;
+	peerRange: string;
+	mainDependencyVersion?: string;
+	devDependencyVersion?: string;
+}>;
+
 const validatePeerDependencies = (
 	packageJson: PackageJson
-): either.Either<Error, PackageJson> => {};
+): either.Either<Error, PackageJson> => {
+	func.pipe(
+		entries(packageJson.peerDependencies),
+		readonlyArray.map(
+			([key, value]): PeerDependencyData => ({
+				name: key,
+				peerRange: value,
+				mainDependencyVersion: packageJson.dependencies?.[key],
+				devDependencyVersion: packageJson.devDependencies?.[key]
+			})
+		)
+	);
 
-const temp = (p: PackageJson): either.Either<Error, PackageJson> => {
 	throw new Error();
 };
 
@@ -167,24 +178,11 @@ const validateNpmDependencies = (
 		? validateNoBetaDependencies
 		: (p: PackageJson) => either.right(p);
 
-	func.pipe(
+	return func.pipe(
 		getRawProjectData<PackageJson>(context.projectType),
-		taskEither.chainEitherK(noBetaDependencies)
+		taskEither.chainEitherK(noBetaDependencies),
+		taskEither.chainEitherK(validatePeerDependencies)
 	);
-
-	func.pipe(
-		getRawProjectData<PackageJson>(context.projectType),
-		taskEither.map((_) =>
-			entries(_.dependencies).concat(entries(_.devDependencies))
-		),
-		taskEither.filterOrElse(
-			npmHasNoBetaDependencies,
-			() => new Error('Cannot have beta dependencies in NPM release')
-		),
-		taskEither.map(() => context)
-	);
-
-	throw new Error();
 };
 
 const extractGradleVersions = (output: string): ReadonlyArray<string> =>
