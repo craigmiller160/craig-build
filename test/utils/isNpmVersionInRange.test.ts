@@ -11,6 +11,8 @@ describe('isNpmVersionInRange', () => {
 		expect(isNpmVersionInRange('1.0.0', '1.0.1')).toEqual(false);
 
 		expect(isNpmVersionInRange('1.0.0', '1.0.0')).toEqual(true);
+		expect(isNpmVersionInRange('1.0.0-beta', '1.0.0-beta')).toEqual(true);
+		expect(isNpmVersionInRange('1.0.0-beta', '1.0.0')).toEqual(false);
 	});
 
 	it('X.x versions', () => {
@@ -27,10 +29,16 @@ describe('isNpmVersionInRange', () => {
 		expect(isNpmVersionInRange('1.1.0', '^1.0.0')).toEqual(true);
 		expect(isNpmVersionInRange('2.0.0', '^1.0.0')).toEqual(false);
 
+		expect(isNpmVersionInRange('1.0.0-beta', '^1.0.0-beta')).toEqual(true);
+		expect(isNpmVersionInRange('1.0.0-beta', '^1.0.0')).toEqual(false);
+
 		expect(isNpmVersionInRange('1.0.0', '~1.0.0')).toEqual(true);
 		expect(isNpmVersionInRange('1.0.1', '~1.0.0')).toEqual(true);
 		expect(isNpmVersionInRange('1.1.0', '~1.0.0')).toEqual(false);
 		expect(isNpmVersionInRange('2.0.0', '~1.0.0')).toEqual(false);
+
+		expect(isNpmVersionInRange('1.0.0-beta', '~1.0.0-beta')).toEqual(true);
+		expect(isNpmVersionInRange('1.0.0-beta', '~1.0.0')).toEqual(false);
 	});
 
 	it('range versions', () => {
@@ -38,5 +46,12 @@ describe('isNpmVersionInRange', () => {
 		expect(isNpmVersionInRange('1.0.1', '>= 1.0.0 < 2.0.0')).toEqual(true);
 		expect(isNpmVersionInRange('1.1.0', '>= 1.0.0 < 2.0.0')).toEqual(true);
 		expect(isNpmVersionInRange('2.0.0', '>= 1.0.0 < 2.0.0')).toEqual(false);
+
+		expect(
+			isNpmVersionInRange('1.0.0-beta', '>= 1.0.0-beta < 2.0.0')
+		).toEqual(true);
+		expect(isNpmVersionInRange('1.0.0-beta', '>= 1.0.0 < 2.0.0')).toEqual(
+			false
+		);
 	});
 });
