@@ -348,5 +348,9 @@ describe('validateDependencyVersions', () => {
 				)
 			);
 		});
+
+		it('beta peer dependency is lower than release main dependency', async () => {
+			throw new Error();
+		});
 	});
 });
