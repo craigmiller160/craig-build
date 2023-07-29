@@ -21,6 +21,18 @@ describe('isNpmVersionInRange', () => {
 		expect(isNpmVersionInRange('1.1.0', '1.0.x')).toEqual(false);
 	});
 
+	it('^/~ versions', () => {
+		expect(isNpmVersionInRange('1.0.0', '^1.0.0')).toEqual(true);
+		expect(isNpmVersionInRange('1.0.1', '^1.0.0')).toEqual(true);
+		expect(isNpmVersionInRange('1.1.0', '^1.0.0')).toEqual(true);
+		expect(isNpmVersionInRange('2.0.0', '^1.0.0')).toEqual(false);
+
+		expect(isNpmVersionInRange('1.0.0', '~1.0.0')).toEqual(true);
+		expect(isNpmVersionInRange('1.0.1', '~1.0.0')).toEqual(true);
+		expect(isNpmVersionInRange('1.1.0', '~1.0.0')).toEqual(false);
+		expect(isNpmVersionInRange('2.0.0', '~1.0.0')).toEqual(false);
+	});
+
 	describe('^/~ versions', () => {
 		it('greater than', () => {
 			throw new Error();
