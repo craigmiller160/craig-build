@@ -256,4 +256,30 @@ describe('validateDependencyVersions', () => {
 			new Error('Cannot have beta dependencies in NPM release')
 		);
 	});
+
+	describe('npm peer dependencies', () => {
+		it('invalid beta for release project', async () => {
+			throw new Error();
+		});
+
+		it('valid beta for pre-release project', async () => {
+			throw new Error();
+		});
+
+		it('peer dependency version lower than dev dependency version for pre-release project', async () => {
+			throw new Error();
+		});
+
+		it('peer dependency version lower than main dependency version for pre-release project', async () => {
+			throw new Error();
+		});
+
+		it('peer dependency version lower than dev dependency version for release project', async () => {
+			throw new Error();
+		});
+
+		it('peer dependency version lower than main dependency version for release project', async () => {
+			throw new Error();
+		});
+	});
 });
