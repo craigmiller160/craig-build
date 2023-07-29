@@ -290,7 +290,8 @@ describe('validateDependencyVersions', () => {
 				projectType: ProjectType.NpmApplication,
 				projectInfo: {
 					...baseBuildContext.projectInfo,
-					versionType: VersionType.Release
+					versionType: VersionType.PreRelease,
+					version: '1.0.0-beta'
 				}
 			};
 
@@ -300,20 +301,53 @@ describe('validateDependencyVersions', () => {
 			expect(result).toEqualRight(buildContext);
 		});
 
-		it('peer dependency version lower than dev dependency version for pre-release project', async () => {
-			throw new Error();
+		it('peer dependency version lower than dev dependency version', async () => {
+			getCwdMock.mockImplementation(() =>
+				path.resolve(
+					npmPeersRoot,
+					'peerDependencyLowerThanDevDependency'
+				)
+			);
+			const buildContext: BuildContext = {
+				...baseBuildContext,
+				projectType: ProjectType.NpmApplication,
+				projectInfo: {
+					...baseBuildContext.projectInfo,
+					versionType: VersionType.Release
+				}
+			};
+
+			const result = await validateDependencyVersions.execute(
+				buildContext
+			)();
+			expect(result).toEqualLeft(
+				new Error(
+					'Peer dependency @craigmiller160/foo-bar has lower version than project requires'
+				)
+			);
 		});
 
-		it('peer dependency version lower than main dependency version for pre-release project', async () => {
-			throw new Error();
-		});
+		it('peer dependency version lower than main dependency version', async () => {
+			getCwdMock.mockImplementation(() =>
+				path.resolve(npmPeersRoot, 'peerDependencyLowerThanDependency')
+			);
+			const buildContext: BuildContext = {
+				...baseBuildContext,
+				projectType: ProjectType.NpmApplication,
+				projectInfo: {
+					...baseBuildContext.projectInfo,
+					versionType: VersionType.Release
+				}
+			};
 
-		it('peer dependency version lower than dev dependency version for release project', async () => {
-			throw new Error();
-		});
-
-		it('peer dependency version lower than main dependency version for release project', async () => {
-			throw new Error();
+			const result = await validateDependencyVersions.execute(
+				buildContext
+			)();
+			expect(result).toEqualLeft(
+				new Error(
+					'Peer dependency @craigmiller160/foo-bar has lower version than project requires'
+				)
+			);
 		});
 
 		describe('version comparison', () => {
