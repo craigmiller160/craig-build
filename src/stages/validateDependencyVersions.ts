@@ -152,16 +152,25 @@ const validateNoBetaDependencies = (
 	return either.right(packageJson);
 };
 
+const validatePeerDependencies = (
+	packageJson: PackageJson
+): either.Either<Error, PackageJson> => {};
+
+const temp = (p: PackageJson): either.Either<Error, PackageJson> => {
+	throw new Error();
+};
+
 const validateNpmDependencies = (
 	context: BuildContext
 ): taskEither.TaskEither<Error, BuildContext> => {
-	const rawProjectDataTE = getRawProjectData<PackageJson>(
-		context.projectType
-	);
+	const noBetaDependencies = isRelease(context.projectInfo)
+		? validateNoBetaDependencies
+		: (p: PackageJson) => either.right(p);
 
-	const noBetaDependenciesE = isRelease(context.projectInfo)
-		? taskEither.chainEitherK(validateNoBetaDependencies)(rawProjectDataTE)
-		: rawProjectDataTE;
+	func.pipe(
+		getRawProjectData<PackageJson>(context.projectType),
+		taskEither.chainEitherK(noBetaDependencies)
+	);
 
 	func.pipe(
 		getRawProjectData<PackageJson>(context.projectType),
