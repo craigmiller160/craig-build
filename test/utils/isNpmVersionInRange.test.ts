@@ -33,17 +33,10 @@ describe('isNpmVersionInRange', () => {
 		expect(isNpmVersionInRange('2.0.0', '~1.0.0')).toEqual(false);
 	});
 
-	describe('range versions', () => {
-		it('greater than', () => {
-			throw new Error();
-		});
-
-		it('less than', () => {
-			throw new Error();
-		});
-
-		it('equal to', () => {
-			throw new Error();
-		});
+	it('range versions', () => {
+		expect(isNpmVersionInRange('1.0.0', '>= 1.0.0 < 2.0.0')).toEqual(true);
+		expect(isNpmVersionInRange('1.0.1', '>= 1.0.0 < 2.0.0')).toEqual(true);
+		expect(isNpmVersionInRange('1.1.0', '>= 1.0.0 < 2.0.0')).toEqual(true);
+		expect(isNpmVersionInRange('2.0.0', '>= 1.0.0 < 2.0.0')).toEqual(false);
 	});
 });
