@@ -276,7 +276,7 @@ describe('validateDependencyVersions', () => {
 				buildContext
 			)();
 			expect(result).toEqualLeft(
-				new Error('Cannot have beta peer dependencies in NPM release')
+				new Error('Cannot have beta dependencies in NPM release')
 			);
 		});
 
@@ -321,7 +321,7 @@ describe('validateDependencyVersions', () => {
 			)();
 			expect(result).toEqualLeft(
 				new Error(
-					'Peer dependency @craigmiller160/foo-bar has lower version than project requires'
+					"Dependency @craigmiller160/foo-bar does not satisfy project's peer range"
 				)
 			);
 		});
@@ -344,7 +344,7 @@ describe('validateDependencyVersions', () => {
 			)();
 			expect(result).toEqualLeft(
 				new Error(
-					'Peer dependency @craigmiller160/foo-bar has lower version than project requires'
+					"Dependency @craigmiller160/foo-bar does not satisfy project's peer range"
 				)
 			);
 		});
@@ -368,7 +368,7 @@ describe('validateDependencyVersions', () => {
 			)();
 			expect(result).toEqualLeft(
 				new Error(
-					'Peer dependency @craigmiller160/foo-bar has lower version than project requires'
+					"Dependency @craigmiller160/foo-bar does not satisfy project's peer range"
 				)
 			);
 		});

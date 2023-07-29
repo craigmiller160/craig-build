@@ -154,6 +154,9 @@ type PeerDependencyData = Readonly<{
 	devDependencyVersion?: string;
 }>;
 
+const cleanVersionForPeerValidation = (version: string): string =>
+	version.replace(/-beta/g, '').replace(/^[\^~]/, '');
+
 const validatePeerDependencies = (
 	packageJson: PackageJson
 ): either.Either<Error, PackageJson> =>
@@ -172,13 +175,13 @@ const validatePeerDependencies = (
 			const validMainVersion =
 				!data.mainDependencyVersion ||
 				semver.satisfies(
-					data.mainDependencyVersion.replace(/-beta/g, ''),
+					cleanVersionForPeerValidation(data.mainDependencyVersion),
 					peerRange
 				);
 			const validDevVersion =
 				!data.devDependencyVersion ||
 				semver.satisfies(
-					data.devDependencyVersion.replace(/-beta/g, ''),
+					cleanVersionForPeerValidation(data.devDependencyVersion),
 					peerRange
 				);
 
