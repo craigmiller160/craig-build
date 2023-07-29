@@ -282,7 +282,22 @@ describe('validateDependencyVersions', () => {
 		});
 
 		it('valid beta for pre-release project', async () => {
-			throw new Error();
+			getCwdMock.mockImplementation(() =>
+				path.resolve(npmPeersRoot, 'validBetaForPreRelease')
+			);
+			const buildContext: BuildContext = {
+				...baseBuildContext,
+				projectType: ProjectType.NpmApplication,
+				projectInfo: {
+					...baseBuildContext.projectInfo,
+					versionType: VersionType.Release
+				}
+			};
+
+			const result = await validateDependencyVersions.execute(
+				buildContext
+			)();
+			expect(result).toEqualRight(buildContext);
 		});
 
 		it('peer dependency version lower than dev dependency version for pre-release project', async () => {
