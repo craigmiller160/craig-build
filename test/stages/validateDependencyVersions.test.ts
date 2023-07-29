@@ -349,11 +349,5 @@ describe('validateDependencyVersions', () => {
 				)
 			);
 		});
-
-		describe('version comparison', () => {
-			it('figure out tests', () => {
-				throw new Error();
-			});
-		});
 	});
 });
