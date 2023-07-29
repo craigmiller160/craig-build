@@ -133,7 +133,7 @@ const npmHasNoBetaDependencies = (dependencyEntries: JsEntries): boolean =>
 		array.filter(([, value]) => value.includes('beta'))
 	).length === 0;
 
-const validateNpmReleaseDependencies = (
+const validateNpmDependencies = (
 	context: BuildContext
 ): taskEither.TaskEither<Error, BuildContext> =>
 	func.pipe(
@@ -208,10 +208,7 @@ const handleValidationByProject = (
 			{ projectType: P.when(isMaven), projectInfo: P.when(isRelease) },
 			validateMavenReleaseDependencies
 		)
-		.with(
-			{ projectType: P.when(isNpm), projectInfo: P.when(isRelease) },
-			validateNpmReleaseDependencies
-		)
+		.with({ projectType: P.when(isNpm) }, validateNpmDependencies)
 		.with(
 			{ projectType: P.when(isGradle), projectInfo: P.when(isRelease) },
 			validateGradleReleaseDependencies
