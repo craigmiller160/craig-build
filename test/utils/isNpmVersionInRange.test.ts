@@ -1,15 +1,17 @@
-describe('isNpmVersionInRange', () => {
-	it('tests', () => {
-		throw new Error();
-	});
+import { isNpmVersionInRange } from '../../src/utils/isNpmVersionInRange';
 
+describe('isNpmVersionInRange', () => {
 	describe('absolute versions', () => {
 		it('greater than', () => {
-			throw new Error();
+			expect(isNpmVersionInRange('2.0.0', '1.0.0')).toEqual(false);
+			expect(isNpmVersionInRange('1.0.1', '1.0.0')).toEqual(false);
+			expect(isNpmVersionInRange('1.1.0', '1.0.0')).toEqual(false);
 		});
 
 		it('less than', () => {
-			throw new Error();
+			expect(isNpmVersionInRange('1.0.0', '2.0.0')).toEqual(false);
+			expect(isNpmVersionInRange('1.0.0', '1.1.0')).toEqual(false);
+			expect(isNpmVersionInRange('1.0.0', '1.0.1')).toEqual(false);
 		});
 
 		it('equal to', () => {
