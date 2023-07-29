@@ -350,7 +350,27 @@ describe('validateDependencyVersions', () => {
 		});
 
 		it('beta peer dependency is lower than release main dependency', async () => {
-			throw new Error();
+			getCwdMock.mockImplementation(() =>
+				path.resolve(npmPeersRoot, 'betaPeerIsLowerThanRelease')
+			);
+			const buildContext: BuildContext = {
+				...baseBuildContext,
+				projectType: ProjectType.NpmApplication,
+				projectInfo: {
+					...baseBuildContext.projectInfo,
+					versionType: VersionType.PreRelease,
+					version: '1.0.0-beta'
+				}
+			};
+
+			const result = await validateDependencyVersions.execute(
+				buildContext
+			)();
+			expect(result).toEqualLeft(
+				new Error(
+					'Peer dependency @craigmiller160/foo-bar has lower version than project requires'
+				)
+			);
 		});
 	});
 });
