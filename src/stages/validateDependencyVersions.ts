@@ -181,7 +181,8 @@ const validateNpmDependencies = (
 	return func.pipe(
 		getRawProjectData<PackageJson>(context.projectType),
 		taskEither.chainEitherK(noBetaDependencies),
-		taskEither.chainEitherK(validatePeerDependencies)
+		taskEither.chainEitherK(validatePeerDependencies),
+		taskEither.map(() => context)
 	);
 };
 
