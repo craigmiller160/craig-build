@@ -9,7 +9,7 @@ export type VersionRegexGroups = Readonly<{
 }>;
 
 export const VERSION_REGEX =
-	/(?<range>[^~])?(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d)(-beta(\.(?<beta>\d+)?))?/;
+	/^(?<range>[\^~])?(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d)(-beta(\.(?<beta>\d+)?))?$/;
 
 export const semverTrimVersion = (version: string): string =>
 	version.split('-')[0];

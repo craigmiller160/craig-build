@@ -33,12 +33,24 @@ describe('semverUtils', () => {
 			beta: '4'
 		});
 
-		const nonBetaRangeResult = VERSION_REGEX.exec('^1.2.3');
-		expect(nonBetaRangeResult).not.toBeNull();
-		const nonBetaRangeGroups = nonBetaRangeResult!
+		const nonBetaRangeResult1 = VERSION_REGEX.exec('^1.2.3');
+		expect(nonBetaRangeResult1).not.toBeNull();
+		const nonBetaRangeGroups1 = nonBetaRangeResult1!
 			.groups as unknown as VersionRegexGroups;
-		expect(nonBetaRangeGroups).toEqual({
+		expect(nonBetaRangeGroups1).toEqual({
 			range: '^',
+			major: '1',
+			minor: '2',
+			patch: '3',
+			beta: undefined
+		});
+
+		const nonBetaRangeResult2 = VERSION_REGEX.exec('~1.2.3');
+		expect(nonBetaRangeResult2).not.toBeNull();
+		const nonBetaRangeGroups2 = nonBetaRangeResult2!
+			.groups as unknown as VersionRegexGroups;
+		expect(nonBetaRangeGroups2).toEqual({
+			range: '~',
 			major: '1',
 			minor: '2',
 			patch: '3',
