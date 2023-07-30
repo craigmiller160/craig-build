@@ -1,5 +1,6 @@
 import {
 	semverMaxVersion,
+	semverSatisifies,
 	semverTrimVersion
 } from '../../src/utils/semverUtils';
 
@@ -16,6 +17,11 @@ describe('semverUtils', () => {
 	});
 
 	it('semverSatisfies', () => {
-		throw new Error();
+		expect(semverSatisifies('^1.0.0', '^1.0.0')).toEqual(true);
+		expect(semverSatisifies('^1.0.0', '>= 1.0.0')).toEqual(true);
+		expect(semverSatisifies('^2.0.0', '^1.0.0')).toEqual(false);
+		expect(semverSatisifies('^1.0.0-beta', '^1.0.0-beta')).toEqual(true);
+		expect(semverSatisifies('^1.0.0-beta.1', '^1.0.0-beta')).toEqual(true);
+		expect(semverSatisifies('^1.0.0', '^1.0.0-beta')).toEqual(false);
 	});
 });
