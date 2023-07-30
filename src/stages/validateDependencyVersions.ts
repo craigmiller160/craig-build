@@ -155,7 +155,7 @@ type PeerDependencyData = Readonly<{
 }>;
 
 const cleanVersionForPeerValidation = (version: string): string =>
-	version.replace(/-beta/g, '').replace(/^[\^~]/, '');
+	version.replace(/^[\^~]/, '');
 
 const validatePeerDependencies = (
 	packageJson: PackageJson
