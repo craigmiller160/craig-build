@@ -14,3 +14,7 @@ export const semverMaxVersion = (version: string): string => {
 
 	return version;
 };
+
+export const semverSatisifies = (versionExpression: string, semverRange: string): boolean => {
+	return false;
+};

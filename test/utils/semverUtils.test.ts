@@ -14,4 +14,8 @@ describe('semverUtils', () => {
 		expect(semverMaxVersion('~1.0.0')).toEqual('1.0.999');
 		expect(semverMaxVersion('^1.0.0')).toEqual('1.999.999');
 	});
+
+	it('semverSatisfies', () => {
+		throw new Error();
+	});
 });
