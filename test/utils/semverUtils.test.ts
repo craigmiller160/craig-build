@@ -12,8 +12,10 @@ describe('semverUtils', () => {
 
 		const nonBetaResult = VERSION_REGEX.exec('1.2.3');
 		expect(nonBetaResult).not.toBeNull();
-		const nonBetaGroups = nonBetaResult!.groups as unknown as VersionRegexGroups;
+		const nonBetaGroups = nonBetaResult!
+			.groups as unknown as VersionRegexGroups;
 		expect(nonBetaGroups).toEqual({
+			range: undefined,
 			major: '1',
 			minor: '2',
 			patch: '3',
@@ -24,10 +26,23 @@ describe('semverUtils', () => {
 		expect(betaResult).not.toBeNull();
 		const betaGroups = betaResult!.groups as unknown as VersionRegexGroups;
 		expect(betaGroups).toEqual({
+			range: undefined,
 			major: '1',
 			minor: '2',
 			patch: '3',
 			beta: '4'
+		});
+
+		const nonBetaRangeResult = VERSION_REGEX.exec('^1.2.3');
+		expect(nonBetaRangeResult).not.toBeNull();
+		const nonBetaRangeGroups = nonBetaRangeResult!
+			.groups as unknown as VersionRegexGroups;
+		expect(nonBetaRangeGroups).toEqual({
+			range: '^',
+			major: '1',
+			minor: '2',
+			patch: '3',
+			beta: undefined
 		});
 	});
 

@@ -1,6 +1,7 @@
 import semver from 'semver';
 
 export type VersionRegexGroups = Readonly<{
+	range?: string;
 	major: string;
 	minor: string;
 	patch: string;
@@ -8,20 +9,26 @@ export type VersionRegexGroups = Readonly<{
 }>;
 
 export const VERSION_REGEX =
-	/(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d)(-beta(\.(?<beta>\d+)?))?/;
+	/(?<range>[^~])?(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d)(-beta(\.(?<beta>\d+)?))?/;
 
 export const semverTrimVersion = (version: string): string =>
 	version.split('-')[0];
 
 export const semverMaxVersion = (version: string): string => {
-	if (version.charAt(0) === '~') {
-		const parts = version.slice(1).split('.');
-		return `${parts[0]}.${parts[1]}.999`;
+	const groups = VERSION_REGEX.exec(version)?.groups as
+		| VersionRegexGroups
+		| undefined;
+
+	if (groups?.beta) {
+		return `${groups.major}.${groups.minor}.${groups.patch}-beta.999`;
 	}
 
-	if (version.charAt(0) == '^') {
-		const parts = version.slice(1).split('.');
-		return `${parts[0]}.999.999`;
+	if (groups?.range === '~') {
+		return `${groups.major}.${groups.minor}.999`;
+	}
+
+	if (groups?.range === '^') {
+		return `${groups.major}.999.999`;
 	}
 
 	return version;
