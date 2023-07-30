@@ -19,10 +19,11 @@ describe('semverUtils', () => {
 			major: '1',
 			minor: '2',
 			patch: '3',
-			beta: undefined
+			beta: undefined,
+			betaNumber: undefined
 		});
 
-		const betaResult = VERSION_REGEX.exec('1.2.3-beta.4');
+		const betaResult = VERSION_REGEX.exec('1.2.3-beta');
 		expect(betaResult).not.toBeNull();
 		const betaGroups = betaResult!.groups as unknown as VersionRegexGroups;
 		expect(betaGroups).toEqual({
@@ -30,7 +31,21 @@ describe('semverUtils', () => {
 			major: '1',
 			minor: '2',
 			patch: '3',
-			beta: '4'
+			beta: '-beta',
+			betaNumber: undefined
+		});
+
+		const betaResultWithNumber = VERSION_REGEX.exec('1.2.3-beta.4');
+		expect(betaResultWithNumber).not.toBeNull();
+		const betaGroupsWithNumber = betaResultWithNumber!
+			.groups as unknown as VersionRegexGroups;
+		expect(betaGroupsWithNumber).toEqual({
+			range: undefined,
+			major: '1',
+			minor: '2',
+			patch: '3',
+			beta: '-beta.4',
+			betaNumber: '4'
 		});
 
 		const nonBetaRangeResult1 = VERSION_REGEX.exec('^1.2.3');
@@ -42,7 +57,8 @@ describe('semverUtils', () => {
 			major: '1',
 			minor: '2',
 			patch: '3',
-			beta: undefined
+			beta: undefined,
+			betaNumber: undefined
 		});
 
 		const nonBetaRangeResult2 = VERSION_REGEX.exec('~1.2.3');
@@ -54,7 +70,7 @@ describe('semverUtils', () => {
 			major: '1',
 			minor: '2',
 			patch: '3',
-			beta: undefined
+			betaNumber: undefined
 		});
 	});
 
@@ -67,6 +83,7 @@ describe('semverUtils', () => {
 		expect(semverMaxVersion('1.0.0')).toEqual('1.0.0');
 		expect(semverMaxVersion('~1.0.0')).toEqual('1.0.999');
 		expect(semverMaxVersion('^1.0.0')).toEqual('1.999.999');
+		console.log('before');
 		expect(semverMaxVersion('1.0.0-beta')).toEqual('1.0.0-beta.999');
 		expect(semverMaxVersion('1.0.0-beta.1')).toEqual('1.0.0-beta.999');
 		expect(semverMaxVersion('~1.0.0-beta.1')).toEqual('1.0.0-beta.999');

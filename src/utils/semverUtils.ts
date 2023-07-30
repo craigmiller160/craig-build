@@ -6,10 +6,11 @@ export type VersionRegexGroups = Readonly<{
 	minor: string;
 	patch: string;
 	beta?: string;
+	betaNumber?: string;
 }>;
 
 export const VERSION_REGEX =
-	/^(?<range>[\^~])?(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d)(-beta(\.(?<beta>\d+)?))?$/;
+	/^(?<range>[\^~])?(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d)(?<beta>-beta(\.(?<betaNumber>\d+)?))?$/;
 
 export const semverTrimVersion = (version: string): string =>
 	version.split('-')[0];
@@ -19,6 +20,7 @@ export const semverMaxVersion = (version: string): string => {
 		| VersionRegexGroups
 		| undefined;
 
+	console.log(groups);
 	if (groups?.beta) {
 		return `${groups.major}.${groups.minor}.${groups.patch}-beta.999`;
 	}
