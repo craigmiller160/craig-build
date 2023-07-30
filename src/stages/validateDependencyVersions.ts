@@ -171,18 +171,17 @@ const validatePeerDependencies = (
 			})
 		),
 		readonlyArray.map((data) => {
-			const peerRange = data.peerRange.replace(/-beta/g, '');
 			const validMainVersion =
 				!data.mainDependencyVersion ||
 				semver.satisfies(
 					cleanVersionForPeerValidation(data.mainDependencyVersion),
-					peerRange
+					data.peerRange
 				);
 			const validDevVersion =
 				!data.devDependencyVersion ||
 				semver.satisfies(
 					cleanVersionForPeerValidation(data.devDependencyVersion),
-					peerRange
+					data.peerRange
 				);
 
 			if (validMainVersion && validDevVersion) {
