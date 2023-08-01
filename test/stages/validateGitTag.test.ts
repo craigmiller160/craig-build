@@ -51,7 +51,10 @@ describe('validateGitTag', () => {
 		};
 
 		const result = await validateGitTag.execute(buildContext)();
-		expect(result).toEqualRight(buildContext);
+		expect(result).toEqualRight({
+			...buildContext,
+			doGitTag: false
+		});
 
 		expect(readUserInputMock).toHaveBeenCalledWith(
 			'A git tag with version 0.1.1 already exists. Do you want to proceed and skip tagging? (y/n): '
