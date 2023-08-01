@@ -1,5 +1,15 @@
 import { BuildContext } from '../context/BuildContext';
-import { either, function as func } from 'fp-ts';
+import {
+	array,
+	either,
+	function as func,
+	option,
+	predicate,
+	readonlyArray,
+	readonlyNonEmptyArray,
+	string,
+	taskEither
+} from 'fp-ts';
 import { match, P } from 'ts-pattern';
 import {
 	isDocker,
@@ -8,17 +18,8 @@ import {
 	isMaven,
 	isNpm
 } from '../context/projectTypeUtils';
-import {
-	taskEither,
-	string,
-	readonlyArray,
-	readonlyNonEmptyArray
-} from 'fp-ts';
 import { getCwd } from '../command/getCwd';
 import { MavenArtifact, PomXml } from '../configFileTypes/PomXml';
-import { array } from 'fp-ts';
-import { option } from 'fp-ts';
-import { predicate } from 'fp-ts';
 import { PackageJson } from '../configFileTypes/PackageJson';
 import { isRelease } from '../context/projectInfoUtils';
 import { Stage, StageExecuteFn } from './Stage';
@@ -26,7 +27,7 @@ import { ProjectType } from '../context/ProjectType';
 import { isFullBuild } from '../context/commandTypeUtils';
 import { getRawProjectData } from '../projectCache';
 import { runCommand } from '../command/runCommand';
-import semver from 'semver';
+import { semverSatisifies } from '../utils/semverUtils';
 
 const MAVEN_PROPERTY_REGEX = /\${.*}/;
 
@@ -154,9 +155,6 @@ type PeerDependencyData = Readonly<{
 	devDependencyVersion?: string;
 }>;
 
-const cleanVersionForPeerValidation = (version: string): string =>
-	version.replace(/^[\^~]/, '');
-
 const validatePeerDependencies = (
 	packageJson: PackageJson
 ): either.Either<Error, PackageJson> =>
@@ -173,16 +171,10 @@ const validatePeerDependencies = (
 		readonlyArray.map((data) => {
 			const validMainVersion =
 				!data.mainDependencyVersion ||
-				semver.satisfies(
-					cleanVersionForPeerValidation(data.mainDependencyVersion),
-					data.peerRange
-				);
+				semverSatisifies(data.mainDependencyVersion, data.peerRange);
 			const validDevVersion =
 				!data.devDependencyVersion ||
-				semver.satisfies(
-					cleanVersionForPeerValidation(data.devDependencyVersion),
-					data.peerRange
-				);
+				semverSatisifies(data.devDependencyVersion, data.peerRange);
 
 			if (validMainVersion && validDevVersion) {
 				return either.right(data);
