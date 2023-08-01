@@ -1,5 +1,15 @@
 import { BuildContext } from '../context/BuildContext';
-import { function as func } from 'fp-ts';
+import {
+	array,
+	either,
+	function as func,
+	option,
+	predicate,
+	readonlyArray,
+	readonlyNonEmptyArray,
+	string,
+	taskEither
+} from 'fp-ts';
 import { match, P } from 'ts-pattern';
 import {
 	isDocker,
@@ -8,17 +18,8 @@ import {
 	isMaven,
 	isNpm
 } from '../context/projectTypeUtils';
-import {
-	taskEither,
-	string,
-	readonlyArray,
-	readonlyNonEmptyArray
-} from 'fp-ts';
 import { getCwd } from '../command/getCwd';
 import { MavenArtifact, PomXml } from '../configFileTypes/PomXml';
-import { array } from 'fp-ts';
-import { option } from 'fp-ts';
-import { predicate } from 'fp-ts';
 import { PackageJson } from '../configFileTypes/PackageJson';
 import { isRelease } from '../context/projectInfoUtils';
 import { Stage, StageExecuteFn } from './Stage';
@@ -26,12 +27,13 @@ import { ProjectType } from '../context/ProjectType';
 import { isFullBuild } from '../context/commandTypeUtils';
 import { getRawProjectData } from '../projectCache';
 import { runCommand } from '../command/runCommand';
+import { semverSatisifies } from '../utils/semverUtils';
 
 const MAVEN_PROPERTY_REGEX = /\${.*}/;
 
 type MavenProperties = { [key: string]: string };
 type PomAndProps = [PomXml, MavenProperties];
-type JsEntries = [string, string][];
+type JsEntries = ReadonlyArray<[string, string]>;
 
 const getMavenProperties = (pomXml: PomXml): MavenProperties =>
 	func.pipe(
@@ -127,26 +129,81 @@ const entries = (obj?: { [key: string]: string }): JsEntries =>
 		option.getOrElse((): JsEntries => [])
 	);
 
-const npmHasNoBetaDependencies = (dependencyEntries: JsEntries): boolean =>
-	func.pipe(
-		dependencyEntries,
-		array.filter(([, value]) => value.includes('beta'))
-	).length === 0;
+const validateNoBetaDependencies = (
+	packageJson: PackageJson
+): either.Either<Error, PackageJson> => {
+	const hasBeta =
+		func.pipe(
+			entries(packageJson.dependencies),
+			readonlyArray.concat(entries(packageJson.devDependencies)),
+			readonlyArray.concat(entries(packageJson.peerDependencies)),
+			readonlyArray.filter(([, value]) => value.includes('beta'))
+		).length > 0;
 
-const validateNpmReleaseDependencies = (
-	context: BuildContext
-): taskEither.TaskEither<Error, BuildContext> =>
+	if (hasBeta) {
+		return either.left(
+			new Error('Cannot have beta dependencies in NPM release')
+		);
+	}
+	return either.right(packageJson);
+};
+
+type PeerDependencyData = Readonly<{
+	name: string;
+	peerRange: string;
+	mainDependencyVersion?: string;
+	devDependencyVersion?: string;
+}>;
+
+const validatePeerDependencies = (
+	packageJson: PackageJson
+): either.Either<Error, PackageJson> =>
 	func.pipe(
+		entries(packageJson.peerDependencies),
+		readonlyArray.map(
+			([key, value]): PeerDependencyData => ({
+				name: key,
+				peerRange: value,
+				mainDependencyVersion: packageJson.dependencies?.[key],
+				devDependencyVersion: packageJson.devDependencies?.[key]
+			})
+		),
+		readonlyArray.map((data) => {
+			const validMainVersion =
+				!data.mainDependencyVersion ||
+				semverSatisifies(data.mainDependencyVersion, data.peerRange);
+			const validDevVersion =
+				!data.devDependencyVersion ||
+				semverSatisifies(data.devDependencyVersion, data.peerRange);
+
+			if (validMainVersion && validDevVersion) {
+				return either.right(data);
+			}
+
+			return either.left(
+				new Error(
+					`Dependency ${data.name} does not satisfy project's peer range`
+				)
+			);
+		}),
+		either.sequenceArray,
+		either.map(() => packageJson)
+	);
+
+const validateNpmDependencies = (
+	context: BuildContext
+): taskEither.TaskEither<Error, BuildContext> => {
+	const noBetaDependencies = isRelease(context.projectInfo)
+		? validateNoBetaDependencies
+		: (p: PackageJson) => either.right(p);
+
+	return func.pipe(
 		getRawProjectData<PackageJson>(context.projectType),
-		taskEither.map((_) =>
-			entries(_.dependencies).concat(entries(_.devDependencies))
-		),
-		taskEither.filterOrElse(
-			npmHasNoBetaDependencies,
-			() => new Error('Cannot have beta dependencies in NPM release')
-		),
+		taskEither.chainEitherK(noBetaDependencies),
+		taskEither.chainEitherK(validatePeerDependencies),
 		taskEither.map(() => context)
 	);
+};
 
 const extractGradleVersions = (output: string): ReadonlyArray<string> =>
 	func.pipe(
@@ -208,10 +265,7 @@ const handleValidationByProject = (
 			{ projectType: P.when(isMaven), projectInfo: P.when(isRelease) },
 			validateMavenReleaseDependencies
 		)
-		.with(
-			{ projectType: P.when(isNpm), projectInfo: P.when(isRelease) },
-			validateNpmReleaseDependencies
-		)
+		.with({ projectType: P.when(isNpm) }, validateNpmDependencies)
 		.with(
 			{ projectType: P.when(isGradle), projectInfo: P.when(isRelease) },
 			validateGradleReleaseDependencies

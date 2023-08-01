@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "dependencies": {
     "@craigmiller160/react-web-config": "^1.0.0",
-    "@material-ui/core": "^1.0.0"
+    "@material-ui/core": "^1.0.0",
+    "@craigmiller160/foo-bar": "^2.0.0"
   },
   "devDependencies": {
-    "@craigmiller160/foo-bar": "^1.1.0",
     "@craigmiller160/abc-def": "^1.0.0"
   },
   "peerDependencies": {

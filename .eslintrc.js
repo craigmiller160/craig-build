@@ -18,6 +18,7 @@ module.exports = {
 	],
 	rules: {
 		'prettier/prettier': ['error', {}, { usePrettierrc: true }],
-		'no-console': ['error']
+		'no-console': ['error'],
+		eqeqeq: ['error']
 	}
 };

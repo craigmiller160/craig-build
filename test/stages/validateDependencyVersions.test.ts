@@ -1,4 +1,3 @@
-import '@relmify/jest-fp-ts';
 import { runCommandMock } from '../testutils/runCommandMock';
 import { baseWorkingDir } from '../testutils/baseWorkingDir';
 import { getCwdMock } from '../testutils/getCwdMock';
@@ -255,5 +254,126 @@ describe('validateDependencyVersions', () => {
 		expect(result).toEqualLeft(
 			new Error('Cannot have beta dependencies in NPM release')
 		);
+	});
+
+	describe('npm peer dependencies', () => {
+		const npmPeersRoot = path.join(baseWorkingDir, '__npmPeers__');
+
+		it('invalid beta for release project', async () => {
+			getCwdMock.mockImplementation(() =>
+				path.resolve(npmPeersRoot, 'invalidBetaForRelease')
+			);
+			const buildContext: BuildContext = {
+				...baseBuildContext,
+				projectType: ProjectType.NpmApplication,
+				projectInfo: {
+					...baseBuildContext.projectInfo,
+					versionType: VersionType.Release
+				}
+			};
+
+			const result = await validateDependencyVersions.execute(
+				buildContext
+			)();
+			expect(result).toEqualLeft(
+				new Error('Cannot have beta dependencies in NPM release')
+			);
+		});
+
+		it('valid beta for pre-release project', async () => {
+			getCwdMock.mockImplementation(() =>
+				path.resolve(npmPeersRoot, 'validBetaForPreRelease')
+			);
+			const buildContext: BuildContext = {
+				...baseBuildContext,
+				projectType: ProjectType.NpmApplication,
+				projectInfo: {
+					...baseBuildContext.projectInfo,
+					versionType: VersionType.PreRelease,
+					version: '1.0.0-beta'
+				}
+			};
+
+			const result = await validateDependencyVersions.execute(
+				buildContext
+			)();
+			expect(result).toEqualRight(buildContext);
+		});
+
+		it('peer dependency version lower than dev dependency version', async () => {
+			getCwdMock.mockImplementation(() =>
+				path.resolve(
+					npmPeersRoot,
+					'peerDependencyLowerThanDevDependency'
+				)
+			);
+			const buildContext: BuildContext = {
+				...baseBuildContext,
+				projectType: ProjectType.NpmApplication,
+				projectInfo: {
+					...baseBuildContext.projectInfo,
+					versionType: VersionType.Release
+				}
+			};
+
+			const result = await validateDependencyVersions.execute(
+				buildContext
+			)();
+			expect(result).toEqualLeft(
+				new Error(
+					"Dependency @craigmiller160/foo-bar does not satisfy project's peer range"
+				)
+			);
+		});
+
+		it('peer dependency version lower than main dependency version', async () => {
+			getCwdMock.mockImplementation(() =>
+				path.resolve(
+					npmPeersRoot,
+					'peerDependencyLowerThanMainDependency'
+				)
+			);
+			const buildContext: BuildContext = {
+				...baseBuildContext,
+				projectType: ProjectType.NpmApplication,
+				projectInfo: {
+					...baseBuildContext.projectInfo,
+					versionType: VersionType.Release
+				}
+			};
+
+			const result = await validateDependencyVersions.execute(
+				buildContext
+			)();
+			expect(result).toEqualLeft(
+				new Error(
+					"Dependency @craigmiller160/foo-bar does not satisfy project's peer range"
+				)
+			);
+		});
+
+		it('beta peer dependency is higher than release main dependency', async () => {
+			getCwdMock.mockImplementation(() =>
+				path.resolve(npmPeersRoot, 'betaPeerIsHigherThanRelease')
+			);
+			const buildContext: BuildContext = {
+				...baseBuildContext,
+				projectType: ProjectType.NpmApplication,
+				projectInfo: {
+					...baseBuildContext.projectInfo,
+					versionType: VersionType.PreRelease,
+					version: '1.0.0-beta'
+				}
+			};
+
+			const result = await validateDependencyVersions.execute(
+				buildContext
+			)();
+			expect(result).toEqualLeft(
+				new Error(
+					"Dependency @craigmiller160/foo-bar does not satisfy project's peer range"
+				)
+			);
+		});
 	});
 });
