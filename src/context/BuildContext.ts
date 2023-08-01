@@ -9,4 +9,5 @@ export interface BuildContext {
 	readonly projectType: ProjectType;
 	readonly projectInfo: ProjectInfo;
 	readonly hasTerraform: boolean;
+	readonly doGitTag: boolean;
 }
