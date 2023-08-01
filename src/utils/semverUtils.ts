@@ -20,7 +20,6 @@ export const semverMaxVersion = (version: string): string => {
 		| VersionRegexGroups
 		| undefined;
 
-	console.log(groups);
 	if (groups?.beta) {
 		return `${groups.major}.${groups.minor}.${groups.patch}-beta.999`;
 	}
@@ -40,5 +39,10 @@ export const semverSatisifies = (
 	versionExpression: string,
 	semverRange: string
 ): boolean => {
-	return false;
+	const minVersion = semver.minVersion(versionExpression)?.version ?? '0.0.0';
+	const maxVersion = semverMaxVersion(versionExpression);
+	return (
+		semver.satisfies(minVersion, semverRange) &&
+		semver.satisfies(maxVersion, semverRange)
+	);
 };

@@ -83,7 +83,6 @@ describe('semverUtils', () => {
 		expect(semverMaxVersion('1.0.0')).toEqual('1.0.0');
 		expect(semverMaxVersion('~1.0.0')).toEqual('1.0.999');
 		expect(semverMaxVersion('^1.0.0')).toEqual('1.999.999');
-		console.log('before');
 		expect(semverMaxVersion('1.0.0-beta')).toEqual('1.0.0-beta.999');
 		expect(semverMaxVersion('1.0.0-beta.1')).toEqual('1.0.0-beta.999');
 		expect(semverMaxVersion('~1.0.0-beta.1')).toEqual('1.0.0-beta.999');
