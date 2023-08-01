@@ -349,7 +349,7 @@ describe('validateDependencyVersions', () => {
 			);
 		});
 
-		it('beta peer dependency is lower than release main dependency', async () => {
+		it('beta peer dependency is higher than release main dependency', async () => {
 			getCwdMock.mockImplementation(() =>
 				path.resolve(npmPeersRoot, 'betaPeerIsLowerThanRelease')
 			);
