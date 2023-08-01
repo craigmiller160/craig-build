@@ -27,4 +27,8 @@ describe('gitTag', () => {
 		expect(runCommandMock).toHaveBeenNthCalledWith(1, 'git tag v1.0.0');
 		expect(runCommandMock).toHaveBeenNthCalledWith(2, 'git push --tags');
 	});
+
+	it('skips creating/pushing tag if it is disabled', async () => {
+		throw new Error();
+	});
 });
