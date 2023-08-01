@@ -29,6 +29,11 @@ describe('gitTag', () => {
 	});
 
 	it('skips creating/pushing tag if it is disabled', async () => {
-		throw new Error();
+		expect(gitTag.shouldStageExecute(baseBuildContext)).toEqual(true);
+		const context: BuildContext = {
+			...baseBuildContext,
+			doGitTag: false
+		};
+		expect(gitTag.shouldStageExecute(context)).toEqual(false);
 	});
 });
