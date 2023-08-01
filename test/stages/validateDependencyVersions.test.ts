@@ -328,7 +328,10 @@ describe('validateDependencyVersions', () => {
 
 		it('peer dependency version lower than main dependency version', async () => {
 			getCwdMock.mockImplementation(() =>
-				path.resolve(npmPeersRoot, 'peerDependencyLowerThanDependency')
+				path.resolve(
+					npmPeersRoot,
+					'peerDependencyLowerThanMainDependency'
+				)
 			);
 			const buildContext: BuildContext = {
 				...baseBuildContext,
