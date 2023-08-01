@@ -351,7 +351,7 @@ describe('validateDependencyVersions', () => {
 
 		it('beta peer dependency is higher than release main dependency', async () => {
 			getCwdMock.mockImplementation(() =>
-				path.resolve(npmPeersRoot, 'betaPeerIsLowerThanRelease')
+				path.resolve(npmPeersRoot, 'betaPeerIsHigherThanRelease')
 			);
 			const buildContext: BuildContext = {
 				...baseBuildContext,
