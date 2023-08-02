@@ -29,7 +29,12 @@ const handleFoundVersion =
 						`Git tag for project version ${version} already exists`
 					)
 			),
-			taskEither.map(() => context)
+			taskEither.map(
+				(): BuildContext => ({
+					...context,
+					doGitTag: false
+				})
+			)
 		);
 
 const handleTagResult =
