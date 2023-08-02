@@ -41,8 +41,13 @@ const isDockerReleaseProjectNoKubernetesOnly: predicate.Predicate<BuildContext> 
 
 const execute: StageExecuteFn = (context) => handleGitTagByProject(context);
 const shouldStageExecute: predicate.Predicate<BuildContext> = func.pipe(
-	isFullBuildAndReleaseVersion,
-	predicate.or(isDockerReleaseProjectNoKubernetesOnly)
+	(_: BuildContext) => _.doGitTag,
+	predicate.and(
+		func.pipe(
+			isFullBuildAndReleaseVersion,
+			predicate.or(isDockerReleaseProjectNoKubernetesOnly)
+		)
+	)
 );
 
 export const gitTag: Stage = {
