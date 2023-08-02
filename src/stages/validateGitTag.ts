@@ -1,14 +1,11 @@
 import { BuildContext } from '../context/BuildContext';
 import {
 	function as func,
-	array,
-	string,
-	predicate,
-	taskEither,
-	readonlyNonEmptyArray,
-	readonlyArray,
 	option,
-	taskOption
+	predicate,
+	readonlyArray,
+	string,
+	taskEither
 } from 'fp-ts';
 import { match, P } from 'ts-pattern';
 import { isRelease } from '../context/projectInfoUtils';
@@ -16,10 +13,6 @@ import { runCommand } from '../command/runCommand';
 import { Stage, StageExecuteFn } from './Stage';
 import { isFullBuild } from '../context/commandTypeUtils';
 import { readUserInput } from '../utils/readUserInput';
-
-readUserInput(
-	`A git tag with version ${version} already exists. Do you want to proceed and skip tagging? (y/n): `
-);
 
 const handleFoundVersion =
 	(context: BuildContext) =>
