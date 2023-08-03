@@ -27,4 +27,13 @@ describe('gitTag', () => {
 		expect(runCommandMock).toHaveBeenNthCalledWith(1, 'git tag v1.0.0');
 		expect(runCommandMock).toHaveBeenNthCalledWith(2, 'git push --tags');
 	});
+
+	it('skips creating/pushing tag if it is disabled', async () => {
+		expect(gitTag.shouldStageExecute(baseBuildContext)).toEqual(true);
+		const context: BuildContext = {
+			...baseBuildContext,
+			doGitTag: false
+		};
+		expect(gitTag.shouldStageExecute(context)).toEqual(false);
+	});
 });

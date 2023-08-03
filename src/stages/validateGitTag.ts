@@ -1,31 +1,63 @@
 import { BuildContext } from '../context/BuildContext';
-import { taskEither } from 'fp-ts';
-import { function as func } from 'fp-ts';
+import {
+	function as func,
+	option,
+	predicate,
+	readonlyArray,
+	string,
+	taskEither
+} from 'fp-ts';
 import { match, P } from 'ts-pattern';
 import { isRelease } from '../context/projectInfoUtils';
 import { runCommand } from '../command/runCommand';
-import { array } from 'fp-ts';
-import { predicate } from 'fp-ts';
 import { Stage, StageExecuteFn } from './Stage';
 import { isFullBuild } from '../context/commandTypeUtils';
+import { readUserInput } from '../utils/readUserInput';
+
+const handleFoundVersion =
+	(context: BuildContext) =>
+	(version: string): taskEither.TaskEither<Error, BuildContext> =>
+		func.pipe(
+			readUserInput(
+				`A git tag with version ${version} already exists. Do you want to proceed and skip tagging? (y/n): `
+			),
+			taskEither.fromTask,
+			taskEither.filterOrElse(
+				(answer) => 'y' === answer.trim().toLowerCase(),
+				() =>
+					new Error(
+						`Git tag for project version ${version} already exists`
+					)
+			),
+			taskEither.map(
+				(): BuildContext => ({
+					...context,
+					doGitTag: false
+				})
+			)
+		);
+
+const handleTagResult =
+	(context: BuildContext) =>
+	(gitTagOutput: string): taskEither.TaskEither<Error, BuildContext> =>
+		func.pipe(
+			gitTagOutput,
+			string.split('\n'),
+			readonlyArray.findFirst(
+				(_) => _.trim() === `v${context.projectInfo.version}`
+			),
+			option.fold(
+				() => taskEither.right(context),
+				handleFoundVersion(context)
+			)
+		);
 
 const executeGitTagValidation = (
 	context: BuildContext
 ): taskEither.TaskEither<Error, BuildContext> =>
 	func.pipe(
 		runCommand('git tag'),
-		taskEither.filterOrElse(
-			(output) =>
-				func.pipe(
-					output.split('\n'),
-					array.filter(
-						(_) => _.trim() === `v${context.projectInfo.version}`
-					)
-				).length === 0,
-			() =>
-				new Error('Git tag for project release version already exists')
-		),
-		taskEither.map(() => context)
+		taskEither.chain(handleTagResult(context))
 	);
 
 const handleValidationByProject = (

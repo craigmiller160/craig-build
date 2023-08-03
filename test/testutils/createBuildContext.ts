@@ -30,7 +30,8 @@ const defaultBuildContext: BuildContext = {
 	buildToolInfo: defaultBuildToolInfo,
 	projectType: defaultProjectType,
 	projectInfo: defaultProjectInfo,
-	hasTerraform: false
+	hasTerraform: false,
+	doGitTag: true
 };
 
 export const createBuildContext = ({
@@ -44,5 +45,6 @@ export const createBuildContext = ({
 	buildToolInfo,
 	projectType,
 	projectInfo,
-	hasTerraform
+	hasTerraform,
+	doGitTag: true
 });

@@ -15,6 +15,7 @@ export const setupBuildContext = (): BuildContext => ({
 	},
 	projectType: ProjectType.Unknown,
 	hasTerraform: false,
+	doGitTag: true,
 	projectInfo: {
 		group: '',
 		name: '',

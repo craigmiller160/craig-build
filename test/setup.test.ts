@@ -10,6 +10,7 @@ describe('setup', () => {
 			commandInfo: {
 				type: CommandType.Unknown
 			},
+			doGitTag: true,
 			buildToolInfo: {
 				group: '',
 				name: '',
