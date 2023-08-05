@@ -1,14 +1,30 @@
-{
-  "$schema": "https://json.schemastore.org/swcrc",
-  "test": ".tsx?$",
-  "jsc": {
-    "parser": {
-      "syntax": "typescript"
+[
+  {
+    "$schema": "https://json.schemastore.org/swcrc",
+    "test": ".tsx?$",
+    "jsc": {
+      "parser": {
+        "syntax": "typescript"
+      },
+      "target": "es2022",
+      "loose": false
     },
-    "target": "es2022",
-    "loose": false
+    "module": {
+      "type": "commonjs"
+    }
   },
-  "module": {
-    "type": "commonjs"
+  {
+    "$schema": "https://json.schemastore.org/swcrc",
+    "test": ".jsx?$",
+    "jsc": {
+      "parser": {
+        "syntax": "ecmascript"
+      },
+      "target": "es2022",
+      "loose": false
+    },
+    "module": {
+      "type": "commonjs"
+    }
   }
-}
+]
