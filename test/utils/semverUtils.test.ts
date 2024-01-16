@@ -88,6 +88,7 @@ describe('semverUtils', () => {
 		expect(semverMaxVersion('~1.0.0-beta.1')).toEqual('1.0.0-beta.999');
 		expect(semverMaxVersion('^1.0.0-beta.1')).toEqual('1.0.0-beta.999');
 		expect(semverMaxVersion('^2.2.20')).toEqual('2.999.999');
+		expect(semverMaxVersion('^0.34.3')).toEqual('0.999.999');
 	});
 
 	it('semverSatisfies', () => {
@@ -98,5 +99,6 @@ describe('semverUtils', () => {
 		expect(semverSatisifies('^1.0.0-beta.1', '^1.0.0-beta')).toEqual(true);
 		expect(semverSatisifies('^1.0.0-beta', '^1.0.0')).toEqual(false);
 		expect(semverSatisifies('^1.0.0', '^1.0.0-beta')).toEqual(true);
+		expect(semverSatisifies('^0.34.3', '^0.34.3')).toEqual(true);
 	});
 });
