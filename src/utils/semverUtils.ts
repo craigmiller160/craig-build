@@ -24,7 +24,7 @@ export const semverMaxVersion = (version: string): string => {
 		return `${groups.major}.${groups.minor}.${groups.patch}-beta.999`;
 	}
 
-	if (groups?.range === '~') {
+	if (groups?.range === '~' || groups?.major === '0') {
 		return `${groups.major}.${groups.minor}.999`;
 	}
 
