@@ -352,6 +352,25 @@ describe('validateDependencyVersions', () => {
 			);
 		});
 
+		it('peer dependency version the same as main dependency version', async () => {
+			getCwdMock.mockImplementation(() =>
+				path.resolve(npmPeersRoot, 'peerDependencySameAsMainDependency')
+			);
+			const buildContext: BuildContext = {
+				...baseBuildContext,
+				projectType: ProjectType.NpmApplication,
+				projectInfo: {
+					...baseBuildContext.projectInfo,
+					versionType: VersionType.Release
+				}
+			};
+
+			const result = await validateDependencyVersions.execute(
+				buildContext
+			)();
+			expect(result).toBeRight();
+		});
+
 		it('beta peer dependency is higher than release main dependency', async () => {
 			getCwdMock.mockImplementation(() =>
 				path.resolve(npmPeersRoot, 'betaPeerIsHigherThanRelease')
