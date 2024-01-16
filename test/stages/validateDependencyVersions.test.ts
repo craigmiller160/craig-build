@@ -321,7 +321,7 @@ describe('validateDependencyVersions', () => {
 			)();
 			expect(result).toEqualLeft(
 				new Error(
-					"Dependency @craigmiller160/foo-bar does not satisfy project's peer range"
+					"Dependency @craigmiller160/foo-bar does not satisfy project's peer range. Version: ^2.0.0 Range: ^1.0.0"
 				)
 			);
 		});
@@ -347,9 +347,28 @@ describe('validateDependencyVersions', () => {
 			)();
 			expect(result).toEqualLeft(
 				new Error(
-					"Dependency @craigmiller160/foo-bar does not satisfy project's peer range"
+					"Dependency @craigmiller160/foo-bar does not satisfy project's peer range. Version: ^2.0.0 Range: ^1.0.0"
 				)
 			);
+		});
+
+		it('peer dependency version the same as main dependency version', async () => {
+			getCwdMock.mockImplementation(() =>
+				path.resolve(npmPeersRoot, 'peerDependencySameAsMainDependency')
+			);
+			const buildContext: BuildContext = {
+				...baseBuildContext,
+				projectType: ProjectType.NpmApplication,
+				projectInfo: {
+					...baseBuildContext.projectInfo,
+					versionType: VersionType.Release
+				}
+			};
+
+			const result = await validateDependencyVersions.execute(
+				buildContext
+			)();
+			expect(result).toBeRight();
 		});
 
 		it('beta peer dependency is higher than release main dependency', async () => {
@@ -371,7 +390,7 @@ describe('validateDependencyVersions', () => {
 			)();
 			expect(result).toEqualLeft(
 				new Error(
-					"Dependency @craigmiller160/foo-bar does not satisfy project's peer range"
+					"Dependency @craigmiller160/foo-bar does not satisfy project's peer range. Version: ^1.0.0 Range: ^1.1.0-beta"
 				)
 			);
 		});
