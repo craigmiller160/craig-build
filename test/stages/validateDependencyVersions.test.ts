@@ -321,7 +321,7 @@ describe('validateDependencyVersions', () => {
 			)();
 			expect(result).toEqualLeft(
 				new Error(
-					"Dependency @craigmiller160/foo-bar does not satisfy project's peer range"
+					"Dependency @craigmiller160/foo-bar does not satisfy project's peer range. Version: ^2.0.0 Range: ^1.0.0"
 				)
 			);
 		});
@@ -347,7 +347,7 @@ describe('validateDependencyVersions', () => {
 			)();
 			expect(result).toEqualLeft(
 				new Error(
-					"Dependency @craigmiller160/foo-bar does not satisfy project's peer range"
+					"Dependency @craigmiller160/foo-bar does not satisfy project's peer range. Version: ^2.0.0 Range: ^1.0.0"
 				)
 			);
 		});
@@ -390,7 +390,7 @@ describe('validateDependencyVersions', () => {
 			)();
 			expect(result).toEqualLeft(
 				new Error(
-					"Dependency @craigmiller160/foo-bar does not satisfy project's peer range"
+					"Dependency @craigmiller160/foo-bar does not satisfy project's peer range. Version: ^1.0.0 Range: ^1.1.0-beta"
 				)
 			);
 		});
