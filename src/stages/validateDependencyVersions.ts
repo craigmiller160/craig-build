@@ -180,9 +180,12 @@ const validatePeerDependencies = (
 				return either.right(data);
 			}
 
+			const version =
+				data.mainDependencyVersion ?? data.devDependencyVersion;
+
 			return either.left(
 				new Error(
-					`Dependency ${data.name} does not satisfy project's peer range`
+					`Dependency ${data.name} does not satisfy project's peer range. Version: ${version} Range: ${data.peerRange}`
 				)
 			);
 		}),
