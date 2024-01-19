@@ -1,12 +1,12 @@
 {
   "name": "@craigmiller160/craig-build",
-  "version": "2.5.2",
+  "version": "2.5.3",
   "author": "craigmiller160",
   "bin": {
     "craig-build": "build/index.js"
   },
   "publishConfig": {
-    "registry": "https://nexus-craigmiller160.ddns.net/repository/npm-private/"
+    "registry": "https://nexus.craigmiller160.us/repository/npm-private/"
   },
   "files": [
     "build",
