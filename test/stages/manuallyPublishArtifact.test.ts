@@ -123,7 +123,7 @@ describe('manuallyPublishArtifact', () => {
 		);
 		expect(runCommandMock).toHaveBeenNthCalledWith(
 			2,
-			`curl -v -u user:password https://nexus-craigmiller160.ddns.net/repository/helm-private/ --upload-file ${tarFile}`,
+			`curl -v -u user:password https://nexus.craigmiller160.us/repository/helm-private/ --upload-file ${tarFile}`,
 			{
 				printOutput: true,
 				cwd: path.join(projectPath, 'deploy')

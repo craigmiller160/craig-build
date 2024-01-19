@@ -74,7 +74,7 @@ const publishHelmArtifact = (
 				`${context.projectInfo.name}-${context.projectInfo.version}.tgz`
 			);
 			return runCommand(
-				`curl -v -u ${userName}:${password} https://nexus-craigmiller160.ddns.net/repository/helm-private/ --upload-file ${tarFile}`,
+				`curl -v -u ${userName}:${password} https://nexus.craigmiller160.us/repository/helm-private/ --upload-file ${tarFile}`,
 				{
 					printOutput: true,
 					cwd: path.join(getCwd(), 'deploy')

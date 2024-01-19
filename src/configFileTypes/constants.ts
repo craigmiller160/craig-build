@@ -25,5 +25,5 @@ export const TERRAFORM_JSON_PATH = path.join(
 	TERRAFORM_DEPLOY_PATH,
 	'terraform.json'
 );
-export const DOCKER_REPO_PREFIX = 'nexus-docker-craigmiller160.ddns.net';
+export const DOCKER_REPO_PREFIX = 'nexus-docker.craigmiller160.us';
 export const IMAGE_VERSION_ENV = '${KUBE_IMG_VERSION}';

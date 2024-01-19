@@ -15,7 +15,7 @@ java {
 repositories {
     mavenCentral()
     maven {
-        url = uri("https://nexus-craigmiller160.ddns.net/repository/maven-public")
+        url = uri("https://nexus.craigmiller160.us/repository/maven-public")
     }
 }
 

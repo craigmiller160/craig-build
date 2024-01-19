@@ -13,7 +13,7 @@ const sort = 'version';
 const direction = 'desc';
 
 export const restApiInstance = axios.create({
-	baseURL: 'https://nexus-craigmiller160.ddns.net/service/rest/v1'
+	baseURL: 'https://nexus.craigmiller160.us/service/rest/v1'
 });
 restApiInstance.interceptors.request.use((config) => {
 	const request = `${config.method?.toUpperCase()} ${config.url}`;

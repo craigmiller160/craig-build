@@ -49,7 +49,7 @@ const validateCommands = ({
 	const cmdSudo = useSudo ? 'sudo ' : '';
 	expect(runCommandMock).toHaveBeenNthCalledWith(
 		callCount,
-		`${cmdSudo}docker login nexus-docker-craigmiller160.ddns.net -u \${user} -p \${password}`,
+		`${cmdSudo}docker login nexus-docker.craigmiller160.us -u \${user} -p \${password}`,
 		{ printOutput: true, variables: { user: 'user', password: 'password' } }
 	);
 	callCount++;
@@ -69,13 +69,13 @@ const validateCommands = ({
 	}
 	expect(runCommandMock).toHaveBeenNthCalledWith(
 		callCount,
-		`${cmdSudo}docker build --platform linux/amd64 --network=host -t nexus-docker-craigmiller160.ddns.net/my-project:1.0.0 .`,
+		`${cmdSudo}docker build --platform linux/amd64 --network=host -t nexus-docker.craigmiller160.us/my-project:1.0.0 .`,
 		{ printOutput: true, cwd: path.join('/root', 'deploy') }
 	);
 	callCount++;
 	expect(runCommandMock).toHaveBeenNthCalledWith(
 		callCount,
-		`${cmdSudo}docker push nexus-docker-craigmiller160.ddns.net/my-project:1.0.0`,
+		`${cmdSudo}docker push nexus-docker.craigmiller160.us/my-project:1.0.0`,
 		{ printOutput: true }
 	);
 };
