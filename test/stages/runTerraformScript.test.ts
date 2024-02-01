@@ -44,8 +44,8 @@ Terraform will perform the following actions:
         id                                         = "302c0308-9523-43cf-aa23-d5dbb055bd17"
         name                                       = "expense-tracker-ui"
       ~ valid_post_logout_redirect_uris            = [
-          - "https://apps-craigmiller160.ddns.net/expense-tracker/*",
-          + "https://apps-craigmiller160.ddns.net/expense-tracker/*2",
+          - "https://apps.craigmiller160.us/expense-tracker/*",
+          + "https://apps.craigmiller160.us/expense-tracker/*2",
         ]
         # (22 unchanged attributes hidden)
     }
