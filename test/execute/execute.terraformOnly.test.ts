@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { prepareStageExecutionMock, validateStages } from './executeTestUtils';
-import '@relmify/jest-fp-ts';
+
 import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
 import { CommandType } from '../../src/context/CommandType';

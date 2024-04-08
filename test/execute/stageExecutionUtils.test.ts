@@ -11,7 +11,7 @@ import { StageExecutionStatus } from '../../src/execute/StageExecutionStatus';
 import { StageExecution } from '../../src/execute/StageExecution';
 import { BuildContext } from '../../src/context/BuildContext';
 import { ProjectType } from '../../src/context/ProjectType';
-import '@relmify/jest-fp-ts';
+
 
 const baseContext = createBuildContext();
 const mockStage: Stage = {

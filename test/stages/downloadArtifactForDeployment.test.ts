@@ -4,7 +4,7 @@ import { BuildContext } from '../../src/context/BuildContext';
 import { ProjectType } from '../../src/context/ProjectType';
 import { getCwdMock } from '../testutils/getCwdMock';
 import { downloadArtifactForDeployment } from '../../src/stages/downloadArtifactForDeployment';
-import '@relmify/jest-fp-ts';
+
 import {
 	downloadArtifact,
 	searchForMavenReleases,

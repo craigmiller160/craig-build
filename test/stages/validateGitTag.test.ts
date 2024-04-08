@@ -4,7 +4,7 @@ import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
 import { validateGitTag } from '../../src/stages/validateGitTag';
 import { task, taskEither } from 'fp-ts';
-import '@relmify/jest-fp-ts';
+
 import { VersionType } from '../../src/context/VersionType';
 import { readUserInput } from '../../src/utils/readUserInput';
 

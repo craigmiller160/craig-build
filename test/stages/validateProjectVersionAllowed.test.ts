@@ -4,7 +4,7 @@ import {
 	searchForMavenReleases,
 	searchForNpmReleases
 } from '../../src/services/NexusRepoApi';
-import '@relmify/jest-fp-ts';
+
 import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
 import { ProjectType } from '../../src/context/ProjectType';

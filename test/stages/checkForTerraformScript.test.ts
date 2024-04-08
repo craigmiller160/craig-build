@@ -6,7 +6,7 @@ import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
 import { ProjectType } from '../../src/context/ProjectType';
 import { checkForTerraformScript } from '../../src/stages/checkForTerraformScript';
-import '@relmify/jest-fp-ts';
+
 
 const baseBuildContext = createBuildContext();
 

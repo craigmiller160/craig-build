@@ -3,7 +3,7 @@ import shellEnv from 'shell-env';
 import { runCommandMock } from '../testutils/runCommandMock';
 import { getCwdMock } from '../testutils/getCwdMock';
 import { createBuildContext } from '../testutils/createBuildContext';
-import '@relmify/jest-fp-ts';
+
 import { buildAndPushDocker } from '../../src/stages/buildAndPushDocker';
 import { BuildContext } from '../../src/context/BuildContext';
 import { ProjectType } from '../../src/context/ProjectType';

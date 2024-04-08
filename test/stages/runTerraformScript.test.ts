@@ -7,7 +7,7 @@ import { BuildContext } from '../../src/context/BuildContext';
 import { createBuildContext } from '../testutils/createBuildContext';
 import { ProjectType } from '../../src/context/ProjectType';
 import { runTerraformScript } from '../../src/stages/runTerraformScript';
-import '@relmify/jest-fp-ts';
+
 import { readUserInput } from '../../src/utils/readUserInput';
 import { task, taskEither } from 'fp-ts';
 import shellEnv from 'shell-env';

@@ -1,7 +1,7 @@
 import { describe, expect, it, beforeEach, vi } from 'vitest';
 import { getCwdMock } from '../testutils/getCwdMock';
 import path from 'path';
-import '@relmify/jest-fp-ts';
+
 import {
 	getNpmBuildTool,
 	getNpmBuildToolInstallCommand

@@ -9,7 +9,7 @@ import {
 	KubeValues,
 	validateKubernetesConfig
 } from '../../src/stages/validateKubernetesConfig';
-import '@relmify/jest-fp-ts';
+
 import { ProjectInfo } from '../../src/context/ProjectInfo';
 import {
 	DOCKER_REPO_PREFIX,

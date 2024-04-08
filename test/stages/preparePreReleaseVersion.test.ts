@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi, MockedFunction } from 'vitest';
 import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
-import '@relmify/jest-fp-ts';
+
 import { preparePreReleaseVersion } from '../../src/stages/preparePreReleaseVersion';
 import {
 	searchForDockerBetas,

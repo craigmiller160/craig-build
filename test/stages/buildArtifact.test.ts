@@ -9,7 +9,7 @@ import {
 	MAVEN_BUILD_CMD,
 	NPM_BUILD_CMD
 } from '../../src/stages/buildArtifact';
-import '@relmify/jest-fp-ts';
+
 import { taskEither } from 'fp-ts';
 
 const baseBuildContext = createBuildContext();

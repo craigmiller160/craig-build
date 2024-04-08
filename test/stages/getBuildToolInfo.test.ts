@@ -3,7 +3,7 @@ import { either } from 'fp-ts';
 import { PackageJson } from '../../src/configFileTypes/PackageJson';
 import { readFile } from '../../src/functions/File';
 import { getBuildToolInfo } from '../../src/stages/getBuildToolInfo';
-import '@relmify/jest-fp-ts';
+
 import { createBuildContext } from '../testutils/createBuildContext';
 import { VersionType } from '../../src/context/VersionType';
 

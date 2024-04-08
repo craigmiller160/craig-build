@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi, MockedFunction } from 'vitest';
 import { OptionValues, program } from 'commander';
 import { CommandType } from '../../src/context/CommandType';
 import { getCommandInfo } from '../../src/stages/getCommandInfo';
-import '@relmify/jest-fp-ts';
+
 import { BuildContext } from '../../src/context/BuildContext';
 import { createBuildContext } from '../testutils/createBuildContext';
 

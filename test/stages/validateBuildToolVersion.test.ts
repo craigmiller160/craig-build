@@ -3,7 +3,7 @@ import { validateBuildToolVersion } from '../../src/stages/validateBuildToolVers
 import { searchForNpmReleases } from '../../src/services/NexusRepoApi';
 import { taskEither } from 'fp-ts';
 import { task } from 'fp-ts';
-import '@relmify/jest-fp-ts';
+
 import { readUserInput } from '../../src/utils/readUserInput';
 import { createBuildContext } from '../testutils/createBuildContext';
 import { VersionType } from '../../src/context/VersionType';

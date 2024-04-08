@@ -12,7 +12,7 @@ import {
 } from '../../src/services/NexusRepoApi';
 import MockAdapter from 'axios-mock-adapter';
 import { NexusSearchResult } from '../../src/services/NexusSearchResult';
-import '@relmify/jest-fp-ts';
+
 import fs from 'fs';
 import tmp from 'tmp';
 import axios from 'axios';

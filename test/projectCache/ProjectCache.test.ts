@@ -7,7 +7,7 @@ import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
 import { VersionType } from '../../src/context/VersionType';
 import { getProjectInfo } from '../../src/stages/getProjectInfo';
-import '@relmify/jest-fp-ts';
+
 
 const baseBuildContext = createBuildContext();
 
