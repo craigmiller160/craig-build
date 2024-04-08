@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { beforeEach, describe, expect, it, test, vi } from 'vitest';
 import { getCwdMock } from '../testutils/getCwdMock';
 import path from 'path';
 import { ProjectType } from '../../src/context/ProjectType';
@@ -12,11 +12,51 @@ import '../testutils/readGradleProjectMock';
 
 const baseBuildContext = createBuildContext();
 
-describe('getProjectInfo', () => {
-	beforeEach(() => {
-		vi.resetAllMocks();
-	});
+beforeEach(() => {
+	vi.resetAllMocks();
+});
 
+type GetProjectInfoArgs = Readonly<{
+	projectType: ProjectType;
+	versionType: VersionType;
+}>;
+
+test.each<GetProjectInfoArgs>([
+	{ projectType: ProjectType.NpmLibrary, versionType: VersionType.Release },
+	{
+		projectType: ProjectType.NpmLibrary,
+		versionType: VersionType.PreRelease
+	},
+	{
+		projectType: ProjectType.NpmApplication,
+		versionType: VersionType.Release
+	},
+	{
+		projectType: ProjectType.NpmApplication,
+		versionType: VersionType.PreRelease
+	},
+	{
+		projectType: ProjectType.MavenLibrary,
+		versionType: VersionType.PreRelease
+	},
+	{
+		projectType: ProjectType.MavenLibrary,
+		versionType: VersionType.Release
+	},
+	{
+		projectType: ProjectType.MavenApplication,
+		versionType: VersionType.PreRelease
+	},
+	{
+		projectType: ProjectType.MavenApplication,
+		versionType: VersionType.Release
+	}
+	// TODO need more
+])('getProjectInfo for $projectType and $versionType', async () => {
+	throw new Error();
+});
+
+describe('getProjectInfo', () => {
 	it('NPM release project', async () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(baseWorkingDir, 'npmReleaseLibrary')
