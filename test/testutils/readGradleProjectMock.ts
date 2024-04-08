@@ -1,10 +1,9 @@
 import { vi, MockedFunction } from 'vitest';
-import { readGradleProject } from '../../src/special/gradle';
-import { runCommand } from '../../src/command/runCommand';
-import { createReadGradleProject } from '../../src/special/gradle';
-
-type RunCommandType = typeof runCommand;
-type CreateReadGradleProjectType = typeof createReadGradleProject;
+import {
+	readGradleProject,
+	CreateReadGradleProjectType
+} from '../../src/special/gradle';
+import { RunCommandType } from '../../src/command/runCommand';
 
 vi.mock('../../src/special/gradle', async () => {
 	const { createReadGradleProject } = await vi.importActual<{

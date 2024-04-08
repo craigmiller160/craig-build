@@ -29,3 +29,5 @@ export const createReadGradleProject =
 		);
 
 export const readGradleProject = createReadGradleProject(runCommand);
+
+export type CreateReadGradleProjectType = typeof createReadGradleProject;

@@ -67,3 +67,5 @@ export const runCommand = (
 		unknownToError
 	);
 };
+
+export type RunCommandType = typeof runCommand;
