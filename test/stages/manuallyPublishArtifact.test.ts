@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi, MockedFunction } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
@@ -12,16 +12,10 @@ import {
 import { taskEither } from 'fp-ts';
 import path from 'path';
 import { baseWorkingDir } from '../testutils/baseWorkingDir';
-import shellEnv from 'shell-env';
-
-vi.mock('shell-env', () => ({
-	sync: vi.fn()
-}));
-
-const shellEnvMock = shellEnv.sync as MockedFunction<typeof shellEnv.sync>;
+import { shellEnvSyncMock } from '../testutils/shellEnvMock';
 
 const prepareEnvMock = () =>
-	shellEnvMock.mockImplementation(() => ({
+	shellEnvSyncMock.mockImplementation(() => ({
 		NEXUS_USER: 'user',
 		NEXUS_PASSWORD: 'password'
 	}));

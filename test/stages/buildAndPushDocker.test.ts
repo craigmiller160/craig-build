@@ -1,5 +1,4 @@
-import { describe, it, expect, beforeEach, vi, MockedFunction } from 'vitest';
-import shellEnv from 'shell-env';
+import { beforeEach, describe, expect, it, MockedFunction, vi } from 'vitest';
 import { runCommandMock } from '../testutils/runCommandMock';
 import { getCwdMock } from '../testutils/getCwdMock';
 import { createBuildContext } from '../testutils/createBuildContext';
@@ -11,10 +10,8 @@ import { taskEither } from 'fp-ts';
 import { VersionType } from '../../src/context/VersionType';
 import path from 'path';
 import os from 'os';
+import { shellEnvSyncMock } from '../testutils/shellEnvMock';
 
-vi.mock('shell-env', () => ({
-	sync: vi.fn()
-}));
 vi.mock('os', () => ({
 	type: vi.fn()
 }));
@@ -29,10 +26,8 @@ const baseBuildContext = createBuildContext({
 	}
 });
 
-const shellEnvMock = shellEnv.sync as MockedFunction<typeof shellEnv.sync>;
-
 const prepareEnvMock = () =>
-	shellEnvMock.mockImplementation(() => ({
+	shellEnvSyncMock.mockImplementation(() => ({
 		NEXUS_USER: 'user',
 		NEXUS_PASSWORD: 'password'
 	}));
@@ -89,7 +84,7 @@ describe('buildAndPushDocker', () => {
 	});
 
 	it('no docker username environment variable', async () => {
-		shellEnvMock.mockImplementation(() => ({
+		shellEnvSyncMock.mockImplementation(() => ({
 			NEXUS_PASSWORD: 'password'
 		}));
 		osTypeMock.mockImplementation(() => 'Linux');
@@ -106,7 +101,7 @@ describe('buildAndPushDocker', () => {
 	});
 
 	it('no docker password environment variable', async () => {
-		shellEnvMock.mockImplementation(() => ({
+		shellEnvSyncMock.mockImplementation(() => ({
 			NEXUS_USER: 'user'
 		}));
 		osTypeMock.mockImplementation(() => 'Linux');

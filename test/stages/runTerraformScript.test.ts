@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi, MockedFunction } from 'vitest';
+import { beforeEach, describe, expect, it, MockedFunction, vi } from 'vitest';
 import { getCwdMock } from '../testutils/getCwdMock';
 import { runCommandMock } from '../testutils/runCommandMock';
 import path from 'path';
@@ -10,7 +10,7 @@ import { runTerraformScript } from '../../src/stages/runTerraformScript';
 
 import { readUserInput } from '../../src/utils/readUserInput';
 import { task, taskEither } from 'fp-ts';
-import shellEnv from 'shell-env';
+import { shellEnvSyncMock } from '../testutils/shellEnvMock';
 
 // The no changes line includes the hidden characters that will show up when testing the output
 const NO_CHANGES_OUTPUT = `
@@ -64,12 +64,8 @@ vi.mock('../../src/utils/readUserInput', () => ({
 }));
 const readUserInputMock = readUserInput as MockedFunction<typeof readUserInput>;
 
-vi.mock('shell-env', () => ({
-	sync: vi.fn()
-}));
-const shellEnvMock = shellEnv.sync as MockedFunction<typeof shellEnv.sync>;
 const prepareEnvMock = () =>
-	shellEnvMock.mockImplementation(() => ({
+	shellEnvSyncMock.mockImplementation(() => ({
 		NEXUS_USER: 'user',
 		NEXUS_PASSWORD: 'password'
 	}));
