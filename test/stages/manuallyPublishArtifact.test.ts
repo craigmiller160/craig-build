@@ -1,9 +1,11 @@
-import '@relmify/jest-fp-ts';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
 import { ProjectType } from '../../src/context/ProjectType';
 import { runCommandMock } from '../testutils/runCommandMock';
 import { getCwdMock } from '../testutils/getCwdMock';
+import { shellEnvMock } from '../testutils/shellEnvMock';
 import {
 	CLEAR_FILES_COMMAND,
 	manuallyPublishArtifact
@@ -11,16 +13,9 @@ import {
 import { taskEither } from 'fp-ts';
 import path from 'path';
 import { baseWorkingDir } from '../testutils/baseWorkingDir';
-import shellEnv from 'shell-env';
-
-jest.mock('shell-env', () => ({
-	sync: jest.fn()
-}));
-
-const shellEnvMock = shellEnv.sync as jest.Mock;
 
 const prepareEnvMock = () =>
-	shellEnvMock.mockImplementation(() => ({
+	shellEnvMock.sync.mockImplementation(() => ({
 		NEXUS_USER: 'user',
 		NEXUS_PASSWORD: 'password'
 	}));
@@ -29,7 +24,7 @@ const baseBuildContext = createBuildContext();
 
 describe('manuallyPublishArtifact', () => {
 	beforeEach(() => {
-		jest.resetAllMocks();
+		vi.resetAllMocks();
 	});
 
 	it('publishes NPM project', async () => {

@@ -1,9 +1,10 @@
+import { describe, it, expect, beforeEach, vi, MockedFunction } from 'vitest';
 import {
 	searchForDockerReleases,
 	searchForMavenReleases,
 	searchForNpmReleases
 } from '../../src/services/NexusRepoApi';
-import '@relmify/jest-fp-ts';
+
 import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
 import { ProjectType } from '../../src/context/ProjectType';
@@ -12,15 +13,21 @@ import { NexusSearchResultItem } from '../../src/services/NexusSearchResult';
 import { taskEither } from 'fp-ts';
 import { VersionType } from '../../src/context/VersionType';
 
-jest.mock('../../src/services/NexusRepoApi', () => ({
-	searchForDockerReleases: jest.fn(),
-	searchForMavenReleases: jest.fn(),
-	searchForNpmReleases: jest.fn()
+vi.mock('../../src/services/NexusRepoApi', () => ({
+	searchForDockerReleases: vi.fn(),
+	searchForMavenReleases: vi.fn(),
+	searchForNpmReleases: vi.fn()
 }));
 
-const searchForDockerReleasesMock = searchForDockerReleases as jest.Mock;
-const searchForMavenReleasesMock = searchForMavenReleases as jest.Mock;
-const searchForNpmReleasesMock = searchForNpmReleases as jest.Mock;
+const searchForDockerReleasesMock = searchForDockerReleases as MockedFunction<
+	typeof searchForDockerReleases
+>;
+const searchForMavenReleasesMock = searchForMavenReleases as MockedFunction<
+	typeof searchForMavenReleases
+>;
+const searchForNpmReleasesMock = searchForNpmReleases as MockedFunction<
+	typeof searchForNpmReleases
+>;
 
 const baseBuildContext = createBuildContext();
 
@@ -36,7 +43,7 @@ const invalidItem: NexusSearchResultItem = {
 
 describe('validateProjectVersionAllowed', () => {
 	beforeEach(() => {
-		jest.resetAllMocks();
+		vi.resetAllMocks();
 	});
 
 	it('allows npm release version with no conflicts', async () => {

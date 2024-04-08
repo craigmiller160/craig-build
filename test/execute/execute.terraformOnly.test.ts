@@ -1,5 +1,6 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { prepareStageExecutionMock, validateStages } from './executeTestUtils';
-import '@relmify/jest-fp-ts';
+
 import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
 import { CommandType } from '../../src/context/CommandType';
@@ -13,7 +14,7 @@ const baseContext = createBuildContext();
 
 describe('execute.terraformOnly', () => {
 	beforeEach(() => {
-		jest.resetAllMocks();
+		vi.resetAllMocks();
 	});
 	it('executes terraform only for MavenApplication without terraform', async () => {
 		const context: BuildContext = {

@@ -1,21 +1,22 @@
+import { describe, it, expect, beforeEach, vi, MockedFunction } from 'vitest';
 import { wait } from '../../src/utils/wait';
 import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
 import { ProjectType } from '../../src/context/ProjectType';
 import { waitOnNexusUpdate } from '../../src/stages/waitOnNexusUpdate';
-import '@relmify/jest-fp-ts';
+
 import { task } from 'fp-ts';
 
-jest.mock('../../src/utils/wait', () => ({
-	wait: jest.fn()
+vi.mock('../../src/utils/wait', () => ({
+	wait: vi.fn()
 }));
 
-const waitMock = wait as jest.Mock;
+const waitMock = wait as MockedFunction<typeof wait>;
 const baseBuildContext = createBuildContext();
 
 describe('waitOnNexusUpdate', () => {
 	beforeEach(() => {
-		jest.resetAllMocks();
+		vi.resetAllMocks();
 	});
 
 	it('waits on non-docker application', async () => {

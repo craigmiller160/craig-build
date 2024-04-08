@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { getCwdMock } from '../testutils/getCwdMock';
 import path from 'path';
 import { baseWorkingDir } from '../testutils/baseWorkingDir';
@@ -5,13 +6,12 @@ import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
 import { ProjectType } from '../../src/context/ProjectType';
 import { checkForTerraformScript } from '../../src/stages/checkForTerraformScript';
-import '@relmify/jest-fp-ts';
 
 const baseBuildContext = createBuildContext();
 
 describe('checkForTerraformScript', () => {
 	beforeEach(() => {
-		jest.resetAllMocks();
+		vi.resetAllMocks();
 	});
 
 	it('is application with terraform script', async () => {

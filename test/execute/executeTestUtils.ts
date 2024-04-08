@@ -1,17 +1,22 @@
-import { Stage } from '../../src/stages/Stage';
+import { expect, vi, MockedFunction } from 'vitest';
+import { Stage, StageExecuteFn } from '../../src/stages/Stage';
 import { BuildContext } from '../../src/context/BuildContext';
 import { stages } from '../../src/stages';
 import { taskEither } from 'fp-ts';
 import { ExpectedExecution } from '../expectedExecutions/ExpectedExecution';
 
-jest.mock('../../src/stages', () => {
+type MockExecute = MockedFunction<StageExecuteFn>;
+
+vi.mock('../../src/stages', async () => {
 	const createStageMock = (stage: Stage): Stage => ({
 		name: stage.name,
-		execute: jest.fn(),
+		execute: vi.fn(),
 		shouldStageExecute: stage.shouldStageExecute
 	});
 
-	const { stages } = jest.requireActual('../../src/stages');
+	const { stages } = await vi.importActual<{
+		stages: ReadonlyArray<Stage>;
+	}>('../../src/stages');
 	return {
 		stages: stages.map(createStageMock)
 	};
@@ -19,7 +24,7 @@ jest.mock('../../src/stages', () => {
 
 export const prepareStageExecutionMock = (context: BuildContext) => {
 	stages.forEach((stage) => {
-		(stage.execute as jest.Mock).mockImplementation(() =>
+		(stage.execute as MockExecute).mockImplementation(() =>
 			taskEither.right(context)
 		);
 	});

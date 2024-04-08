@@ -1,6 +1,7 @@
+import { describe, it, expect, beforeEach, vi, MockedFunction } from 'vitest';
 import { runCommandMock } from '../testutils/runCommandMock';
 import { taskEither, task } from 'fp-ts';
-import '@relmify/jest-fp-ts';
+
 import {
 	checkForUncommittedChanges,
 	GIT_COMMAND
@@ -11,14 +12,14 @@ import { CommandType } from '../../src/context/CommandType';
 import { readUserInput } from '../../src/utils/readUserInput';
 
 const baseBuildContext = createBuildContext();
-jest.mock('../../src/utils/readUserInput', () => ({
-	readUserInput: jest.fn()
+vi.mock('../../src/utils/readUserInput', () => ({
+	readUserInput: vi.fn()
 }));
-const readUserInputMock = readUserInput as jest.Mock;
+const readUserInputMock = readUserInput as MockedFunction<typeof readUserInput>;
 
 describe('checkForUncommittedChanges', () => {
 	beforeEach(() => {
-		jest.resetAllMocks();
+		vi.resetAllMocks();
 	});
 
 	it('uncommitted changes found for FullBuild build, approve to proceed', async () => {

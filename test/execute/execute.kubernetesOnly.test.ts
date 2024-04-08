@@ -1,6 +1,7 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { prepareStageExecutionMock, validateStages } from './executeTestUtils';
 import { createBuildContext } from '../testutils/createBuildContext';
-import '@relmify/jest-fp-ts';
+
 import { CommandType } from '../../src/context/CommandType';
 import { BuildContext } from '../../src/context/BuildContext';
 import { ProjectType } from '../../src/context/ProjectType';
@@ -30,7 +31,7 @@ const baseContext = createBuildContext();
 
 describe('execute.kubernetesOnly', () => {
 	beforeEach(() => {
-		jest.resetAllMocks();
+		vi.resetAllMocks();
 	});
 
 	it('executes kubernetes only for release MavenApplication', async () => {

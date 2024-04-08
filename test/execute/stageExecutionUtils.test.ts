@@ -1,6 +1,7 @@
+import { describe, it, expect, beforeEach, vi, MockedFunction } from 'vitest';
 import { createBuildContext } from '../testutils/createBuildContext';
 import { Stage } from '../../src/stages/Stage';
-import { taskEither } from 'fp-ts';
+import { predicate, taskEither } from 'fp-ts';
 import {
 	createStageExecution,
 	executeIfAllowed,
@@ -10,18 +11,19 @@ import { StageExecutionStatus } from '../../src/execute/StageExecutionStatus';
 import { StageExecution } from '../../src/execute/StageExecution';
 import { BuildContext } from '../../src/context/BuildContext';
 import { ProjectType } from '../../src/context/ProjectType';
-import '@relmify/jest-fp-ts';
 
 const baseContext = createBuildContext();
 const mockStage: Stage = {
 	name: 'Mock Stage',
 	execute: () => taskEither.right(baseContext),
-	shouldStageExecute: jest.fn()
+	shouldStageExecute: vi.fn()
 };
+
+type MockShouldStageExecute = MockedFunction<predicate.Predicate<BuildContext>>;
 
 describe('stageExecutionUtils', () => {
 	beforeEach(() => {
-		jest.resetAllMocks();
+		vi.resetAllMocks();
 	});
 
 	it('createStageExecution', () => {
@@ -38,17 +40,17 @@ describe('stageExecutionUtils', () => {
 			stage: mockStage
 		};
 		it('stage shouldStageExecute returns true', async () => {
-			(mockStage.shouldStageExecute as jest.Mock).mockImplementation(
-				() => true
-			);
+			(
+				mockStage.shouldStageExecute as MockShouldStageExecute
+			).mockImplementation(() => true);
 			const result = shouldStageExecute(baseContext)(execution);
 			expect(result).toEqual(execution);
 		});
 
 		it('stage shouldStageExecute returns false', async () => {
-			(mockStage.shouldStageExecute as jest.Mock).mockImplementation(
-				() => false
-			);
+			(
+				mockStage.shouldStageExecute as MockShouldStageExecute
+			).mockImplementation(() => false);
 			const result = shouldStageExecute(baseContext)(execution);
 			expect(result).toEqual({
 				...execution,

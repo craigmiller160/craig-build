@@ -1,19 +1,20 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { getCwdMock } from '../testutils/getCwdMock';
 import path from 'path';
 import { ProjectType } from '../../src/context/ProjectType';
 import { getProjectInfo } from '../../src/stages/getProjectInfo';
-import '@relmify/jest-fp-ts';
+
 import { baseWorkingDir } from '../testutils/baseWorkingDir';
 import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
 import { VersionType } from '../../src/context/VersionType';
-import '../testutils/readGradleProjectUnmock';
+import '../testutils/readGradleProjectMock';
 
 const baseBuildContext = createBuildContext();
 
 describe('getProjectInfo', () => {
 	beforeEach(() => {
-		jest.resetAllMocks();
+		vi.resetAllMocks();
 	});
 
 	it('NPM release project', async () => {

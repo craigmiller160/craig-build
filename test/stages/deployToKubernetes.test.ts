@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { getCwdMock } from '../testutils/getCwdMock';
 import { runCommandMock } from '../testutils/runCommandMock';
 import { createBuildContext } from '../testutils/createBuildContext';
@@ -6,7 +7,7 @@ import {
 	K8S_CTX,
 	K8S_NS
 } from '../../src/stages/deployToKubernetes';
-import '@relmify/jest-fp-ts';
+
 import { taskEither } from 'fp-ts';
 import { VersionType } from '../../src/context/VersionType';
 import { BuildContext } from '../../src/context/BuildContext';
@@ -14,7 +15,7 @@ import { baseWorkingDir } from '../testutils/baseWorkingDir';
 import { ProjectType } from '../../src/context/ProjectType';
 import path from 'path';
 import { createDockerImageTag } from '../../src/utils/dockerUtils';
-import shellEnv from 'shell-env';
+import { shellEnvMock } from '../testutils/shellEnvMock';
 
 const baseBuildContext = createBuildContext({
 	projectInfo: {
@@ -25,21 +26,15 @@ const baseBuildContext = createBuildContext({
 	}
 });
 
-jest.mock('shell-env', () => ({
-	sync: jest.fn()
-}));
-
-const shellEnvMock = shellEnv.sync as jest.Mock;
-
 const prepareEnvMock = () =>
-	shellEnvMock.mockImplementation(() => ({
+	shellEnvMock.sync.mockImplementation(() => ({
 		NEXUS_USER: 'user',
 		NEXUS_PASSWORD: 'password'
 	}));
 
 describe('deployToKubernetes', () => {
 	beforeEach(() => {
-		jest.resetAllMocks();
+		vi.resetAllMocks();
 		prepareEnvMock();
 	});
 

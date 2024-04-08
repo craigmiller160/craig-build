@@ -1,6 +1,7 @@
+import { describe, it, expect, beforeEach, vi, MockedFunction } from 'vitest';
 import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
-import '@relmify/jest-fp-ts';
+
 import { preparePreReleaseVersion } from '../../src/stages/preparePreReleaseVersion';
 import {
 	searchForDockerBetas,
@@ -19,22 +20,28 @@ import { homedir } from 'os';
 import { VersionType } from '../../src/context/VersionType';
 import { CommandType } from '../../src/context/CommandType';
 
-jest.mock('../../src/services/NexusRepoApi', () => ({
-	searchForNpmBetas: jest.fn(),
-	searchForDockerBetas: jest.fn(),
-	searchForMavenSnapshots: jest.fn()
+vi.mock('../../src/services/NexusRepoApi', () => ({
+	searchForNpmBetas: vi.fn(),
+	searchForDockerBetas: vi.fn(),
+	searchForMavenSnapshots: vi.fn()
 }));
 
-jest.mock('os', () => ({
-	homedir: jest.fn()
+vi.mock('os', () => ({
+	homedir: vi.fn()
 }));
 
 const baseBuildContext = createBuildContext();
 
-const searchForNpmBetasMock = searchForNpmBetas as jest.Mock;
-const searchForDockerBetasMock = searchForDockerBetas as jest.Mock;
-const searchForMavenSnapshotsMock = searchForMavenSnapshots as jest.Mock;
-const homedirMock = homedir as jest.Mock;
+const searchForNpmBetasMock = searchForNpmBetas as MockedFunction<
+	typeof searchForNpmBetas
+>;
+const searchForDockerBetasMock = searchForDockerBetas as MockedFunction<
+	typeof searchForDockerBetas
+>;
+const searchForMavenSnapshotsMock = searchForMavenSnapshots as MockedFunction<
+	typeof searchForMavenSnapshots
+>;
+const homedirMock = homedir as MockedFunction<typeof homedir>;
 
 const createItem = (version: string): NexusSearchResultItem => ({
 	name: '',
@@ -48,7 +55,7 @@ const createItem = (version: string): NexusSearchResultItem => ({
 
 describe('preparePreReleaseVersion', () => {
 	beforeEach(() => {
-		jest.resetAllMocks();
+		vi.resetAllMocks();
 	});
 
 	it('full build, prepares pre-release version for NPM project based on existing version', async () => {

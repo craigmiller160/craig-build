@@ -1,16 +1,17 @@
+import { describe, it, expect, beforeEach, vi, MockedFunction } from 'vitest';
 import { either } from 'fp-ts';
 import { PackageJson } from '../../src/configFileTypes/PackageJson';
 import { readFile } from '../../src/functions/File';
 import { getBuildToolInfo } from '../../src/stages/getBuildToolInfo';
-import '@relmify/jest-fp-ts';
+
 import { createBuildContext } from '../testutils/createBuildContext';
 import { VersionType } from '../../src/context/VersionType';
 
-jest.mock('../../src/functions/File', () => ({
-	readFile: jest.fn()
+vi.mock('../../src/functions/File', () => ({
+	readFile: vi.fn()
 }));
 
-const readFileMock = readFile as jest.Mock;
+const readFileMock = readFile as MockedFunction<typeof readFile>;
 
 const releasePackageJson: PackageJson = {
 	name: '@craigmiller160/craig-build',
@@ -25,7 +26,7 @@ const buildContext = createBuildContext();
 
 describe('getBuildToolInfo', () => {
 	beforeEach(() => {
-		jest.resetAllMocks();
+		vi.resetAllMocks();
 	});
 
 	it('gets pre-release info', async () => {

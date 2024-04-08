@@ -1,23 +1,24 @@
+import { vi, describe, beforeEach, it, expect, MockedFunction } from 'vitest';
 import { runCommandMock } from '../testutils/runCommandMock';
 import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
 import { validateGitTag } from '../../src/stages/validateGitTag';
 import { task, taskEither } from 'fp-ts';
-import '@relmify/jest-fp-ts';
+
 import { VersionType } from '../../src/context/VersionType';
 import { readUserInput } from '../../src/utils/readUserInput';
 
 const baseBuildContext = createBuildContext();
 const versions = 'v0.0.1\nv0.1.1';
 
-jest.mock('../../src/utils/readUserInput', () => ({
-	readUserInput: jest.fn()
+vi.mock('../../src/utils/readUserInput', () => ({
+	readUserInput: vi.fn()
 }));
-const readUserInputMock = readUserInput as jest.Mock;
+const readUserInputMock = readUserInput as MockedFunction<typeof readUserInput>;
 
 describe('validateGitTag', () => {
 	beforeEach(() => {
-		jest.resetAllMocks();
+		vi.resetAllMocks();
 	});
 
 	it('confirms there is no existing tag for release version', async () => {

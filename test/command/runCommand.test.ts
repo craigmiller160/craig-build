@@ -1,9 +1,10 @@
-import '@relmify/jest-fp-ts';
+import { describe, expect, it, vi, beforeEach } from 'vitest';
+
 import { runCommand } from '../../src/command/runCommand';
 
 describe('runCommand', () => {
 	beforeEach(() => {
-		jest.resetAllMocks();
+		vi.resetAllMocks();
 	});
 
 	it('test successful command', async () => {

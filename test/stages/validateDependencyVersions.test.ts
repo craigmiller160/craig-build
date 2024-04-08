@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { runCommandMock } from '../testutils/runCommandMock';
 import { baseWorkingDir } from '../testutils/baseWorkingDir';
 import { getCwdMock } from '../testutils/getCwdMock';
@@ -7,7 +8,7 @@ import { BuildContext } from '../../src/context/BuildContext';
 import { ProjectType } from '../../src/context/ProjectType';
 import { validateDependencyVersions } from '../../src/stages/validateDependencyVersions';
 import { VersionType } from '../../src/context/VersionType';
-import '../testutils/readGradleProjectUnmock';
+import '../testutils/readGradleProjectMock';
 import { either } from 'fp-ts';
 import { taskEither } from 'fp-ts';
 import { match, P } from 'ts-pattern';
@@ -69,7 +70,7 @@ const runCommandMockImpl = (
 
 describe('validateDependencyVersions', () => {
 	beforeEach(() => {
-		jest.resetAllMocks();
+		vi.resetAllMocks();
 	});
 
 	it('all release dependencies and plugins are valid for maven project', async () => {

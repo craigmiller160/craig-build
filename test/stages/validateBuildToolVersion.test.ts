@@ -1,8 +1,9 @@
+import { describe, it, expect, beforeEach, vi, MockedFunction } from 'vitest';
 import { validateBuildToolVersion } from '../../src/stages/validateBuildToolVersion';
 import { searchForNpmReleases } from '../../src/services/NexusRepoApi';
 import { taskEither } from 'fp-ts';
 import { task } from 'fp-ts';
-import '@relmify/jest-fp-ts';
+
 import { readUserInput } from '../../src/utils/readUserInput';
 import { createBuildContext } from '../testutils/createBuildContext';
 import { VersionType } from '../../src/context/VersionType';
@@ -11,15 +12,17 @@ import {
 	NexusSearchResultItem
 } from '../../src/services/NexusSearchResult';
 
-jest.mock('../../src/services/NexusRepoApi', () => ({
-	searchForNpmReleases: jest.fn()
+vi.mock('../../src/services/NexusRepoApi', () => ({
+	searchForNpmReleases: vi.fn()
 }));
-jest.mock('../../src/utils/readUserInput', () => ({
-	readUserInput: jest.fn()
+vi.mock('../../src/utils/readUserInput', () => ({
+	readUserInput: vi.fn()
 }));
 
-const searchForNpmReleasesMock = searchForNpmReleases as jest.Mock;
-const readUserInputMock = readUserInput as jest.Mock;
+const searchForNpmReleasesMock = searchForNpmReleases as MockedFunction<
+	typeof searchForNpmReleases
+>;
+const readUserInputMock = readUserInput as MockedFunction<typeof readUserInput>;
 
 const createNexusItem = (version: string): NexusSearchResultItem => ({
 	name: '',
@@ -33,7 +36,7 @@ const createNexusItem = (version: string): NexusSearchResultItem => ({
 
 describe('validateBuildToolVersion', () => {
 	beforeEach(() => {
-		jest.resetAllMocks();
+		vi.resetAllMocks();
 	});
 
 	it('tool version is highest release version', async () => {

@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { getCwdMock } from '../testutils/getCwdMock';
 import path from 'path';
 import { baseWorkingDir } from '../testutils/baseWorkingDir';
@@ -6,7 +7,6 @@ import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
 import { VersionType } from '../../src/context/VersionType';
 import { getProjectInfo } from '../../src/stages/getProjectInfo';
-import '@relmify/jest-fp-ts';
 
 const baseBuildContext = createBuildContext();
 

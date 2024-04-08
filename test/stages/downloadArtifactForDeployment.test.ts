@@ -1,9 +1,10 @@
+import { describe, it, expect, beforeEach, vi, MockedFunction } from 'vitest';
 import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
 import { ProjectType } from '../../src/context/ProjectType';
 import { getCwdMock } from '../testutils/getCwdMock';
 import { downloadArtifactForDeployment } from '../../src/stages/downloadArtifactForDeployment';
-import '@relmify/jest-fp-ts';
+
 import {
 	downloadArtifact,
 	searchForMavenReleases,
@@ -11,34 +12,44 @@ import {
 	searchForNpmBetas,
 	searchForNpmReleases
 } from '../../src/services/NexusRepoApi';
-import { taskEither } from 'fp-ts';
+import { taskEither, function as func } from 'fp-ts';
 import { NexusSearchResultItem } from '../../src/services/NexusSearchResult';
 import { mkdir, rmDirIfExists } from '../../src/functions/File';
 import { either } from 'fp-ts';
 import { VersionType } from '../../src/context/VersionType';
 
-jest.mock('../../src/services/NexusRepoApi', () => ({
-	downloadArtifact: jest.fn(),
-	searchForMavenSnapshots: jest.fn(),
-	searchForMavenReleases: jest.fn(),
-	searchForNpmBetas: jest.fn(),
-	searchForNpmReleases: jest.fn(),
-	searchForMavenSnapshotsExplicit: jest.fn()
+vi.mock('../../src/services/NexusRepoApi', () => ({
+	downloadArtifact: vi.fn(),
+	searchForMavenSnapshots: vi.fn(),
+	searchForMavenReleases: vi.fn(),
+	searchForNpmBetas: vi.fn(),
+	searchForNpmReleases: vi.fn(),
+	searchForMavenSnapshotsExplicit: vi.fn()
 }));
 
-jest.mock('../../src/functions/File', () => ({
-	mkdir: jest.fn(),
-	rmDirIfExists: jest.fn()
+vi.mock('../../src/functions/File', () => ({
+	mkdir: vi.fn(),
+	rmDirIfExists: vi.fn()
 }));
 
-const downloadArtifactMock = downloadArtifact as jest.Mock;
-const searchForMavenReleasesMock = searchForMavenReleases as jest.Mock;
-const searchForNpmBetasMock = searchForNpmBetas as jest.Mock;
-const searchForNpmReleasesMock = searchForNpmReleases as jest.Mock;
+const downloadArtifactMock = downloadArtifact as MockedFunction<
+	typeof downloadArtifact
+>;
+const searchForMavenReleasesMock = searchForMavenReleases as MockedFunction<
+	typeof searchForMavenReleases
+>;
+const searchForNpmBetasMock = searchForNpmBetas as MockedFunction<
+	typeof searchForNpmBetas
+>;
+const searchForNpmReleasesMock = searchForNpmReleases as MockedFunction<
+	typeof searchForNpmReleases
+>;
 const searchForMavenSnapshotsExplicitMock =
-	searchForMavenSnapshotsExplicit as jest.Mock;
-const mkdirMock = mkdir as jest.Mock;
-const rmDirIfExistsMock = rmDirIfExists as jest.Mock;
+	searchForMavenSnapshotsExplicit as MockedFunction<
+		typeof searchForMavenSnapshotsExplicit
+	>;
+const mkdirMock = mkdir as MockedFunction<typeof mkdir>;
+const rmDirIfExistsMock = rmDirIfExists as MockedFunction<typeof rmDirIfExists>;
 
 const createItem = (version: string, ext: string): NexusSearchResultItem => ({
 	name: '',
@@ -67,10 +78,12 @@ const baseBuildContext = createBuildContext({
 
 describe('downloadArtifactForDeployment', () => {
 	beforeEach(() => {
-		jest.resetAllMocks();
+		vi.resetAllMocks();
 		downloadArtifactMock.mockImplementation(() => taskEither.right(''));
 		mkdirMock.mockImplementation(() => either.right(''));
-		rmDirIfExistsMock.mockImplementation(() => either.right(''));
+		rmDirIfExistsMock.mockImplementation(() =>
+			either.right(func.constVoid())
+		);
 	});
 
 	it('downloads maven release artifact', async () => {

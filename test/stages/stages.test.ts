@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest';
 import { stages } from '../../src/stages';
 import { getCommandInfo } from '../../src/stages/getCommandInfo';
 import { getBuildToolInfo } from '../../src/stages/getBuildToolInfo';

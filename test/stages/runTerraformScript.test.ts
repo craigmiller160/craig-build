@@ -1,15 +1,16 @@
+import { beforeEach, describe, expect, it, MockedFunction, vi } from 'vitest';
 import { getCwdMock } from '../testutils/getCwdMock';
 import { runCommandMock } from '../testutils/runCommandMock';
+import { shellEnvMock } from '../testutils/shellEnvMock';
 import path from 'path';
 import { baseWorkingDir } from '../testutils/baseWorkingDir';
 import { BuildContext } from '../../src/context/BuildContext';
 import { createBuildContext } from '../testutils/createBuildContext';
 import { ProjectType } from '../../src/context/ProjectType';
 import { runTerraformScript } from '../../src/stages/runTerraformScript';
-import '@relmify/jest-fp-ts';
+
 import { readUserInput } from '../../src/utils/readUserInput';
 import { task, taskEither } from 'fp-ts';
-import shellEnv from 'shell-env';
 
 // The no changes line includes the hidden characters that will show up when testing the output
 const NO_CHANGES_OUTPUT = `
@@ -58,24 +59,20 @@ Note: You didn't use the -out option to save this plan, so Terraform can't
 guarantee to take exactly these actions if you run "terraform apply" now.
 `;
 
-jest.mock('../../src/utils/readUserInput', () => ({
-	readUserInput: jest.fn()
+vi.mock('../../src/utils/readUserInput', () => ({
+	readUserInput: vi.fn()
 }));
-const readUserInputMock = readUserInput as jest.Mock;
+const readUserInputMock = readUserInput as MockedFunction<typeof readUserInput>;
 
-jest.mock('shell-env', () => ({
-	sync: jest.fn()
-}));
-const shellEnvMock = shellEnv.sync as jest.Mock;
 const prepareEnvMock = () =>
-	shellEnvMock.mockImplementation(() => ({
+	shellEnvMock.sync.mockImplementation(() => ({
 		NEXUS_USER: 'user',
 		NEXUS_PASSWORD: 'password'
 	}));
 
 describe('runTerraformScript', () => {
 	beforeEach(() => {
-		jest.resetAllMocks();
+		vi.resetAllMocks();
 	});
 
 	it('executes the terraform script', async () => {
@@ -124,7 +121,7 @@ describe('runTerraformScript', () => {
 			'mavenReleaseApplicationWithTerraform'
 		);
 		getCwdMock.mockImplementation(() => workingDir);
-		readUserInputMock.mockImplementation(() => 'n');
+		readUserInputMock.mockImplementation(() => async () => 'n');
 		runCommandMock.mockImplementation(() =>
 			taskEither.right(HAS_CHANGES_OUTPUT)
 		);

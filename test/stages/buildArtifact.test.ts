@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
 import { ProjectType } from '../../src/context/ProjectType';
@@ -8,14 +9,14 @@ import {
 	MAVEN_BUILD_CMD,
 	NPM_BUILD_CMD
 } from '../../src/stages/buildArtifact';
-import '@relmify/jest-fp-ts';
+
 import { taskEither } from 'fp-ts';
 
 const baseBuildContext = createBuildContext();
 
 describe('buildArtifact', () => {
 	beforeEach(() => {
-		jest.resetAllMocks();
+		vi.resetAllMocks();
 	});
 
 	it('builds maven artifact', async () => {
