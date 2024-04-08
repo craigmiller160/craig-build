@@ -37,6 +37,10 @@ Gradle builds require the `craig-build-gradle-tool`, which is automatically down
 
 NOTE: There may be an issue where the `craig-build-gradle-tool` only installs properly when installing from the repo, rather than installing the artifact directly. Since they both use the same tool version, any problems have been masked until now.
 
+## A Note on Monorepos
+
+Monorepo support is being added gradually and is only supported by certain project types.
+
 ## Project Types
 
 ### NpmApplication
@@ -49,11 +53,15 @@ NOTE: There may be an issue where the `craig-build-gradle-tool` only installs pr
     package.json
 ```
 
+Supports Monorepo: No
+
 ### NpmLibrary
 ```
 /
     package.json
 ```
+
+Supports Monorepo: No
 
 ### MavenApplication
 ```
@@ -65,11 +73,15 @@ NOTE: There may be an issue where the `craig-build-gradle-tool` only installs pr
     pom.xml
 ```
 
+Supports Monorepo: No
+
 ### MavenLibrary
 ```
 /
     pom.xml
 ```
+
+Supports Monorepo: Yes
 
 ### DockerImage
 
@@ -81,6 +93,8 @@ This is building a docker image directly, without an artifact involved. This req
         Dockerfile
     docker.json
 ```
+
+Supports Monorepo: No
 
 ### DockerApplication
 
@@ -95,6 +109,8 @@ This is building a docker application directly, without an artifact involved. Th
     docker.json
 ```
 
+Supports Monorepo: No
+
 ### Gradle Library
 
 This is building a library using Gradle.
@@ -108,6 +124,8 @@ This is building a library using Gradle.
 /
     build.gradle.kts
 ```
+
+Supports Monorepo: No
 
 ### Gradle Application
 
@@ -131,6 +149,8 @@ This is building and deploying an application using Gradle.
     build.gradle.kts
 ```
 
+Supports Monorepo: No
+
 ### Helm Library or Application
 
 This is building and deploying a Helm Chart as a library or as an application in Kubernetes. The difference is determined in the `helm.json` file, see the documentation below.
@@ -142,6 +162,8 @@ This is building and deploying a Helm Chart as a library or as an application in
             Chart.yaml
     helm.json
 ```
+
+Supports Monorepo: No
 
 ## Custom Configuration Files
 
