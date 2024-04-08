@@ -6,8 +6,7 @@ import { preparePreReleaseVersion } from '../../src/stages/preparePreReleaseVers
 import {
 	searchForDockerBetas,
 	searchForMavenSnapshots,
-	searchForNpmBetas,
-	searchForNpmReleases
+	searchForNpmBetas
 } from '../../src/services/NexusRepoApi';
 import {
 	NexusSearchResult,

@@ -19,7 +19,9 @@ vi.mock('../../src/utils/readUserInput', () => ({
 	readUserInput: vi.fn()
 }));
 
-const searchForNpmReleasesMock = searchForNpmReleases as MockedFunction<typeof searchForNpmReleases>
+const searchForNpmReleasesMock = searchForNpmReleases as MockedFunction<
+	typeof searchForNpmReleases
+>;
 const readUserInputMock = readUserInput as MockedFunction<typeof readUserInput>;
 
 const createNexusItem = (version: string): NexusSearchResultItem => ({

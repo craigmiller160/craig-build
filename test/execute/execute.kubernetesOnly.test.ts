@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi, MockedFunction } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { prepareStageExecutionMock, validateStages } from './executeTestUtils';
 import { createBuildContext } from '../testutils/createBuildContext';
 import '@relmify/jest-fp-ts';
