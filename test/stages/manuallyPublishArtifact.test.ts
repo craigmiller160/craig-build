@@ -12,10 +12,10 @@ import {
 import { taskEither } from 'fp-ts';
 import path from 'path';
 import { baseWorkingDir } from '../testutils/baseWorkingDir';
-import { shellEnvSyncMock } from '../testutils/shellEnvMock';
+import { shellEnvMock } from '../testutils/shellEnvMock';
 
 const prepareEnvMock = () =>
-	shellEnvSyncMock.mockImplementation(() => ({
+	shellEnvMock.sync.mockImplementation(() => ({
 		NEXUS_USER: 'user',
 		NEXUS_PASSWORD: 'password'
 	}));

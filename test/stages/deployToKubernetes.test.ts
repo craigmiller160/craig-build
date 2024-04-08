@@ -15,7 +15,7 @@ import { baseWorkingDir } from '../testutils/baseWorkingDir';
 import { ProjectType } from '../../src/context/ProjectType';
 import path from 'path';
 import { createDockerImageTag } from '../../src/utils/dockerUtils';
-import { shellEnvSyncMock } from '../testutils/shellEnvMock';
+import { shellEnvMock } from '../testutils/shellEnvMock';
 
 const baseBuildContext = createBuildContext({
 	projectInfo: {
@@ -27,7 +27,7 @@ const baseBuildContext = createBuildContext({
 });
 
 const prepareEnvMock = () =>
-	shellEnvSyncMock.mockImplementation(() => ({
+	shellEnvMock.sync.mockImplementation(() => ({
 		NEXUS_USER: 'user',
 		NEXUS_PASSWORD: 'password'
 	}));
