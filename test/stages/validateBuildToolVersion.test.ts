@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { validateBuildToolVersion } from '../../src/stages/validateBuildToolVersion';
 import { searchForNpmReleases } from '../../src/services/NexusRepoApi';
 import { taskEither } from 'fp-ts';
