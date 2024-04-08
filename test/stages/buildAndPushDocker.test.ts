@@ -1,6 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { runCommandMock } from '../testutils/runCommandMock';
 import { getCwdMock } from '../testutils/getCwdMock';
+import { shellEnvMock } from '../testutils/shellEnvMock';
+import { osMock } from '../testutils/osMock';
 import { createBuildContext } from '../testutils/createBuildContext';
 
 import { buildAndPushDocker } from '../../src/stages/buildAndPushDocker';
@@ -9,8 +11,6 @@ import { ProjectType } from '../../src/context/ProjectType';
 import { taskEither } from 'fp-ts';
 import { VersionType } from '../../src/context/VersionType';
 import path from 'path';
-import { shellEnvMock } from '../testutils/shellEnvMock';
-import { osMock } from '../testutils/osMock';
 
 const baseBuildContext = createBuildContext({
 	projectInfo: {

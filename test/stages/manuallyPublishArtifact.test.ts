@@ -5,6 +5,7 @@ import { BuildContext } from '../../src/context/BuildContext';
 import { ProjectType } from '../../src/context/ProjectType';
 import { runCommandMock } from '../testutils/runCommandMock';
 import { getCwdMock } from '../testutils/getCwdMock';
+import { shellEnvMock } from '../testutils/shellEnvMock';
 import {
 	CLEAR_FILES_COMMAND,
 	manuallyPublishArtifact
@@ -12,7 +13,6 @@ import {
 import { taskEither } from 'fp-ts';
 import path from 'path';
 import { baseWorkingDir } from '../testutils/baseWorkingDir';
-import { shellEnvMock } from '../testutils/shellEnvMock';
 
 const prepareEnvMock = () =>
 	shellEnvMock.sync.mockImplementation(() => ({
