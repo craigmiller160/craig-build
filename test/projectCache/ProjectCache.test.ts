@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { getCwdMock } from '../testutils/getCwdMock';
 import path from 'path';
 import { baseWorkingDir } from '../testutils/baseWorkingDir';
