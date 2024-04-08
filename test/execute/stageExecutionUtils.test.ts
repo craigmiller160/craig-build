@@ -12,7 +12,6 @@ import { StageExecution } from '../../src/execute/StageExecution';
 import { BuildContext } from '../../src/context/BuildContext';
 import { ProjectType } from '../../src/context/ProjectType';
 
-
 const baseContext = createBuildContext();
 const mockStage: Stage = {
 	name: 'Mock Stage',

@@ -8,7 +8,6 @@ import { BuildContext } from '../../src/context/BuildContext';
 import { VersionType } from '../../src/context/VersionType';
 import { getProjectInfo } from '../../src/stages/getProjectInfo';
 
-
 const baseBuildContext = createBuildContext();
 
 describe('caching raw project data', () => {

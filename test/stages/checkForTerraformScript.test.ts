@@ -7,7 +7,6 @@ import { BuildContext } from '../../src/context/BuildContext';
 import { ProjectType } from '../../src/context/ProjectType';
 import { checkForTerraformScript } from '../../src/stages/checkForTerraformScript';
 
-
 const baseBuildContext = createBuildContext();
 
 describe('checkForTerraformScript', () => {
