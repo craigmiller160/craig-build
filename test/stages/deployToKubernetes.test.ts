@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi, MockedFunction } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { getCwdMock } from '../testutils/getCwdMock';
 import { runCommandMock } from '../testutils/runCommandMock';
 import { createBuildContext } from '../testutils/createBuildContext';
@@ -15,7 +15,7 @@ import { baseWorkingDir } from '../testutils/baseWorkingDir';
 import { ProjectType } from '../../src/context/ProjectType';
 import path from 'path';
 import { createDockerImageTag } from '../../src/utils/dockerUtils';
-import shellEnv from 'shell-env';
+import { shellEnvSyncMock } from '../testutils/shellEnvMock';
 
 const baseBuildContext = createBuildContext({
 	projectInfo: {
@@ -26,14 +26,8 @@ const baseBuildContext = createBuildContext({
 	}
 });
 
-vi.mock('shell-env', () => ({
-	sync: vi.fn()
-}));
-
-const shellEnvMock = shellEnv.sync as MockedFunction<typeof shellEnv.sync>;
-
 const prepareEnvMock = () =>
-	shellEnvMock.mockImplementation(() => ({
+	shellEnvSyncMock.mockImplementation(() => ({
 		NEXUS_USER: 'user',
 		NEXUS_PASSWORD: 'password'
 	}));
