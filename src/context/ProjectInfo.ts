@@ -7,4 +7,5 @@ export type ProjectInfo = Readonly<{
 	version: string;
 	versionType: VersionType;
 	npmBuildTool?: NpmBuildTool;
+	isMonorepo: boolean;
 }>;
