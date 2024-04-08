@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, MockedFunction, vi } from 'vitest';
 import { getCwdMock } from '../testutils/getCwdMock';
 import { runCommandMock } from '../testutils/runCommandMock';
+import { shellEnvMock } from '../testutils/shellEnvMock';
 import path from 'path';
 import { baseWorkingDir } from '../testutils/baseWorkingDir';
 import { BuildContext } from '../../src/context/BuildContext';
@@ -10,7 +11,6 @@ import { runTerraformScript } from '../../src/stages/runTerraformScript';
 
 import { readUserInput } from '../../src/utils/readUserInput';
 import { task, taskEither } from 'fp-ts';
-import { shellEnvMock } from '../testutils/shellEnvMock';
 
 // The no changes line includes the hidden characters that will show up when testing the output
 const NO_CHANGES_OUTPUT = `
