@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { getCwdMock } from '../testutils/getCwdMock';
 import { runCommandMock } from '../testutils/runCommandMock';
 import path from 'path';
