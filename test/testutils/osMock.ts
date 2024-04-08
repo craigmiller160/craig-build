@@ -2,7 +2,9 @@ import { vi, MockedFunction } from 'vitest';
 import os from 'os';
 
 vi.mock('os', () => ({
-	type: vi.fn()
+	default: {
+		type: vi.fn()
+	}
 }));
 
 export const osMock = {
