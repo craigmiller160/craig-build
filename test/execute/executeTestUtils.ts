@@ -4,14 +4,14 @@ import { stages } from '../../src/stages';
 import { taskEither } from 'fp-ts';
 import { ExpectedExecution } from '../expectedExecutions/ExpectedExecution';
 
-jest.mock('../../src/stages', () => {
+vi.mock('../../src/stages', () => {
 	const createStageMock = (stage: Stage): Stage => ({
 		name: stage.name,
-		execute: jest.fn(),
+		execute: vi.fn(),
 		shouldStageExecute: stage.shouldStageExecute
 	});
 
-	const { stages } = jest.requireActual('../../src/stages');
+	const { stages } = vi.requireActual('../../src/stages');
 	return {
 		stages: stages.map(createStageMock)
 	};
@@ -19,7 +19,7 @@ jest.mock('../../src/stages', () => {
 
 export const prepareStageExecutionMock = (context: BuildContext) => {
 	stages.forEach((stage) => {
-		(stage.execute as jest.Mock).mockImplementation(() =>
+		(stage.execute as vi.Mock).mockImplementation(() =>
 			taskEither.right(context)
 		);
 	});

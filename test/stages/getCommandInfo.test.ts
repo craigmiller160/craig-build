@@ -5,21 +5,21 @@ import '@relmify/jest-fp-ts';
 import { BuildContext } from '../../src/context/BuildContext';
 import { createBuildContext } from '../testutils/createBuildContext';
 
-jest.mock('commander', () => {
-	const { OptionValues } = jest.requireActual('commander');
+vi.mock('commander', () => {
+	const { OptionValues } = vi.requireActual('commander');
 	return {
 		OptionValues,
 		program: {
-			opts: jest.fn()
+			opts: vi.fn()
 		}
 	};
 });
 
-const optsMock = program.opts as jest.Mock;
+const optsMock = program.opts as vi.Mock;
 
 describe('getCommandInfo', () => {
 	beforeEach(() => {
-		jest.resetAllMocks();
+		vi.resetAllMocks();
 	});
 
 	it('FULL_BUILD', async () => {

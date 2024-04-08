@@ -11,7 +11,7 @@ const buildContext = createBuildContext();
 
 describe('getProjectType', () => {
 	beforeEach(() => {
-		jest.resetAllMocks();
+		vi.resetAllMocks();
 	});
 
 	it('is GradleLibrary (Kotlin)', async () => {

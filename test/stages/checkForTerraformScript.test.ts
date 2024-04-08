@@ -11,7 +11,7 @@ const baseBuildContext = createBuildContext();
 
 describe('checkForTerraformScript', () => {
 	beforeEach(() => {
-		jest.resetAllMocks();
+		vi.resetAllMocks();
 	});
 
 	it('is application with terraform script', async () => {

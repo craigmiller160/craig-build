@@ -11,14 +11,14 @@ import { CommandType } from '../../src/context/CommandType';
 import { readUserInput } from '../../src/utils/readUserInput';
 
 const baseBuildContext = createBuildContext();
-jest.mock('../../src/utils/readUserInput', () => ({
-	readUserInput: jest.fn()
+vi.mock('../../src/utils/readUserInput', () => ({
+	readUserInput: vi.fn()
 }));
-const readUserInputMock = readUserInput as jest.Mock;
+const readUserInputMock = readUserInput as vi.Mock;
 
 describe('checkForUncommittedChanges', () => {
 	beforeEach(() => {
-		jest.resetAllMocks();
+		vi.resetAllMocks();
 	});
 
 	it('uncommitted changes found for FullBuild build, approve to proceed', async () => {

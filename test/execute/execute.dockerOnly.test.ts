@@ -32,7 +32,7 @@ const baseContext = createBuildContext();
 
 describe('execute.fullBuild', () => {
 	beforeEach(() => {
-		jest.resetAllMocks();
+		vi.resetAllMocks();
 	});
 
 	it('executes docker only for release MavenApplication', async () => {

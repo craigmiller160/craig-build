@@ -25,11 +25,11 @@ const baseBuildContext = createBuildContext({
 	}
 });
 
-jest.mock('shell-env', () => ({
-	sync: jest.fn()
+vi.mock('shell-env', () => ({
+	sync: vi.fn()
 }));
 
-const shellEnvMock = shellEnv.sync as jest.Mock;
+const shellEnvMock = shellEnv.sync as vi.Mock;
 
 const prepareEnvMock = () =>
 	shellEnvMock.mockImplementation(() => ({
@@ -39,7 +39,7 @@ const prepareEnvMock = () =>
 
 describe('deployToKubernetes', () => {
 	beforeEach(() => {
-		jest.resetAllMocks();
+		vi.resetAllMocks();
 		prepareEnvMock();
 	});
 

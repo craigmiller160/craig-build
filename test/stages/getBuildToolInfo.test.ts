@@ -6,11 +6,11 @@ import '@relmify/jest-fp-ts';
 import { createBuildContext } from '../testutils/createBuildContext';
 import { VersionType } from '../../src/context/VersionType';
 
-jest.mock('../../src/functions/File', () => ({
-	readFile: jest.fn()
+vi.mock('../../src/functions/File', () => ({
+	readFile: vi.fn()
 }));
 
-const readFileMock = readFile as jest.Mock;
+const readFileMock = readFile as vi.Mock;
 
 const releasePackageJson: PackageJson = {
 	name: '@craigmiller160/craig-build',
@@ -25,7 +25,7 @@ const buildContext = createBuildContext();
 
 describe('getBuildToolInfo', () => {
 	beforeEach(() => {
-		jest.resetAllMocks();
+		vi.resetAllMocks();
 	});
 
 	it('gets pre-release info', async () => {

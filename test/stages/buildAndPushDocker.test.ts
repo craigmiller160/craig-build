@@ -11,13 +11,13 @@ import { VersionType } from '../../src/context/VersionType';
 import path from 'path';
 import os from 'os';
 
-jest.mock('shell-env', () => ({
-	sync: jest.fn()
+vi.mock('shell-env', () => ({
+	sync: vi.fn()
 }));
-jest.mock('os', () => ({
-	type: jest.fn()
+vi.mock('os', () => ({
+	type: vi.fn()
 }));
-const osTypeMock = os.type as jest.Mock;
+const osTypeMock = os.type as vi.Mock;
 
 const baseBuildContext = createBuildContext({
 	projectInfo: {
@@ -28,7 +28,7 @@ const baseBuildContext = createBuildContext({
 	}
 });
 
-const shellEnvMock = shellEnv.sync as jest.Mock;
+const shellEnvMock = shellEnv.sync as vi.Mock;
 
 const prepareEnvMock = () =>
 	shellEnvMock.mockImplementation(() => ({
@@ -82,7 +82,7 @@ const validateCommands = ({
 
 describe('buildAndPushDocker', () => {
 	beforeEach(() => {
-		jest.resetAllMocks();
+		vi.resetAllMocks();
 		runCommandMock.mockImplementation(() => taskEither.right('a'));
 		getCwdMock.mockImplementation(() => '/root');
 	});

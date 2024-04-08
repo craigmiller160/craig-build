@@ -1,7 +1,7 @@
 import { getCwd } from '../../src/command/getCwd';
 
-jest.mock('../../src/command/getCwd', () => ({
-	getCwd: jest.fn()
+vi.mock('../../src/command/getCwd', () => ({
+	getCwd: vi.fn()
 }));
 
-export const getCwdMock = getCwd as jest.Mock;
+export const getCwdMock = getCwd as vi.Mock;

@@ -15,7 +15,7 @@ const baseBuildContext = createBuildContext();
 
 describe('buildArtifact', () => {
 	beforeEach(() => {
-		jest.resetAllMocks();
+		vi.resetAllMocks();
 	});
 
 	it('builds maven artifact', async () => {

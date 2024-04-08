@@ -30,7 +30,7 @@ const baseContext = createBuildContext();
 
 describe('execute.kubernetesOnly', () => {
 	beforeEach(() => {
-		jest.resetAllMocks();
+		vi.resetAllMocks();
 	});
 
 	it('executes kubernetes only for release MavenApplication', async () => {

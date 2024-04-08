@@ -14,7 +14,7 @@ const getNpmCommandBaseDir = path.join(
 
 describe('npmCommandUtils', () => {
 	beforeEach(() => {
-		jest.resetAllMocks();
+		vi.resetAllMocks();
 	});
 
 	describe('getNpmBuildToolInstallCommand', () => {

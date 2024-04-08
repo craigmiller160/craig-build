@@ -12,15 +12,15 @@ import { NexusSearchResultItem } from '../../src/services/NexusSearchResult';
 import { taskEither } from 'fp-ts';
 import { VersionType } from '../../src/context/VersionType';
 
-jest.mock('../../src/services/NexusRepoApi', () => ({
-	searchForDockerReleases: jest.fn(),
-	searchForMavenReleases: jest.fn(),
-	searchForNpmReleases: jest.fn()
+vi.mock('../../src/services/NexusRepoApi', () => ({
+	searchForDockerReleases: vi.fn(),
+	searchForMavenReleases: vi.fn(),
+	searchForNpmReleases: vi.fn()
 }));
 
-const searchForDockerReleasesMock = searchForDockerReleases as jest.Mock;
-const searchForMavenReleasesMock = searchForMavenReleases as jest.Mock;
-const searchForNpmReleasesMock = searchForNpmReleases as jest.Mock;
+const searchForDockerReleasesMock = searchForDockerReleases as vi.Mock;
+const searchForMavenReleasesMock = searchForMavenReleases as vi.Mock;
+const searchForNpmReleasesMock = searchForNpmReleases as vi.Mock;
 
 const baseBuildContext = createBuildContext();
 
@@ -36,7 +36,7 @@ const invalidItem: NexusSearchResultItem = {
 
 describe('validateProjectVersionAllowed', () => {
 	beforeEach(() => {
-		jest.resetAllMocks();
+		vi.resetAllMocks();
 	});
 
 	it('allows npm release version with no conflicts', async () => {

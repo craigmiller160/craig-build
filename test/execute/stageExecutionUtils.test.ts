@@ -16,12 +16,12 @@ const baseContext = createBuildContext();
 const mockStage: Stage = {
 	name: 'Mock Stage',
 	execute: () => taskEither.right(baseContext),
-	shouldStageExecute: jest.fn()
+	shouldStageExecute: vi.fn()
 };
 
 describe('stageExecutionUtils', () => {
 	beforeEach(() => {
-		jest.resetAllMocks();
+		vi.resetAllMocks();
 	});
 
 	it('createStageExecution', () => {
@@ -38,7 +38,7 @@ describe('stageExecutionUtils', () => {
 			stage: mockStage
 		};
 		it('stage shouldStageExecute returns true', async () => {
-			(mockStage.shouldStageExecute as jest.Mock).mockImplementation(
+			(mockStage.shouldStageExecute as vi.Mock).mockImplementation(
 				() => true
 			);
 			const result = shouldStageExecute(baseContext)(execution);
@@ -46,7 +46,7 @@ describe('stageExecutionUtils', () => {
 		});
 
 		it('stage shouldStageExecute returns false', async () => {
-			(mockStage.shouldStageExecute as jest.Mock).mockImplementation(
+			(mockStage.shouldStageExecute as vi.Mock).mockImplementation(
 				() => false
 			);
 			const result = shouldStageExecute(baseContext)(execution);

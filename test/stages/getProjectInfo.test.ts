@@ -13,7 +13,7 @@ const baseBuildContext = createBuildContext();
 
 describe('getProjectInfo', () => {
 	beforeEach(() => {
-		jest.resetAllMocks();
+		vi.resetAllMocks();
 	});
 
 	it('NPM release project', async () => {

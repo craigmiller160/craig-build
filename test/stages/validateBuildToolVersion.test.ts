@@ -11,15 +11,15 @@ import {
 	NexusSearchResultItem
 } from '../../src/services/NexusSearchResult';
 
-jest.mock('../../src/services/NexusRepoApi', () => ({
-	searchForNpmReleases: jest.fn()
+vi.mock('../../src/services/NexusRepoApi', () => ({
+	searchForNpmReleases: vi.fn()
 }));
-jest.mock('../../src/utils/readUserInput', () => ({
-	readUserInput: jest.fn()
+vi.mock('../../src/utils/readUserInput', () => ({
+	readUserInput: vi.fn()
 }));
 
-const searchForNpmReleasesMock = searchForNpmReleases as jest.Mock;
-const readUserInputMock = readUserInput as jest.Mock;
+const searchForNpmReleasesMock = searchForNpmReleases as vi.Mock;
+const readUserInputMock = readUserInput as vi.Mock;
 
 const createNexusItem = (version: string): NexusSearchResultItem => ({
 	name: '',
@@ -33,7 +33,7 @@ const createNexusItem = (version: string): NexusSearchResultItem => ({
 
 describe('validateBuildToolVersion', () => {
 	beforeEach(() => {
-		jest.resetAllMocks();
+		vi.resetAllMocks();
 	});
 
 	it('tool version is highest release version', async () => {

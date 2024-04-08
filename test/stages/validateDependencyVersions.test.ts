@@ -69,7 +69,7 @@ const runCommandMockImpl = (
 
 describe('validateDependencyVersions', () => {
 	beforeEach(() => {
-		jest.resetAllMocks();
+		vi.resetAllMocks();
 	});
 
 	it('all release dependencies and plugins are valid for maven project', async () => {

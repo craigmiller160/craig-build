@@ -13,7 +13,7 @@ const baseContext = createBuildContext();
 
 describe('execute.terraformOnly', () => {
 	beforeEach(() => {
-		jest.resetAllMocks();
+		vi.resetAllMocks();
 	});
 	it('executes terraform only for MavenApplication without terraform', async () => {
 		const context: BuildContext = {

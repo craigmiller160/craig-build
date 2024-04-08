@@ -17,28 +17,28 @@ import { mkdir, rmDirIfExists } from '../../src/functions/File';
 import { either } from 'fp-ts';
 import { VersionType } from '../../src/context/VersionType';
 
-jest.mock('../../src/services/NexusRepoApi', () => ({
-	downloadArtifact: jest.fn(),
-	searchForMavenSnapshots: jest.fn(),
-	searchForMavenReleases: jest.fn(),
-	searchForNpmBetas: jest.fn(),
-	searchForNpmReleases: jest.fn(),
-	searchForMavenSnapshotsExplicit: jest.fn()
+vi.mock('../../src/services/NexusRepoApi', () => ({
+	downloadArtifact: vi.fn(),
+	searchForMavenSnapshots: vi.fn(),
+	searchForMavenReleases: vi.fn(),
+	searchForNpmBetas: vi.fn(),
+	searchForNpmReleases: vi.fn(),
+	searchForMavenSnapshotsExplicit: vi.fn()
 }));
 
-jest.mock('../../src/functions/File', () => ({
-	mkdir: jest.fn(),
-	rmDirIfExists: jest.fn()
+vi.mock('../../src/functions/File', () => ({
+	mkdir: vi.fn(),
+	rmDirIfExists: vi.fn()
 }));
 
-const downloadArtifactMock = downloadArtifact as jest.Mock;
-const searchForMavenReleasesMock = searchForMavenReleases as jest.Mock;
-const searchForNpmBetasMock = searchForNpmBetas as jest.Mock;
-const searchForNpmReleasesMock = searchForNpmReleases as jest.Mock;
+const downloadArtifactMock = downloadArtifact as vi.Mock;
+const searchForMavenReleasesMock = searchForMavenReleases as vi.Mock;
+const searchForNpmBetasMock = searchForNpmBetas as vi.Mock;
+const searchForNpmReleasesMock = searchForNpmReleases as vi.Mock;
 const searchForMavenSnapshotsExplicitMock =
-	searchForMavenSnapshotsExplicit as jest.Mock;
-const mkdirMock = mkdir as jest.Mock;
-const rmDirIfExistsMock = rmDirIfExists as jest.Mock;
+	searchForMavenSnapshotsExplicit as vi.Mock;
+const mkdirMock = mkdir as vi.Mock;
+const rmDirIfExistsMock = rmDirIfExists as vi.Mock;
 
 const createItem = (version: string, ext: string): NexusSearchResultItem => ({
 	name: '',
@@ -67,7 +67,7 @@ const baseBuildContext = createBuildContext({
 
 describe('downloadArtifactForDeployment', () => {
 	beforeEach(() => {
-		jest.resetAllMocks();
+		vi.resetAllMocks();
 		downloadArtifactMock.mockImplementation(() => taskEither.right(''));
 		mkdirMock.mockImplementation(() => either.right(''));
 		rmDirIfExistsMock.mockImplementation(() => either.right(''));

@@ -6,16 +6,16 @@ import { waitOnNexusUpdate } from '../../src/stages/waitOnNexusUpdate';
 import '@relmify/jest-fp-ts';
 import { task } from 'fp-ts';
 
-jest.mock('../../src/utils/wait', () => ({
-	wait: jest.fn()
+vi.mock('../../src/utils/wait', () => ({
+	wait: vi.fn()
 }));
 
-const waitMock = wait as jest.Mock;
+const waitMock = wait as vi.Mock;
 const baseBuildContext = createBuildContext();
 
 describe('waitOnNexusUpdate', () => {
 	beforeEach(() => {
-		jest.resetAllMocks();
+		vi.resetAllMocks();
 	});
 
 	it('waits on non-docker application', async () => {

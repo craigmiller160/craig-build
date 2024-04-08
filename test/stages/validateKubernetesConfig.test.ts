@@ -28,7 +28,7 @@ const projectInfo: ProjectInfo = {
 
 describe('validateKubernetesConfig', () => {
 	beforeEach(() => {
-		jest.resetAllMocks();
+		vi.resetAllMocks();
 	});
 
 	it.skip('kubernetes config is valid', async () => {

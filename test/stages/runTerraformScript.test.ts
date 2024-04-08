@@ -58,15 +58,15 @@ Note: You didn't use the -out option to save this plan, so Terraform can't
 guarantee to take exactly these actions if you run "terraform apply" now.
 `;
 
-jest.mock('../../src/utils/readUserInput', () => ({
-	readUserInput: jest.fn()
+vi.mock('../../src/utils/readUserInput', () => ({
+	readUserInput: vi.fn()
 }));
-const readUserInputMock = readUserInput as jest.Mock;
+const readUserInputMock = readUserInput as vi.Mock;
 
-jest.mock('shell-env', () => ({
-	sync: jest.fn()
+vi.mock('shell-env', () => ({
+	sync: vi.fn()
 }));
-const shellEnvMock = shellEnv.sync as jest.Mock;
+const shellEnvMock = shellEnv.sync as vi.Mock;
 const prepareEnvMock = () =>
 	shellEnvMock.mockImplementation(() => ({
 		NEXUS_USER: 'user',
@@ -75,7 +75,7 @@ const prepareEnvMock = () =>
 
 describe('runTerraformScript', () => {
 	beforeEach(() => {
-		jest.resetAllMocks();
+		vi.resetAllMocks();
 	});
 
 	it('executes the terraform script', async () => {

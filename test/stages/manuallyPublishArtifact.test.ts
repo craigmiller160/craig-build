@@ -13,11 +13,11 @@ import path from 'path';
 import { baseWorkingDir } from '../testutils/baseWorkingDir';
 import shellEnv from 'shell-env';
 
-jest.mock('shell-env', () => ({
-	sync: jest.fn()
+vi.mock('shell-env', () => ({
+	sync: vi.fn()
 }));
 
-const shellEnvMock = shellEnv.sync as jest.Mock;
+const shellEnvMock = shellEnv.sync as vi.Mock;
 
 const prepareEnvMock = () =>
 	shellEnvMock.mockImplementation(() => ({
@@ -29,7 +29,7 @@ const baseBuildContext = createBuildContext();
 
 describe('manuallyPublishArtifact', () => {
 	beforeEach(() => {
-		jest.resetAllMocks();
+		vi.resetAllMocks();
 	});
 
 	it('publishes NPM project', async () => {
