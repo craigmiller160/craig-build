@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, MockedFunction, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { runCommandMock } from '../testutils/runCommandMock';
 import { getCwdMock } from '../testutils/getCwdMock';
 import { createBuildContext } from '../testutils/createBuildContext';
@@ -9,13 +9,8 @@ import { ProjectType } from '../../src/context/ProjectType';
 import { taskEither } from 'fp-ts';
 import { VersionType } from '../../src/context/VersionType';
 import path from 'path';
-import os from 'os';
 import { shellEnvMock } from '../testutils/shellEnvMock';
-
-vi.mock('os', () => ({
-	type: vi.fn()
-}));
-const osTypeMock = os.type as MockedFunction<typeof os.type>;
+import { osMock } from '../testutils/osMock';
 
 const baseBuildContext = createBuildContext({
 	projectInfo: {
@@ -87,7 +82,7 @@ describe('buildAndPushDocker', () => {
 		shellEnvMock.sync.mockImplementation(() => ({
 			NEXUS_PASSWORD: 'password'
 		}));
-		osTypeMock.mockImplementation(() => 'Linux');
+		osMock.type.mockImplementation(() => 'Linux');
 
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -104,7 +99,7 @@ describe('buildAndPushDocker', () => {
 		shellEnvMock.sync.mockImplementation(() => ({
 			NEXUS_USER: 'user'
 		}));
-		osTypeMock.mockImplementation(() => 'Linux');
+		osMock.type.mockImplementation(() => 'Linux');
 
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -121,7 +116,7 @@ describe('buildAndPushDocker', () => {
 
 	it('builds and pushes docker image for maven application', async () => {
 		prepareEnvMock();
-		osTypeMock.mockImplementation(() => 'Linux');
+		osMock.type.mockImplementation(() => 'Linux');
 
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -138,7 +133,7 @@ describe('buildAndPushDocker', () => {
 		runCommandMock.mockReset();
 		runCommandMock.mockImplementation(() => taskEither.right(''));
 		prepareEnvMock();
-		osTypeMock.mockImplementation(() => 'Linux');
+		osMock.type.mockImplementation(() => 'Linux');
 
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -153,7 +148,7 @@ describe('buildAndPushDocker', () => {
 
 	it('builds and pushes docker image for npm application', async () => {
 		prepareEnvMock();
-		osTypeMock.mockImplementation(() => 'Linux');
+		osMock.type.mockImplementation(() => 'Linux');
 
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -168,7 +163,7 @@ describe('buildAndPushDocker', () => {
 
 	it('builds and pushes docker image for docker application', async () => {
 		prepareEnvMock();
-		osTypeMock.mockImplementation(() => 'Linux');
+		osMock.type.mockImplementation(() => 'Linux');
 
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -183,7 +178,7 @@ describe('buildAndPushDocker', () => {
 
 	it('builds and pushes docker image for docker image', async () => {
 		prepareEnvMock();
-		osTypeMock.mockImplementation(() => 'Linux');
+		osMock.type.mockImplementation(() => 'Linux');
 
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -198,7 +193,7 @@ describe('buildAndPushDocker', () => {
 
 	it('builds and pushes docker image on MacOS', async () => {
 		prepareEnvMock();
-		osTypeMock.mockImplementation(() => 'Darwin');
+		osMock.type.mockImplementation(() => 'Darwin');
 
 		const buildContext: BuildContext = {
 			...baseBuildContext,

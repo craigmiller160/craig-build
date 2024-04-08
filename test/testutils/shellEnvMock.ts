@@ -8,8 +8,5 @@ vi.mock('shell-env', () => ({
 }));
 
 export const shellEnvMock = {
-	sync: vi.fn<
-		Parameters<typeof shellEnv.sync>,
-		ReturnType<typeof shellEnv.sync>
-	>()
+	sync: shellEnv.sync as MockedFunction<typeof shellEnv.sync>
 };
