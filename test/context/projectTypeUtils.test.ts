@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { ProjectType } from '../../src/context/ProjectType';
 import {
 	isApplication,

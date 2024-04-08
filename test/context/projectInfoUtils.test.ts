@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { ProjectInfo } from '../../src/context/ProjectInfo';
 import { isPreRelease, isRelease } from '../../src/context/projectInfoUtils';
 import { VersionType } from '../../src/context/VersionType';

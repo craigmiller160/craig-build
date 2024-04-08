@@ -1,3 +1,4 @@
+import { describe, expect, it, vi, beforeEach } from 'vitest';
 import '@relmify/jest-fp-ts';
 import { runCommand } from '../../src/command/runCommand';
 

@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { CommandType } from '../../src/context/CommandType';
 import {
 	isDockerOnly,
