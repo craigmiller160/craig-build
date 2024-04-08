@@ -10,7 +10,7 @@ import { runTerraformScript } from '../../src/stages/runTerraformScript';
 
 import { readUserInput } from '../../src/utils/readUserInput';
 import { task, taskEither } from 'fp-ts';
-import { shellEnvSyncMock } from '../testutils/shellEnvMock';
+import { shellEnvMock } from '../testutils/shellEnvMock';
 
 // The no changes line includes the hidden characters that will show up when testing the output
 const NO_CHANGES_OUTPUT = `
@@ -65,7 +65,7 @@ vi.mock('../../src/utils/readUserInput', () => ({
 const readUserInputMock = readUserInput as MockedFunction<typeof readUserInput>;
 
 const prepareEnvMock = () =>
-	shellEnvSyncMock.mockImplementation(() => ({
+	shellEnvMock.sync.mockImplementation(() => ({
 		NEXUS_USER: 'user',
 		NEXUS_PASSWORD: 'password'
 	}));

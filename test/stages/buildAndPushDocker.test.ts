@@ -10,7 +10,7 @@ import { taskEither } from 'fp-ts';
 import { VersionType } from '../../src/context/VersionType';
 import path from 'path';
 import os from 'os';
-import { shellEnvSyncMock } from '../testutils/shellEnvMock';
+import { shellEnvMock } from '../testutils/shellEnvMock';
 
 vi.mock('os', () => ({
 	type: vi.fn()
@@ -27,7 +27,7 @@ const baseBuildContext = createBuildContext({
 });
 
 const prepareEnvMock = () =>
-	shellEnvSyncMock.mockImplementation(() => ({
+	shellEnvMock.sync.mockImplementation(() => ({
 		NEXUS_USER: 'user',
 		NEXUS_PASSWORD: 'password'
 	}));
@@ -84,7 +84,7 @@ describe('buildAndPushDocker', () => {
 	});
 
 	it('no docker username environment variable', async () => {
-		shellEnvSyncMock.mockImplementation(() => ({
+		shellEnvMock.sync.mockImplementation(() => ({
 			NEXUS_PASSWORD: 'password'
 		}));
 		osTypeMock.mockImplementation(() => 'Linux');
@@ -101,7 +101,7 @@ describe('buildAndPushDocker', () => {
 	});
 
 	it('no docker password environment variable', async () => {
-		shellEnvSyncMock.mockImplementation(() => ({
+		shellEnvMock.sync.mockImplementation(() => ({
 			NEXUS_USER: 'user'
 		}));
 		osTypeMock.mockImplementation(() => 'Linux');
