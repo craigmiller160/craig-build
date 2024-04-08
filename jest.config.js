@@ -14,7 +14,7 @@ module.exports = {
 		'^.+\\.tsx?$': '@swc/jest'
 	},
 	setupFilesAfterEnv: [
-		path.join(process.cwd(), 'test', 'jestSetup.ts')
+		path.join(process.cwd(), 'test', 'setup.ts')
 	]
 	// reporters: [
 	// 	['jest-summarizing-reporter', { diffs: true }]
