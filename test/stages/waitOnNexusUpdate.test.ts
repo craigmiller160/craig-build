@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, vi, MockedFunction } from 'vitest';
 import { wait } from '../../src/utils/wait';
 import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
@@ -10,7 +11,7 @@ vi.mock('../../src/utils/wait', () => ({
 	wait: vi.fn()
 }));
 
-const waitMock = wait as vi.Mock;
+const waitMock = wait as MockedFunction<typeof wait>;
 const baseBuildContext = createBuildContext();
 
 describe('waitOnNexusUpdate', () => {

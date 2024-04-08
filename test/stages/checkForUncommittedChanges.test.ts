@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi, MockedFunction } from 'vitest';
 import { runCommandMock } from '../testutils/runCommandMock';
 import { taskEither, task } from 'fp-ts';
 import '@relmify/jest-fp-ts';
@@ -15,7 +15,7 @@ const baseBuildContext = createBuildContext();
 vi.mock('../../src/utils/readUserInput', () => ({
 	readUserInput: vi.fn()
 }));
-const readUserInputMock = readUserInput as vi.Mock;
+const readUserInputMock = readUserInput as MockedFunction<typeof readUserInput>;
 
 describe('checkForUncommittedChanges', () => {
 	beforeEach(() => {
