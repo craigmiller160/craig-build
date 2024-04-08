@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest';
 import { setupBuildContext } from '../src/setup';
 import { CommandType } from '../src/context/CommandType';
 import { VersionType } from '../src/context/VersionType';

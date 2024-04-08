@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, vi, MockedFunction } from 'vitest';
 import shellEnv from 'shell-env';
 import { runCommandMock } from '../testutils/runCommandMock';
 import { getCwdMock } from '../testutils/getCwdMock';
@@ -17,7 +18,7 @@ vi.mock('shell-env', () => ({
 vi.mock('os', () => ({
 	type: vi.fn()
 }));
-const osTypeMock = os.type as vi.Mock;
+const osTypeMock = os.type as MockedFunction<typeof os.type>;
 
 const baseBuildContext = createBuildContext({
 	projectInfo: {
@@ -28,7 +29,7 @@ const baseBuildContext = createBuildContext({
 	}
 });
 
-const shellEnvMock = shellEnv.sync as vi.Mock;
+const shellEnvMock = shellEnv.sync as MockedFunction<typeof shellEnv.sync>;
 
 const prepareEnvMock = () =>
 	shellEnvMock.mockImplementation(() => ({

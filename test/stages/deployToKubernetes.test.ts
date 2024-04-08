@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, vi, MockedFunction } from 'vitest';
 import { getCwdMock } from '../testutils/getCwdMock';
 import { runCommandMock } from '../testutils/runCommandMock';
 import { createBuildContext } from '../testutils/createBuildContext';
@@ -29,7 +30,7 @@ vi.mock('shell-env', () => ({
 	sync: vi.fn()
 }));
 
-const shellEnvMock = shellEnv.sync as vi.Mock;
+const shellEnvMock = shellEnv.sync as MockedFunction<typeof shellEnv.sync>;
 
 const prepareEnvMock = () =>
 	shellEnvMock.mockImplementation(() => ({
