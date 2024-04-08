@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi, MockedFunction } from 'vitest';
 import { getCwdMock } from '../testutils/getCwdMock';
 import { runCommandMock } from '../testutils/runCommandMock';
 import path from 'path';
@@ -62,12 +62,12 @@ guarantee to take exactly these actions if you run "terraform apply" now.
 vi.mock('../../src/utils/readUserInput', () => ({
 	readUserInput: vi.fn()
 }));
-const readUserInputMock = readUserInput as vi.Mock;
+const readUserInputMock = readUserInput as MockedFunction<typeof readUserInput>;
 
 vi.mock('shell-env', () => ({
 	sync: vi.fn()
 }));
-const shellEnvMock = shellEnv.sync as vi.Mock;
+const shellEnvMock = shellEnv.sync as MockedFunction<typeof shellEnv.sync>;
 const prepareEnvMock = () =>
 	shellEnvMock.mockImplementation(() => ({
 		NEXUS_USER: 'user',
@@ -125,7 +125,7 @@ describe('runTerraformScript', () => {
 			'mavenReleaseApplicationWithTerraform'
 		);
 		getCwdMock.mockImplementation(() => workingDir);
-		readUserInputMock.mockImplementation(() => 'n');
+		readUserInputMock.mockImplementation(() => async () => 'n');
 		runCommandMock.mockImplementation(() =>
 			taskEither.right(HAS_CHANGES_OUTPUT)
 		);

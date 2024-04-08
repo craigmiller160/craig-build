@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi, MockedFunction } from 'vitest';
 import {
 	searchForDockerReleases,
 	searchForMavenReleases,
@@ -19,9 +19,15 @@ vi.mock('../../src/services/NexusRepoApi', () => ({
 	searchForNpmReleases: vi.fn()
 }));
 
-const searchForDockerReleasesMock = searchForDockerReleases as vi.Mock;
-const searchForMavenReleasesMock = searchForMavenReleases as vi.Mock;
-const searchForNpmReleasesMock = searchForNpmReleases as vi.Mock;
+const searchForDockerReleasesMock = searchForDockerReleases as MockedFunction<
+	typeof searchForDockerReleases
+>;
+const searchForMavenReleasesMock = searchForMavenReleases as MockedFunction<
+	typeof searchForMavenReleases
+>;
+const searchForNpmReleasesMock = searchForNpmReleases as MockedFunction<
+	typeof searchForNpmReleases
+>;
 
 const baseBuildContext = createBuildContext();
 
