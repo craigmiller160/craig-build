@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { OptionValues, program } from 'commander';
 import { CommandType } from '../../src/context/CommandType';
 import { getCommandInfo } from '../../src/stages/getCommandInfo';
