@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, vi, MockedFunction } from 'vitest';
 import { either } from 'fp-ts';
 import { PackageJson } from '../../src/configFileTypes/PackageJson';
 import { readFile } from '../../src/functions/File';
@@ -10,7 +11,7 @@ vi.mock('../../src/functions/File', () => ({
 	readFile: vi.fn()
 }));
 
-const readFileMock = readFile as vi.Mock;
+const readFileMock = readFile as MockedFunction<typeof readFile>;
 
 const releasePackageJson: PackageJson = {
 	name: '@craigmiller160/craig-build',

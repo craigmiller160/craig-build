@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi, MockedFunction } from 'vitest';
 import '@relmify/jest-fp-ts';
 import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
@@ -18,7 +18,7 @@ vi.mock('shell-env', () => ({
 	sync: vi.fn()
 }));
 
-const shellEnvMock = shellEnv.sync as vi.Mock;
+const shellEnvMock = shellEnv.sync as MockedFunction<typeof shellEnv.sync>;
 
 const prepareEnvMock = () =>
 	shellEnvMock.mockImplementation(() => ({

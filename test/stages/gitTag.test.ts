@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest';
 import { runCommandMock } from '../testutils/runCommandMock';
 import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';

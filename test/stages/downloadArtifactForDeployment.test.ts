@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi, MockedFunction } from 'vitest';
 import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
 import { ProjectType } from '../../src/context/ProjectType';
@@ -12,7 +12,7 @@ import {
 	searchForNpmBetas,
 	searchForNpmReleases
 } from '../../src/services/NexusRepoApi';
-import { taskEither } from 'fp-ts';
+import { taskEither, function as func } from 'fp-ts';
 import { NexusSearchResultItem } from '../../src/services/NexusSearchResult';
 import { mkdir, rmDirIfExists } from '../../src/functions/File';
 import { either } from 'fp-ts';
@@ -32,14 +32,24 @@ vi.mock('../../src/functions/File', () => ({
 	rmDirIfExists: vi.fn()
 }));
 
-const downloadArtifactMock = downloadArtifact as vi.Mock;
-const searchForMavenReleasesMock = searchForMavenReleases as vi.Mock;
-const searchForNpmBetasMock = searchForNpmBetas as vi.Mock;
-const searchForNpmReleasesMock = searchForNpmReleases as vi.Mock;
+const downloadArtifactMock = downloadArtifact as MockedFunction<
+	typeof downloadArtifact
+>;
+const searchForMavenReleasesMock = searchForMavenReleases as MockedFunction<
+	typeof searchForMavenReleases
+>;
+const searchForNpmBetasMock = searchForNpmBetas as MockedFunction<
+	typeof searchForNpmBetas
+>;
+const searchForNpmReleasesMock = searchForNpmReleases as MockedFunction<
+	typeof searchForNpmReleases
+>;
 const searchForMavenSnapshotsExplicitMock =
-	searchForMavenSnapshotsExplicit as vi.Mock;
-const mkdirMock = mkdir as vi.Mock;
-const rmDirIfExistsMock = rmDirIfExists as vi.Mock;
+	searchForMavenSnapshotsExplicit as MockedFunction<
+		typeof searchForMavenSnapshotsExplicit
+	>;
+const mkdirMock = mkdir as MockedFunction<typeof mkdir>;
+const rmDirIfExistsMock = rmDirIfExists as MockedFunction<typeof rmDirIfExists>;
 
 const createItem = (version: string, ext: string): NexusSearchResultItem => ({
 	name: '',
@@ -71,7 +81,9 @@ describe('downloadArtifactForDeployment', () => {
 		vi.resetAllMocks();
 		downloadArtifactMock.mockImplementation(() => taskEither.right(''));
 		mkdirMock.mockImplementation(() => either.right(''));
-		rmDirIfExistsMock.mockImplementation(() => either.right(''));
+		rmDirIfExistsMock.mockImplementation(() =>
+			either.right(func.constVoid())
+		);
 	});
 
 	it('downloads maven release artifact', async () => {
