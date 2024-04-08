@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi, MockedFunction } from 'vitest';
 import { validateBuildToolVersion } from '../../src/stages/validateBuildToolVersion';
 import { searchForNpmReleases } from '../../src/services/NexusRepoApi';
 import { taskEither } from 'fp-ts';
@@ -19,8 +19,8 @@ vi.mock('../../src/utils/readUserInput', () => ({
 	readUserInput: vi.fn()
 }));
 
-const searchForNpmReleasesMock = searchForNpmReleases as vi.Mock;
-const readUserInputMock = readUserInput as vi.Mock;
+const searchForNpmReleasesMock = searchForNpmReleases as MockedFunction<typeof searchForNpmReleases>
+const readUserInputMock = readUserInput as MockedFunction<typeof readUserInput>;
 
 const createNexusItem = (version: string): NexusSearchResultItem => ({
 	name: '',

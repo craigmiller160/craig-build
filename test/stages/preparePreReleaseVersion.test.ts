@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi, MockedFunction } from 'vitest';
 import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
 import '@relmify/jest-fp-ts';
@@ -6,7 +6,8 @@ import { preparePreReleaseVersion } from '../../src/stages/preparePreReleaseVers
 import {
 	searchForDockerBetas,
 	searchForMavenSnapshots,
-	searchForNpmBetas
+	searchForNpmBetas,
+	searchForNpmReleases
 } from '../../src/services/NexusRepoApi';
 import {
 	NexusSearchResult,
@@ -32,10 +33,16 @@ vi.mock('os', () => ({
 
 const baseBuildContext = createBuildContext();
 
-const searchForNpmBetasMock = searchForNpmBetas as vi.Mock;
-const searchForDockerBetasMock = searchForDockerBetas as vi.Mock;
-const searchForMavenSnapshotsMock = searchForMavenSnapshots as vi.Mock;
-const homedirMock = homedir as vi.Mock;
+const searchForNpmBetasMock = searchForNpmBetas as MockedFunction<
+	typeof searchForNpmBetas
+>;
+const searchForDockerBetasMock = searchForDockerBetas as MockedFunction<
+	typeof searchForDockerBetas
+>;
+const searchForMavenSnapshotsMock = searchForMavenSnapshots as MockedFunction<
+	typeof searchForMavenSnapshots
+>;
+const homedirMock = homedir as MockedFunction<typeof homedir>;
 
 const createItem = (version: string): NexusSearchResultItem => ({
 	name: '',

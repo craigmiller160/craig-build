@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi, MockedFunction } from 'vitest';
 import { OptionValues, program } from 'commander';
 import { CommandType } from '../../src/context/CommandType';
 import { getCommandInfo } from '../../src/stages/getCommandInfo';
@@ -6,8 +6,10 @@ import '@relmify/jest-fp-ts';
 import { BuildContext } from '../../src/context/BuildContext';
 import { createBuildContext } from '../testutils/createBuildContext';
 
-vi.mock('commander', () => {
-	const { OptionValues } = vi.requireActual('commander');
+vi.mock('commander', async () => {
+	const { OptionValues } = await vi.importActual<{
+		OptionValues: OptionValues;
+	}>('commander');
 	return {
 		OptionValues,
 		program: {
@@ -16,7 +18,7 @@ vi.mock('commander', () => {
 	};
 });
 
-const optsMock = program.opts as vi.Mock;
+const optsMock = program.opts as MockedFunction<typeof program.opts>;
 
 describe('getCommandInfo', () => {
 	beforeEach(() => {
