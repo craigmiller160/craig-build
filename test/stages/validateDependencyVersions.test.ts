@@ -273,9 +273,8 @@ describe('validateDependencyVersions', () => {
 				}
 			};
 
-			const result = await validateDependencyVersions.execute(
-				buildContext
-			)();
+			const result =
+				await validateDependencyVersions.execute(buildContext)();
 			expect(result).toEqualLeft(
 				new Error('Cannot have beta dependencies in NPM release')
 			);
@@ -295,9 +294,8 @@ describe('validateDependencyVersions', () => {
 				}
 			};
 
-			const result = await validateDependencyVersions.execute(
-				buildContext
-			)();
+			const result =
+				await validateDependencyVersions.execute(buildContext)();
 			expect(result).toEqualRight(buildContext);
 		});
 
@@ -317,9 +315,8 @@ describe('validateDependencyVersions', () => {
 				}
 			};
 
-			const result = await validateDependencyVersions.execute(
-				buildContext
-			)();
+			const result =
+				await validateDependencyVersions.execute(buildContext)();
 			expect(result).toEqualLeft(
 				new Error(
 					"Dependency @craigmiller160/foo-bar does not satisfy project's peer range. Version: ^2.0.0 Range: ^1.0.0"
@@ -343,9 +340,8 @@ describe('validateDependencyVersions', () => {
 				}
 			};
 
-			const result = await validateDependencyVersions.execute(
-				buildContext
-			)();
+			const result =
+				await validateDependencyVersions.execute(buildContext)();
 			expect(result).toEqualLeft(
 				new Error(
 					"Dependency @craigmiller160/foo-bar does not satisfy project's peer range. Version: ^2.0.0 Range: ^1.0.0"
@@ -366,9 +362,8 @@ describe('validateDependencyVersions', () => {
 				}
 			};
 
-			const result = await validateDependencyVersions.execute(
-				buildContext
-			)();
+			const result =
+				await validateDependencyVersions.execute(buildContext)();
 			expect(result).toBeRight();
 		});
 
@@ -386,9 +381,8 @@ describe('validateDependencyVersions', () => {
 				}
 			};
 
-			const result = await validateDependencyVersions.execute(
-				buildContext
-			)();
+			const result =
+				await validateDependencyVersions.execute(buildContext)();
 			expect(result).toEqualLeft(
 				new Error(
 					"Dependency @craigmiller160/foo-bar does not satisfy project's peer range. Version: ^1.0.0 Range: ^1.1.0-beta"

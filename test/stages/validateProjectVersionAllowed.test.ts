@@ -59,9 +59,8 @@ describe('validateProjectVersionAllowed', () => {
 			}
 		};
 
-		const result = await validateProjectVersionAllowed.execute(
-			buildContext
-		)();
+		const result =
+			await validateProjectVersionAllowed.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
 	});
 
@@ -78,9 +77,8 @@ describe('validateProjectVersionAllowed', () => {
 			}
 		};
 
-		const result = await validateProjectVersionAllowed.execute(
-			buildContext
-		)();
+		const result =
+			await validateProjectVersionAllowed.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
 	});
 
@@ -97,9 +95,8 @@ describe('validateProjectVersionAllowed', () => {
 			}
 		};
 
-		const result = await validateProjectVersionAllowed.execute(
-			buildContext
-		)();
+		const result =
+			await validateProjectVersionAllowed.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
 	});
 
@@ -116,9 +113,8 @@ describe('validateProjectVersionAllowed', () => {
 			}
 		};
 
-		const result = await validateProjectVersionAllowed.execute(
-			buildContext
-		)();
+		const result =
+			await validateProjectVersionAllowed.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
 	});
 
@@ -135,9 +131,8 @@ describe('validateProjectVersionAllowed', () => {
 			}
 		};
 
-		const result = await validateProjectVersionAllowed.execute(
-			buildContext
-		)();
+		const result =
+			await validateProjectVersionAllowed.execute(buildContext)();
 		expect(result).toEqualLeft(
 			new Error('Project release version is not unique')
 		);
@@ -156,9 +151,8 @@ describe('validateProjectVersionAllowed', () => {
 			}
 		};
 
-		const result = await validateProjectVersionAllowed.execute(
-			buildContext
-		)();
+		const result =
+			await validateProjectVersionAllowed.execute(buildContext)();
 		expect(result).toEqualLeft(
 			new Error('Project release version is not unique')
 		);
@@ -177,9 +171,8 @@ describe('validateProjectVersionAllowed', () => {
 			}
 		};
 
-		const result = await validateProjectVersionAllowed.execute(
-			buildContext
-		)();
+		const result =
+			await validateProjectVersionAllowed.execute(buildContext)();
 		expect(result).toEqualLeft(
 			new Error('Project release version is not unique')
 		);
@@ -198,9 +191,8 @@ describe('validateProjectVersionAllowed', () => {
 			}
 		};
 
-		const result = await validateProjectVersionAllowed.execute(
-			buildContext
-		)();
+		const result =
+			await validateProjectVersionAllowed.execute(buildContext)();
 		expect(result).toEqualLeft(
 			new Error('Project release version is not unique')
 		);

@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, vi, MockedFunction } from 'vitest';
+import { osMock } from '../testutils/osMock';
 import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
 
@@ -16,7 +17,6 @@ import { ProjectType } from '../../src/context/ProjectType';
 import { taskEither } from 'fp-ts';
 import { baseWorkingDir } from '../testutils/baseWorkingDir';
 import path from 'path';
-import { homedir } from 'os';
 import { VersionType } from '../../src/context/VersionType';
 import { CommandType } from '../../src/context/CommandType';
 
@@ -24,10 +24,6 @@ vi.mock('../../src/services/NexusRepoApi', () => ({
 	searchForNpmBetas: vi.fn(),
 	searchForDockerBetas: vi.fn(),
 	searchForMavenSnapshots: vi.fn()
-}));
-
-vi.mock('os', () => ({
-	homedir: vi.fn()
 }));
 
 const baseBuildContext = createBuildContext();
@@ -41,7 +37,6 @@ const searchForDockerBetasMock = searchForDockerBetas as MockedFunction<
 const searchForMavenSnapshotsMock = searchForMavenSnapshots as MockedFunction<
 	typeof searchForMavenSnapshots
 >;
-const homedirMock = homedir as MockedFunction<typeof homedir>;
 
 const createItem = (version: string): NexusSearchResultItem => ({
 	name: '',
@@ -93,7 +88,7 @@ describe('preparePreReleaseVersion', () => {
 			'1.0.0-beta*'
 		);
 		expect(searchForDockerBetasMock).not.toHaveBeenCalled();
-		expect(homedirMock).not.toHaveBeenCalled();
+		expect(osMock.homedir).not.toHaveBeenCalled();
 		expect(searchForMavenSnapshotsMock).not.toHaveBeenCalled();
 	});
 
@@ -132,12 +127,12 @@ describe('preparePreReleaseVersion', () => {
 			'1.0.0-beta*'
 		);
 		expect(searchForDockerBetasMock).not.toHaveBeenCalled();
-		expect(homedirMock).not.toHaveBeenCalled();
+		expect(osMock.homedir).not.toHaveBeenCalled();
 		expect(searchForMavenSnapshotsMock).not.toHaveBeenCalled();
 	});
 
 	it('full build, looks up recently created maven pre-release version from .m2', async () => {
-		homedirMock.mockImplementation(() =>
+		osMock.homedir.mockImplementation(() =>
 			path.join(baseWorkingDir, 'mavenPreReleaseInfoM2')
 		);
 		const buildContext: BuildContext = {
@@ -204,7 +199,7 @@ describe('preparePreReleaseVersion', () => {
 			'1.0.0-beta*'
 		);
 		expect(searchForDockerBetasMock).not.toHaveBeenCalled();
-		expect(homedirMock).not.toHaveBeenCalled();
+		expect(osMock.homedir).not.toHaveBeenCalled();
 		expect(searchForMavenSnapshotsMock).not.toHaveBeenCalled();
 	});
 
@@ -242,7 +237,7 @@ describe('preparePreReleaseVersion', () => {
 			'1.0.0-beta*'
 		);
 		expect(searchForDockerBetasMock).not.toHaveBeenCalled();
-		expect(homedirMock).not.toHaveBeenCalled();
+		expect(osMock.homedir).not.toHaveBeenCalled();
 		expect(searchForMavenSnapshotsMock).not.toHaveBeenCalled();
 	});
 
@@ -421,7 +416,7 @@ describe('preparePreReleaseVersion', () => {
 			'1.0.0-beta*'
 		);
 		expect(searchForNpmBetasMock).not.toHaveBeenCalled();
-		expect(homedirMock).not.toHaveBeenCalled();
+		expect(osMock.homedir).not.toHaveBeenCalled();
 		expect(searchForMavenSnapshotsMock).not.toHaveBeenCalled();
 	});
 
@@ -459,7 +454,7 @@ describe('preparePreReleaseVersion', () => {
 			'1.0.0-beta*'
 		);
 		expect(searchForNpmBetasMock).not.toHaveBeenCalled();
-		expect(homedirMock).not.toHaveBeenCalled();
+		expect(osMock.homedir).not.toHaveBeenCalled();
 		expect(searchForMavenSnapshotsMock).not.toHaveBeenCalled();
 	});
 
@@ -500,7 +495,7 @@ describe('preparePreReleaseVersion', () => {
 			'1.0.0-beta*'
 		);
 		expect(searchForNpmBetasMock).not.toHaveBeenCalled();
-		expect(homedirMock).not.toHaveBeenCalled();
+		expect(osMock.homedir).not.toHaveBeenCalled();
 		expect(searchForMavenSnapshotsMock).not.toHaveBeenCalled();
 	});
 
@@ -537,7 +532,7 @@ describe('preparePreReleaseVersion', () => {
 			'1.0.0-beta*'
 		);
 		expect(searchForNpmBetasMock).not.toHaveBeenCalled();
-		expect(homedirMock).not.toHaveBeenCalled();
+		expect(osMock.homedir).not.toHaveBeenCalled();
 		expect(searchForMavenSnapshotsMock).not.toHaveBeenCalled();
 	});
 });
