@@ -101,9 +101,8 @@ describe('downloadArtifactForDeployment', () => {
 			}
 		};
 
-		const result = await downloadArtifactForDeployment.execute(
-			buildContext
-		)();
+		const result =
+			await downloadArtifactForDeployment.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
 
 		expect(downloadArtifactMock).toHaveBeenCalledWith(
@@ -137,9 +136,8 @@ describe('downloadArtifactForDeployment', () => {
 			}
 		};
 
-		const result = await downloadArtifactForDeployment.execute(
-			buildContext
-		)();
+		const result =
+			await downloadArtifactForDeployment.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
 
 		expect(downloadArtifactMock).toHaveBeenCalledWith(
@@ -175,9 +173,8 @@ describe('downloadArtifactForDeployment', () => {
 			}
 		};
 
-		const result = await downloadArtifactForDeployment.execute(
-			buildContext
-		)();
+		const result =
+			await downloadArtifactForDeployment.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
 
 		expect(downloadArtifactMock).toHaveBeenCalledWith(
@@ -213,9 +210,8 @@ describe('downloadArtifactForDeployment', () => {
 			}
 		};
 
-		const result = await downloadArtifactForDeployment.execute(
-			buildContext
-		)();
+		const result =
+			await downloadArtifactForDeployment.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
 
 		expect(downloadArtifactMock).toHaveBeenCalledWith(
@@ -249,9 +245,8 @@ describe('downloadArtifactForDeployment', () => {
 			}
 		};
 
-		const result = await downloadArtifactForDeployment.execute(
-			buildContext
-		)();
+		const result =
+			await downloadArtifactForDeployment.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
 
 		expect(downloadArtifactMock).toHaveBeenCalledWith(
@@ -285,9 +280,8 @@ describe('downloadArtifactForDeployment', () => {
 			}
 		};
 
-		const result = await downloadArtifactForDeployment.execute(
-			buildContext
-		)();
+		const result =
+			await downloadArtifactForDeployment.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
 
 		expect(downloadArtifactMock).toHaveBeenCalledWith(
