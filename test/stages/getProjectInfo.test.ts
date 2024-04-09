@@ -28,14 +28,6 @@ test.each<GetProjectInfoArgs>([
 		versionType: VersionType.PreRelease
 	},
 	{
-		projectType: ProjectType.NpmApplication,
-		versionType: VersionType.Release
-	},
-	{
-		projectType: ProjectType.NpmApplication,
-		versionType: VersionType.PreRelease
-	},
-	{
 		projectType: ProjectType.MavenLibrary,
 		versionType: VersionType.PreRelease
 	},
@@ -44,14 +36,37 @@ test.each<GetProjectInfoArgs>([
 		versionType: VersionType.Release
 	},
 	{
-		projectType: ProjectType.MavenApplication,
+		projectType: ProjectType.GradleLibrary,
 		versionType: VersionType.PreRelease
 	},
 	{
-		projectType: ProjectType.MavenApplication,
+		projectType: ProjectType.GradleLibrary,
+		versionType: VersionType.Release
+	},
+	{
+		projectType: ProjectType.DockerImage,
+		versionType: VersionType.PreRelease
+	},
+	{
+		projectType: ProjectType.DockerImage,
+		versionType: VersionType.Release
+	},
+	{
+		projectType: ProjectType.HelmLibrary,
+		versionType: VersionType.PreRelease
+	},
+	{
+		projectType: ProjectType.HelmLibrary,
+		versionType: VersionType.Release
+	},
+	{
+		projectType: ProjectType.HelmApplication,
+		versionType: VersionType.PreRelease
+	},
+	{
+		projectType: ProjectType.HelmApplication,
 		versionType: VersionType.Release
 	}
-	// TODO need more
 ])('getProjectInfo for $projectType and $versionType', async () => {
 	throw new Error();
 });
