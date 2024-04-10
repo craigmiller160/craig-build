@@ -23,6 +23,11 @@ type GetProjectIfoArgs = Readonly<{
 	repoType: RepoType;
 }>;
 
+type VersionTypeValues = Readonly<{
+	workingDir: string;
+	version: string;
+}>;
+
 test.each<GetProjectIfoArgs>([
 	{ versionType: VersionType.Release, repoType: 'polyrepo' },
 	{ versionType: VersionType.PreRelease, repoType: 'polyrepo' },
@@ -30,9 +35,17 @@ test.each<GetProjectIfoArgs>([
 ])(
 	'NPM getProjectInfo for $versionType and $repoType',
 	async ({ versionType, repoType }) => {
-		const workingDir = match(versionType)
-			.with(VersionType.Release, () => 'npmReleaseLibrary')
-			.with(VersionType.PreRelease, () => 'npmBetaLibrary')
+		const { workingDir, version } = match<VersionType, VersionTypeValues>(
+			versionType
+		)
+			.with(VersionType.Release, () => ({
+				workingDir: 'npmReleaseLibrary',
+				version: '1.0.0'
+			}))
+			.with(VersionType.PreRelease, () => ({
+				workingDir: 'npmBetaLibrary',
+				version: '1.0.0-beta'
+			}))
 			.run();
 
 		getCwdMock.mockImplementation(() =>
@@ -47,7 +60,7 @@ test.each<GetProjectIfoArgs>([
 			projectInfo: {
 				group: 'craigmiller160',
 				name: 'craig-build',
-				version: '1.0.0',
+				version,
 				versionType,
 				npmBuildTool: 'yarn',
 				repoType
@@ -65,9 +78,17 @@ test.each<GetProjectIfoArgs>([
 ])(
 	'Maven getProjectInfo for $versionType and $repoType',
 	async ({ versionType, repoType }) => {
-		const workingDir = match(versionType)
-			.with(VersionType.Release, () => 'mavenReleaseLibrary')
-			.with(VersionType.PreRelease, () => 'mavenSnapshotLibrary')
+		const { workingDir, version } = match<VersionType, VersionTypeValues>(
+			versionType
+		)
+			.with(VersionType.Release, () => ({
+				workingDir: 'mavenReleaseLibrary',
+				version: '1.2.0'
+			}))
+			.with(VersionType.PreRelease, () => ({
+				workingDir: 'mavenSnapshotLibrary',
+				version: '1.2.0-SNAPSHOT'
+			}))
 			.run();
 
 		getCwdMock.mockImplementation(() =>
@@ -82,7 +103,7 @@ test.each<GetProjectIfoArgs>([
 			projectInfo: {
 				group: 'io.craigmiller160',
 				name: 'email-service',
-				version: '1.2.0',
+				version,
 				versionType,
 				repoType
 			}
@@ -103,9 +124,17 @@ test.each<GetProjectIfoArgs>([
 ])(
 	'Docker getProjectInfo for $versionType and $repoType',
 	async ({ versionType, repoType }) => {
-		const workingDir = match(versionType)
-			.with(VersionType.Release, () => 'dockerReleaseImage')
-			.with(VersionType.PreRelease, () => 'dockerBetaImage')
+		const { workingDir, version } = match<VersionType, VersionTypeValues>(
+			versionType
+		)
+			.with(VersionType.Release, () => ({
+				workingDir: 'dockerReleaseImage',
+				version: '1.0.0'
+			}))
+			.with(VersionType.PreRelease, () => ({
+				workingDir: 'dockerBetaImage',
+				version: '1.0.0-beta'
+			}))
 			.run();
 
 		getCwdMock.mockImplementation(() =>
@@ -120,7 +149,7 @@ test.each<GetProjectIfoArgs>([
 			projectInfo: {
 				group: 'craigmiller160',
 				name: 'nginx-base',
-				version: '1.0.0',
+				version,
 				versionType,
 				repoType
 			}
@@ -131,49 +160,6 @@ test.each<GetProjectIfoArgs>([
 );
 
 describe('getProjectInfo', () => {
-
-	it('Docker release project', async () => {
-		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDir, 'dockerReleaseImage')
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.DockerImage
-		};
-		const expectedContext: BuildContext = {
-			...buildContext,
-			projectInfo: {
-				group: 'craigmiller160',
-				name: 'nginx-base',
-				version: '1.0.0',
-				versionType: VersionType.Release
-			}
-		};
-		const result = await getProjectInfo.execute(buildContext)();
-		expect(result).toEqualRight(expectedContext);
-	});
-
-	it('Docker pre-release project', async () => {
-		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDir, 'dockerBetaImage')
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.DockerImage
-		};
-		const expectedContext: BuildContext = {
-			...buildContext,
-			projectInfo: {
-				group: 'craigmiller160',
-				name: 'nginx-base',
-				version: '1.0.0-beta',
-				versionType: VersionType.PreRelease
-			}
-		};
-		const result = await getProjectInfo.execute(buildContext)();
-		expect(result).toEqualRight(expectedContext);
-	});
-
 	it('GradleKotlin pre-release project', async () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(baseWorkingDir, 'gradleKotlinPreReleaseLibrary')
