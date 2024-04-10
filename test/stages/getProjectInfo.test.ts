@@ -16,12 +16,19 @@ beforeEach(() => {
 	vi.resetAllMocks();
 });
 
-type GetProjectInfoArgs = Readonly<{
+type RepoType = 'polyrepo' | 'monorepo';
+
+type GetProjectIfoArgs = Readonly<{
+	versionType: VersionType;
+	repoType: RepoType;
+}>;
+
+type GetProjectInfoArgs2 = Readonly<{
 	projectType: ProjectType;
 	versionType: VersionType;
 }>;
 
-test.each<GetProjectInfoArgs>([
+test.each<GetProjectInfoArgs2>([
 	{ projectType: ProjectType.NpmLibrary, versionType: VersionType.Release },
 	{
 		projectType: ProjectType.NpmLibrary,
