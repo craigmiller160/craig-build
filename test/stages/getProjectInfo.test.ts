@@ -1,14 +1,15 @@
-import { beforeEach, describe, expect, it, test, vi } from 'vitest';
-import { getCwdMock } from '../testutils/getCwdMock';
+import {beforeEach, describe, expect, it, test, vi} from 'vitest';
+import {getCwdMock} from '../testutils/getCwdMock';
 import path from 'path';
-import { ProjectType } from '../../src/context/ProjectType';
-import { getProjectInfo } from '../../src/stages/getProjectInfo';
+import {ProjectType} from '../../src/context/ProjectType';
+import {getProjectInfo} from '../../src/stages/getProjectInfo';
 
-import { baseWorkingDir } from '../testutils/baseWorkingDir';
-import { createBuildContext } from '../testutils/createBuildContext';
-import { BuildContext } from '../../src/context/BuildContext';
-import { VersionType } from '../../src/context/VersionType';
+import {baseWorkingDir} from '../testutils/baseWorkingDir';
+import {createBuildContext} from '../testutils/createBuildContext';
+import {BuildContext} from '../../src/context/BuildContext';
+import {VersionType} from '../../src/context/VersionType';
 import '../testutils/readGradleProjectMock';
+import {RepoType} from '../../src/context/ProjectInfo';
 
 const baseBuildContext = createBuildContext();
 
@@ -16,65 +17,34 @@ beforeEach(() => {
 	vi.resetAllMocks();
 });
 
-type RepoType = 'polyrepo' | 'monorepo';
-
 type GetProjectIfoArgs = Readonly<{
 	versionType: VersionType;
 	repoType: RepoType;
 }>;
 
-type GetProjectInfoArgs2 = Readonly<{
-	projectType: ProjectType;
-	versionType: VersionType;
-}>;
-
-test.each<GetProjectInfoArgs2>([
-	{ projectType: ProjectType.NpmLibrary, versionType: VersionType.Release },
-	{
-		projectType: ProjectType.NpmLibrary,
-		versionType: VersionType.PreRelease
-	},
-	{
-		projectType: ProjectType.MavenLibrary,
-		versionType: VersionType.PreRelease
-	},
-	{
-		projectType: ProjectType.MavenLibrary,
-		versionType: VersionType.Release
-	},
-	{
-		projectType: ProjectType.GradleLibrary,
-		versionType: VersionType.PreRelease
-	},
-	{
-		projectType: ProjectType.GradleLibrary,
-		versionType: VersionType.Release
-	},
-	{
-		projectType: ProjectType.DockerImage,
-		versionType: VersionType.PreRelease
-	},
-	{
-		projectType: ProjectType.DockerImage,
-		versionType: VersionType.Release
-	},
-	{
-		projectType: ProjectType.HelmLibrary,
-		versionType: VersionType.PreRelease
-	},
-	{
-		projectType: ProjectType.HelmLibrary,
-		versionType: VersionType.Release
-	},
-	{
-		projectType: ProjectType.HelmApplication,
-		versionType: VersionType.PreRelease
-	},
-	{
-		projectType: ProjectType.HelmApplication,
-		versionType: VersionType.Release
+test.each<GetProjectIfoArgs>([
+	{ versionType: VersionType.Release, repoType: 'polyrepo' },
+	{ versionType: VersionType.PreRelease, repoType: 'polyrepo' },
+	{ versionType: VersionType.Release, repoType: 'monrepo' }
+])(
+	'NPM getProjectInfo for $versionType and $repoType',
+	({ versionType, repoType }) => {
+		throw new Error();
 	}
-])('getProjectInfo for $projectType and $versionType', async () => {
+);
+
+test.each<GetProjectIfoArgs>([
+	{ versionType: VersionType.Release, repoType: 'polyrepo' },
+	{ versionType: VersionType.PreRelease, repoType: 'polyrepo' },
+	{ versionType: VersionType.Release, repoType: 'monrepo' }
+])(
+	'Maven getProjectInfo for $versionType and $repoType',
+	({ versionType, repoType }) => {
+		throw new Error();
+	}
+);
+
+test('Maven getProjectInfo for monorepo application', () => {
 	throw new Error();
 });
 
