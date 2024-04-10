@@ -96,6 +96,40 @@ test('Maven getProjectInfo for monorepo application', () => {
 	throw new Error();
 });
 
+test.each<GetProjectIfoArgs>([
+	{ versionType: VersionType.Release, repoType: 'polyrepo' },
+	{ versionType: VersionType.PreRelease, repoType: 'polyrepo' },
+	{ versionType: VersionType.Release, repoType: 'monrepo' }
+])(
+	'Docker getProjectInfo for $versionType and $repoType',
+	async ({ versionType, repoType }) => {
+		const workingDir = match(versionType)
+			.with(VersionType.Release, () => 'dockerReleaseImage')
+			.with(VersionType.PreRelease, () => 'dockerBetaImage')
+			.run();
+
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDir, workingDir)
+		);
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.DockerImage
+		};
+		const expectedContext: BuildContext = {
+			...buildContext,
+			projectInfo: {
+				group: 'craigmiller160',
+				name: 'nginx-base',
+				version: '1.0.0',
+				versionType,
+				repoType
+			}
+		};
+		const result = await getProjectInfo.execute(buildContext)();
+		expect(result).toEqualRight(expectedContext);
+	}
+);
+
 describe('getProjectInfo', () => {
 
 	it('Docker release project', async () => {
