@@ -32,7 +32,7 @@ test.each<GetProjectIfoArgs>([
 	async ({ versionType, repoType }) => {
 		const workingDir = match(versionType)
 			.with(VersionType.Release, () => 'npmReleaseLibrary')
-			.with(VersionType.PreRelease, () => 'npmPreReleaseLibrary')
+			.with(VersionType.PreRelease, () => 'npmBetaLibrary')
 			.run();
 
 		getCwdMock.mockImplementation(() =>
@@ -64,63 +64,14 @@ test.each<GetProjectIfoArgs>([
 	{ versionType: VersionType.Release, repoType: 'monrepo' }
 ])(
 	'Maven getProjectInfo for $versionType and $repoType',
-	({ versionType, repoType }) => {
-		throw new Error();
-	}
-);
+	async ({ versionType, repoType }) => {
+		const workingDir = match(versionType)
+			.with(VersionType.Release, () => 'mavenReleaseLibrary')
+			.with(VersionType.PreRelease, () => 'mavenSnapshotLibrary')
+			.run();
 
-test('Maven getProjectInfo for monorepo application', () => {
-	throw new Error();
-});
-
-describe('getProjectInfo', () => {
-	it('NPM release project', async () => {
 		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDir, 'npmReleaseLibrary')
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.NpmLibrary
-		};
-		const expectedContext: BuildContext = {
-			...buildContext,
-			projectInfo: {
-				group: 'craigmiller160',
-				name: 'craig-build',
-				version: '1.0.0',
-				versionType: VersionType.Release,
-				npmBuildTool: 'yarn'
-			}
-		};
-		const result = await getProjectInfo.execute(buildContext)();
-		expect(result).toEqualRight(expectedContext);
-	});
-
-	it('NPM pre-release project', async () => {
-		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDir, 'npmBetaLibrary')
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.NpmLibrary
-		};
-		const expectedContext: BuildContext = {
-			...buildContext,
-			projectInfo: {
-				group: 'craigmiller160',
-				name: 'craig-build',
-				version: '1.0.0-beta',
-				versionType: VersionType.PreRelease,
-				npmBuildTool: 'yarn'
-			}
-		};
-		const result = await getProjectInfo.execute(buildContext)();
-		expect(result).toEqualRight(expectedContext);
-	});
-
-	it('Maven release project', async () => {
-		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDir, 'mavenReleaseLibrary')
+			path.resolve(baseWorkingDir, workingDir)
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -132,33 +83,20 @@ describe('getProjectInfo', () => {
 				group: 'io.craigmiller160',
 				name: 'email-service',
 				version: '1.2.0',
-				versionType: VersionType.Release
+				versionType,
+				repoType
 			}
 		};
 		const result = await getProjectInfo.execute(buildContext)();
 		expect(result).toEqualRight(expectedContext);
-	});
+	}
+);
 
-	it('Maven pre-release project', async () => {
-		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDir, 'mavenSnapshotLibrary')
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.MavenLibrary
-		};
-		const expectedContext: BuildContext = {
-			...buildContext,
-			projectInfo: {
-				group: 'io.craigmiller160',
-				name: 'email-service',
-				version: '1.2.0-SNAPSHOT',
-				versionType: VersionType.PreRelease
-			}
-		};
-		const result = await getProjectInfo.execute(buildContext)();
-		expect(result).toEqualRight(expectedContext);
-	});
+test('Maven getProjectInfo for monorepo application', () => {
+	throw new Error();
+});
+
+describe('getProjectInfo', () => {
 
 	it('Docker release project', async () => {
 		getCwdMock.mockImplementation(() =>
