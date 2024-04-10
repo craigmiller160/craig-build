@@ -1,15 +1,16 @@
-import {beforeEach, describe, expect, it, test, vi} from 'vitest';
-import {getCwdMock} from '../testutils/getCwdMock';
+import { beforeEach, describe, expect, it, test, vi } from 'vitest';
+import { getCwdMock } from '../testutils/getCwdMock';
 import path from 'path';
-import {ProjectType} from '../../src/context/ProjectType';
-import {getProjectInfo} from '../../src/stages/getProjectInfo';
+import { ProjectType } from '../../src/context/ProjectType';
+import { getProjectInfo } from '../../src/stages/getProjectInfo';
 
-import {baseWorkingDir} from '../testutils/baseWorkingDir';
-import {createBuildContext} from '../testutils/createBuildContext';
-import {BuildContext} from '../../src/context/BuildContext';
-import {VersionType} from '../../src/context/VersionType';
+import { baseWorkingDir } from '../testutils/baseWorkingDir';
+import { createBuildContext } from '../testutils/createBuildContext';
+import { BuildContext } from '../../src/context/BuildContext';
+import { VersionType } from '../../src/context/VersionType';
 import '../testutils/readGradleProjectMock';
-import {RepoType} from '../../src/context/ProjectInfo';
+import { RepoType } from '../../src/context/ProjectInfo';
+import { match } from 'ts-pattern';
 
 const baseBuildContext = createBuildContext();
 
@@ -28,8 +29,32 @@ test.each<GetProjectIfoArgs>([
 	{ versionType: VersionType.Release, repoType: 'monrepo' }
 ])(
 	'NPM getProjectInfo for $versionType and $repoType',
-	({ versionType, repoType }) => {
-		throw new Error();
+	async ({ versionType, repoType }) => {
+		const workingDir = match(versionType)
+			.with(VersionType.Release, () => 'npmReleaseLibrary')
+			.with(VersionType.PreRelease, () => 'npmPreReleaseLibrary')
+			.run();
+
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDir, workingDir)
+		);
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.NpmLibrary
+		};
+		const expectedContext: BuildContext = {
+			...buildContext,
+			projectInfo: {
+				group: 'craigmiller160',
+				name: 'craig-build',
+				version: '1.0.0',
+				versionType,
+				npmBuildTool: 'yarn',
+				repoType
+			}
+		};
+		const result = await getProjectInfo.execute(buildContext)();
+		expect(result).toEqualRight(expectedContext);
 	}
 );
 
