@@ -125,8 +125,18 @@ test.each<GetProjectIfoArgs>([
 	}
 );
 
-test('Maven getProjectInfo for monorepo application', () => {
-	throw new Error();
+test('Maven getProjectInfo for monorepo application', async () => {
+	getCwdMock.mockImplementation(() =>
+		path.resolve(baseWorkingDir, 'mavenReleaseApplication')
+	);
+	const buildContext: BuildContext = {
+		...baseBuildContext,
+		projectType: ProjectType.MavenApplication
+	};
+	const result = await getProjectInfo.execute(buildContext)();
+	expect(result).toEqualLeft(
+		new Error('Monorepo not supported for this project type')
+	);
 });
 
 test.each<GetProjectIfoArgs>([
