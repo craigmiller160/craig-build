@@ -159,49 +159,50 @@ test.each<GetProjectIfoArgs>([
 	}
 );
 
+test.each<GetProjectIfoArgs>([
+	{ versionType: VersionType.Release, repoType: 'polyrepo' },
+	{ versionType: VersionType.PreRelease, repoType: 'polyrepo' },
+	{ versionType: VersionType.Release, repoType: 'monrepo' }
+])(
+	'Docker getProjectInfo for $versionType and $repoType',
+	async ({ versionType, repoType }) => {
+		const { workingDir, version } = match<VersionType, VersionTypeValues>(
+			versionType
+		)
+			.with(VersionType.Release, () => ({
+				workingDir: 'gradleKotlinReleaseLibrary',
+				version: '1.0.0'
+			}))
+			.with(VersionType.PreRelease, () => ({
+				workingDir: 'gradleKotlinPreReleaseLibrary',
+				version: '1.0.0-SNAPSHOT'
+			}))
+			.run();
+
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDir, workingDir)
+		);
+
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.GradleLibrary
+		};
+		const expectedContext: BuildContext = {
+			...buildContext,
+			projectInfo: {
+				group: 'io.craigmiller160',
+				name: 'spring-gradle-playground',
+				version,
+				versionType: VersionType.PreRelease,
+				repoType
+			}
+		};
+		const result = await getProjectInfo.execute(buildContext)();
+		expect(result).toEqualRight(expectedContext);
+	}
+);
+
 describe('getProjectInfo', () => {
-	it('GradleKotlin pre-release project', async () => {
-		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDir, 'gradleKotlinPreReleaseLibrary')
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.GradleLibrary
-		};
-		const expectedContext: BuildContext = {
-			...buildContext,
-			projectInfo: {
-				group: 'io.craigmiller160',
-				name: 'spring-gradle-playground',
-				version: '1.0.0-SNAPSHOT',
-				versionType: VersionType.PreRelease
-			}
-		};
-		const result = await getProjectInfo.execute(buildContext)();
-		expect(result).toEqualRight(expectedContext);
-	});
-
-	it('GradleKotlin release project', async () => {
-		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDir, 'gradleKotlinReleaseLibrary')
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.GradleLibrary
-		};
-		const expectedContext: BuildContext = {
-			...buildContext,
-			projectInfo: {
-				group: 'io.craigmiller160',
-				name: 'spring-gradle-playground',
-				version: '1.0.0',
-				versionType: VersionType.Release
-			}
-		};
-		const result = await getProjectInfo.execute(buildContext)();
-		expect(result).toEqualRight(expectedContext);
-	});
-
 	it('HelmLibrary release project', async () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(baseWorkingDir, 'helmReleaseLibrary')
