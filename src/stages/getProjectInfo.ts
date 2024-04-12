@@ -51,7 +51,8 @@ const readMavenProjectInfo = (
 				group: pomXml.project.groupId[0],
 				name: pomXml.project.artifactId[0],
 				version,
-				versionType: getVersionType(version)
+				versionType: getVersionType(version),
+				repoType: 'polyrepo'
 			};
 		})
 	);
@@ -80,7 +81,8 @@ const readNpmProjectInfo = (
 				group,
 				name,
 				version: packageJson.version,
-				versionType: getVersionType(packageJson.version)
+				versionType: getVersionType(packageJson.version),
+				repoType: 'polyrepo'
 			};
 		}),
 		taskEither.chainEitherK(addNpmCommand)
@@ -97,7 +99,8 @@ const readDockerProjectInfo = (
 				group,
 				name,
 				version: dockerJson.version,
-				versionType: getVersionType(dockerJson.version)
+				versionType: getVersionType(dockerJson.version),
+				repoType: 'polyrepo'
 			};
 		})
 	);
@@ -111,7 +114,8 @@ const readGradleProjectInfo = (
 			group: buildGradle.info.group,
 			name: buildGradle.info.name,
 			version: buildGradle.info.version,
-			versionType: getVersionType(buildGradle.info.version)
+			versionType: getVersionType(buildGradle.info.version),
+			repoType: 'polyrepo'
 		}))
 	);
 
@@ -126,7 +130,8 @@ const readHelmProjectInfo = (
 				group,
 				name,
 				version: helmJson.version,
-				versionType: getVersionType(helmJson.version)
+				versionType: getVersionType(helmJson.version),
+				repoType: 'polyrepo'
 			};
 		}),
 		taskEither.filterOrElse(
