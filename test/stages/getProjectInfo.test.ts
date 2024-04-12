@@ -193,7 +193,7 @@ test.each<GetProjectIfoArgs>([
 				group: 'io.craigmiller160',
 				name: 'spring-gradle-playground',
 				version,
-				versionType: VersionType.PreRelease,
+				versionType,
 				repoType
 			}
 		};
@@ -235,52 +235,25 @@ test.each<GetProjectIfoArgs>([
 			projectInfo: {
 				group: 'craigmiller160',
 				name: 'my-lib',
-				version: '1.0.0',
-				versionType: VersionType.Release,
+				version,
+				versionType,
 				repoType
 			}
 		};
 		const result = await getProjectInfo.execute(buildContext)();
-		throw new Error();
+		if (VersionType.Release === versionType) {
+			expect(result).toEqualRight(expectedContext);
+		} else {
+			expect(result).toEqualLeft(
+				new Error(
+					'Helm pre-release projects are not currently supported'
+				)
+			);
+		}
 	}
 );
 
 describe('getProjectInfo', () => {
-	it('HelmLibrary release project', async () => {
-		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDir, 'helmReleaseLibrary')
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.HelmLibrary
-		};
-		const expectedContext: BuildContext = {
-			...buildContext,
-			projectInfo: {
-				group: 'craigmiller160',
-				name: 'my-lib',
-				version: '1.0.0',
-				versionType: VersionType.Release
-			}
-		};
-		const result = await getProjectInfo.execute(buildContext)();
-		expect(result).toEqualRight(expectedContext);
-	});
-
-	it('HelmLibrary pre-release project', async () => {
-		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDir, 'helmPreReleaseLibrary')
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.HelmLibrary
-		};
-		const result = await getProjectInfo.execute(buildContext)();
-		expect(result).toEqualLeft(
-			new Error('Helm pre-release projects are not currently supported')
-		);
-	});
-
 	it('HelmApplication release project', async () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(baseWorkingDir, 'helmReleaseApplication')
