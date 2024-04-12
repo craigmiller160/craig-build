@@ -164,7 +164,7 @@ test.each<GetProjectIfoArgs>([
 	{ versionType: VersionType.PreRelease, repoType: 'polyrepo' },
 	{ versionType: VersionType.Release, repoType: 'monrepo' }
 ])(
-	'Docker getProjectInfo for $versionType and $repoType',
+	'Gradle getProjectInfo for $versionType and $repoType',
 	async ({ versionType, repoType }) => {
 		const { workingDir, version } = match<VersionType, VersionTypeValues>(
 			versionType
@@ -199,6 +199,49 @@ test.each<GetProjectIfoArgs>([
 		};
 		const result = await getProjectInfo.execute(buildContext)();
 		expect(result).toEqualRight(expectedContext);
+	}
+);
+
+test.each<GetProjectIfoArgs>([
+	{ versionType: VersionType.Release, repoType: 'polyrepo' },
+	{ versionType: VersionType.PreRelease, repoType: 'polyrepo' },
+	{ versionType: VersionType.Release, repoType: 'monrepo' }
+])(
+	'Helm Library getProjectInfo for $versionType and $repoType',
+	async ({ versionType, repoType }) => {
+		const { workingDir, version } = match<VersionType, VersionTypeValues>(
+			versionType
+		)
+			.with(VersionType.Release, () => ({
+				workingDir: 'helmReleaseLibrary',
+				version: '1.0.0'
+			}))
+			.with(VersionType.PreRelease, () => ({
+				workingDir: 'helmPreReleaseLibrary',
+				version: '1.0.0-beta'
+			}))
+			.run();
+
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDir, workingDir)
+		);
+
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.HelmLibrary
+		};
+		const expectedContext: BuildContext = {
+			...buildContext,
+			projectInfo: {
+				group: 'craigmiller160',
+				name: 'my-lib',
+				version: '1.0.0',
+				versionType: VersionType.Release,
+				repoType
+			}
+		};
+		const result = await getProjectInfo.execute(buildContext)();
+		throw new Error();
 	}
 );
 
