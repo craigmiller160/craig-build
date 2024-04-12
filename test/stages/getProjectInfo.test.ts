@@ -67,7 +67,13 @@ test.each<GetProjectIfoArgs>([
 			}
 		};
 		const result = await getProjectInfo.execute(buildContext)();
-		expect(result).toEqualRight(expectedContext);
+		if (repoType === 'polyrepo') {
+			expect(result).toEqualRight(expectedContext);
+		} else {
+			expect(result).toEqualLeft(
+				new Error('Monorepo not supported for this project type')
+			);
+		}
 	}
 );
 
@@ -109,7 +115,13 @@ test.each<GetProjectIfoArgs>([
 			}
 		};
 		const result = await getProjectInfo.execute(buildContext)();
-		expect(result).toEqualRight(expectedContext);
+		if (repoType === 'polyrepo') {
+			expect(result).toEqualRight(expectedContext);
+		} else {
+			expect(result).toEqualLeft(
+				new Error('Monorepo not supported for this project type')
+			);
+		}
 	}
 );
 
@@ -155,7 +167,13 @@ test.each<GetProjectIfoArgs>([
 			}
 		};
 		const result = await getProjectInfo.execute(buildContext)();
-		expect(result).toEqualRight(expectedContext);
+		if (repoType === 'polyrepo') {
+			expect(result).toEqualRight(expectedContext);
+		} else {
+			expect(result).toEqualLeft(
+				new Error('Monorepo not supported for this project type')
+			);
+		}
 	}
 );
 
@@ -198,7 +216,13 @@ test.each<GetProjectIfoArgs>([
 			}
 		};
 		const result = await getProjectInfo.execute(buildContext)();
-		expect(result).toEqualRight(expectedContext);
+		if (repoType === 'polyrepo') {
+			expect(result).toEqualRight(expectedContext);
+		} else {
+			expect(result).toEqualLeft(
+				new Error('Monorepo not supported for this project type')
+			);
+		}
 	}
 );
 
@@ -241,7 +265,11 @@ test.each<GetProjectIfoArgs>([
 			}
 		};
 		const result = await getProjectInfo.execute(buildContext)();
-		if (VersionType.Release === versionType) {
+		if (repoType === 'monrepo') {
+			expect(result).toEqualLeft(
+				new Error('Monorepo not supported for this project type')
+			);
+		} else if (VersionType.Release === versionType) {
 			expect(result).toEqualRight(expectedContext);
 		} else {
 			expect(result).toEqualLeft(
@@ -292,7 +320,11 @@ test.each<GetProjectIfoArgs>([
 		};
 
 		const result = await getProjectInfo.execute(buildContext)();
-		if (VersionType.Release === versionType) {
+		if (repoType === 'monrepo') {
+			expect(result).toEqualLeft(
+				new Error('Monorepo not supported for this project type')
+			);
+		} else if (VersionType.Release === versionType) {
 			expect(result).toEqualRight(expectedContext);
 		} else {
 			expect(result).toEqualLeft(
