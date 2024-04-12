@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, test, vi } from 'vitest';
+import { beforeEach, expect, test, vi } from 'vitest';
 import { getCwdMock } from '../testutils/getCwdMock';
 import path from 'path';
 import { ProjectType } from '../../src/context/ProjectType';
@@ -253,10 +253,28 @@ test.each<GetProjectIfoArgs>([
 	}
 );
 
-describe('getProjectInfo', () => {
-	it('HelmApplication release project', async () => {
+test.each<GetProjectIfoArgs>([
+	{ versionType: VersionType.Release, repoType: 'polyrepo' },
+	{ versionType: VersionType.PreRelease, repoType: 'polyrepo' },
+	{ versionType: VersionType.Release, repoType: 'monrepo' }
+])(
+	'Helm Application getProjectInfo for $versionType and $repoType',
+	async ({ versionType, repoType }) => {
+		const { workingDir, version } = match<VersionType, VersionTypeValues>(
+			versionType
+		)
+			.with(VersionType.Release, () => ({
+				workingDir: 'helmReleaseApplication',
+				version: '1.0.0'
+			}))
+			.with(VersionType.PreRelease, () => ({
+				workingDir: 'helmPreReleaseApplication',
+				version: '1.0.0-beta'
+			}))
+			.run();
+
 		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDir, 'helmReleaseApplication')
+			path.resolve(baseWorkingDir, workingDir)
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -267,25 +285,21 @@ describe('getProjectInfo', () => {
 			projectInfo: {
 				group: 'craigmiller160',
 				name: 'my-app',
-				version: '1.0.0',
-				versionType: VersionType.Release
+				version,
+				versionType,
+				repoType
 			}
 		};
-		const result = await getProjectInfo.execute(buildContext)();
-		expect(result).toEqualRight(expectedContext);
-	});
 
-	it('HelmApplication pre-release project', async () => {
-		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDir, 'helmPreReleaseApplication')
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.HelmApplication
-		};
 		const result = await getProjectInfo.execute(buildContext)();
-		expect(result).toEqualLeft(
-			new Error('Helm pre-release projects are not currently supported')
-		);
-	});
-});
+		if (VersionType.Release === versionType) {
+			expect(result).toEqualRight(expectedContext);
+		} else {
+			expect(result).toEqualLeft(
+				new Error(
+					'Helm pre-release projects are not currently supported'
+				)
+			);
+		}
+	}
+);
