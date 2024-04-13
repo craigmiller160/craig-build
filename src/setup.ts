@@ -20,6 +20,7 @@ export const setupBuildContext = (): BuildContext => ({
 		group: '',
 		name: '',
 		version: '',
-		versionType: VersionType.Unknown
+		versionType: VersionType.Unknown,
+		repoType: 'polyrepo'
 	}
 });
