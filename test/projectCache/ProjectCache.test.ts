@@ -35,7 +35,8 @@ describe('caching raw project data', () => {
 				name: 'craig-build',
 				version: '1.0.0',
 				versionType: VersionType.Release,
-				npmBuildTool: 'yarn'
+				npmBuildTool: 'yarn',
+				repoType: 'polyrepo'
 			}
 		};
 		// Reads the actual project file

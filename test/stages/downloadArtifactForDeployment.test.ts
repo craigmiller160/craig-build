@@ -72,7 +72,8 @@ const baseBuildContext = createBuildContext({
 		group: 'craigmiller160',
 		name: 'my-project',
 		versionType: VersionType.Release,
-		version: ''
+		version: '',
+		repoType: 'polyrepo'
 	}
 });
 

@@ -24,7 +24,8 @@ const projectInfo: ProjectInfo = {
 	group: 'io.craigmiller160',
 	name: 'email-service',
 	version: '1.0.0',
-	versionType: VersionType.Release
+	versionType: VersionType.Release,
+	repoType: 'polyrepo'
 };
 
 describe('validateKubernetesConfig', () => {

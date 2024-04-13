@@ -22,7 +22,8 @@ const defaultProjectInfo: ProjectInfo = {
 	group: 'craigmiller150',
 	name: 'my-project',
 	version: '1.0.0',
-	versionType: VersionType.Release
+	versionType: VersionType.Release,
+	repoType: 'polyrepo'
 };
 
 const defaultBuildContext: BuildContext = {
