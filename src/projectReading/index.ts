@@ -29,47 +29,58 @@ import { readGradleProject } from '../special/gradle';
 import { HelmJson } from '../configFileTypes/HelmJson';
 import { TerraformJson } from '../configFileTypes/TerraformJson';
 
-const readMavenProject = (): either.Either<Error, PomXml> =>
+const readMavenProject = (
+	cwd: string = getCwd()
+): either.Either<Error, PomXml> =>
 	func.pipe(
-		readFile(path.join(getCwd(), MAVEN_PROJECT_FILE)),
+		readFile(path.join(cwd, MAVEN_PROJECT_FILE)),
 		either.chain((_) => parseXml<PomXml>(_))
 	);
 
-const readNpmProject = (): either.Either<Error, PackageJson> =>
+const readNpmProject = (
+	cwd: string = getCwd()
+): either.Either<Error, PackageJson> =>
 	func.pipe(
-		readFile(path.join(getCwd(), NPM_PROJECT_FILE)),
+		readFile(path.join(cwd, NPM_PROJECT_FILE)),
 		either.chain((_) => parseJson<PackageJson>(_))
 	);
 
-const readDockerProject = (): either.Either<Error, DockerJson> =>
+const readDockerProject = (
+	cwd: string = getCwd()
+): either.Either<Error, DockerJson> =>
 	func.pipe(
-		readFile(path.join(getCwd(), DOCKER_PROJECT_FILE)),
+		readFile(path.join(cwd, DOCKER_PROJECT_FILE)),
 		either.chain((_) => parseJson<DockerJson>(_))
 	);
 
-export const readHelmProject = (): either.Either<Error, HelmJson> =>
+export const readHelmProject = (
+	cwd: string = getCwd()
+): either.Either<Error, HelmJson> =>
 	func.pipe(
-		readFile(path.join(getCwd(), HELM_PROJECT_FILE)),
+		readFile(path.join(cwd, HELM_PROJECT_FILE)),
 		either.chain((_) => parseJson<HelmJson>(_))
 	);
 
-export const readTerraformProject = (): either.Either<Error, TerraformJson> =>
+export const readTerraformProject = (
+	cwd: string = getCwd()
+): either.Either<Error, TerraformJson> =>
 	func.pipe(
-		readFile(path.join(getCwd(), TERRAFORM_JSON_PATH)),
+		readFile(path.join(cwd, TERRAFORM_JSON_PATH)),
 		either.chain((_) => parseJson<TerraformJson>(_))
 	);
 
 export const getRawProjectData = <T>(
-	projectType: ProjectType
+	projectType: ProjectType,
+	cwd: string = getCwd()
 ): taskEither.TaskEither<Error, T> => {
 	const rawProjectTE: taskEither.TaskEither<Error, unknown> = match(
 		projectType
 	)
-		.when(isMaven, () => taskEither.fromEither(readMavenProject()))
-		.when(isNpm, () => taskEither.fromEither(readNpmProject()))
-		.when(isDocker, () => taskEither.fromEither(readDockerProject()))
-		.when(isGradle, () => readGradleProject(getCwd()))
-		.when(isHelm, () => taskEither.fromEither(readHelmProject()))
+		.when(isMaven, () => taskEither.fromEither(readMavenProject(cwd)))
+		.when(isNpm, () => taskEither.fromEither(readNpmProject(cwd)))
+		.when(isDocker, () => taskEither.fromEither(readDockerProject(cwd)))
+		.when(isGradle, () => readGradleProject(cwd))
+		.when(isHelm, () => taskEither.fromEither(readHelmProject(cwd)))
 		.run();
 	return func.pipe(
 		rawProjectTE,
