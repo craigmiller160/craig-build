@@ -76,6 +76,11 @@ test.each<GetProjectIfoArgs>([
 	}
 );
 
+type VersionAndRepoType = Readonly<{
+	versionType: VersionType;
+	repoType: RepoType;
+}>;
+
 test.each<GetProjectIfoArgs>([
 	{ versionType: VersionType.Release, repoType: 'polyrepo' },
 	{ versionType: VersionType.PreRelease, repoType: 'polyrepo' },
@@ -83,17 +88,31 @@ test.each<GetProjectIfoArgs>([
 ])(
 	'Maven getProjectInfo for $versionType and $repoType',
 	async ({ versionType, repoType }) => {
-		const { workingDir, version } = match<VersionType, VersionTypeValues>(
-			versionType
-		)
-			.with(VersionType.Release, () => ({
-				workingDir: 'mavenReleaseLibrary',
-				version: '1.2.0'
-			}))
-			.with(VersionType.PreRelease, () => ({
-				workingDir: 'mavenSnapshotLibrary',
-				version: '1.2.0-SNAPSHOT'
-			}))
+		const { workingDir, version } = match<
+			VersionAndRepoType,
+			VersionTypeValues
+		>({ versionType, repoType })
+			.with(
+				{ versionType: VersionType.Release, repoType: 'polyrepo' },
+				() => ({
+					workingDir: 'mavenReleaseLibrary',
+					version: '1.2.0'
+				})
+			)
+			.with(
+				{ versionType: VersionType.PreRelease, repoType: 'polyrepo' },
+				() => ({
+					workingDir: 'mavenSnapshotLibrary',
+					version: '1.2.0-SNAPSHOT'
+				})
+			)
+			.with(
+				{ versionType: VersionType.Release, repoType: 'monorepo' },
+				() => ({
+					workingDir: 'mavenReleaseLibraryMonorepo',
+					version: '1.2.0'
+				})
+			)
 			.run();
 
 		getCwdMock.mockImplementation(() =>
