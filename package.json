@@ -14,7 +14,7 @@
   ],
   "scripts": {
     "lint": "eslint . --fix --max-warnings=0",
-    "forceBuild": "rm -rf ./build && swc ./src -d ./build --config-file ./.swcrc",
+    "forceBuild": "rm -rf ./build && swc ./src -d ./build-temp --config-file ./.swcrc && mv ./build-temp/src ./build && rm -rf build-temp",
     "typeCheck": "tsc --noEmit --project ./test/tsconfig.json",
     "test": "vitest run",
     "build": "npm run validate && npm run forceBuild",
