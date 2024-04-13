@@ -20,7 +20,7 @@ import { BuildContext } from '../context/BuildContext';
 import { VersionType } from '../context/VersionType';
 import { regexTest } from '../functions/RegExp';
 import { GradleProject } from '../special/gradle';
-import { getRawProjectData } from '../projectCache';
+import { getRawProjectData } from '../projectReading';
 import { HelmJson } from '../configFileTypes/HelmJson';
 import { getNpmBuildTool } from '../context/npmCommandUtils';
 

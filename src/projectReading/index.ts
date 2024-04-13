@@ -1,4 +1,3 @@
-import { option } from 'fp-ts';
 import { taskEither } from 'fp-ts';
 import { either } from 'fp-ts';
 import { ProjectType } from '../context/ProjectType';
@@ -30,8 +29,6 @@ import { readGradleProject } from '../special/gradle';
 import { HelmJson } from '../configFileTypes/HelmJson';
 import { TerraformJson } from '../configFileTypes/TerraformJson';
 
-let project: option.Option<unknown> = option.none;
-
 const readMavenProject = (): either.Either<Error, PomXml> =>
 	func.pipe(
 		readFile(path.join(getCwd(), MAVEN_PROJECT_FILE)),
@@ -50,7 +47,7 @@ const readDockerProject = (): either.Either<Error, DockerJson> =>
 		either.chain((_) => parseJson<DockerJson>(_))
 	);
 
-const readHelmProject = (): either.Either<Error, HelmJson> =>
+export const readHelmProject = (): either.Either<Error, HelmJson> =>
 	func.pipe(
 		readFile(path.join(getCwd(), HELM_PROJECT_FILE)),
 		either.chain((_) => parseJson<HelmJson>(_))
@@ -62,27 +59,7 @@ export const readTerraformProject = (): either.Either<Error, TerraformJson> =>
 		either.chain((_) => parseJson<TerraformJson>(_))
 	);
 
-export const getAndCacheHelmProject = (): either.Either<Error, HelmJson> => {
-	if (process.env.NODE_ENV === 'test') {
-		return readHelmProject();
-	}
-	return func.pipe(
-		project,
-		option.fold(
-			() =>
-				func.pipe(
-					readHelmProject(),
-					either.map((helmProject) => {
-						project = option.some(helmProject);
-						return helmProject;
-					})
-				),
-			(_) => either.right(_ as HelmJson)
-		)
-	);
-};
-
-const readAndCacheRawProjectData = <T>(
+export const getRawProjectData = <T>(
 	projectType: ProjectType
 ): taskEither.TaskEither<Error, T> => {
 	const rawProjectTE: taskEither.TaskEither<Error, unknown> = match(
@@ -97,24 +74,7 @@ const readAndCacheRawProjectData = <T>(
 	return func.pipe(
 		rawProjectTE,
 		taskEither.map((data) => {
-			project = option.some(data);
 			return data as unknown as T;
 		})
-	);
-};
-
-export const getRawProjectData = <T>(
-	projectType: ProjectType
-): taskEither.TaskEither<Error, T> => {
-	if (process.env.NODE_ENV === 'test') {
-		return readAndCacheRawProjectData<T>(projectType);
-	}
-
-	return func.pipe(
-		project,
-		option.fold(
-			() => readAndCacheRawProjectData<T>(projectType),
-			(_) => taskEither.right(_ as T)
-		)
 	);
 };

@@ -18,14 +18,14 @@ import {
 	MAVEN_PROJECT_FILE,
 	NPM_PROJECT_FILE
 } from '../configFileTypes/constants';
-import { getAndCacheHelmProject } from '../projectCache';
+import { getHelmProject } from '../projectReading';
 
 const fileExists = (cwd: string, file: string): boolean =>
 	fs.existsSync(path.resolve(cwd, file));
 
 const isHelmApplication = (): boolean =>
 	func.pipe(
-		getAndCacheHelmProject(),
+		getHelmProject(),
 		either.exists((helmJson) => helmJson.type === 'application')
 	);
 

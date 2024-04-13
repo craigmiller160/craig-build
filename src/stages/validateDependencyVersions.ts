@@ -24,7 +24,7 @@ import { isRelease } from '../context/projectInfoUtils';
 import { Stage, StageExecuteFn } from './Stage';
 import { ProjectType } from '../context/ProjectType';
 import { isFullBuild } from '../context/commandTypeUtils';
-import { getRawProjectData } from '../projectCache';
+import { getRawProjectData } from '../projectReading';
 import { runCommand } from '../command/runCommand';
 import { semverSatisifies } from '../utils/semverUtils';
 

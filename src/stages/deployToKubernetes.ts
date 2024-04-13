@@ -9,7 +9,7 @@ import { runCommand } from '../command/runCommand';
 import { predicate } from 'fp-ts';
 import { Stage, StageExecuteFn } from './Stage';
 import { createDockerImageTag } from '../utils/dockerUtils';
-import { getAndCacheHelmProject } from '../projectCache';
+import { getHelmProject } from '../projectReading';
 import shellEnv from 'shell-env';
 import { CommandType } from '../context/CommandType';
 import { isTerraformOnly } from '../context/commandTypeUtils';
@@ -40,7 +40,7 @@ const getNamespace = (context: BuildContext): either.Either<Error, string> => {
 	}
 
 	return func.pipe(
-		getAndCacheHelmProject(),
+		getHelmProject(),
 		either.map((_) => _.namespace)
 	);
 };
@@ -54,7 +54,7 @@ const createHelmSetValues = (
 	}
 
 	return func.pipe(
-		getAndCacheHelmProject(),
+		getHelmProject(),
 		either.map((_) => _.setValues ?? {}),
 		either.map(
 			func.flow(
