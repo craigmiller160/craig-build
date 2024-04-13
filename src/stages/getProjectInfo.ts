@@ -69,7 +69,8 @@ const readMavenProjectInfo = (
 				name: pomXml.project.artifactId[0],
 				version,
 				versionType: getVersionType(version),
-				repoType: rootProjectInfo !== undefined ? 'monrepo' : 'polyrepo'
+				repoType:
+					rootProjectInfo !== undefined ? 'monorepo' : 'polyrepo'
 			};
 
 			if (
@@ -100,7 +101,7 @@ const readMavenProjectInfo = (
 						(monorepoChildren): ProjectInfo => ({
 							...projectInfo,
 							monorepoChildren,
-							repoType: 'monrepo'
+							repoType: 'monorepo'
 						})
 					)
 				);
