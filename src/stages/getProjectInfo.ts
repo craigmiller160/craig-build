@@ -184,7 +184,7 @@ const readProjectInfoByType = (
 	projectType: ProjectType
 ): taskEither.TaskEither<Error, ProjectInfo> =>
 	match(projectType)
-		.when(isMaven, readMavenProjectInfo)
+		.when(isMaven, (_) => readMavenProjectInfo(_))
 		.when(isNpm, readNpmProjectInfo)
 		.when(isDocker, readDockerProjectInfo)
 		.when(isGradle, readGradleProjectInfo)
