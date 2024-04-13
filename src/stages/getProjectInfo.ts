@@ -2,9 +2,14 @@ import { Stage, StageExecuteFn } from './Stage';
 import { ProjectType } from '../context/ProjectType';
 import { ProjectInfo } from '../context/ProjectInfo';
 import { match } from 'ts-pattern';
-import { option, readonlyArray, taskEither } from 'fp-ts';
-import { either, function as func } from 'fp-ts';
-import { predicate } from 'fp-ts';
+import {
+	either,
+	function as func,
+	option,
+	predicate,
+	readonlyArray,
+	taskEither
+} from 'fp-ts';
 import path from 'path';
 import {
 	isDocker,
@@ -66,6 +71,15 @@ const readMavenProjectInfo = (
 				versionType: getVersionType(version),
 				repoType: 'polyrepo'
 			};
+
+			if (
+				pomXml.project.modules &&
+				projectType === ProjectType.MavenApplication
+			) {
+				return taskEither.left(
+					new Error('Monorepo not supported for this project type')
+				);
+			}
 
 			if (pomXml.project.modules) {
 				return func.pipe(
