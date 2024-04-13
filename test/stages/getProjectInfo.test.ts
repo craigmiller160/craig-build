@@ -9,7 +9,7 @@ import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
 import { VersionType } from '../../src/context/VersionType';
 import '../testutils/readGradleProjectMock';
-import { RepoType } from '../../src/context/ProjectInfo';
+import { ProjectInfo, RepoType } from '../../src/context/ProjectInfo';
 import { match } from 'ts-pattern';
 
 const baseBuildContext = createBuildContext();
@@ -79,7 +79,7 @@ test.each<GetProjectIfoArgs>([
 test.each<GetProjectIfoArgs>([
 	{ versionType: VersionType.Release, repoType: 'polyrepo' },
 	{ versionType: VersionType.PreRelease, repoType: 'polyrepo' },
-	{ versionType: VersionType.Release, repoType: 'monrepo' }
+	{ versionType: VersionType.Release, repoType: 'monorepo' }
 ])(
 	'Maven getProjectInfo for $versionType and $repoType',
 	async ({ versionType, repoType }) => {
@@ -103,6 +103,24 @@ test.each<GetProjectIfoArgs>([
 			...baseBuildContext,
 			projectType: ProjectType.MavenLibrary
 		};
+
+		const monorepoChildren: ReadonlyArray<ProjectInfo> = [
+			{
+				group: 'io.craigmiller160',
+				name: 'email-service-child-1',
+				version,
+				versionType,
+				repoType
+			},
+			{
+				group: 'io.craigmiller160',
+				name: 'email-service-child-2',
+				version,
+				versionType,
+				repoType
+			}
+		];
+
 		const expectedContext: BuildContext = {
 			...buildContext,
 			projectInfo: {
@@ -110,7 +128,9 @@ test.each<GetProjectIfoArgs>([
 				name: 'email-service',
 				version,
 				versionType,
-				repoType
+				repoType,
+				monorepoChildren:
+					repoType === 'monorepo' ? monorepoChildren : undefined
 			}
 		};
 		const result = await getProjectInfo.execute(buildContext)();
@@ -271,7 +291,7 @@ test.each<GetProjectIfoArgs>([
 			}
 		};
 		const result = await getProjectInfo.execute(buildContext)();
-		if (repoType === 'monrepo') {
+		if (repoType === 'monorepo') {
 			expect(result).toEqualLeft(
 				new Error('Monorepo not supported for this project type')
 			);
@@ -325,7 +345,7 @@ test.each<GetProjectIfoArgs>([
 		};
 
 		const result = await getProjectInfo.execute(buildContext)();
-		if (repoType === 'monrepo') {
+		if (repoType === 'monorepo') {
 			expect(result).toEqualLeft(
 				new Error('Monorepo not supported for this project type')
 			);

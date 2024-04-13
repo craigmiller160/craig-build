@@ -1,7 +1,7 @@
 import { VersionType } from './VersionType';
 import { NpmBuildTool } from './NpmBuildTool';
 
-export type RepoType = 'polyrepo' | 'monrepo';
+export type RepoType = 'polyrepo' | 'monorepo';
 
 export type ProjectInfo = Readonly<{
 	group: string;

@@ -69,7 +69,7 @@ const readMavenProjectInfo = (
 				name: pomXml.project.artifactId[0],
 				version,
 				versionType: getVersionType(version),
-				repoType: 'polyrepo'
+				repoType: rootProjectInfo !== undefined ? 'monrepo' : 'polyrepo'
 			};
 
 			if (
@@ -99,7 +99,8 @@ const readMavenProjectInfo = (
 					taskEither.map(
 						(monorepoChildren): ProjectInfo => ({
 							...projectInfo,
-							monorepoChildren
+							monorepoChildren,
+							repoType: 'monrepo'
 						})
 					)
 				);
