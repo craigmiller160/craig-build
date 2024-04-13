@@ -153,13 +153,7 @@ test.each<GetProjectIfoArgs>([
 			}
 		};
 		const result = await getProjectInfo.execute(buildContext)();
-		if (repoType === 'polyrepo') {
-			expect(result).toEqualRight(expectedContext);
-		} else {
-			expect(result).toEqualLeft(
-				new Error('Monorepo not supported for this project type')
-			);
-		}
+		expect(result).toEqualRight(expectedContext);
 	}
 );
 
