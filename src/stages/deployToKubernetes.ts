@@ -1,15 +1,20 @@
 import { BuildContext } from '../context/BuildContext';
-import { taskEither } from 'fp-ts';
+import {
+	either,
+	function as func,
+	monoid,
+	predicate,
+	readonlyArray,
+	taskEither
+} from 'fp-ts';
 import { match, P } from 'ts-pattern';
 import { isApplication, isHelm } from '../context/projectTypeUtils';
 import path from 'path';
 import { getCwd } from '../command/getCwd';
-import { either, monoid, readonlyArray, function as func } from 'fp-ts';
 import { runCommand } from '../command/runCommand';
-import { predicate } from 'fp-ts';
 import { Stage, StageExecuteFn } from './Stage';
 import { createDockerImageTag } from '../utils/dockerUtils';
-import { getHelmProject } from '../projectReading';
+import { readHelmProject } from '../projectReading';
 import shellEnv from 'shell-env';
 import { CommandType } from '../context/CommandType';
 import { isTerraformOnly } from '../context/commandTypeUtils';
@@ -40,7 +45,7 @@ const getNamespace = (context: BuildContext): either.Either<Error, string> => {
 	}
 
 	return func.pipe(
-		getHelmProject(),
+		readHelmProject(),
 		either.map((_) => _.namespace)
 	);
 };
@@ -54,7 +59,7 @@ const createHelmSetValues = (
 	}
 
 	return func.pipe(
-		getHelmProject(),
+		readHelmProject(),
 		either.map((_) => _.setValues ?? {}),
 		either.map(
 			func.flow(
