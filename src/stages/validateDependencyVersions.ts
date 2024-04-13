@@ -1,6 +1,5 @@
 import { BuildContext } from '../context/BuildContext';
 import {
-	array,
 	either,
 	function as func,
 	option,
@@ -38,13 +37,13 @@ type JsEntries = ReadonlyArray<[string, string]>;
 const getMavenProperties = (pomXml: PomXml): MavenProperties =>
 	func.pipe(
 		option.fromNullable(pomXml.project.properties),
-		option.chain(array.head),
+		option.chain(readonlyArray.head),
 		option.map((props) =>
 			Object.entries(props).reduce(
 				(mvnProps: MavenProperties, [key, value]) => {
 					mvnProps[key] = func.pipe(
 						value,
-						array.head,
+						readonlyArray.head,
 						option.getOrElse(() => '')
 					);
 					return mvnProps;
@@ -58,7 +57,7 @@ const getMavenProperties = (pomXml: PomXml): MavenProperties =>
 const mavenFormatArtifactVersion = (dependency: MavenArtifact): string =>
 	func.pipe(
 		option.fromNullable(dependency.version),
-		option.chain(array.head),
+		option.chain(readonlyArray.head),
 		option.getOrElse(() => '')
 	);
 
@@ -83,8 +82,8 @@ const mavenHasNoSnapshotDependencies = ([
 	const hasNoSnapshotDependencies =
 		func.pipe(
 			pomXml.project.dependencies[0].dependency,
-			array.map(mavenFormatArtifactVersion),
-			array.filter((version) =>
+			readonlyArray.map(mavenFormatArtifactVersion),
+			readonlyArray.filter((version) =>
 				mavenReplaceVersionProperty(mvnProps, version).includes(
 					'SNAPSHOT'
 				)
@@ -93,8 +92,8 @@ const mavenHasNoSnapshotDependencies = ([
 	const hasNoSnapshotPlugins =
 		func.pipe(
 			pomXml.project.build?.[0].plugins?.[0].plugin ?? [],
-			array.map(mavenFormatArtifactVersion),
-			array.filter((version) =>
+			readonlyArray.map(mavenFormatArtifactVersion),
+			readonlyArray.filter((version) =>
 				mavenReplaceVersionProperty(mvnProps, version).includes(
 					'SNAPSHOT'
 				)
