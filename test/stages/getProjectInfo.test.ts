@@ -165,7 +165,7 @@ test.each<GetProjectIfoArgs>([
 
 test('Maven getProjectInfo for monorepo application', async () => {
 	getCwdMock.mockImplementation(() =>
-		path.resolve(baseWorkingDir, 'mavenReleaseApplication')
+		path.resolve(baseWorkingDir, 'mavenReleaseApplicationMonorepo')
 	);
 	const buildContext: BuildContext = {
 		...baseBuildContext,
