@@ -1,4 +1,12 @@
-import { describe, it, expect, beforeEach, vi, MockedFunction } from 'vitest';
+import {
+	describe,
+	it,
+	expect,
+	beforeEach,
+	vi,
+	MockedFunction,
+	test
+} from 'vitest';
 import {
 	searchForDockerReleases,
 	searchForMavenReleases,
@@ -40,6 +48,8 @@ const invalidItem: NexusSearchResultItem = {
 	version: baseBuildContext.projectInfo.version,
 	assets: []
 };
+
+test.fails('Needs to support monorepo');
 
 describe('validateProjectVersionAllowed', () => {
 	beforeEach(() => {

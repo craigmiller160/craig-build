@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi, test } from 'vitest';
 import { runCommandMock } from '../testutils/runCommandMock';
 import { baseWorkingDir } from '../testutils/baseWorkingDir';
 import { getCwdMock } from '../testutils/getCwdMock';
@@ -67,6 +67,8 @@ const runCommandMockImpl = (
 				new Error(`Invalid command: '${command}' Snapshot: ${snapshot}`)
 			)
 		);
+
+test.fails('needs to support monorepo');
 
 describe('validateDependencyVersions', () => {
 	beforeEach(() => {
