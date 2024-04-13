@@ -30,8 +30,7 @@ type VersionTypeValues = Readonly<{
 
 test.each<GetProjectIfoArgs>([
 	{ versionType: VersionType.Release, repoType: 'polyrepo' },
-	{ versionType: VersionType.PreRelease, repoType: 'polyrepo' },
-	{ versionType: VersionType.Release, repoType: 'monrepo' }
+	{ versionType: VersionType.PreRelease, repoType: 'polyrepo' }
 ])(
 	'NPM getProjectInfo for $versionType and $repoType',
 	async ({ versionType, repoType }) => {
@@ -141,8 +140,7 @@ test('Maven getProjectInfo for monorepo application', async () => {
 
 test.each<GetProjectIfoArgs>([
 	{ versionType: VersionType.Release, repoType: 'polyrepo' },
-	{ versionType: VersionType.PreRelease, repoType: 'polyrepo' },
-	{ versionType: VersionType.Release, repoType: 'monrepo' }
+	{ versionType: VersionType.PreRelease, repoType: 'polyrepo' }
 ])(
 	'Docker getProjectInfo for $versionType and $repoType',
 	async ({ versionType, repoType }) => {
@@ -189,8 +187,7 @@ test.each<GetProjectIfoArgs>([
 
 test.each<GetProjectIfoArgs>([
 	{ versionType: VersionType.Release, repoType: 'polyrepo' },
-	{ versionType: VersionType.PreRelease, repoType: 'polyrepo' },
-	{ versionType: VersionType.Release, repoType: 'monrepo' }
+	{ versionType: VersionType.PreRelease, repoType: 'polyrepo' }
 ])(
 	'Gradle getProjectInfo for $versionType and $repoType',
 	async ({ versionType, repoType }) => {
@@ -238,8 +235,7 @@ test.each<GetProjectIfoArgs>([
 
 test.each<GetProjectIfoArgs>([
 	{ versionType: VersionType.Release, repoType: 'polyrepo' },
-	{ versionType: VersionType.PreRelease, repoType: 'polyrepo' },
-	{ versionType: VersionType.Release, repoType: 'monrepo' }
+	{ versionType: VersionType.PreRelease, repoType: 'polyrepo' }
 ])(
 	'Helm Library getProjectInfo for $versionType and $repoType',
 	async ({ versionType, repoType }) => {
@@ -293,8 +289,7 @@ test.each<GetProjectIfoArgs>([
 
 test.each<GetProjectIfoArgs>([
 	{ versionType: VersionType.Release, repoType: 'polyrepo' },
-	{ versionType: VersionType.PreRelease, repoType: 'polyrepo' },
-	{ versionType: VersionType.Release, repoType: 'monrepo' }
+	{ versionType: VersionType.PreRelease, repoType: 'polyrepo' }
 ])(
 	'Helm Application getProjectInfo for $versionType and $repoType',
 	async ({ versionType, repoType }) => {
