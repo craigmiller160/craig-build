@@ -1,0 +1,4 @@
+app_deployment:
+  appName: email-service
+  deployment:
+    image: nexus-docker.craigmiller160.us/email-service:latest
