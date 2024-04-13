@@ -1,4 +1,12 @@
-import { describe, it, expect, beforeEach, vi, MockedFunction } from 'vitest';
+import {
+	describe,
+	it,
+	expect,
+	beforeEach,
+	vi,
+	MockedFunction,
+	test
+} from 'vitest';
 import { osMock } from '../testutils/osMock';
 import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
@@ -47,6 +55,8 @@ const createItem = (version: string): NexusSearchResultItem => ({
 	id: '',
 	assets: []
 });
+
+test.fails('support monorepo');
 
 describe('preparePreReleaseVersion', () => {
 	beforeEach(() => {
