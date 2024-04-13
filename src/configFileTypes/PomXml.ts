@@ -1,32 +1,37 @@
 export type MavenArtifact = Readonly<{
-	groupId: string[];
-	artifactId: string[];
-	version?: string[];
+	groupId: ReadonlyArray<string>;
+	artifactId: ReadonlyArray<string>;
+	version?: ReadonlyArray<string>;
 }>;
 
 export type MavenDependencies = Readonly<{
-	dependency: MavenArtifact[];
+	dependency: ReadonlyArray<MavenArtifact>;
 }>;
 
 export type MavenProperties = Readonly<{
-	[key: string]: string[];
+	[key: string]: ReadonlyArray<string>;
 }>;
 
 export type MavenPlugins = Readonly<{
-	plugin?: MavenArtifact[];
+	plugin?: ReadonlyArray<MavenArtifact>;
 }>;
 
 export type MavenBuild = Readonly<{
-	plugins?: MavenPlugins[];
+	plugins?: ReadonlyArray<MavenPlugins>;
+}>;
+
+export type MavenModules = Readonly<{
+	module: ReadonlyArray<string>;
 }>;
 
 export type PomXml = Readonly<{
 	project: Readonly<{
-		groupId?: string[];
-		artifactId: string[];
-		version?: string[];
-		properties?: MavenProperties[];
-		dependencies?: MavenDependencies[];
-		build?: MavenBuild[];
+		groupId?: ReadonlyArray<string>;
+		artifactId: ReadonlyArray<string>;
+		version?: ReadonlyArray<string>;
+		properties?: ReadonlyArray<MavenProperties>;
+		dependencies?: ReadonlyArray<MavenDependencies>;
+		build?: ReadonlyArray<MavenBuild>;
+		modules?: ReadonlyArray<MavenModules>;
 	}>;
 }>;
