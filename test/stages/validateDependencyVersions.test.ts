@@ -92,7 +92,37 @@ test.each<MavenDependencyValidationScenario>([
 	'invalid dependencies',
 	'invalid plugins'
 ])('validating dependencies for maven. Scenario: %s', async (scenario) => {
-	throw new Error();
+	const workingDir = match(scenario)
+		.with('all valid', () => 'mavenReleaseApplication')
+		.with(
+			'invalid dependencies',
+			() => 'mavenReleaseApplicationBadDependency'
+		)
+		.with('invalid plugins', () => 'mavenReleaseApplicationBadPlugin')
+		.exhaustive();
+	getCwdMock.mockImplementation(() =>
+		path.resolve(baseWorkingDir, workingDir)
+	);
+
+	const buildContext: BuildContext = {
+		...baseBuildContext,
+		projectType: ProjectType.MavenApplication,
+		projectInfo: {
+			...baseBuildContext.projectInfo,
+			versionType: VersionType.Release
+		}
+	};
+
+	const result = await validateDependencyVersions.execute(buildContext)();
+	if (scenario === 'all valid') {
+		expect(result).toEqualRight(buildContext);
+	} else {
+		expect(result).toEqualLeft(
+			new Error(
+				'Cannot have SNAPSHOT dependencies or plugins in Maven release'
+			)
+		);
+	}
 });
 
 test.each<GradleDependencyValidationScenario>([
