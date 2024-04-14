@@ -1,11 +1,11 @@
 import {
-	describe,
-	it,
-	expect,
 	beforeEach,
-	vi,
+	describe,
+	expect,
+	it,
 	MockedFunction,
-	test
+	test,
+	vi
 } from 'vitest';
 import {
 	searchForDockerReleases,
@@ -20,6 +20,7 @@ import { validateProjectVersionAllowed } from '../../src/stages/validateProjectV
 import { NexusSearchResultItem } from '../../src/services/NexusSearchResult';
 import { taskEither } from 'fp-ts';
 import { VersionType } from '../../src/context/VersionType';
+import { RepoType } from '../../src/context/ProjectInfo';
 
 vi.mock('../../src/services/NexusRepoApi', () => ({
 	searchForDockerReleases: vi.fn(),
@@ -49,13 +50,65 @@ const invalidItem: NexusSearchResultItem = {
 	assets: []
 };
 
-test.fails('Needs to support monorepo');
+type ValidationArgs = Readonly<{
+	projectType: ProjectType;
+	repoType: RepoType;
+	hasConflicts: boolean;
+}>;
+
+beforeEach(() => {
+	vi.resetAllMocks();
+});
+
+test.each<ValidationArgs>([
+	{
+		projectType: ProjectType.NpmApplication,
+		repoType: 'polyrepo',
+		hasConflicts: true
+	},
+	{
+		projectType: ProjectType.NpmApplication,
+		repoType: 'polyrepo',
+		hasConflicts: false
+	},
+	{
+		projectType: ProjectType.NpmApplication,
+		repoType: 'monorepo',
+		hasConflicts: true
+	},
+	{
+		projectType: ProjectType.NpmApplication,
+		repoType: 'monorepo',
+		hasConflicts: false
+	},
+	{
+		projectType: ProjectType.MavenApplication,
+		repoType: 'polyrepo',
+		hasConflicts: true
+	},
+	{
+		projectType: ProjectType.MavenApplication,
+		repoType: 'polyrepo',
+		hasConflicts: false
+	},
+	{
+		projectType: ProjectType.MavenApplication,
+		repoType: 'monorepo',
+		hasConflicts: true
+	},
+	{
+		projectType: ProjectType.MavenApplication,
+		repoType: 'monorepo',
+		hasConflicts: false
+	}
+])(
+	'validateProjectVersionAllowed for $projectType and $repoType when has conflicts = $hasConflicts',
+	() => {
+		throw new Error();
+	}
+);
 
 describe('validateProjectVersionAllowed', () => {
-	beforeEach(() => {
-		vi.resetAllMocks();
-	});
-
 	it('allows npm release version with no conflicts', async () => {
 		searchForNpmReleasesMock.mockImplementation(() =>
 			taskEither.right({ items: [] })
