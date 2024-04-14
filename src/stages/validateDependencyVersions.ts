@@ -18,7 +18,7 @@ import {
 	isNpm
 } from '../context/projectTypeUtils';
 import { getCwd } from '../command/getCwd';
-import { MavenArtifact, PomXml } from '../configFileTypes/PomXml';
+import { MavenArtifact, MavenModules, PomXml } from '../configFileTypes/PomXml';
 import { PackageJson } from '../configFileTypes/PackageJson';
 import { isRelease } from '../context/projectInfoUtils';
 import { Stage, StageExecuteFn } from './Stage';
@@ -27,6 +27,7 @@ import { isFullBuild } from '../context/commandTypeUtils';
 import { getRawProjectData } from '../projectReading';
 import { runCommand } from '../command/runCommand';
 import { semverSatisifies } from '../utils/semverUtils';
+import path from 'path';
 
 const MAVEN_PROPERTY_REGEX = /\${.*}/;
 
@@ -103,11 +104,12 @@ const mavenHasNoSnapshotDependencies = ([
 	return hasNoSnapshotDependencies && hasNoSnapshotPlugins;
 };
 
-const validateMavenReleaseDependencies = (
-	context: BuildContext
+const validateMavenPomXml = (
+	context: BuildContext,
+	cwd: string
 ): taskEither.TaskEither<Error, BuildContext> =>
 	func.pipe(
-		getRawProjectData<PomXml>(context.projectType),
+		getRawProjectData<PomXml>(context.projectType, cwd),
 		taskEither.map(
 			(pomXml): PomAndProps => [pomXml, getMavenProperties(pomXml)]
 		),
@@ -120,6 +122,32 @@ const validateMavenReleaseDependencies = (
 		),
 		taskEither.map(() => context)
 	);
+
+const validateMavenReleaseDependencies = (
+	context: BuildContext
+): taskEither.TaskEither<Error, BuildContext> => {
+	const cwd = getCwd();
+	return func.pipe(
+		getRawProjectData<PomXml>(context.projectType, cwd),
+		taskEither.flatMap((pomXml) => {
+			if (pomXml.project.modules) {
+				return func.pipe(
+					pomXml.project.modules,
+					readonlyArray.head,
+					option.getOrElse((): MavenModules => ({ module: [] })),
+					(m) => m.module,
+					readonlyArray.map((module) => path.join(cwd, module)),
+					readonlyArray.map((modulePath) =>
+						validateMavenPomXml(context, modulePath)
+					),
+					taskEither.sequenceArray,
+					taskEither.map(() => context)
+				);
+			}
+			return validateMavenPomXml(context, cwd);
+		})
+	);
+};
 
 const entries = (obj?: { [key: string]: string }): JsEntries =>
 	func.pipe(
