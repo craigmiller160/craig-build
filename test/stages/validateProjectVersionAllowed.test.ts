@@ -155,6 +155,11 @@ test.each<ValidationArgs>([
 									...baseBuildContext.projectInfo,
 									repoType,
 									versionType: VersionType.Release
+								},
+								{
+									...baseBuildContext.projectInfo,
+									repoType,
+									versionType: VersionType.Release
 								}
 							]
 						: undefined
