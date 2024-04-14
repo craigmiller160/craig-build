@@ -52,6 +52,10 @@ const mavenMonorepoScenarios: ReadonlyArray<MavenDependencyValidationScenario> =
 		'invalid child dependencies',
 		'invalid child plugins'
 	];
+const mavenValidScenarios: ReadonlyArray<MavenDependencyValidationScenario> = [
+	'all valid',
+	'all valid with children'
+];
 
 const gradleRunCommandMockImpl = (
 	command: string,
@@ -133,7 +137,7 @@ test.each<MavenDependencyValidationScenario>([
 	};
 
 	const result = await validateDependencyVersions.execute(buildContext)();
-	if (scenario === 'all valid') {
+	if (mavenValidScenarios.includes(scenario)) {
 		expect(result).toEqualRight(buildContext);
 	} else {
 		expect(result).toEqualLeft(
