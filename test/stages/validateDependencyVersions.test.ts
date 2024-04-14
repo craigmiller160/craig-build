@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi, test } from 'vitest';
+import { beforeEach, describe, expect, it, test, vi } from 'vitest';
 import { runCommandMock } from '../testutils/runCommandMock';
 import { baseWorkingDir } from '../testutils/baseWorkingDir';
 import { getCwdMock } from '../testutils/getCwdMock';
@@ -9,10 +9,10 @@ import { ProjectType } from '../../src/context/ProjectType';
 import { validateDependencyVersions } from '../../src/stages/validateDependencyVersions';
 import { VersionType } from '../../src/context/VersionType';
 import '../testutils/readGradleProjectMock';
-import { either } from 'fp-ts';
-import { taskEither } from 'fp-ts';
+import { either, taskEither } from 'fp-ts';
 import { match, P } from 'ts-pattern';
 import fs from 'fs';
+import { RepoType } from '../../src/context/ProjectInfo';
 
 const baseBuildContext = createBuildContext();
 
@@ -68,13 +68,47 @@ const runCommandMockImpl = (
 			)
 		);
 
-test.fails('needs to support monorepo');
+beforeEach(() => {
+	vi.resetAllMocks();
+});
+
+type ValidateDependencyVersionArgs = Readonly<{
+	projectType: ProjectType;
+	repoType: RepoType;
+}>;
+
+type ProjectAndRepoType = Readonly<{
+	projectType: ProjectType;
+	repoType: RepoType;
+}>;
+
+test.each<ValidateDependencyVersionArgs>([
+	{ projectType: ProjectType.MavenApplication, repoType: 'polyrepo' },
+	{ projectType: ProjectType.MavenApplication, repoType: 'monorepo' }
+])(
+	'validateDependencyVersions for $projectType and $repoType',
+	async ({ projectType, repoType }) => {
+		const workingDir = match<ProjectAndRepoType, string>({
+			projectType,
+			repoType
+		})
+			.with(
+				{
+					projectType: ProjectType.MavenApplication,
+					repoType: 'polyrepo'
+				},
+				() => 'mavenReleaseApplication'
+			)
+			.run();
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDir, workingDir)
+		);
+
+		throw new Error();
+	}
+);
 
 describe('validateDependencyVersions', () => {
-	beforeEach(() => {
-		vi.resetAllMocks();
-	});
-
 	it('all release dependencies and plugins are valid for maven project', async () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(baseWorkingDir, 'mavenReleaseApplication')
