@@ -125,6 +125,26 @@ test.each<ValidationArgs>([
 		projectType: ProjectType.GradleApplication,
 		repoType: 'monorepo',
 		hasConflicts: false
+	},
+	{
+		projectType: ProjectType.DockerApplication,
+		repoType: 'polyrepo',
+		hasConflicts: true
+	},
+	{
+		projectType: ProjectType.DockerApplication,
+		repoType: 'polyrepo',
+		hasConflicts: false
+	},
+	{
+		projectType: ProjectType.DockerApplication,
+		repoType: 'monorepo',
+		hasConflicts: true
+	},
+	{
+		projectType: ProjectType.DockerApplication,
+		repoType: 'monorepo',
+		hasConflicts: false
 	}
 ])(
 	'validateProjectVersionAllowed for $projectType and $repoType when has conflicts = $hasConflicts',
@@ -188,42 +208,6 @@ test.each<ValidationArgs>([
 );
 
 describe('validateProjectVersionAllowed', () => {
-	it('allows gradle kotlin release version with no conflicts', async () => {
-		searchForMavenReleasesMock.mockImplementation(() =>
-			taskEither.right({ items: [] })
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.GradleApplication,
-			projectInfo: {
-				...baseBuildContext.projectInfo,
-				versionType: VersionType.Release
-			}
-		};
-
-		const result =
-			await validateProjectVersionAllowed.execute(buildContext)();
-		expect(result).toEqualRight(buildContext);
-	});
-
-	it('allows docker release version with no conflicts', async () => {
-		searchForDockerReleasesMock.mockImplementation(() =>
-			taskEither.right({ items: [] })
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.DockerApplication,
-			projectInfo: {
-				...baseBuildContext.projectInfo,
-				versionType: VersionType.Release
-			}
-		};
-
-		const result =
-			await validateProjectVersionAllowed.execute(buildContext)();
-		expect(result).toEqualRight(buildContext);
-	});
-
 	it('rejects npm release version with conflict', async () => {
 		searchForNpmReleasesMock.mockImplementation(() =>
 			taskEither.right({ items: [invalidItem] })
