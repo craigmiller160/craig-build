@@ -80,9 +80,13 @@ beforeEach(() => {
  */
 
 type DependencyValidationScenario = 'all valid' | 'invalid dependencies';
-type MavenDependencyValidationScenario =
+type MonorepoDependencyValidationScenario =
 	| DependencyValidationScenario
-	| 'invalid plugins';
+	| 'invalid child dependencies';
+type MavenDependencyValidationScenario =
+	| MonorepoDependencyValidationScenario
+	| 'invalid plugins'
+	| 'invalid child plugins';
 type GradleDependencyValidationScenario =
 	| MavenDependencyValidationScenario
 	| 'unresolved dependencies';
@@ -99,6 +103,12 @@ test.each<MavenDependencyValidationScenario>([
 			() => 'mavenReleaseApplicationBadDependency'
 		)
 		.with('invalid plugins', () => 'mavenReleaseApplicationBadPlugin')
+		.with('invalid child dependencies', () => {
+			throw new Error();
+		})
+		.with('invalid child plugins', () => {
+			throw new Error();
+		})
 		.exhaustive();
 	getCwdMock.mockImplementation(() =>
 		path.resolve(baseWorkingDir, workingDir)
