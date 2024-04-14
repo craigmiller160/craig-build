@@ -89,7 +89,8 @@ type MavenDependencyValidationScenario =
 	| 'invalid plugins'
 	| 'invalid child plugins';
 type GradleDependencyValidationScenario =
-	| MavenDependencyValidationScenario
+	| DependencyValidationScenario
+	| 'invalid plugins'
 	| 'unresolved dependencies';
 
 test.each<MavenDependencyValidationScenario>([
@@ -148,11 +149,52 @@ test.each<GradleDependencyValidationScenario>([
 	'invalid plugins',
 	'unresolved dependencies'
 ])('validating dependencies for gradle. Scenario: %s', async (scenario) => {
-	throw new Error();
+	const workingDir = match(scenario)
+		.with('all valid', () => 'gradleKotlinReleaseApplication')
+		.with(
+			'invalid dependencies',
+			() => 'gradleKotlinReleaseApplicationBadDependency'
+		)
+		.with(
+			'invalid plugins',
+			() => 'gradleKotlinReleaseApplicationBadPlugin'
+		)
+		.with(
+			'unresolved dependencies',
+			() => 'gradleKotlinReleaseApplicationUnresolvedDependency'
+		)
+		.exhaustive();
+	getCwdMock.mockImplementation(() =>
+		path.resolve(baseWorkingDir, workingDir)
+	);
+
+	const buildContext: BuildContext = {
+		...baseBuildContext,
+		projectType: ProjectType.GradleApplication,
+		projectInfo: {
+			...baseBuildContext.projectInfo,
+			versionType: VersionType.Release
+		}
+	};
+	const result = await validateDependencyVersions.execute(buildContext)();
+	if (scenario === 'all valid') {
+		expect(result).toEqualRight(buildContext);
+	} else if (scenario === 'unresolved dependencies') {
+		expect(result).toBeLeft();
+		const error = (result as either.Left<Error>).left;
+		expect(error.message).toMatch(
+			/UnresolvedDependencyException.*spring-web-utils/
+		);
+	} else {
+		expect(result).toEqualLeft(
+			new Error(
+				'Cannot have SNAPSHOT dependencies or plugins in Gradle release'
+			)
+		);
+	}
 });
 
 describe('validateDependencyVersions', () => {
-
 	it('all release dependencies and plugins are valid for gradle kotlin project', async () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(baseWorkingDir, 'gradleKotlinReleaseApplication')
