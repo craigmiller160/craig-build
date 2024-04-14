@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, test, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { runCommandMock } from '../testutils/runCommandMock';
 import { baseWorkingDir } from '../testutils/baseWorkingDir';
 import { getCwdMock } from '../testutils/getCwdMock';
@@ -71,42 +71,6 @@ const runCommandMockImpl = (
 beforeEach(() => {
 	vi.resetAllMocks();
 });
-
-type ValidateDependencyVersionArgs = Readonly<{
-	projectType: ProjectType;
-	repoType: RepoType;
-}>;
-
-type ProjectAndRepoType = Readonly<{
-	projectType: ProjectType;
-	repoType: RepoType;
-}>;
-
-test.each<ValidateDependencyVersionArgs>([
-	{ projectType: ProjectType.MavenApplication, repoType: 'polyrepo' },
-	{ projectType: ProjectType.MavenApplication, repoType: 'monorepo' }
-])(
-	'validateDependencyVersions for $projectType and $repoType',
-	async ({ projectType, repoType }) => {
-		const workingDir = match<ProjectAndRepoType, string>({
-			projectType,
-			repoType
-		})
-			.with(
-				{
-					projectType: ProjectType.MavenApplication,
-					repoType: 'polyrepo'
-				},
-				() => 'mavenReleaseApplication'
-			)
-			.run();
-		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDir, workingDir)
-		);
-
-		throw new Error();
-	}
-);
 
 describe('validateDependencyVersions', () => {
 	it('all release dependencies and plugins are valid for maven project', async () => {
