@@ -225,40 +225,6 @@ test.each<DependencyValidationScenario>(['all valid', 'invalid dependencies'])(
 );
 
 describe('validateDependencyVersions', () => {
-	it('all release dependencies are valid for npm project', async () => {
-		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDir, 'npmReleaseApplication')
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.NpmApplication,
-			projectInfo: {
-				...baseBuildContext.projectInfo,
-				versionType: VersionType.Release
-			}
-		};
-		const result = await validateDependencyVersions.execute(buildContext)();
-		expect(result).toEqualRight(buildContext);
-	});
-
-	it('invalid release dependencies for npm project', async () => {
-		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDir, 'npmReleaseApplicationBadDependency')
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.NpmApplication,
-			projectInfo: {
-				...baseBuildContext.projectInfo,
-				versionType: VersionType.Release
-			}
-		};
-		const result = await validateDependencyVersions.execute(buildContext)();
-		expect(result).toEqualLeft(
-			new Error('Cannot have beta dependencies in NPM release')
-		);
-	});
-
 	describe('npm peer dependencies', () => {
 		const npmPeersRoot = path.join(baseWorkingDir, '__npmPeers__');
 
