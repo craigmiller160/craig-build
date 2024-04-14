@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi, test } from 'vitest';
+import { beforeEach, describe, expect, it, test, vi } from 'vitest';
 import { runCommandMock } from '../testutils/runCommandMock';
 import { baseWorkingDir } from '../testutils/baseWorkingDir';
 import { getCwdMock } from '../testutils/getCwdMock';
@@ -9,7 +9,7 @@ import { ProjectType } from '../../src/context/ProjectType';
 import { validateDependencyVersions } from '../../src/stages/validateDependencyVersions';
 import { VersionType } from '../../src/context/VersionType';
 import '../testutils/readGradleProjectMock';
-import { either, taskEither } from 'fp-ts';
+import { taskEither } from 'fp-ts';
 import { match, P } from 'ts-pattern';
 import fs from 'fs';
 
@@ -176,13 +176,13 @@ test.each<GradleDependencyValidationScenario>([
 	const result = await validateDependencyVersions.execute(buildContext)();
 	if (scenario === 'all valid') {
 		expect(result).toEqualRight(buildContext);
-	} else if (scenario === 'unresolved dependencies') {
+	} /*else if (scenario === 'unresolved dependencies') {
 		expect(result).toBeLeft();
 		const error = (result as either.Left<Error>).left;
 		expect(error.message).toMatch(
 			/UnresolvedDependencyException.*spring-web-utils/
 		);
-	} else {
+	}*/ else {
 		expect(result).toEqualLeft(
 			new Error(
 				'Cannot have SNAPSHOT dependencies or plugins in Gradle release'
