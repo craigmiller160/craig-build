@@ -29,7 +29,7 @@ export const kubernetesOnly_release_mavenApplication_terraform: ExpectedExecutio
 		[getProjectType.name]: true,
 		[getProjectInfo.name]: true,
 		[checkForTerraformScript.name]: true,
-		[validateMonorepoVersions.name]: true,
+		[validateMonorepoVersions.name]: false,
 		[validateDependencyVersions.name]: false,
 		[validateProjectVersionAllowed.name]: false,
 		// [validateKubernetesConfig.name]: true,

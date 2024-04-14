@@ -27,7 +27,7 @@ export const dockerOnly_release_helmLibrary: ExpectedExecution = {
 	[checkForUncommittedChanges.name]: true,
 	[getProjectType.name]: true,
 	[getProjectInfo.name]: true,
-	[validateMonorepoVersions.name]: true,
+	[validateMonorepoVersions.name]: false,
 	[checkForTerraformScript.name]: false,
 	[validateDependencyVersions.name]: false,
 	[validateProjectVersionAllowed.name]: false,

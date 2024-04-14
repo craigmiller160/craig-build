@@ -28,7 +28,7 @@ export const dockerOnly_release_dockerImage: ExpectedExecution = {
 	[getProjectType.name]: true,
 	[getProjectInfo.name]: true,
 	[checkForTerraformScript.name]: false,
-	[validateMonorepoVersions.name]: true,
+	[validateMonorepoVersions.name]: false,
 	[validateDependencyVersions.name]: false,
 	[validateProjectVersionAllowed.name]: true,
 	// [validateKubernetesConfig.name]: false,

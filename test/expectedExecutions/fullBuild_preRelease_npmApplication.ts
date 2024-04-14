@@ -28,7 +28,7 @@ export const fullBuild_preRelease_npmApplication: ExpectedExecution = {
 	[getProjectType.name]: true,
 	[getProjectInfo.name]: true,
 	[checkForTerraformScript.name]: true,
-	[validateMonorepoVersions.name]: true,
+	[validateMonorepoVersions.name]: false,
 	[validateDependencyVersions.name]: false,
 	[validateProjectVersionAllowed.name]: false,
 	// [validateKubernetesConfig.name]: true,

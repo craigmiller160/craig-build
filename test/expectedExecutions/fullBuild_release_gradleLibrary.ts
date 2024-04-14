@@ -28,7 +28,7 @@ export const fullBuild_release_gradleLibrary: ExpectedExecution = {
 	[getProjectType.name]: true,
 	[getProjectInfo.name]: true,
 	[checkForTerraformScript.name]: false,
-	[validateMonorepoVersions.name]: true,
+	[validateMonorepoVersions.name]: false,
 	[validateDependencyVersions.name]: true,
 	[validateProjectVersionAllowed.name]: true,
 	// [validateKubernetesConfig.name]: false,
