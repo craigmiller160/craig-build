@@ -17,7 +17,7 @@ import { taskEither } from 'fp-ts';
 import { VersionType } from '../../src/context/VersionType';
 import { RepoType } from '../../src/context/ProjectInfo';
 import { match } from 'ts-pattern';
-import { isDocker, isMaven, isNpm } from '../../src/context/projectTypeUtils';
+import { isDocker, isJvm, isNpm } from '../../src/context/projectTypeUtils';
 
 vi.mock('../../src/services/NexusRepoApi', () => ({
 	searchForDockerReleases: vi.fn(),
@@ -170,7 +170,7 @@ test.each<ValidationArgs>([
 				) => taskEither.TaskEither<Error, NexusSearchResult>
 			>
 		>(projectType)
-			.when(isMaven, () => searchForMavenReleasesMock)
+			.when(isJvm, () => searchForMavenReleasesMock)
 			.when(isNpm, () => searchForNpmReleasesMock)
 			.when(isDocker, () => searchForDockerReleasesMock)
 			.run();
