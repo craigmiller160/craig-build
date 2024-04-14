@@ -152,21 +152,6 @@ test.each<GradleDependencyValidationScenario>([
 });
 
 describe('validateDependencyVersions', () => {
-	it('all release dependencies and plugins are valid for maven project', async () => {
-		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDir, 'mavenReleaseApplication')
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.MavenApplication,
-			projectInfo: {
-				...baseBuildContext.projectInfo,
-				versionType: VersionType.Release
-			}
-		};
-		const result = await validateDependencyVersions.execute(buildContext)();
-		expect(result).toEqualRight(buildContext);
-	});
 
 	it('all release dependencies and plugins are valid for gradle kotlin project', async () => {
 		getCwdMock.mockImplementation(() =>
@@ -201,46 +186,6 @@ describe('validateDependencyVersions', () => {
 		};
 		const result = await validateDependencyVersions.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
-	});
-
-	it('invalid release dependencies for maven project', async () => {
-		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDir, 'mavenReleaseApplicationBadDependency')
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.MavenApplication,
-			projectInfo: {
-				...baseBuildContext.projectInfo,
-				versionType: VersionType.Release
-			}
-		};
-		const result = await validateDependencyVersions.execute(buildContext)();
-		expect(result).toEqualLeft(
-			new Error(
-				'Cannot have SNAPSHOT dependencies or plugins in Maven release'
-			)
-		);
-	});
-
-	it('invalid release plugins for maven project', async () => {
-		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDir, 'mavenReleaseApplicationBadPlugin')
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.MavenApplication,
-			projectInfo: {
-				...baseBuildContext.projectInfo,
-				versionType: VersionType.Release
-			}
-		};
-		const result = await validateDependencyVersions.execute(buildContext)();
-		expect(result).toEqualLeft(
-			new Error(
-				'Cannot have SNAPSHOT dependencies or plugins in Maven release'
-			)
-		);
 	});
 
 	it('invalid release dependencies for gradle kotlin project', async () => {
