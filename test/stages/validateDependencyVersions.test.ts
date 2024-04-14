@@ -103,9 +103,7 @@ test.each<MavenDependencyValidationScenario>([
 ])('validating dependencies for maven. Scenario: %s', async (scenario) => {
 	const workingDir = match(scenario)
 		.with('all valid', () => 'mavenReleaseApplication')
-		.with('all valid with children', () => {
-			throw new Error();
-		})
+		.with('all valid with children', () => 'mavenReleaseLibraryMonorepo')
 		.with(
 			'invalid dependencies',
 			() => 'mavenReleaseApplicationBadDependency'
