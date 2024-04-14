@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi, test } from 'vitest';
 import { runCommandMock } from '../testutils/runCommandMock';
 import { baseWorkingDir } from '../testutils/baseWorkingDir';
 import { getCwdMock } from '../testutils/getCwdMock';
@@ -12,7 +12,6 @@ import '../testutils/readGradleProjectMock';
 import { either, taskEither } from 'fp-ts';
 import { match, P } from 'ts-pattern';
 import fs from 'fs';
-import { RepoType } from '../../src/context/ProjectInfo';
 
 const baseBuildContext = createBuildContext();
 
@@ -70,6 +69,39 @@ const runCommandMockImpl = (
 
 beforeEach(() => {
 	vi.resetAllMocks();
+});
+
+/**
+ * Maven & Gradle
+ * 1. Dependencies & Plugins Valid
+ * 2. Invalid Dependencies
+ * 3. Invalid Plugins
+ * 4. Gradle Only - Unresolved Dependency
+ */
+
+type DependencyValidationScenario = 'all valid' | 'invalid dependencies';
+type MavenDependencyValidationScenario =
+	| DependencyValidationScenario
+	| 'invalid plugins';
+type GradleDependencyValidationScenario =
+	| MavenDependencyValidationScenario
+	| 'unresolved dependencies';
+
+test.each<MavenDependencyValidationScenario>([
+	'all valid',
+	'invalid dependencies',
+	'invalid plugins'
+])('validating dependencies for maven. Scenario: %s', async (scenario) => {
+	throw new Error();
+});
+
+test.each<GradleDependencyValidationScenario>([
+	'all valid',
+	'invalid dependencies',
+	'invalid plugins',
+	'unresolved dependencies'
+])('validating dependencies for gradle. Scenario: %s', async (scenario) => {
+	throw new Error();
 });
 
 describe('validateDependencyVersions', () => {
