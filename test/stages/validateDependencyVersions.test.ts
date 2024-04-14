@@ -231,6 +231,10 @@ type NpmPeerValidationScenario =
 	| 'peer lower than main dependency'
 	| 'peer same as main dependency'
 	| 'beta peer higher than release main dependency';
+const validScenarios: ReadonlyArray<NpmPeerValidationScenario> = [
+	'valid beta for pre-release',
+	'peer same as main dependency'
+];
 
 test.each<NpmPeerValidationScenario>([
 	'invalid beta for release',
@@ -276,11 +280,17 @@ test.each<NpmPeerValidationScenario>([
 		}
 	};
 	const result = await validateDependencyVersions.execute(buildContext)();
-	if (scenario === 'valid beta for pre-release') {
+	if (validScenarios.includes(scenario)) {
 		expect(result).toEqualRight(buildContext);
 	} else if (scenario === 'invalid beta for release') {
 		expect(result).toEqualLeft(
 			new Error('Cannot have beta dependencies in NPM release')
+		);
+	} else {
+		expect(result).toEqualLeft(
+			new Error(
+				"Dependency @craigmiller160/foo-bar does not satisfy project's peer range. Version: ^2.0.0 Range: ^1.0.0"
+			)
 		);
 	}
 });
