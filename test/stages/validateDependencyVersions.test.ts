@@ -235,6 +235,10 @@ const validScenarios: ReadonlyArray<NpmPeerValidationScenario> = [
 	'valid beta for pre-release',
 	'peer same as main dependency'
 ];
+const preReleaseScenarios: ReadonlyArray<NpmPeerValidationScenario> = [
+	'beta peer higher than release main dependency',
+	'valid beta for pre-release'
+];
 
 test.each<NpmPeerValidationScenario>([
 	'invalid beta for release',
@@ -273,10 +277,9 @@ test.each<NpmPeerValidationScenario>([
 		projectType: ProjectType.NpmApplication,
 		projectInfo: {
 			...baseBuildContext.projectInfo,
-			versionType:
-				scenario === 'valid beta for pre-release'
-					? VersionType.PreRelease
-					: VersionType.Release
+			versionType: preReleaseScenarios.includes(scenario)
+				? VersionType.PreRelease
+				: VersionType.Release
 		}
 	};
 	const result = await validateDependencyVersions.execute(buildContext)();
