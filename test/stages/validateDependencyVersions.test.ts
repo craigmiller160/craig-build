@@ -224,6 +224,25 @@ test.each<DependencyValidationScenario>(['all valid', 'invalid dependencies'])(
 	}
 );
 
+type NpmPeerValidationScenario =
+	| 'invalid beta for release'
+	| 'valid beta for pre-release'
+	| 'peer lower than dev dependency'
+	| 'peer lower than main dependency'
+	| 'peer same as main dependency'
+	| 'beta peer higher than release main dependency';
+
+test.each<NpmPeerValidationScenario>([
+	'invalid beta for release',
+	'valid beta for pre-release',
+	'peer lower than dev dependency',
+	'peer lower than main dependency',
+	'peer same as main dependency',
+	'beta peer higher than release main dependency'
+])('validating npm peer dependencies. Scenario: %s', async (scenario) => {
+	throw new Error();
+});
+
 describe('validateDependencyVersions', () => {
 	describe('npm peer dependencies', () => {
 		const npmPeersRoot = path.join(baseWorkingDir, '__npmPeers__');
