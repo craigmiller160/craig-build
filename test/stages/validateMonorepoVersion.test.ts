@@ -7,3 +7,5 @@ test.each<RepoType>(['polyrepo', 'monorepo'])(
 		throw new Error();
 	}
 );
+
+test.fails('validateMonorepoVersion executes');
