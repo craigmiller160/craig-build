@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, test, vi } from 'vitest';
+import { beforeEach, expect, test, vi } from 'vitest';
 import { runCommandMock } from '../testutils/runCommandMock';
 import { baseWorkingDir } from '../testutils/baseWorkingDir';
 import { getCwdMock } from '../testutils/getCwdMock';
@@ -9,7 +9,7 @@ import { ProjectType } from '../../src/context/ProjectType';
 import { validateDependencyVersions } from '../../src/stages/validateDependencyVersions';
 import { VersionType } from '../../src/context/VersionType';
 import '../testutils/readGradleProjectMock';
-import { taskEither, either } from 'fp-ts';
+import { either, taskEither } from 'fp-ts';
 import { match, P } from 'ts-pattern';
 import fs from 'fs';
 
@@ -298,140 +298,4 @@ test.each<NpmPeerValidationScenario>([
 			)
 		);
 	}
-});
-
-describe('validateDependencyVersions', () => {
-	describe('npm peer dependencies', () => {
-		const npmPeersRoot = path.join(baseWorkingDir, '__npmPeers__');
-
-		it('invalid beta for release project', async () => {
-			getCwdMock.mockImplementation(() =>
-				path.resolve(npmPeersRoot, 'invalidBetaForRelease')
-			);
-			const buildContext: BuildContext = {
-				...baseBuildContext,
-				projectType: ProjectType.NpmApplication,
-				projectInfo: {
-					...baseBuildContext.projectInfo,
-					versionType: VersionType.Release
-				}
-			};
-
-			const result =
-				await validateDependencyVersions.execute(buildContext)();
-			expect(result).toEqualLeft(
-				new Error('Cannot have beta dependencies in NPM release')
-			);
-		});
-
-		it('valid beta for pre-release project', async () => {
-			getCwdMock.mockImplementation(() =>
-				path.resolve(npmPeersRoot, 'validBetaForPreRelease')
-			);
-			const buildContext: BuildContext = {
-				...baseBuildContext,
-				projectType: ProjectType.NpmApplication,
-				projectInfo: {
-					...baseBuildContext.projectInfo,
-					versionType: VersionType.PreRelease,
-					version: '1.0.0-beta'
-				}
-			};
-
-			const result =
-				await validateDependencyVersions.execute(buildContext)();
-			expect(result).toEqualRight(buildContext);
-		});
-
-		it('peer dependency version lower than dev dependency version', async () => {
-			getCwdMock.mockImplementation(() =>
-				path.resolve(
-					npmPeersRoot,
-					'peerDependencyLowerThanDevDependency'
-				)
-			);
-			const buildContext: BuildContext = {
-				...baseBuildContext,
-				projectType: ProjectType.NpmApplication,
-				projectInfo: {
-					...baseBuildContext.projectInfo,
-					versionType: VersionType.Release
-				}
-			};
-
-			const result =
-				await validateDependencyVersions.execute(buildContext)();
-			expect(result).toEqualLeft(
-				new Error(
-					"Dependency @craigmiller160/foo-bar does not satisfy project's peer range. Version: ^2.0.0 Range: ^1.0.0"
-				)
-			);
-		});
-
-		it('peer dependency version lower than main dependency version', async () => {
-			getCwdMock.mockImplementation(() =>
-				path.resolve(
-					npmPeersRoot,
-					'peerDependencyLowerThanMainDependency'
-				)
-			);
-			const buildContext: BuildContext = {
-				...baseBuildContext,
-				projectType: ProjectType.NpmApplication,
-				projectInfo: {
-					...baseBuildContext.projectInfo,
-					versionType: VersionType.Release
-				}
-			};
-
-			const result =
-				await validateDependencyVersions.execute(buildContext)();
-			expect(result).toEqualLeft(
-				new Error(
-					"Dependency @craigmiller160/foo-bar does not satisfy project's peer range. Version: ^2.0.0 Range: ^1.0.0"
-				)
-			);
-		});
-
-		it('peer dependency version the same as main dependency version', async () => {
-			getCwdMock.mockImplementation(() =>
-				path.resolve(npmPeersRoot, 'peerDependencySameAsMainDependency')
-			);
-			const buildContext: BuildContext = {
-				...baseBuildContext,
-				projectType: ProjectType.NpmApplication,
-				projectInfo: {
-					...baseBuildContext.projectInfo,
-					versionType: VersionType.Release
-				}
-			};
-
-			const result =
-				await validateDependencyVersions.execute(buildContext)();
-			expect(result).toBeRight();
-		});
-
-		it('beta peer dependency is higher than release main dependency', async () => {
-			getCwdMock.mockImplementation(() =>
-				path.resolve(npmPeersRoot, 'betaPeerIsHigherThanRelease')
-			);
-			const buildContext: BuildContext = {
-				...baseBuildContext,
-				projectType: ProjectType.NpmApplication,
-				projectInfo: {
-					...baseBuildContext.projectInfo,
-					versionType: VersionType.PreRelease,
-					version: '1.0.0-beta'
-				}
-			};
-
-			const result =
-				await validateDependencyVersions.execute(buildContext)();
-			expect(result).toEqualLeft(
-				new Error(
-					"Dependency @craigmiller160/foo-bar does not satisfy project's peer range. Version: ^1.0.0 Range: ^1.1.0-beta"
-				)
-			);
-		});
-	});
 });
