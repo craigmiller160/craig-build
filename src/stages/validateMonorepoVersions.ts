@@ -4,5 +4,5 @@ import { Stage } from './Stage';
 export const validateMonorepoVersions: Stage = {
 	name: 'Validate Monorepo Versions',
 	execute: (c) => taskEither.right(c),
-	shouldStageExecute: () => false
+	shouldStageExecute: () => true
 };
