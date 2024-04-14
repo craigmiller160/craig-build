@@ -1,12 +1,4 @@
-import {
-	beforeEach,
-	describe,
-	expect,
-	it,
-	MockedFunction,
-	test,
-	vi
-} from 'vitest';
+import { beforeEach, expect, MockedFunction, test, vi } from 'vitest';
 import {
 	searchForDockerReleases,
 	searchForMavenReleases,
@@ -25,7 +17,7 @@ import { taskEither } from 'fp-ts';
 import { VersionType } from '../../src/context/VersionType';
 import { RepoType } from '../../src/context/ProjectInfo';
 import { match } from 'ts-pattern';
-import { isMaven } from '../../src/context/projectTypeUtils';
+import { isDocker, isMaven, isNpm } from '../../src/context/projectTypeUtils';
 
 vi.mock('../../src/services/NexusRepoApi', () => ({
 	searchForDockerReleases: vi.fn(),
@@ -179,6 +171,8 @@ test.each<ValidationArgs>([
 			>
 		>(projectType)
 			.when(isMaven, () => searchForMavenReleasesMock)
+			.when(isNpm, () => searchForNpmReleasesMock)
+			.when(isDocker, () => searchForDockerReleasesMock)
 			.run();
 		searchFn.mockImplementation(() => {
 			if (hasConflicts) {
@@ -206,85 +200,3 @@ test.each<ValidationArgs>([
 		}
 	}
 );
-
-describe('validateProjectVersionAllowed', () => {
-	it('rejects npm release version with conflict', async () => {
-		searchForNpmReleasesMock.mockImplementation(() =>
-			taskEither.right({ items: [invalidItem] })
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.NpmApplication,
-			projectInfo: {
-				...baseBuildContext.projectInfo,
-				versionType: VersionType.Release
-			}
-		};
-
-		const result =
-			await validateProjectVersionAllowed.execute(buildContext)();
-		expect(result).toEqualLeft(
-			new Error('Project release version is not unique')
-		);
-	});
-
-	it('rejects maven release version with conflicts', async () => {
-		searchForMavenReleasesMock.mockImplementation(() =>
-			taskEither.right({ items: [invalidItem] })
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.MavenApplication,
-			projectInfo: {
-				...baseBuildContext.projectInfo,
-				versionType: VersionType.Release
-			}
-		};
-
-		const result =
-			await validateProjectVersionAllowed.execute(buildContext)();
-		expect(result).toEqualLeft(
-			new Error('Project release version is not unique')
-		);
-	});
-
-	it('rejects gradle kotlin release version with conflicts', async () => {
-		searchForMavenReleasesMock.mockImplementation(() =>
-			taskEither.right({ items: [invalidItem] })
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.GradleApplication,
-			projectInfo: {
-				...baseBuildContext.projectInfo,
-				versionType: VersionType.Release
-			}
-		};
-
-		const result =
-			await validateProjectVersionAllowed.execute(buildContext)();
-		expect(result).toEqualLeft(
-			new Error('Project release version is not unique')
-		);
-	});
-
-	it('rejects docker release version with conflicts', async () => {
-		searchForDockerReleasesMock.mockImplementation(() =>
-			taskEither.right({ items: [invalidItem] })
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.DockerApplication,
-			projectInfo: {
-				...baseBuildContext.projectInfo,
-				versionType: VersionType.Release
-			}
-		};
-
-		const result =
-			await validateProjectVersionAllowed.execute(buildContext)();
-		expect(result).toEqualLeft(
-			new Error('Project release version is not unique')
-		);
-	});
-});
