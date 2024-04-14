@@ -82,6 +82,7 @@ beforeEach(() => {
 type DependencyValidationScenario = 'all valid' | 'invalid dependencies';
 type MonorepoDependencyValidationScenario =
 	| DependencyValidationScenario
+	| 'all valid with children'
 	| 'invalid child dependencies';
 type MavenDependencyValidationScenario =
 	| MonorepoDependencyValidationScenario
@@ -93,11 +94,17 @@ type GradleDependencyValidationScenario =
 
 test.each<MavenDependencyValidationScenario>([
 	'all valid',
+	'all valid with children',
 	'invalid dependencies',
-	'invalid plugins'
+	'invalid plugins',
+	'invalid child dependencies',
+	'invalid child plugins'
 ])('validating dependencies for maven. Scenario: %s', async (scenario) => {
 	const workingDir = match(scenario)
 		.with('all valid', () => 'mavenReleaseApplication')
+		.with('all valid with children', () => {
+			throw new Error();
+		})
 		.with(
 			'invalid dependencies',
 			() => 'mavenReleaseApplicationBadDependency'
