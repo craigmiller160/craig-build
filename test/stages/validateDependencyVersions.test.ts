@@ -263,7 +263,26 @@ test.each<NpmPeerValidationScenario>([
 	getCwdMock.mockImplementation(() =>
 		path.join(baseWorkingDir, '__npmPeers__', workingDir)
 	);
-	throw new Error();
+
+	const buildContext: BuildContext = {
+		...baseBuildContext,
+		projectType: ProjectType.NpmApplication,
+		projectInfo: {
+			...baseBuildContext.projectInfo,
+			versionType:
+				scenario === 'valid beta for pre-release'
+					? VersionType.PreRelease
+					: VersionType.Release
+		}
+	};
+	const result = await validateDependencyVersions.execute(buildContext)();
+	if (scenario === 'valid beta for pre-release') {
+		expect(result).toEqualRight(buildContext);
+	} else if (scenario === 'invalid beta for release') {
+		expect(result).toEqualLeft(
+			new Error('Cannot have beta dependencies in NPM release')
+		);
+	}
 });
 
 describe('validateDependencyVersions', () => {
