@@ -191,6 +191,23 @@ test.each<GradleDependencyValidationScenario>([
 	}
 });
 
+test.each<DependencyValidationScenario>(['all valid', 'invalid dependencies'])(
+	'validating dependencies for npm. Scenario: %s',
+	async (scenario) => {
+		const workingDir = match(scenario)
+			.with('all valid', () => 'npmReleaseApplication')
+			.with(
+				'invalid dependencies',
+				() => 'npmReleaseApplicationBadDependency'
+			)
+			.exhaustive();
+		getCwdMock.mockImplementation(() =>
+			path.resolve(baseWorkingDir, workingDir)
+		);
+		throw new Error();
+	}
+);
+
 describe('validateDependencyVersions', () => {
 	it('all release dependencies are valid for npm project', async () => {
 		getCwdMock.mockImplementation(() =>
