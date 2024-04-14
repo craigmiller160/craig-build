@@ -158,6 +158,12 @@ test.each<ValidationArgs>([
 		} else {
 			expect(result).toEqualRight(buildContext);
 		}
+
+		if (repoType === 'monorepo') {
+			expect(searchFn).toHaveBeenCalledTimes(2);
+		} else {
+			expect(searchFn).toHaveBeenCalledTimes(1);
+		}
 	}
 );
 
