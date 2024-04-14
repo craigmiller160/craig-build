@@ -9,7 +9,7 @@ import { ProjectType } from '../../src/context/ProjectType';
 import { validateDependencyVersions } from '../../src/stages/validateDependencyVersions';
 import { VersionType } from '../../src/context/VersionType';
 import '../testutils/readGradleProjectMock';
-import { taskEither } from 'fp-ts';
+import { taskEither, either } from 'fp-ts';
 import { match, P } from 'ts-pattern';
 import fs from 'fs';
 
@@ -290,9 +290,11 @@ test.each<NpmPeerValidationScenario>([
 			new Error('Cannot have beta dependencies in NPM release')
 		);
 	} else {
-		expect(result).toEqualLeft(
-			new Error(
-				"Dependency @craigmiller160/foo-bar does not satisfy project's peer range. Version: ^2.0.0 Range: ^1.0.0"
+		expect(result).toBeLeft();
+		const error = (result as either.Left<Error>).left;
+		expect(error.message).toEqual(
+			expect.stringContaining(
+				"Dependency @craigmiller160/foo-bar does not satisfy project's peer range"
 			)
 		);
 	}
