@@ -240,6 +240,29 @@ test.each<NpmPeerValidationScenario>([
 	'peer same as main dependency',
 	'beta peer higher than release main dependency'
 ])('validating npm peer dependencies. Scenario: %s', async (scenario) => {
+	const workingDir = match(scenario)
+		.with('invalid beta for release', () => 'invalidBetaForRelease')
+		.with('valid beta for pre-release', () => 'validBetaForPreRelease')
+		.with(
+			'peer lower than dev dependency',
+			() => 'peerDependencyLowerThanDevDependency'
+		)
+		.with(
+			'peer lower than main dependency',
+			() => 'peerDependencyLowerThanMainDependency'
+		)
+		.with(
+			'peer same as main dependency',
+			() => 'peerDependencySameAsMainDependency'
+		)
+		.with(
+			'beta peer higher than release main dependency',
+			() => 'betaPeerIsHigherThanRelease'
+		)
+		.exhaustive();
+	getCwdMock.mockImplementation(() =>
+		path.join(baseWorkingDir, '__npmPeers__', workingDir)
+	);
 	throw new Error();
 });
 
