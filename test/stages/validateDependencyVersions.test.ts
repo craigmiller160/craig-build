@@ -192,25 +192,6 @@ test.each<GradleDependencyValidationScenario>([
 });
 
 describe('validateDependencyVersions', () => {
-	it('all release dependencies and plugins are valid for gradle kotlin project', async () => {
-		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDir, 'gradleKotlinReleaseApplication')
-		);
-		runCommandMock.mockImplementation((command: string) =>
-			gradleRunCommandMockImpl(command, 'none')
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.GradleApplication,
-			projectInfo: {
-				...baseBuildContext.projectInfo,
-				versionType: VersionType.Release
-			}
-		};
-		const result = await validateDependencyVersions.execute(buildContext)();
-		expect(result).toEqualRight(buildContext);
-	});
-
 	it('all release dependencies are valid for npm project', async () => {
 		getCwdMock.mockImplementation(() =>
 			path.resolve(baseWorkingDir, 'npmReleaseApplication')
@@ -225,81 +206,6 @@ describe('validateDependencyVersions', () => {
 		};
 		const result = await validateDependencyVersions.execute(buildContext)();
 		expect(result).toEqualRight(buildContext);
-	});
-
-	it('invalid release dependencies for gradle kotlin project', async () => {
-		getCwdMock.mockImplementation(() =>
-			path.resolve(
-				baseWorkingDir,
-				'gradleKotlinReleaseApplicationBadDependency'
-			)
-		);
-		runCommandMock.mockImplementation((command: string) =>
-			gradleRunCommandMockImpl(command, 'dependencies')
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.GradleApplication,
-			projectInfo: {
-				...baseBuildContext.projectInfo,
-				versionType: VersionType.Release
-			}
-		};
-		const result = await validateDependencyVersions.execute(buildContext)();
-		expect(result).toEqualLeft(
-			new Error(
-				'Cannot have SNAPSHOT dependencies or plugins in Gradle release'
-			)
-		);
-	});
-
-	it('invalid release plugins for gradle kotlin project', async () => {
-		getCwdMock.mockImplementation(() =>
-			path.resolve(
-				baseWorkingDir,
-				'gradleKotlinReleaseApplicationBadPlugin'
-			)
-		);
-		runCommandMock.mockImplementation((command: string) =>
-			gradleRunCommandMockImpl(command, 'plugins')
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.GradleApplication,
-			projectInfo: {
-				...baseBuildContext.projectInfo,
-				versionType: VersionType.Release
-			}
-		};
-		const result = await validateDependencyVersions.execute(buildContext)();
-		expect(result).toEqualLeft(
-			new Error(
-				'Cannot have SNAPSHOT dependencies or plugins in Gradle release'
-			)
-		);
-	});
-
-	it.skip('unresolved dependency for gradle kotlin project', async () => {
-		getCwdMock.mockImplementation(() =>
-			path.resolve(
-				baseWorkingDir,
-				'gradleKotlinReleaseApplicationUnresolvedDependency'
-			)
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.GradleApplication,
-			projectInfo: {
-				...baseBuildContext.projectInfo,
-				versionType: VersionType.Release
-			}
-		};
-		const result = await validateDependencyVersions.execute(buildContext)();
-		expect(result).toBeLeft();
-		const error = (result as either.Left<Error>).left;
-		expect(error.message).toMatch(
-			/UnresolvedDependencyException.*spring-web-utils/
-		);
 	});
 
 	it('invalid release dependencies for npm project', async () => {
