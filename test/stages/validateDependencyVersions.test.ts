@@ -204,7 +204,23 @@ test.each<DependencyValidationScenario>(['all valid', 'invalid dependencies'])(
 		getCwdMock.mockImplementation(() =>
 			path.resolve(baseWorkingDir, workingDir)
 		);
-		throw new Error();
+
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.NpmApplication,
+			projectInfo: {
+				...baseBuildContext.projectInfo,
+				versionType: VersionType.Release
+			}
+		};
+		const result = await validateDependencyVersions.execute(buildContext)();
+		if (scenario === 'all valid') {
+			expect(result).toEqualRight(buildContext);
+		} else {
+			expect(result).toEqualLeft(
+				new Error('Cannot have beta dependencies in NPM release')
+			);
+		}
 	}
 );
 
