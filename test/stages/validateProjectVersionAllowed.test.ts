@@ -17,10 +17,15 @@ import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
 import { ProjectType } from '../../src/context/ProjectType';
 import { validateProjectVersionAllowed } from '../../src/stages/validateProjectVersionAllowed';
-import { NexusSearchResultItem } from '../../src/services/NexusSearchResult';
+import {
+	NexusSearchResult,
+	NexusSearchResultItem
+} from '../../src/services/NexusSearchResult';
 import { taskEither } from 'fp-ts';
 import { VersionType } from '../../src/context/VersionType';
 import { RepoType } from '../../src/context/ProjectInfo';
+import { match } from 'ts-pattern';
+import { isMaven } from '../../src/context/projectTypeUtils';
 
 vi.mock('../../src/services/NexusRepoApi', () => ({
 	searchForDockerReleases: vi.fn(),
@@ -103,8 +108,56 @@ test.each<ValidationArgs>([
 	}
 ])(
 	'validateProjectVersionAllowed for $projectType and $repoType when has conflicts = $hasConflicts',
-	() => {
-		throw new Error();
+	async ({ projectType, repoType, hasConflicts }) => {
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType,
+			projectInfo: {
+				...baseBuildContext.projectInfo,
+				repoType,
+				versionType: VersionType.Release,
+				monorepoChildren:
+					repoType === 'monorepo'
+						? [
+								{
+									...baseBuildContext.projectInfo,
+									repoType,
+									versionType: VersionType.Release
+								}
+							]
+						: undefined
+			}
+		};
+
+		const searchFn = match<
+			ProjectType,
+			MockedFunction<
+				(
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
+					...args: any[]
+				) => taskEither.TaskEither<Error, NexusSearchResult>
+			>
+		>(projectType)
+			.when(isMaven, () => searchForMavenReleasesMock)
+			.run();
+		searchFn.mockImplementation(() => {
+			if (hasConflicts) {
+				return taskEither.right<Error, NexusSearchResult>({
+					items: [invalidItem]
+				});
+			}
+			return taskEither.right<Error, NexusSearchResult>({ items: [] });
+		});
+
+		const result =
+			await validateProjectVersionAllowed.execute(buildContext)();
+		if (hasConflicts) {
+			expect(result).toEqualLeft(
+				new Error('Project release version is not unique')
+			);
+		} else {
+			expect(result).toEqualRight(buildContext);
+		}
 	}
 );
 
