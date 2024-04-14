@@ -46,6 +46,12 @@ type GradleDependencyValidationScenario =
 	| DependencyValidationScenario
 	| 'invalid plugins'
 	| 'unresolved dependencies';
+const mavenMonorepoScenarios: ReadonlyArray<MavenDependencyValidationScenario> =
+	[
+		'all valid with children',
+		'invalid child dependencies',
+		'invalid child plugins'
+	];
 
 const gradleRunCommandMockImpl = (
 	command: string,
@@ -121,7 +127,10 @@ test.each<MavenDependencyValidationScenario>([
 		projectType: ProjectType.MavenApplication,
 		projectInfo: {
 			...baseBuildContext.projectInfo,
-			versionType: VersionType.Release
+			versionType: VersionType.Release,
+			repoType: mavenMonorepoScenarios.includes(scenario)
+				? 'monorepo'
+				: 'polyrepo'
 		}
 	};
 
