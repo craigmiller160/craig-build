@@ -117,9 +117,10 @@ test.each<MavenDependencyValidationScenario>([
 			'invalid child dependencies',
 			() => 'mavenReleaseLibraryMonorepoInvalidDependency'
 		)
-		.with('invalid child plugins', () => {
-			throw new Error();
-		})
+		.with(
+			'invalid child plugins',
+			() => 'mavenReleaseLibraryMonorepoInvalidPlugin'
+		)
 		.exhaustive();
 	getCwdMock.mockImplementation(() =>
 		path.resolve(baseWorkingDir, workingDir)
