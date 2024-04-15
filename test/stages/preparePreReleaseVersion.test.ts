@@ -1,11 +1,11 @@
 import {
-	describe,
-	it,
-	expect,
 	beforeEach,
-	vi,
+	describe,
+	expect,
+	it,
 	MockedFunction,
-	test
+	test,
+	vi
 } from 'vitest';
 import { osMock } from '../testutils/osMock';
 import { createBuildContext } from '../testutils/createBuildContext';
@@ -81,7 +81,52 @@ test.each<NpmArgs>([
 		 * 3. not full build, gets version from Nexus
 		 * 4. not full build, cannot find version in Nexus
 		 */
-		throw new Error();
+
+		const nexusResult: NexusSearchResult = {
+			items: [createItem('1.0.0-beta.2')]
+		};
+		searchForNpmBetasMock.mockImplementation(() => {
+			if (matchInNexus) {
+				return taskEither.right(nexusResult);
+			}
+			return taskEither.right({ items: [] });
+		});
+
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			commandInfo: {
+				type: commandType
+			},
+			projectType: ProjectType.NpmApplication,
+			projectInfo: {
+				...baseBuildContext.projectInfo,
+				group: 'craigmiller160',
+				name: 'my-project',
+				versionType: VersionType.PreRelease,
+				version: '1.0.0-beta'
+			}
+		};
+
+		const result = await preparePreReleaseVersion.execute(buildContext)();
+		if (commandType === CommandType.FullBuild && matchInNexus) {
+			expect(result).toEqualRight({
+				...buildContext,
+				projectInfo: {
+					...buildContext.projectInfo,
+					version: '1.0.0-beta.3'
+				}
+			});
+		} else if (commandType === CommandType.FullBuild && !matchInNexus) {
+			expect(result).toEqualRight({
+				...buildContext,
+				projectInfo: {
+					...buildContext.projectInfo,
+					version: '1.0.0-beta.1'
+				}
+			});
+		} else {
+			throw new Error('Invalid combination of arguments');
+		}
 	}
 );
 
