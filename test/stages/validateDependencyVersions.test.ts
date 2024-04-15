@@ -113,9 +113,10 @@ test.each<MavenDependencyValidationScenario>([
 			() => 'mavenReleaseApplicationBadDependency'
 		)
 		.with('invalid plugins', () => 'mavenReleaseApplicationBadPlugin')
-		.with('invalid child dependencies', () => {
-			throw new Error();
-		})
+		.with(
+			'invalid child dependencies',
+			() => 'mavenReleaseLibraryMonorepoInvalidDependency'
+		)
 		.with('invalid child plugins', () => {
 			throw new Error();
 		})
