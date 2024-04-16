@@ -75,13 +75,6 @@ test.each<NpmArgs>([
 ])(
 	'preparePreReleaseVersion for NPM with command $commandType and match in Nexus $matchInNexus',
 	async ({ commandType, matchInNexus }) => {
-		/**
-		 * 1. full build with existing version in Nexus
-		 * 2. full build with no existing version in Nexus
-		 * 3. not full build, gets version from Nexus
-		 * 4. not full build, cannot find version in Nexus
-		 */
-
 		const nexusResult: NexusSearchResult = {
 			items: [createItem('1.0.0-beta.2')]
 		};
