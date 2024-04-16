@@ -124,6 +124,18 @@ test.each<NpmArgs>([
 					version: '1.0.0-beta.1'
 				}
 			});
+		} else if (commandType !== CommandType.FullBuild && matchInNexus) {
+			expect(result).toEqualRight({
+				...buildContext,
+				projectInfo: {
+					...buildContext.projectInfo,
+					version: '1.0.0-beta.2'
+				}
+			});
+		} else if (commandType !== CommandType.FullBuild && !matchInNexus) {
+			expect(result).toEqualLeft(
+				new Error('No matching NPM pre-release versions in Nexus')
+			);
 		} else {
 			throw new Error('Invalid combination of arguments');
 		}
