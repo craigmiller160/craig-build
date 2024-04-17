@@ -1,4 +1,4 @@
-import { taskEither } from 'fp-ts';
+import { readonlyArray, taskEither } from 'fp-ts';
 import { BuildContext } from '../context/BuildContext';
 import { match, P } from 'ts-pattern';
 import {
@@ -69,7 +69,7 @@ const findMatchingVersion = (
 		option.map((_) => _.version)
 	);
 
-const updateProjectInfo = (
+const updateBuildContext = (
 	context: BuildContext,
 	version: string
 ): BuildContext => ({
@@ -80,15 +80,23 @@ const updateProjectInfo = (
 	}
 });
 
-const createMavenM2NexusPath = (context: BuildContext): string => {
-	const groupPath = context.projectInfo.group.split('.').join(path.sep);
+const updateProjectInfo = (
+	projectInfo: ProjectInfo,
+	version: string
+): ProjectInfo => ({
+	...projectInfo,
+	version
+});
+
+const createMavenM2NexusPath = (projectInfo: ProjectInfo): string => {
+	const groupPath = projectInfo.group.split('.').join(path.sep);
 	return path.join(
 		homedir(),
 		'.m2',
 		'repository',
 		groupPath,
-		context.projectInfo.name,
-		context.projectInfo.version,
+		projectInfo.name,
+		projectInfo.version,
 		'maven-metadata-nexus.xml'
 	);
 };
@@ -102,11 +110,11 @@ const getMavenMetadataPreReleaseVersion = (
 		option.map((_) => _.value[0])
 	);
 
-const handleFullBuildMavenPreReleaseVersion = (
-	context: BuildContext
-): taskEither.TaskEither<Error, BuildContext> =>
+const getM2PreReleaseVersionForProjectInfo = (
+	projectInfo: ProjectInfo
+): either.Either<Error, ProjectInfo> =>
 	func.pipe(
-		createMavenM2NexusPath(context),
+		createMavenM2NexusPath(projectInfo),
 		readFile,
 		either.chain((_) => parseXml<MavenMetadataNexus>(_)),
 		either.chain((_) =>
@@ -120,9 +128,41 @@ const handleFullBuildMavenPreReleaseVersion = (
 				)
 			)
 		),
-		either.map((_) => updateProjectInfo(context, _)),
+		either.map((_) => updateProjectInfo(projectInfo, _))
+	);
+
+const handleFullBuildMavenPreReleaseVersion = (
+	context: BuildContext
+): taskEither.TaskEither<Error, BuildContext> => {
+	const rootProjectInfoEither = getM2PreReleaseVersionForProjectInfo(
+		context.projectInfo
+	);
+
+	const monorepoChildProjectInfo = func.pipe(
+		context.projectInfo.monorepoChildren ?? [],
+		readonlyArray.map(getM2PreReleaseVersionForProjectInfo),
+		either.sequenceArray
+	);
+
+	return func.pipe(
+		rootProjectInfoEither,
+		either.bindTo('rootProjectInfo'),
+		either.bind('monorepoChildren', () => monorepoChildProjectInfo),
+		either.map(
+			({ rootProjectInfo, monorepoChildren }): ProjectInfo => ({
+				...rootProjectInfo,
+				monorepoChildren
+			})
+		),
+		either.map(
+			(projectInfo): BuildContext => ({
+				...context,
+				projectInfo
+			})
+		),
 		taskEither.fromEither
 	);
+};
 
 const bumpBetaVersion = (fullVersion: string): option.Option<string> =>
 	func.pipe(
@@ -164,7 +204,7 @@ const handleMavenPreReleaseVersionFromNexus = (
 				)
 			)
 		),
-		taskEither.map((_) => updateProjectInfo(context, _))
+		taskEither.map((_) => updateBuildContext(context, _))
 	);
 };
 
@@ -252,7 +292,7 @@ const handleNpmPreReleaseVersion = (
 				)
 			)
 		),
-		taskEither.map((_) => updateProjectInfo(context, _))
+		taskEither.map((_) => updateBuildContext(context, _))
 	);
 };
 
@@ -279,7 +319,7 @@ const handleDockerPreReleaseVersion = (
 				)
 			)
 		),
-		taskEither.map((_) => updateProjectInfo(context, _))
+		taskEither.map((_) => updateBuildContext(context, _))
 	);
 };
 
