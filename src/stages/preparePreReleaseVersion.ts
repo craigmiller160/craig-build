@@ -141,7 +141,8 @@ const handleFullBuildMavenPreReleaseVersion = (
 	const monorepoChildProjectInfo = func.pipe(
 		context.projectInfo.monorepoChildren ?? [],
 		readonlyArray.map(getM2PreReleaseVersionForProjectInfo),
-		either.sequenceArray
+		either.sequenceArray,
+		either.map((children) => (children.length === 0 ? undefined : children))
 	);
 
 	return func.pipe(
