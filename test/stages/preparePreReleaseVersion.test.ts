@@ -257,7 +257,7 @@ test.each<PreReleaseVersionArgs>([
 			});
 		} else {
 			expect(result).toEqualLeft(
-				new Error('No matching Gradle pre-release versions in Nexus')
+				new Error('No matching Maven pre-release versions in Nexus')
 			);
 		}
 	}
