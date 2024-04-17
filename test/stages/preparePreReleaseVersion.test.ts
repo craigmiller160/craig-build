@@ -256,6 +256,18 @@ test.each<PreReleaseVersionArgs>([
 	}
 );
 
+test.each<PreReleaseVersionArgs>([
+	{ commandType: CommandType.FullBuild, matchInNexus: true },
+	{ commandType: CommandType.FullBuild, matchInNexus: false },
+	{ commandType: CommandType.KubernetesOnly, matchInNexus: true },
+	{ commandType: CommandType.KubernetesOnly, matchInNexus: false }
+])(
+	'preparePreReleaseVersion for Docker with command $commandType and match in Nexus $matchInNexus',
+	({ commandType, matchInNexus }) => {
+		throw new Error();
+	}
+);
+
 describe('preparePreReleaseVersion', () => {
 	it('prepares pre-release version for Docker project based on existing version', async () => {
 		const nexusResult: NexusSearchResult = {
