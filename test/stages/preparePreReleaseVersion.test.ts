@@ -161,11 +161,13 @@ test.each<PreReleaseVersionArgs>([
 				monorepoChildren: [
 					{
 						...baseBuildContext.projectInfo,
+						group: 'io.craigmiller160',
 						name: 'my-child-project-1',
 						version: '1.1.0-SNAPSHOT'
 					},
 					{
 						...baseBuildContext.projectInfo,
+						group: 'io.craigmiller160',
 						name: 'my-child-project-2',
 						version: '1.1.0-SNAPSHOT'
 					}
