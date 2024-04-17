@@ -221,8 +221,45 @@ test.each<PreReleaseVersionArgs>([
 	{ commandType: CommandType.DockerOnly, matchInNexus: false }
 ])(
 	'preparePreReleaseVersion for Gradle with command $commandType and match in Nexus $matchInNexus',
-	async () => {
-		throw new Error();
+	async ({ commandType, matchInNexus }) => {
+		searchForMavenSnapshotsMock.mockImplementation(() => {
+			if (matchInNexus) {
+				return taskEither.right({
+					items: [createItem('1.1.0-20211225.003019-1')]
+				});
+			}
+			return taskEither.right({ items: [] });
+		});
+
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			commandInfo: {
+				type: commandType
+			},
+			projectType: ProjectType.GradleApplication,
+			projectInfo: {
+				...baseBuildContext.projectInfo,
+				group: 'io.craigmiller160',
+				name: 'my-project',
+				versionType: VersionType.PreRelease,
+				version: '1.1.0-SNAPSHOT'
+			}
+		};
+
+		const result = await preparePreReleaseVersion.execute(buildContext)();
+		if (matchInNexus) {
+			expect(result).toEqualRight({
+				...buildContext,
+				projectInfo: {
+					...buildContext.projectInfo,
+					version: '1.1.0-20211225.003019-1'
+				}
+			});
+		} else {
+			expect(result).toEqualLeft(
+				new Error('No matching Gradle pre-release versions in Nexus')
+			);
+		}
 	}
 );
 
