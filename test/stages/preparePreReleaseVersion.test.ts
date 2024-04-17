@@ -52,8 +52,6 @@ beforeEach(() => {
 	vi.resetAllMocks();
 });
 
-test.fails('support monorepo');
-
 type PreReleaseVersionArgs = Readonly<{
 	commandType: CommandType;
 	matchInNexus: boolean;
@@ -264,7 +262,7 @@ test.each<PreReleaseVersionArgs>([
 		searchForMavenSnapshotsMock.mockImplementation(() => {
 			if (matchInNexus) {
 				return taskEither.right({
-					items: [createItem('1.1.0-20211225.003019-1')]
+					items: [createItem('1.1.0-20211225.003019-0')]
 				});
 			}
 			return taskEither.right({ items: [] });
@@ -294,7 +292,7 @@ test.each<PreReleaseVersionArgs>([
 				...buildContext,
 				projectInfo: {
 					...buildContext.projectInfo,
-					version: '1.1.0-20211225.003019-1'
+					version: '1.1.0-20211225.003019-0'
 				}
 			});
 			expect(searchForMavenSnapshotsMock).not.toHaveBeenCalled();
@@ -303,7 +301,7 @@ test.each<PreReleaseVersionArgs>([
 				...buildContext,
 				projectInfo: {
 					...buildContext.projectInfo,
-					version: '1.1.0-20211225.003019-1'
+					version: '1.1.0-20211225.003019-0'
 				}
 			});
 			expect(searchForMavenSnapshotsMock).toHaveBeenCalledWith(
