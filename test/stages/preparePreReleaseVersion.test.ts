@@ -117,7 +117,9 @@ test.each<PreReleaseVersionArgs>([
 			});
 		} else if (commandType !== CommandType.FullBuild && !matchInNexus) {
 			expect(result).toEqualLeft(
-				new Error('No matching NPM pre-release versions in Nexus')
+				new Error(
+					'No matching NPM pre-release versions in Nexus for craigmiller160 my-project'
+				)
 			);
 		} else {
 			throw new Error('Invalid combination of arguments');
@@ -229,7 +231,9 @@ test.each<PreReleaseVersionArgs>([
 			);
 		} else if (!matchInNexus) {
 			expect(result).toEqualLeft(
-				new Error('No matching Maven pre-release versions in Nexus')
+				new Error(
+					'No matching Maven pre-release versions in Nexus for io.craigmiller160 my-project'
+				)
 			);
 			expect(searchForMavenSnapshotsMock).toHaveBeenNthCalledWith(
 				1,
@@ -314,7 +318,9 @@ test.each<PreReleaseVersionArgs>([
 			);
 		} else if (!matchInNexus) {
 			expect(result).toEqualLeft(
-				new Error('No matching Maven pre-release versions in Nexus')
+				new Error(
+					'No matching Maven pre-release versions in Nexus for io.craigmiller160 my-project'
+				)
 			);
 			expect(searchForMavenSnapshotsMock).toHaveBeenCalledWith(
 				'io.craigmiller160',
@@ -370,7 +376,9 @@ test.each<PreReleaseVersionArgs>([
 			});
 		} else {
 			expect(result).toEqualLeft(
-				new Error('No matching Maven pre-release versions in Nexus')
+				new Error(
+					'No matching Maven pre-release versions in Nexus for io.craigmiller160 my-project'
+				)
 			);
 		}
 	}
@@ -442,7 +450,9 @@ test.each<PreReleaseVersionArgs>([
 			!matchInNexus
 		) {
 			expect(result).toEqualLeft(
-				new Error('No matching Docker pre-release versions in Nexus')
+				new Error(
+					'No matching Docker pre-release versions in Nexus for craigmiller160 my-project'
+				)
 			);
 		} else {
 			throw new Error('Invalid combination of arguments');
