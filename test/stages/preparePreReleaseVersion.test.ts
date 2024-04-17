@@ -166,7 +166,7 @@ test.each<PreReleaseVersionArgs>([
 					},
 					{
 						...baseBuildContext.projectInfo,
-						name: 'my-child-project-1',
+						name: 'my-child-project-2',
 						version: '1.1.0-SNAPSHOT'
 					}
 				]
@@ -205,18 +205,45 @@ test.each<PreReleaseVersionArgs>([
 						) ?? []
 				}
 			});
-			expect(searchForMavenSnapshotsMock).toHaveBeenCalledWith(
+			expect(searchForMavenSnapshotsMock).toHaveBeenCalledTimes(3);
+			expect(searchForMavenSnapshotsMock).toHaveBeenNthCalledWith(
+				1,
 				'io.craigmiller160',
 				'my-project',
+				'1.1.0-*'
+			);
+			expect(searchForMavenSnapshotsMock).toHaveBeenNthCalledWith(
+				2,
+				'io.craigmiller160',
+				'my-child-project-1',
+				'1.1.0-*'
+			);
+			expect(searchForMavenSnapshotsMock).toHaveBeenNthCalledWith(
+				3,
+				'io.craigmiller160',
+				'my-child-project-2',
 				'1.1.0-*'
 			);
 		} else if (!matchInNexus) {
 			expect(result).toEqualLeft(
 				new Error('No matching Maven pre-release versions in Nexus')
 			);
-			expect(searchForMavenSnapshotsMock).toHaveBeenCalledWith(
+			expect(searchForMavenSnapshotsMock).toHaveBeenNthCalledWith(
+				1,
 				'io.craigmiller160',
 				'my-project',
+				'1.1.0-*'
+			);
+			expect(searchForMavenSnapshotsMock).toHaveBeenNthCalledWith(
+				2,
+				'io.craigmiller160',
+				'my-child-project-1',
+				'1.1.0-*'
+			);
+			expect(searchForMavenSnapshotsMock).toHaveBeenNthCalledWith(
+				3,
+				'io.craigmiller160',
+				'my-child-project-2',
 				'1.1.0-*'
 			);
 		} else {
