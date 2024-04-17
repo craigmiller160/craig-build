@@ -62,12 +62,12 @@ beforeEach(() => {
 
 test.fails('support monorepo');
 
-type NpmArgs = Readonly<{
+type PreReleaseVersionArgs = Readonly<{
 	commandType: CommandType;
 	matchInNexus: boolean;
 }>;
 
-test.each<NpmArgs>([
+test.each<PreReleaseVersionArgs>([
 	{ commandType: CommandType.FullBuild, matchInNexus: true },
 	{ commandType: CommandType.FullBuild, matchInNexus: false },
 	{ commandType: CommandType.DockerOnly, matchInNexus: true },
@@ -132,6 +132,23 @@ test.each<NpmArgs>([
 		} else {
 			throw new Error('Invalid combination of arguments');
 		}
+	}
+);
+
+test.each<PreReleaseVersionArgs>([
+	{ commandType: CommandType.FullBuild, matchInNexus: false },
+	{ commandType: CommandType.DockerOnly, matchInNexus: true },
+	{ commandType: CommandType.DockerOnly, matchInNexus: false }
+])(
+	'preparePreReleaseVersion for NPM with command $commandType and match in Nexus $matchInNexus',
+	({ commandType, matchInNexus }) => {
+		/*
+		 * Maven
+		 * 1. Full Build - Looks up pre-release version from .m2
+		 * 2. Not Full Build - Looks up pre-release version from Nexus
+		 * 3. Not Full Build - Cannot find pre-release version in Nexus
+		 */
+		throw new Error();
 	}
 );
 
