@@ -204,12 +204,25 @@ test.each<PreReleaseVersionArgs>([
 		} else {
 			throw new Error('Invalid combination of arguments');
 		}
-		/*
-		 * Maven
-		 * 1. Full Build - Looks up pre-release version from .m2
-		 * 2. Not Full Build - Looks up pre-release version from Nexus
-		 * 3. Not Full Build - Cannot find pre-release version in Nexus
-		 */
+	}
+);
+
+/*
+ * Gradle
+ * 1. Not full build, gets pre-release from Nexus
+ * 2. Is full build, gets pre-release from Nexus
+ * 3. Inverse of the previous two
+ */
+
+test.each<PreReleaseVersionArgs>([
+	{ commandType: CommandType.FullBuild, matchInNexus: true },
+	{ commandType: CommandType.FullBuild, matchInNexus: false },
+	{ commandType: CommandType.DockerOnly, matchInNexus: true },
+	{ commandType: CommandType.DockerOnly, matchInNexus: false }
+])(
+	'preparePreReleaseVersion for Gradle with command $commandType and match in Nexus $matchInNexus',
+	async () => {
+		throw new Error();
 	}
 );
 
