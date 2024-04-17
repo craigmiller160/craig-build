@@ -123,7 +123,7 @@ const getM2PreReleaseVersionForProjectInfo = (
 				either.fromOption(
 					() =>
 						new Error(
-							'Could not find Maven pre-release version in .m2'
+							`Could not find Maven pre-release version in .m2. ${projectInfo.group} ${projectInfo.name}`
 						)
 				)
 			)
@@ -198,7 +198,7 @@ const getMavenPreReleaseVersionFromNexus = (
 				taskEither.fromOption(
 					() =>
 						new Error(
-							'No matching Maven pre-release versions in Nexus'
+							`No matching Maven pre-release versions in Nexus for ${projectInfo.group} ${projectInfo.name}`
 						)
 				)
 			)
@@ -321,7 +321,7 @@ const handleNpmPreReleaseVersion = (
 				taskEither.fromOption(
 					() =>
 						new Error(
-							'No matching NPM pre-release versions in Nexus'
+							`No matching NPM pre-release versions in Nexus for ${context.projectInfo.group} ${context.projectInfo.name}`
 						)
 				)
 			)
@@ -348,7 +348,7 @@ const handleDockerPreReleaseVersion = (
 				taskEither.fromOption(
 					() =>
 						new Error(
-							'No matching Docker pre-release versions in Nexus'
+							`No matching Docker pre-release versions in Nexus for ${context.projectInfo.group} ${context.projectInfo.name}`
 						)
 				)
 			)
