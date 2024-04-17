@@ -156,6 +156,9 @@ test.each<PreReleaseVersionArgs>([
 
 		const buildContext: BuildContext = {
 			...baseBuildContext,
+			commandInfo: {
+				type: commandType
+			},
 			projectType: ProjectType.MavenApplication,
 			projectInfo: {
 				...baseBuildContext.projectInfo,
