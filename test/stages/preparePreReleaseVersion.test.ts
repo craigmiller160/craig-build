@@ -141,14 +141,40 @@ test.each<PreReleaseVersionArgs>([
 	{ commandType: CommandType.DockerOnly, matchInNexus: false }
 ])(
 	'preparePreReleaseVersion for NPM with command $commandType and match in Nexus $matchInNexus',
-	({ commandType, matchInNexus }) => {
+	async ({ commandType, matchInNexus }) => {
+		osMock.homedir.mockImplementation(() =>
+			path.join(baseWorkingDir, 'mavenPreReleaseInfoM2')
+		);
+
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			projectType: ProjectType.MavenApplication,
+			projectInfo: {
+				...baseBuildContext.projectInfo,
+				group: 'io.craigmiller160',
+				name: 'my-project',
+				versionType: VersionType.PreRelease,
+				version: '1.1.0-SNAPSHOT'
+			}
+		};
+
+		const result = await preparePreReleaseVersion.execute(buildContext)();
+		if (commandType === CommandType.FullBuild) {
+			expect(result).toEqualRight({
+				...buildContext,
+				projectInfo: {
+					...buildContext.projectInfo,
+					version: '1.1.0-20211225.003019-1'
+				}
+			});
+			expect(searchForMavenSnapshotsMock).not.toHaveBeenCalled();
+		}
 		/*
 		 * Maven
 		 * 1. Full Build - Looks up pre-release version from .m2
 		 * 2. Not Full Build - Looks up pre-release version from Nexus
 		 * 3. Not Full Build - Cannot find pre-release version in Nexus
 		 */
-		throw new Error();
 	}
 );
 
