@@ -140,7 +140,7 @@ test.each<PreReleaseVersionArgs>([
 	{ commandType: CommandType.DockerOnly, matchInNexus: true },
 	{ commandType: CommandType.DockerOnly, matchInNexus: false }
 ])(
-	'preparePreReleaseVersion for NPM with command $commandType and match in Nexus $matchInNexus',
+	'preparePreReleaseVersion for Maven with command $commandType and match in Nexus $matchInNexus',
 	async ({ commandType, matchInNexus }) => {
 		searchForMavenSnapshotsMock.mockImplementation(() => {
 			if (matchInNexus) {
