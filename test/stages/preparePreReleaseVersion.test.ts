@@ -142,6 +142,14 @@ test.each<PreReleaseVersionArgs>([
 ])(
 	'preparePreReleaseVersion for NPM with command $commandType and match in Nexus $matchInNexus',
 	async ({ commandType, matchInNexus }) => {
+		searchForMavenSnapshotsMock.mockImplementation(() => {
+			if (matchInNexus) {
+				return taskEither.right({
+					items: [createItem('1.1.0-20211225.003019-1')]
+				});
+			}
+			return taskEither.right({ items: [] });
+		});
 		osMock.homedir.mockImplementation(() =>
 			path.join(baseWorkingDir, 'mavenPreReleaseInfoM2')
 		);
@@ -168,6 +176,30 @@ test.each<PreReleaseVersionArgs>([
 				}
 			});
 			expect(searchForMavenSnapshotsMock).not.toHaveBeenCalled();
+		} else if (matchInNexus) {
+			expect(result).toEqualRight({
+				...buildContext,
+				projectInfo: {
+					...buildContext.projectInfo,
+					version: '1.1.0-20211225.003019-1'
+				}
+			});
+			expect(searchForMavenSnapshotsMock).toHaveBeenCalledWith(
+				'io.craigmiller160',
+				'my-project',
+				'1.1.0-*'
+			);
+		} else if (!matchInNexus) {
+			expect(result).toEqualLeft(
+				new Error('No matching Maven pre-release versions in Nexus')
+			);
+			expect(searchForMavenSnapshotsMock).toHaveBeenCalledWith(
+				'io.craigmiller160',
+				'my-project',
+				'1.1.0-*'
+			);
+		} else {
+			throw new Error('Invalid combination of arguments');
 		}
 		/*
 		 * Maven
