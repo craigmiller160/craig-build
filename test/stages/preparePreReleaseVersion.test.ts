@@ -214,73 +214,6 @@ test.each<PreReleaseVersionArgs>([
 );
 
 describe('preparePreReleaseVersion', () => {
-	it('full build, looks up recently created maven pre-release version from .m2', async () => {
-		osMock.homedir.mockImplementation(() =>
-			path.join(baseWorkingDir, 'mavenPreReleaseInfoM2')
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.MavenApplication,
-			projectInfo: {
-				...baseBuildContext.projectInfo,
-				group: 'io.craigmiller160',
-				name: 'my-project',
-				versionType: VersionType.PreRelease,
-				version: '1.1.0-SNAPSHOT'
-			}
-		};
-
-		const result = await preparePreReleaseVersion.execute(buildContext)();
-		expect(result).toEqualRight({
-			...buildContext,
-			projectInfo: {
-				...buildContext.projectInfo,
-				version: '1.1.0-20211225.003019-1'
-			}
-		});
-
-		expect(searchForNpmBetasMock).not.toHaveBeenCalled();
-		expect(searchForDockerBetasMock).not.toHaveBeenCalled();
-		expect(searchForMavenSnapshotsMock).not.toHaveBeenCalled();
-	});
-
-	it('not full build, grabs pre-release version for Maven project from Nexus', async () => {
-		searchForMavenSnapshotsMock.mockImplementation(() =>
-			taskEither.right({ items: [createItem('1.1.0-20211225.003019-1')] })
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			commandInfo: {
-				type: CommandType.DockerOnly
-			},
-			projectType: ProjectType.MavenApplication,
-			projectInfo: {
-				...baseBuildContext.projectInfo,
-				group: 'io.craigmiller160',
-				name: 'my-project',
-				versionType: VersionType.PreRelease,
-				version: '1.1.0-SNAPSHOT'
-			}
-		};
-
-		const result = await preparePreReleaseVersion.execute(buildContext)();
-		expect(result).toEqualRight({
-			...buildContext,
-			projectInfo: {
-				...buildContext.projectInfo,
-				version: '1.1.0-20211225.003019-1'
-			}
-		});
-
-		expect(searchForNpmBetasMock).not.toHaveBeenCalled();
-		expect(searchForDockerBetasMock).not.toHaveBeenCalled();
-		expect(searchForMavenSnapshotsMock).toHaveBeenCalledWith(
-			'io.craigmiller160',
-			'my-project',
-			'1.1.0-*'
-		);
-	});
-
 	it('not full build, grabs pre-release version for Gradle project in Nexus', async () => {
 		searchForMavenSnapshotsMock.mockImplementation(() =>
 			taskEither.right({ items: [createItem('1.1.0-20211225.003019-1')] })
@@ -342,39 +275,6 @@ describe('preparePreReleaseVersion', () => {
 				version: '1.1.0-20211225.003019-1'
 			}
 		});
-
-		expect(searchForNpmBetasMock).not.toHaveBeenCalled();
-		expect(searchForDockerBetasMock).not.toHaveBeenCalled();
-		expect(searchForMavenSnapshotsMock).toHaveBeenCalledWith(
-			'io.craigmiller160',
-			'my-project',
-			'1.1.0-*'
-		);
-	});
-
-	it('not full build, cannot find pre-release version for Maven project in Nexus', async () => {
-		searchForMavenSnapshotsMock.mockImplementation(() =>
-			taskEither.right({ items: [] })
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			commandInfo: {
-				type: CommandType.DockerOnly
-			},
-			projectType: ProjectType.MavenApplication,
-			projectInfo: {
-				...baseBuildContext.projectInfo,
-				group: 'io.craigmiller160',
-				name: 'my-project',
-				versionType: VersionType.PreRelease,
-				version: '1.1.0-SNAPSHOT'
-			}
-		};
-
-		const result = await preparePreReleaseVersion.execute(buildContext)();
-		expect(result).toEqualLeft(
-			new Error('No matching Maven pre-release versions in Nexus')
-		);
 
 		expect(searchForNpmBetasMock).not.toHaveBeenCalled();
 		expect(searchForDockerBetasMock).not.toHaveBeenCalled();
