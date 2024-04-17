@@ -179,23 +179,21 @@ const prepareVersionSearchParam = (version: string): string => {
 	return `${formattedVersion}*`;
 };
 
-const handleMavenPreReleaseVersionFromNexus = (
-	context: BuildContext
-): taskEither.TaskEither<Error, BuildContext> => {
-	const versionSearchParam = prepareVersionSearchParam(
-		context.projectInfo.version
-	);
+const getMavenPreReleaseVersionFromNexus = (
+	projectInfo: ProjectInfo
+): taskEither.TaskEither<Error, ProjectInfo> => {
+	const versionSearchParam = prepareVersionSearchParam(projectInfo.version);
 	return func.pipe(
 		searchForMavenSnapshots(
-			context.projectInfo.group,
-			context.projectInfo.name,
+			projectInfo.group,
+			projectInfo.name,
 			versionSearchParam
 		),
 		taskEither.chain((nexusResult) =>
 			func.pipe(
 				findMatchingVersion(
 					nexusResult,
-					context.projectInfo.version.replaceAll('SNAPSHOT', '')
+					projectInfo.version.replaceAll('SNAPSHOT', '')
 				),
 				taskEither.fromOption(
 					() =>
@@ -205,7 +203,42 @@ const handleMavenPreReleaseVersionFromNexus = (
 				)
 			)
 		),
-		taskEither.map((_) => updateBuildContext(context, _))
+		taskEither.map((_) => updateProjectInfo(projectInfo, _))
+	);
+};
+
+const handleMavenPreReleaseVersionFromNexus = (
+	context: BuildContext
+): taskEither.TaskEither<Error, BuildContext> => {
+	const rootProjectInfoTaskEither = getMavenPreReleaseVersionFromNexus(
+		context.projectInfo
+	);
+
+	const monorepoChildProjectInfo = func.pipe(
+		context.projectInfo.monorepoChildren ?? [],
+		readonlyArray.map(getMavenPreReleaseVersionFromNexus),
+		taskEither.sequenceArray,
+		taskEither.map((children) =>
+			children.length === 0 ? undefined : children
+		)
+	);
+
+	return func.pipe(
+		rootProjectInfoTaskEither,
+		taskEither.bindTo('rootProjectInfo'),
+		taskEither.bind('monorepoChildren', () => monorepoChildProjectInfo),
+		taskEither.map(
+			({ rootProjectInfo, monorepoChildren }): ProjectInfo => ({
+				...rootProjectInfo,
+				monorepoChildren
+			})
+		),
+		taskEither.map(
+			(projectInfo): BuildContext => ({
+				...context,
+				projectInfo
+			})
+		)
 	);
 };
 
