@@ -19,7 +19,7 @@ const defaultBuildToolInfo: BuildToolInfo = {
 const defaultProjectType: ProjectType = ProjectType.NpmLibrary;
 
 const defaultProjectInfo: ProjectInfo = {
-	group: 'craigmiller150',
+	group: 'craigmiller160',
 	name: 'my-project',
 	version: '1.0.0',
 	versionType: VersionType.Release,
