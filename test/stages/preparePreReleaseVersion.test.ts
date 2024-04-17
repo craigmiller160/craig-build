@@ -134,10 +134,12 @@ test.each<PreReleaseVersionArgs>([
 ])(
 	'preparePreReleaseVersion for Maven monorepo with command $commandType and match in Nexus $matchInNexus',
 	async ({ commandType, matchInNexus }) => {
+		let counter = 0;
 		searchForMavenSnapshotsMock.mockImplementation(() => {
 			if (matchInNexus) {
+				counter++;
 				return taskEither.right({
-					items: [createItem('1.1.0-20211225.003019-1')]
+					items: [createItem(`1.1.0-20211225.003019-${counter}`)]
 				});
 			}
 			return taskEither.right({ items: [] });
@@ -179,12 +181,12 @@ test.each<PreReleaseVersionArgs>([
 				...buildContext,
 				projectInfo: {
 					...buildContext.projectInfo,
-					version: '1.1.0-20211225.003019-1',
+					version: '1.1.0-20211225.003019-0',
 					monorepoChildren:
 						buildContext.projectInfo.monorepoChildren?.map(
 							(child, index) => ({
 								...child,
-								version: `1.1.0-20211225.003019-${index}`
+								version: `1.1.0-20211225.003019-${index + 1}`
 							})
 						) ?? []
 				}
@@ -195,12 +197,12 @@ test.each<PreReleaseVersionArgs>([
 				...buildContext,
 				projectInfo: {
 					...buildContext.projectInfo,
-					version: '1.1.0-20211225.003019-1',
+					version: '1.1.0-20211225.003019-0',
 					monorepoChildren:
 						buildContext.projectInfo.monorepoChildren?.map(
 							(child, index) => ({
 								...child,
-								version: `1.1.0-20211225.003019-${index}`
+								version: `1.1.0-20211225.003019-${index + 1}`
 							})
 						) ?? []
 				}
