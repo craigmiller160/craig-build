@@ -103,12 +103,24 @@ const createMavenM2NexusPath = (projectInfo: ProjectInfo): string => {
 
 const getMavenMetadataPreReleaseVersion = (
 	metadata: MavenMetadataNexus
-): option.Option<string> =>
-	func.pipe(
-		metadata.metadata.versioning[0].snapshotVersions[0].snapshotVersion,
-		array.findFirst((_) => _.extension[0] === 'jar'),
+): option.Option<string> => {
+	const snapshotVersions =
+		metadata.metadata.versioning[0].snapshotVersions[0].snapshotVersion;
+	const jarVersionOption = func.pipe(
+		snapshotVersions,
+		array.findFirst((_) => _.extension[0] === 'jar')
+	);
+	const pomVersionOption = func.pipe(
+		snapshotVersions,
+		array.findFirst((_) => _.extension[0] === 'pom')
+	);
+
+	return func.pipe(
+		jarVersionOption,
+		option.fold(() => pomVersionOption, option.of),
 		option.map((_) => _.value[0])
 	);
+};
 
 const getM2PreReleaseVersionForProjectInfo = (
 	projectInfo: ProjectInfo
