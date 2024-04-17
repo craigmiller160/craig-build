@@ -263,8 +263,70 @@ test.each<PreReleaseVersionArgs>([
 	{ commandType: CommandType.KubernetesOnly, matchInNexus: false }
 ])(
 	'preparePreReleaseVersion for Docker with command $commandType and match in Nexus $matchInNexus',
-	({ commandType, matchInNexus }) => {
-		throw new Error();
+	async ({ commandType, matchInNexus }) => {
+		searchForDockerBetasMock.mockImplementation(() => {
+			if (matchInNexus) {
+				return taskEither.right({
+					items: [createItem('1.0.0-beta.2')]
+				});
+			}
+			return taskEither.right({ items: [] });
+		});
+
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			commandInfo: {
+				type: commandType
+			},
+			projectType: ProjectType.DockerApplication,
+			projectInfo: {
+				...baseBuildContext.projectInfo,
+				group: 'craigmiller160',
+				name: 'my-project',
+				versionType: VersionType.PreRelease,
+				version: '1.0.0-beta'
+			}
+		};
+
+		const result = await preparePreReleaseVersion.execute(buildContext)();
+		expect(searchForDockerBetasMock).toHaveBeenCalledWith(
+			'my-project',
+			'1.0.0-beta*'
+		);
+		if (commandType === CommandType.FullBuild && matchInNexus) {
+			expect(result).toEqualRight({
+				...buildContext,
+				projectInfo: {
+					...buildContext.projectInfo,
+					version: '1.0.0-beta.3'
+				}
+			});
+		} else if (commandType === CommandType.FullBuild && !matchInNexus) {
+			expect(result).toEqualRight({
+				...buildContext,
+				projectInfo: {
+					...buildContext.projectInfo,
+					version: '1.0.0-beta.1'
+				}
+			});
+		} else if (commandType === CommandType.KubernetesOnly && matchInNexus) {
+			expect(result).toEqualRight({
+				...buildContext,
+				projectInfo: {
+					...buildContext.projectInfo,
+					version: '1.0.0-beta.2'
+				}
+			});
+		} else if (
+			commandType === CommandType.KubernetesOnly &&
+			!matchInNexus
+		) {
+			expect(result).toEqualLeft(
+				new Error('No matching Docker pre-release versions in Nexus')
+			);
+		} else {
+			throw new Error('Invalid combination of arguments');
+		}
 	}
 );
 
