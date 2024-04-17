@@ -135,10 +135,11 @@ test.each<PreReleaseVersionArgs>([
 		let counter = 0;
 		searchForMavenSnapshotsMock.mockImplementation(() => {
 			if (matchInNexus) {
-				counter++;
-				return taskEither.right({
+				const result = taskEither.right({
 					items: [createItem(`1.1.0-20211225.003019-${counter}`)]
 				});
+				counter++;
+				return result;
 			}
 			return taskEither.right({ items: [] });
 		});
