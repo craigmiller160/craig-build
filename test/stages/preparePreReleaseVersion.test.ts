@@ -132,6 +132,104 @@ test.each<PreReleaseVersionArgs>([
 	{ commandType: CommandType.DockerOnly, matchInNexus: true },
 	{ commandType: CommandType.DockerOnly, matchInNexus: false }
 ])(
+	'preparePreReleaseVersion for Maven monorepo with command $commandType and match in Nexus $matchInNexus',
+	async ({ commandType, matchInNexus }) => {
+		searchForMavenSnapshotsMock.mockImplementation(() => {
+			if (matchInNexus) {
+				return taskEither.right({
+					items: [createItem('1.1.0-20211225.003019-1')]
+				});
+			}
+			return taskEither.right({ items: [] });
+		});
+		osMock.homedir.mockImplementation(() =>
+			path.join(baseWorkingDir, 'mavenPreReleaseInfoM2')
+		);
+
+		const buildContext: BuildContext = {
+			...baseBuildContext,
+			commandInfo: {
+				type: commandType
+			},
+			projectType: ProjectType.MavenApplication,
+			projectInfo: {
+				...baseBuildContext.projectInfo,
+				group: 'io.craigmiller160',
+				name: 'my-project',
+				versionType: VersionType.PreRelease,
+				version: '1.1.0-SNAPSHOT',
+				monorepoChildren: [
+					{
+						...baseBuildContext.projectInfo,
+						name: 'my-child-project-1',
+						version: '1.1.0-SNAPSHOT'
+					},
+					{
+						...baseBuildContext.projectInfo,
+						name: 'my-child-project-1',
+						version: '1.1.0-SNAPSHOT'
+					}
+				]
+			}
+		};
+
+		const result = await preparePreReleaseVersion.execute(buildContext)();
+		if (commandType === CommandType.FullBuild) {
+			expect(result).toEqualRight({
+				...buildContext,
+				projectInfo: {
+					...buildContext.projectInfo,
+					version: '1.1.0-20211225.003019-1',
+					monorepoChildren:
+						buildContext.projectInfo.monorepoChildren?.map(
+							(child, index) => ({
+								...child,
+								version: `1.1.0-20211225.003019-${index}`
+							})
+						) ?? []
+				}
+			});
+			expect(searchForMavenSnapshotsMock).not.toHaveBeenCalled();
+		} else if (matchInNexus) {
+			expect(result).toEqualRight({
+				...buildContext,
+				projectInfo: {
+					...buildContext.projectInfo,
+					version: '1.1.0-20211225.003019-1',
+					monorepoChildren:
+						buildContext.projectInfo.monorepoChildren?.map(
+							(child, index) => ({
+								...child,
+								version: `1.1.0-20211225.003019-${index}`
+							})
+						) ?? []
+				}
+			});
+			expect(searchForMavenSnapshotsMock).toHaveBeenCalledWith(
+				'io.craigmiller160',
+				'my-project',
+				'1.1.0-*'
+			);
+		} else if (!matchInNexus) {
+			expect(result).toEqualLeft(
+				new Error('No matching Maven pre-release versions in Nexus')
+			);
+			expect(searchForMavenSnapshotsMock).toHaveBeenCalledWith(
+				'io.craigmiller160',
+				'my-project',
+				'1.1.0-*'
+			);
+		} else {
+			throw new Error('Invalid combination of arguments');
+		}
+	}
+);
+
+test.each<PreReleaseVersionArgs>([
+	{ commandType: CommandType.FullBuild, matchInNexus: false },
+	{ commandType: CommandType.DockerOnly, matchInNexus: true },
+	{ commandType: CommandType.DockerOnly, matchInNexus: false }
+])(
 	'preparePreReleaseVersion for Maven with command $commandType and match in Nexus $matchInNexus',
 	async ({ commandType, matchInNexus }) => {
 		searchForMavenSnapshotsMock.mockImplementation(() => {
