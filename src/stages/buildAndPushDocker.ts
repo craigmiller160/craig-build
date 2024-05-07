@@ -40,7 +40,7 @@ const loginToNexusDocker = (
 				USERNAME: creds.userName,
 				PASSWORD: creds.password
 			},
-			shell: true
+			shell: false
 		}
 	);
 
