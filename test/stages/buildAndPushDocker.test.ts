@@ -41,8 +41,12 @@ const validateCommands = ({
 	const cmdSudo = useSudo ? 'sudo ' : '';
 	expect(runCommandMock).toHaveBeenNthCalledWith(
 		callCount,
-		`${cmdSudo}docker login nexus-docker.craigmiller160.us -u \${user} -p \${password}`,
-		{ printOutput: true, variables: { user: 'user', password: 'password' } }
+		`${cmdSudo}docker login nexus-docker.craigmiller160.us -u \${USERNAME} -p \${PASSWORD}`,
+		{
+			printOutput: true,
+			env: { USERNAME: 'user', PASSWORD: 'password' },
+			shell: false
+		}
 	);
 	callCount++;
 	expect(runCommandMock).toHaveBeenNthCalledWith(
