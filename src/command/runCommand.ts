@@ -12,6 +12,7 @@ export interface CommandOptions {
 	readonly cwd: string;
 	readonly variables: Variables;
 	readonly env: object;
+	readonly shell: boolean;
 }
 
 const formatCommand = (command: string, variables: Variables): string =>
@@ -39,7 +40,8 @@ export const runCommand = (
 					env: {
 						...process.env,
 						...(options?.env ?? {})
-					}
+					},
+					shell: options?.shell
 				});
 				let fullOutput = '';
 				childProcess.stdout?.on('data', (data) => {
