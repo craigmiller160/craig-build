@@ -33,14 +33,14 @@ const loginToNexusDocker = (
 	creds: NexusCredentials
 ): taskEither.TaskEither<Error, string> =>
 	runCommand(
-		`${getCmdSudo()}docker login ${DOCKER_REPO_PREFIX} -u \${USERNAME} \${PASSWORD}`,
+		`${getCmdSudo()}docker login ${DOCKER_REPO_PREFIX} -u \${USERNAME} -p \${PASSWORD}`,
 		{
 			printOutput: true,
 			env: {
 				USERNAME: creds.userName,
 				PASSWORD: creds.password
 			},
-			shell: true
+			shell: false
 		}
 	);
 
