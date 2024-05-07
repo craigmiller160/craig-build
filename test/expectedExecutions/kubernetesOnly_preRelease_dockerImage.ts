@@ -19,6 +19,7 @@ import { getProjectInfo } from '../../src/stages/getProjectInfo';
 import { waitOnNexusUpdate } from '../../src/stages/waitOnNexusUpdate';
 import { runTerraformScript } from '../../src/stages/runTerraformScript';
 import { checkForTerraformScript } from '../../src/stages/checkForTerraformScript';
+import { validateMonorepoVersions } from '../../src/stages/validateMonorepoVersions';
 
 export const kubernetesOnly_preRelease_dockerImage: ExpectedExecution = {
 	[getCommandInfo.name]: true,
@@ -28,6 +29,7 @@ export const kubernetesOnly_preRelease_dockerImage: ExpectedExecution = {
 	[getProjectType.name]: true,
 	[getProjectInfo.name]: true,
 	[checkForTerraformScript.name]: false,
+	[validateMonorepoVersions.name]: false,
 	[validateDependencyVersions.name]: false,
 	[validateProjectVersionAllowed.name]: false,
 	// [validateKubernetesConfig.name]: false,

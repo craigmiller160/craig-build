@@ -1,10 +1,14 @@
 import { VersionType } from './VersionType';
 import { NpmBuildTool } from './NpmBuildTool';
 
-export interface ProjectInfo {
-	readonly group: string;
-	readonly name: string;
-	readonly version: string;
-	readonly versionType: VersionType;
-	readonly npmBuildTool?: NpmBuildTool;
-}
+export type RepoType = 'polyrepo' | 'monorepo';
+
+export type ProjectInfo = Readonly<{
+	group: string;
+	name: string;
+	version: string;
+	versionType: VersionType;
+	repoType: RepoType;
+	npmBuildTool?: NpmBuildTool;
+	monorepoChildren?: ReadonlyArray<ProjectInfo>;
+}>;

@@ -19,6 +19,7 @@ import { deployToKubernetes } from '../../src/stages/deployToKubernetes';
 import { waitOnNexusUpdate } from '../../src/stages/waitOnNexusUpdate';
 import { runTerraformScript } from '../../src/stages/runTerraformScript';
 import { checkForTerraformScript } from '../../src/stages/checkForTerraformScript';
+import { validateMonorepoVersions } from '../../src/stages/validateMonorepoVersions';
 
 describe('stages', () => {
 	it('all stages are added in the correct order', () => {
@@ -31,6 +32,7 @@ describe('stages', () => {
 			getProjectType.name,
 			getProjectInfo.name,
 			checkForTerraformScript.name,
+			validateMonorepoVersions.name,
 			validateDependencyVersions.name,
 			validateProjectVersionAllowed.name,
 			// validateKubernetesConfig.name,

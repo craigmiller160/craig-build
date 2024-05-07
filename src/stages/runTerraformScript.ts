@@ -13,7 +13,7 @@ import {
 import { runCommand } from '../command/runCommand';
 import { match } from 'ts-pattern';
 import fs from 'fs';
-import { readTerraformProject } from '../projectCache';
+import { readTerraformProject } from '../projectReading';
 import { either } from 'fp-ts';
 import { TerraformJson } from '../configFileTypes/TerraformJson';
 import shellEnv from 'shell-env';

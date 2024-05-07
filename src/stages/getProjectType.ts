@@ -4,10 +4,7 @@ import { getCwd } from '../command/getCwd';
 import fs from 'fs';
 import { match } from 'ts-pattern';
 import { ProjectType } from '../context/ProjectType';
-import { either } from 'fp-ts';
-import { function as func } from 'fp-ts';
-import { predicate } from 'fp-ts';
-import { taskEither } from 'fp-ts';
+import { either, function as func, predicate, taskEither } from 'fp-ts';
 import { BuildContext } from '../context/BuildContext';
 import {
 	DOCKER_PROJECT_FILE,
@@ -18,14 +15,14 @@ import {
 	MAVEN_PROJECT_FILE,
 	NPM_PROJECT_FILE
 } from '../configFileTypes/constants';
-import { getAndCacheHelmProject } from '../projectCache';
+import { readHelmProject } from '../projectReading';
 
 const fileExists = (cwd: string, file: string): boolean =>
 	fs.existsSync(path.resolve(cwd, file));
 
 const isHelmApplication = (): boolean =>
 	func.pipe(
-		getAndCacheHelmProject(),
+		readHelmProject(),
 		either.exists((helmJson) => helmJson.type === 'application')
 	);
 

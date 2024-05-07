@@ -18,6 +18,7 @@ import { Stage } from './Stage';
 import { waitOnNexusUpdate } from './waitOnNexusUpdate';
 import { runTerraformScript } from './runTerraformScript';
 import { checkForTerraformScript } from './checkForTerraformScript';
+import { validateMonorepoVersions } from './validateMonorepoVersions';
 
 export const stages: Stage[] = [
 	getCommandInfo,
@@ -27,6 +28,7 @@ export const stages: Stage[] = [
 	getProjectType,
 	getProjectInfo,
 	checkForTerraformScript,
+	validateMonorepoVersions,
 	validateDependencyVersions,
 	validateProjectVersionAllowed,
 	// validateKubernetesConfig,

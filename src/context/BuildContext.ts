@@ -3,11 +3,11 @@ import { BuildToolInfo } from './BuildToolInfo';
 import { ProjectType } from './ProjectType';
 import { ProjectInfo } from './ProjectInfo';
 
-export interface BuildContext {
-	readonly commandInfo: CommandInfo;
-	readonly buildToolInfo: BuildToolInfo;
-	readonly projectType: ProjectType;
-	readonly projectInfo: ProjectInfo;
-	readonly hasTerraform: boolean;
-	readonly doGitTag: boolean;
-}
+export type BuildContext = Readonly<{
+	commandInfo: CommandInfo;
+	buildToolInfo: BuildToolInfo;
+	projectType: ProjectType;
+	projectInfo: ProjectInfo;
+	hasTerraform: boolean;
+	doGitTag: boolean;
+}>;

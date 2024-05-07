@@ -18,6 +18,7 @@ import { getProjectInfo } from '../../src/stages/getProjectInfo';
 import { waitOnNexusUpdate } from '../../src/stages/waitOnNexusUpdate';
 import { runTerraformScript } from '../../src/stages/runTerraformScript';
 import { checkForTerraformScript } from '../../src/stages/checkForTerraformScript';
+import { validateMonorepoVersions } from '../../src/stages/validateMonorepoVersions';
 
 export const dockerOnly_release_helmLibrary: ExpectedExecution = {
 	[getCommandInfo.name]: true,
@@ -26,6 +27,7 @@ export const dockerOnly_release_helmLibrary: ExpectedExecution = {
 	[checkForUncommittedChanges.name]: true,
 	[getProjectType.name]: true,
 	[getProjectInfo.name]: true,
+	[validateMonorepoVersions.name]: false,
 	[checkForTerraformScript.name]: false,
 	[validateDependencyVersions.name]: false,
 	[validateProjectVersionAllowed.name]: false,

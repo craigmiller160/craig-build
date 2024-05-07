@@ -9,7 +9,8 @@ describe('projectInfoUtils', () => {
 			name: '',
 			group: '',
 			version: '',
-			versionType: VersionType.Release
+			versionType: VersionType.Release,
+			repoType: 'polyrepo'
 		};
 		expect(isRelease(projectInfo)).toEqual(true);
 		expect(
@@ -25,7 +26,8 @@ describe('projectInfoUtils', () => {
 			name: '',
 			group: '',
 			version: '',
-			versionType: VersionType.PreRelease
+			versionType: VersionType.PreRelease,
+			repoType: 'polyrepo'
 		};
 		expect(isPreRelease(projectInfo)).toEqual(true);
 		expect(

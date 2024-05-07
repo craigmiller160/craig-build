@@ -1,6 +1,6 @@
 {
   "name": "@craigmiller160/craig-build",
-  "version": "2.6.0-beta",
+  "version": "2.6.0-beta.5",
   "author": "craigmiller160",
   "bin": {
     "craig-build": "build/index.js"
@@ -14,7 +14,7 @@
   ],
   "scripts": {
     "lint": "eslint . --fix --max-warnings=0",
-    "forceBuild": "rm -rf ./build && swc ./src -d ./build --config-file ./.swcrc",
+    "forceBuild": "rm -rf ./build && swc ./src -d ./build-temp --config-file ./.swcrc && mv ./build-temp/src ./build && rm -rf build-temp",
     "typeCheck": "tsc --noEmit --project ./test/tsconfig.json",
     "test": "vitest run",
     "build": "npm run validate && npm run forceBuild",

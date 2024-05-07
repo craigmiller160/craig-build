@@ -1,4 +1,4 @@
-import { taskEither } from 'fp-ts';
+import { readonlyArray, taskEither } from 'fp-ts';
 import { BuildContext } from '../context/BuildContext';
 import { match, P } from 'ts-pattern';
 import {
@@ -69,7 +69,7 @@ const findMatchingVersion = (
 		option.map((_) => _.version)
 	);
 
-const updateProjectInfo = (
+const updateBuildContext = (
 	context: BuildContext,
 	version: string
 ): BuildContext => ({
@@ -80,33 +80,53 @@ const updateProjectInfo = (
 	}
 });
 
-const createMavenM2NexusPath = (context: BuildContext): string => {
-	const groupPath = context.projectInfo.group.split('.').join(path.sep);
+const updateProjectInfo = (
+	projectInfo: ProjectInfo,
+	version: string
+): ProjectInfo => ({
+	...projectInfo,
+	version
+});
+
+const createMavenM2NexusPath = (projectInfo: ProjectInfo): string => {
+	const groupPath = projectInfo.group.split('.').join(path.sep);
 	return path.join(
 		homedir(),
 		'.m2',
 		'repository',
 		groupPath,
-		context.projectInfo.name,
-		context.projectInfo.version,
+		projectInfo.name,
+		projectInfo.version,
 		'maven-metadata-nexus.xml'
 	);
 };
 
 const getMavenMetadataPreReleaseVersion = (
 	metadata: MavenMetadataNexus
-): option.Option<string> =>
-	func.pipe(
-		metadata.metadata.versioning[0].snapshotVersions[0].snapshotVersion,
-		array.findFirst((_) => _.extension[0] === 'jar'),
-		option.map((_) => _.value[0])
+): option.Option<string> => {
+	const snapshotVersions =
+		metadata.metadata.versioning[0].snapshotVersions[0].snapshotVersion;
+	const jarVersionOption = func.pipe(
+		snapshotVersions,
+		array.findFirst((_) => _.extension[0] === 'jar')
+	);
+	const pomVersionOption = func.pipe(
+		snapshotVersions,
+		array.findFirst((_) => _.extension[0] === 'pom')
 	);
 
-const handleFullBuildMavenPreReleaseVersion = (
-	context: BuildContext
-): taskEither.TaskEither<Error, BuildContext> =>
+	return func.pipe(
+		jarVersionOption,
+		option.fold(() => pomVersionOption, option.of),
+		option.map((_) => _.value[0])
+	);
+};
+
+const getM2PreReleaseVersionForProjectInfo = (
+	projectInfo: ProjectInfo
+): either.Either<Error, ProjectInfo> =>
 	func.pipe(
-		createMavenM2NexusPath(context),
+		createMavenM2NexusPath(projectInfo),
 		readFile,
 		either.chain((_) => parseXml<MavenMetadataNexus>(_)),
 		either.chain((_) =>
@@ -115,14 +135,47 @@ const handleFullBuildMavenPreReleaseVersion = (
 				either.fromOption(
 					() =>
 						new Error(
-							'Could not find Maven pre-release version in .m2'
+							`Could not find Maven pre-release version in .m2. ${projectInfo.group} ${projectInfo.name}`
 						)
 				)
 			)
 		),
-		either.map((_) => updateProjectInfo(context, _)),
+		either.map((_) => updateProjectInfo(projectInfo, _))
+	);
+
+const handleFullBuildMavenPreReleaseVersion = (
+	context: BuildContext
+): taskEither.TaskEither<Error, BuildContext> => {
+	const rootProjectInfoEither = getM2PreReleaseVersionForProjectInfo(
+		context.projectInfo
+	);
+
+	const monorepoChildProjectInfo = func.pipe(
+		context.projectInfo.monorepoChildren ?? [],
+		readonlyArray.map(getM2PreReleaseVersionForProjectInfo),
+		either.sequenceArray,
+		either.map((children) => (children.length === 0 ? undefined : children))
+	);
+
+	return func.pipe(
+		rootProjectInfoEither,
+		either.bindTo('rootProjectInfo'),
+		either.bind('monorepoChildren', () => monorepoChildProjectInfo),
+		either.map(
+			({ rootProjectInfo, monorepoChildren }): ProjectInfo => ({
+				...rootProjectInfo,
+				monorepoChildren
+			})
+		),
+		either.map(
+			(projectInfo): BuildContext => ({
+				...context,
+				projectInfo
+			})
+		),
 		taskEither.fromEither
 	);
+};
 
 const bumpBetaVersion = (fullVersion: string): option.Option<string> =>
 	func.pipe(
@@ -138,33 +191,66 @@ const prepareVersionSearchParam = (version: string): string => {
 	return `${formattedVersion}*`;
 };
 
-const handleMavenPreReleaseVersionFromNexus = (
-	context: BuildContext
-): taskEither.TaskEither<Error, BuildContext> => {
-	const versionSearchParam = prepareVersionSearchParam(
-		context.projectInfo.version
-	);
+const getMavenPreReleaseVersionFromNexus = (
+	projectInfo: ProjectInfo
+): taskEither.TaskEither<Error, ProjectInfo> => {
+	const versionSearchParam = prepareVersionSearchParam(projectInfo.version);
 	return func.pipe(
 		searchForMavenSnapshots(
-			context.projectInfo.group,
-			context.projectInfo.name,
+			projectInfo.group,
+			projectInfo.name,
 			versionSearchParam
 		),
 		taskEither.chain((nexusResult) =>
 			func.pipe(
 				findMatchingVersion(
 					nexusResult,
-					context.projectInfo.version.replaceAll('SNAPSHOT', '')
+					projectInfo.version.replaceAll('SNAPSHOT', '')
 				),
 				taskEither.fromOption(
 					() =>
 						new Error(
-							'No matching Maven pre-release versions in Nexus'
+							`No matching Maven pre-release versions in Nexus for ${projectInfo.group} ${projectInfo.name}`
 						)
 				)
 			)
 		),
-		taskEither.map((_) => updateProjectInfo(context, _))
+		taskEither.map((_) => updateProjectInfo(projectInfo, _))
+	);
+};
+
+const handleMavenPreReleaseVersionFromNexus = (
+	context: BuildContext
+): taskEither.TaskEither<Error, BuildContext> => {
+	const rootProjectInfoTaskEither = getMavenPreReleaseVersionFromNexus(
+		context.projectInfo
+	);
+
+	const monorepoChildProjectInfo = func.pipe(
+		context.projectInfo.monorepoChildren ?? [],
+		readonlyArray.map(getMavenPreReleaseVersionFromNexus),
+		taskEither.sequenceArray,
+		taskEither.map((children) =>
+			children.length === 0 ? undefined : children
+		)
+	);
+
+	return func.pipe(
+		rootProjectInfoTaskEither,
+		taskEither.bindTo('rootProjectInfo'),
+		taskEither.bind('monorepoChildren', () => monorepoChildProjectInfo),
+		taskEither.map(
+			({ rootProjectInfo, monorepoChildren }): ProjectInfo => ({
+				...rootProjectInfo,
+				monorepoChildren
+			})
+		),
+		taskEither.map(
+			(projectInfo): BuildContext => ({
+				...context,
+				projectInfo
+			})
+		)
 	);
 };
 
@@ -247,12 +333,12 @@ const handleNpmPreReleaseVersion = (
 				taskEither.fromOption(
 					() =>
 						new Error(
-							'No matching NPM pre-release versions in Nexus'
+							`No matching NPM pre-release versions in Nexus for ${context.projectInfo.group} ${context.projectInfo.name}`
 						)
 				)
 			)
 		),
-		taskEither.map((_) => updateProjectInfo(context, _))
+		taskEither.map((_) => updateBuildContext(context, _))
 	);
 };
 
@@ -274,12 +360,12 @@ const handleDockerPreReleaseVersion = (
 				taskEither.fromOption(
 					() =>
 						new Error(
-							'No matching Docker pre-release versions in Nexus'
+							`No matching Docker pre-release versions in Nexus for ${context.projectInfo.group} ${context.projectInfo.name}`
 						)
 				)
 			)
 		),
-		taskEither.map((_) => updateProjectInfo(context, _))
+		taskEither.map((_) => updateBuildContext(context, _))
 	);
 };
 

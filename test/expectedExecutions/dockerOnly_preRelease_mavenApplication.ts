@@ -18,6 +18,7 @@ import { getProjectInfo } from '../../src/stages/getProjectInfo';
 import { waitOnNexusUpdate } from '../../src/stages/waitOnNexusUpdate';
 import { runTerraformScript } from '../../src/stages/runTerraformScript';
 import { checkForTerraformScript } from '../../src/stages/checkForTerraformScript';
+import { validateMonorepoVersions } from '../../src/stages/validateMonorepoVersions';
 
 export const dockerOnly_preRelease_mavenApplication: ExpectedExecution = {
 	[getCommandInfo.name]: true,
@@ -27,6 +28,7 @@ export const dockerOnly_preRelease_mavenApplication: ExpectedExecution = {
 	[getProjectType.name]: true,
 	[getProjectInfo.name]: true,
 	[checkForTerraformScript.name]: true,
+	[validateMonorepoVersions.name]: false,
 	[validateDependencyVersions.name]: false,
 	[validateProjectVersionAllowed.name]: false,
 	// [validateKubernetesConfig.name]: true,

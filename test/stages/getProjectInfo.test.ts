@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { beforeEach, expect, test, vi } from 'vitest';
 import { getCwdMock } from '../testutils/getCwdMock';
 import path from 'path';
 import { ProjectType } from '../../src/context/ProjectType';
@@ -9,17 +9,46 @@ import { createBuildContext } from '../testutils/createBuildContext';
 import { BuildContext } from '../../src/context/BuildContext';
 import { VersionType } from '../../src/context/VersionType';
 import '../testutils/readGradleProjectMock';
+import { ProjectInfo, RepoType } from '../../src/context/ProjectInfo';
+import { match } from 'ts-pattern';
 
 const baseBuildContext = createBuildContext();
 
-describe('getProjectInfo', () => {
-	beforeEach(() => {
-		vi.resetAllMocks();
-	});
+beforeEach(() => {
+	vi.resetAllMocks();
+});
 
-	it('NPM release project', async () => {
+type GetProjectIfoArgs = Readonly<{
+	versionType: VersionType;
+	repoType: RepoType;
+}>;
+
+type VersionTypeValues = Readonly<{
+	workingDir: string;
+	version: string;
+}>;
+
+test.each<GetProjectIfoArgs>([
+	{ versionType: VersionType.Release, repoType: 'polyrepo' },
+	{ versionType: VersionType.PreRelease, repoType: 'polyrepo' }
+])(
+	'NPM getProjectInfo for $versionType and $repoType',
+	async ({ versionType, repoType }) => {
+		const { workingDir, version } = match<VersionType, VersionTypeValues>(
+			versionType
+		)
+			.with(VersionType.Release, () => ({
+				workingDir: 'npmReleaseLibrary',
+				version: '1.0.0'
+			}))
+			.with(VersionType.PreRelease, () => ({
+				workingDir: 'npmBetaLibrary',
+				version: '1.0.0-beta'
+			}))
+			.run();
+
 		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDir, 'npmReleaseLibrary')
+			path.resolve(baseWorkingDir, workingDir)
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -30,82 +59,139 @@ describe('getProjectInfo', () => {
 			projectInfo: {
 				group: 'craigmiller160',
 				name: 'craig-build',
-				version: '1.0.0',
-				versionType: VersionType.Release,
-				npmBuildTool: 'yarn'
+				version,
+				versionType,
+				npmBuildTool: 'yarn',
+				repoType
 			}
 		};
 		const result = await getProjectInfo.execute(buildContext)();
-		expect(result).toEqualRight(expectedContext);
-	});
+		if (repoType === 'polyrepo') {
+			expect(result).toEqualRight(expectedContext);
+		} else {
+			expect(result).toEqualLeft(
+				new Error('Monorepo not supported for this project type')
+			);
+		}
+	}
+);
 
-	it('NPM pre-release project', async () => {
-		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDir, 'npmBetaLibrary')
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.NpmLibrary
-		};
-		const expectedContext: BuildContext = {
-			...buildContext,
-			projectInfo: {
-				group: 'craigmiller160',
-				name: 'craig-build',
-				version: '1.0.0-beta',
-				versionType: VersionType.PreRelease,
-				npmBuildTool: 'yarn'
-			}
-		};
-		const result = await getProjectInfo.execute(buildContext)();
-		expect(result).toEqualRight(expectedContext);
-	});
+type VersionAndRepoType = Readonly<{
+	versionType: VersionType;
+	repoType: RepoType;
+}>;
 
-	it('Maven release project', async () => {
+test.each<GetProjectIfoArgs>([
+	{ versionType: VersionType.Release, repoType: 'polyrepo' },
+	{ versionType: VersionType.PreRelease, repoType: 'polyrepo' },
+	{ versionType: VersionType.Release, repoType: 'monorepo' }
+])(
+	'Maven getProjectInfo for $versionType and $repoType',
+	async ({ versionType, repoType }) => {
+		const { workingDir, version } = match<
+			VersionAndRepoType,
+			VersionTypeValues
+		>({ versionType, repoType })
+			.with(
+				{ versionType: VersionType.Release, repoType: 'polyrepo' },
+				() => ({
+					workingDir: 'mavenReleaseLibrary',
+					version: '1.2.0'
+				})
+			)
+			.with(
+				{ versionType: VersionType.PreRelease, repoType: 'polyrepo' },
+				() => ({
+					workingDir: 'mavenSnapshotLibrary',
+					version: '1.2.0-SNAPSHOT'
+				})
+			)
+			.with(
+				{ versionType: VersionType.Release, repoType: 'monorepo' },
+				() => ({
+					workingDir: 'mavenReleaseLibraryMonorepo',
+					version: '1.2.0'
+				})
+			)
+			.run();
+
 		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDir, 'mavenReleaseLibrary')
+			path.resolve(baseWorkingDir, workingDir)
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
 			projectType: ProjectType.MavenLibrary
 		};
+
+		const monorepoChildren: ReadonlyArray<ProjectInfo> = [
+			{
+				group: 'io.craigmiller160',
+				name: 'email-service-child-1',
+				version,
+				versionType,
+				repoType
+			},
+			{
+				group: 'io.craigmiller160',
+				name: 'email-service-child-2',
+				version,
+				versionType,
+				repoType
+			}
+		];
+
 		const expectedContext: BuildContext = {
 			...buildContext,
 			projectInfo: {
 				group: 'io.craigmiller160',
 				name: 'email-service',
-				version: '1.2.0',
-				versionType: VersionType.Release
+				version,
+				versionType,
+				repoType,
+				monorepoChildren:
+					repoType === 'monorepo' ? monorepoChildren : undefined
 			}
 		};
 		const result = await getProjectInfo.execute(buildContext)();
 		expect(result).toEqualRight(expectedContext);
-	});
+	}
+);
 
-	it('Maven pre-release project', async () => {
-		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDir, 'mavenSnapshotLibrary')
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.MavenLibrary
-		};
-		const expectedContext: BuildContext = {
-			...buildContext,
-			projectInfo: {
-				group: 'io.craigmiller160',
-				name: 'email-service',
-				version: '1.2.0-SNAPSHOT',
-				versionType: VersionType.PreRelease
-			}
-		};
-		const result = await getProjectInfo.execute(buildContext)();
-		expect(result).toEqualRight(expectedContext);
-	});
+test('Maven getProjectInfo for monorepo application', async () => {
+	getCwdMock.mockImplementation(() =>
+		path.resolve(baseWorkingDir, 'mavenReleaseApplicationMonorepo')
+	);
+	const buildContext: BuildContext = {
+		...baseBuildContext,
+		projectType: ProjectType.MavenApplication
+	};
+	const result = await getProjectInfo.execute(buildContext)();
+	expect(result).toEqualLeft(
+		new Error('Monorepo not supported for this project type')
+	);
+});
 
-	it('Docker release project', async () => {
+test.each<GetProjectIfoArgs>([
+	{ versionType: VersionType.Release, repoType: 'polyrepo' },
+	{ versionType: VersionType.PreRelease, repoType: 'polyrepo' }
+])(
+	'Docker getProjectInfo for $versionType and $repoType',
+	async ({ versionType, repoType }) => {
+		const { workingDir, version } = match<VersionType, VersionTypeValues>(
+			versionType
+		)
+			.with(VersionType.Release, () => ({
+				workingDir: 'dockerReleaseImage',
+				version: '1.0.0'
+			}))
+			.with(VersionType.PreRelease, () => ({
+				workingDir: 'dockerBetaImage',
+				version: '1.0.0-beta'
+			}))
+			.run();
+
 		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDir, 'dockerReleaseImage')
+			path.resolve(baseWorkingDir, workingDir)
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -116,60 +202,45 @@ describe('getProjectInfo', () => {
 			projectInfo: {
 				group: 'craigmiller160',
 				name: 'nginx-base',
-				version: '1.0.0',
-				versionType: VersionType.Release
+				version,
+				versionType,
+				repoType
 			}
 		};
 		const result = await getProjectInfo.execute(buildContext)();
-		expect(result).toEqualRight(expectedContext);
-	});
+		if (repoType === 'polyrepo') {
+			expect(result).toEqualRight(expectedContext);
+		} else {
+			expect(result).toEqualLeft(
+				new Error('Monorepo not supported for this project type')
+			);
+		}
+	}
+);
 
-	it('Docker pre-release project', async () => {
-		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDir, 'dockerBetaImage')
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.DockerImage
-		};
-		const expectedContext: BuildContext = {
-			...buildContext,
-			projectInfo: {
-				group: 'craigmiller160',
-				name: 'nginx-base',
-				version: '1.0.0-beta',
-				versionType: VersionType.PreRelease
-			}
-		};
-		const result = await getProjectInfo.execute(buildContext)();
-		expect(result).toEqualRight(expectedContext);
-	});
+test.each<GetProjectIfoArgs>([
+	{ versionType: VersionType.Release, repoType: 'polyrepo' },
+	{ versionType: VersionType.PreRelease, repoType: 'polyrepo' }
+])(
+	'Gradle getProjectInfo for $versionType and $repoType',
+	async ({ versionType, repoType }) => {
+		const { workingDir, version } = match<VersionType, VersionTypeValues>(
+			versionType
+		)
+			.with(VersionType.Release, () => ({
+				workingDir: 'gradleKotlinReleaseLibrary',
+				version: '1.0.0'
+			}))
+			.with(VersionType.PreRelease, () => ({
+				workingDir: 'gradleKotlinPreReleaseLibrary',
+				version: '1.0.0-SNAPSHOT'
+			}))
+			.run();
 
-	it('GradleKotlin pre-release project', async () => {
 		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDir, 'gradleKotlinPreReleaseLibrary')
+			path.resolve(baseWorkingDir, workingDir)
 		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.GradleLibrary
-		};
-		const expectedContext: BuildContext = {
-			...buildContext,
-			projectInfo: {
-				group: 'io.craigmiller160',
-				name: 'spring-gradle-playground',
-				version: '1.0.0-SNAPSHOT',
-				versionType: VersionType.PreRelease
-			}
-		};
-		const result = await getProjectInfo.execute(buildContext)();
-		expect(result).toEqualRight(expectedContext);
-	});
 
-	it('GradleKotlin release project', async () => {
-		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDir, 'gradleKotlinReleaseLibrary')
-		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
 			projectType: ProjectType.GradleLibrary
@@ -179,18 +250,45 @@ describe('getProjectInfo', () => {
 			projectInfo: {
 				group: 'io.craigmiller160',
 				name: 'spring-gradle-playground',
-				version: '1.0.0',
-				versionType: VersionType.Release
+				version,
+				versionType,
+				repoType
 			}
 		};
 		const result = await getProjectInfo.execute(buildContext)();
-		expect(result).toEqualRight(expectedContext);
-	});
+		if (repoType === 'polyrepo') {
+			expect(result).toEqualRight(expectedContext);
+		} else {
+			expect(result).toEqualLeft(
+				new Error('Monorepo not supported for this project type')
+			);
+		}
+	}
+);
 
-	it('HelmLibrary release project', async () => {
+test.each<GetProjectIfoArgs>([
+	{ versionType: VersionType.Release, repoType: 'polyrepo' },
+	{ versionType: VersionType.PreRelease, repoType: 'polyrepo' }
+])(
+	'Helm Library getProjectInfo for $versionType and $repoType',
+	async ({ versionType, repoType }) => {
+		const { workingDir, version } = match<VersionType, VersionTypeValues>(
+			versionType
+		)
+			.with(VersionType.Release, () => ({
+				workingDir: 'helmReleaseLibrary',
+				version: '1.0.0'
+			}))
+			.with(VersionType.PreRelease, () => ({
+				workingDir: 'helmPreReleaseLibrary',
+				version: '1.0.0-beta'
+			}))
+			.run();
+
 		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDir, 'helmReleaseLibrary')
+			path.resolve(baseWorkingDir, workingDir)
 		);
+
 		const buildContext: BuildContext = {
 			...baseBuildContext,
 			projectType: ProjectType.HelmLibrary
@@ -200,31 +298,49 @@ describe('getProjectInfo', () => {
 			projectInfo: {
 				group: 'craigmiller160',
 				name: 'my-lib',
-				version: '1.0.0',
-				versionType: VersionType.Release
+				version,
+				versionType,
+				repoType
 			}
 		};
 		const result = await getProjectInfo.execute(buildContext)();
-		expect(result).toEqualRight(expectedContext);
-	});
+		if (repoType === 'monorepo') {
+			expect(result).toEqualLeft(
+				new Error('Monorepo not supported for this project type')
+			);
+		} else if (VersionType.Release === versionType) {
+			expect(result).toEqualRight(expectedContext);
+		} else {
+			expect(result).toEqualLeft(
+				new Error(
+					'Helm pre-release projects are not currently supported'
+				)
+			);
+		}
+	}
+);
 
-	it('HelmLibrary pre-release project', async () => {
-		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDir, 'helmPreReleaseLibrary')
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.HelmLibrary
-		};
-		const result = await getProjectInfo.execute(buildContext)();
-		expect(result).toEqualLeft(
-			new Error('Helm pre-release projects are not currently supported')
-		);
-	});
+test.each<GetProjectIfoArgs>([
+	{ versionType: VersionType.Release, repoType: 'polyrepo' },
+	{ versionType: VersionType.PreRelease, repoType: 'polyrepo' }
+])(
+	'Helm Application getProjectInfo for $versionType and $repoType',
+	async ({ versionType, repoType }) => {
+		const { workingDir, version } = match<VersionType, VersionTypeValues>(
+			versionType
+		)
+			.with(VersionType.Release, () => ({
+				workingDir: 'helmReleaseApplication',
+				version: '1.0.0'
+			}))
+			.with(VersionType.PreRelease, () => ({
+				workingDir: 'helmPreReleaseApplication',
+				version: '1.0.0-beta'
+			}))
+			.run();
 
-	it('HelmApplication release project', async () => {
 		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDir, 'helmReleaseApplication')
+			path.resolve(baseWorkingDir, workingDir)
 		);
 		const buildContext: BuildContext = {
 			...baseBuildContext,
@@ -235,25 +351,25 @@ describe('getProjectInfo', () => {
 			projectInfo: {
 				group: 'craigmiller160',
 				name: 'my-app',
-				version: '1.0.0',
-				versionType: VersionType.Release
+				version,
+				versionType,
+				repoType
 			}
 		};
-		const result = await getProjectInfo.execute(buildContext)();
-		expect(result).toEqualRight(expectedContext);
-	});
 
-	it('HelmApplication pre-release project', async () => {
-		getCwdMock.mockImplementation(() =>
-			path.resolve(baseWorkingDir, 'helmPreReleaseApplication')
-		);
-		const buildContext: BuildContext = {
-			...baseBuildContext,
-			projectType: ProjectType.HelmApplication
-		};
 		const result = await getProjectInfo.execute(buildContext)();
-		expect(result).toEqualLeft(
-			new Error('Helm pre-release projects are not currently supported')
-		);
-	});
-});
+		if (repoType === 'monorepo') {
+			expect(result).toEqualLeft(
+				new Error('Monorepo not supported for this project type')
+			);
+		} else if (VersionType.Release === versionType) {
+			expect(result).toEqualRight(expectedContext);
+		} else {
+			expect(result).toEqualLeft(
+				new Error(
+					'Helm pre-release projects are not currently supported'
+				)
+			);
+		}
+	}
+);

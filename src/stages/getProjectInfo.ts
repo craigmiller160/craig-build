@@ -2,9 +2,15 @@ import { Stage, StageExecuteFn } from './Stage';
 import { ProjectType } from '../context/ProjectType';
 import { ProjectInfo } from '../context/ProjectInfo';
 import { match } from 'ts-pattern';
-import { taskEither } from 'fp-ts';
-import { either, function as func } from 'fp-ts';
-import { predicate } from 'fp-ts';
+import {
+	either,
+	function as func,
+	option,
+	predicate,
+	readonlyArray,
+	taskEither
+} from 'fp-ts';
+import path from 'path';
 import {
 	isDocker,
 	isGradle,
@@ -15,14 +21,15 @@ import {
 import { npmSeparateGroupAndName } from '../utils/npmSeparateGroupAndName';
 import { PackageJson } from '../configFileTypes/PackageJson';
 import { DockerJson } from '../configFileTypes/DockerJson';
-import { PomXml } from '../configFileTypes/PomXml';
+import { MavenModules, PomXml } from '../configFileTypes/PomXml';
 import { BuildContext } from '../context/BuildContext';
 import { VersionType } from '../context/VersionType';
 import { regexTest } from '../functions/RegExp';
 import { GradleProject } from '../special/gradle';
-import { getRawProjectData } from '../projectCache';
+import { getRawProjectData } from '../projectReading';
 import { HelmJson } from '../configFileTypes/HelmJson';
 import { getNpmBuildTool } from '../context/npmCommandUtils';
+import { getCwd } from '../command/getCwd';
 
 const BETA_VERSION_REGEX = /^.*-beta/;
 const SNAPSHOT_VERSION_REGEX = /^.*-SNAPSHOT/;
@@ -41,18 +48,65 @@ const getVersionType = (version: string): VersionType =>
 		.otherwise(() => VersionType.Release);
 
 const readMavenProjectInfo = (
-	projectType: ProjectType
+	projectType: ProjectType,
+	cwd: string = getCwd(),
+	rootProjectInfo: ProjectInfo | undefined = undefined
 ): taskEither.TaskEither<Error, ProjectInfo> =>
 	func.pipe(
-		getRawProjectData<PomXml>(projectType),
-		taskEither.map((pomXml): ProjectInfo => {
-			const version = pomXml.project.version[0];
-			return {
-				group: pomXml.project.groupId[0],
+		getRawProjectData<PomXml>(projectType, cwd),
+		taskEither.flatMap((pomXml) => {
+			const version =
+				pomXml.project.version?.[0] ?? rootProjectInfo?.version;
+			const group = pomXml.project.groupId?.[0] ?? rootProjectInfo?.group;
+			if (!version || !group) {
+				return taskEither.left(
+					new Error('Cannot find required fields from pom.xml')
+				);
+			}
+
+			const projectInfo: ProjectInfo = {
+				group,
 				name: pomXml.project.artifactId[0],
 				version,
-				versionType: getVersionType(version)
+				versionType: getVersionType(version),
+				repoType:
+					rootProjectInfo !== undefined ? 'monorepo' : 'polyrepo'
 			};
+
+			if (
+				pomXml.project.modules &&
+				projectType === ProjectType.MavenApplication
+			) {
+				return taskEither.left(
+					new Error('Monorepo not supported for this project type')
+				);
+			}
+
+			if (pomXml.project.modules) {
+				return func.pipe(
+					pomXml.project.modules,
+					readonlyArray.head,
+					option.getOrElse((): MavenModules => ({ module: [] })),
+					(m) => m.module,
+					readonlyArray.map((module) => path.join(cwd, module)),
+					readonlyArray.map((modulePath) =>
+						readMavenProjectInfo(
+							projectType,
+							modulePath,
+							projectInfo
+						)
+					),
+					taskEither.sequenceArray,
+					taskEither.map(
+						(monorepoChildren): ProjectInfo => ({
+							...projectInfo,
+							monorepoChildren,
+							repoType: 'monorepo'
+						})
+					)
+				);
+			}
+			return taskEither.right(projectInfo);
 		})
 	);
 
@@ -80,7 +134,8 @@ const readNpmProjectInfo = (
 				group,
 				name,
 				version: packageJson.version,
-				versionType: getVersionType(packageJson.version)
+				versionType: getVersionType(packageJson.version),
+				repoType: 'polyrepo'
 			};
 		}),
 		taskEither.chainEitherK(addNpmCommand)
@@ -97,7 +152,8 @@ const readDockerProjectInfo = (
 				group,
 				name,
 				version: dockerJson.version,
-				versionType: getVersionType(dockerJson.version)
+				versionType: getVersionType(dockerJson.version),
+				repoType: 'polyrepo'
 			};
 		})
 	);
@@ -111,7 +167,8 @@ const readGradleProjectInfo = (
 			group: buildGradle.info.group,
 			name: buildGradle.info.name,
 			version: buildGradle.info.version,
-			versionType: getVersionType(buildGradle.info.version)
+			versionType: getVersionType(buildGradle.info.version),
+			repoType: 'polyrepo'
 		}))
 	);
 
@@ -126,7 +183,8 @@ const readHelmProjectInfo = (
 				group,
 				name,
 				version: helmJson.version,
-				versionType: getVersionType(helmJson.version)
+				versionType: getVersionType(helmJson.version),
+				repoType: 'polyrepo'
 			};
 		}),
 		taskEither.filterOrElse(
@@ -142,7 +200,7 @@ const readProjectInfoByType = (
 	projectType: ProjectType
 ): taskEither.TaskEither<Error, ProjectInfo> =>
 	match(projectType)
-		.when(isMaven, readMavenProjectInfo)
+		.when(isMaven, (_) => readMavenProjectInfo(_))
 		.when(isNpm, readNpmProjectInfo)
 		.when(isDocker, readDockerProjectInfo)
 		.when(isGradle, readGradleProjectInfo)

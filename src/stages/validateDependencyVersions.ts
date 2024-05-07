@@ -1,6 +1,5 @@
 import { BuildContext } from '../context/BuildContext';
 import {
-	array,
 	either,
 	function as func,
 	option,
@@ -19,15 +18,16 @@ import {
 	isNpm
 } from '../context/projectTypeUtils';
 import { getCwd } from '../command/getCwd';
-import { MavenArtifact, PomXml } from '../configFileTypes/PomXml';
+import { MavenArtifact, MavenModules, PomXml } from '../configFileTypes/PomXml';
 import { PackageJson } from '../configFileTypes/PackageJson';
 import { isRelease } from '../context/projectInfoUtils';
 import { Stage, StageExecuteFn } from './Stage';
 import { ProjectType } from '../context/ProjectType';
 import { isFullBuild } from '../context/commandTypeUtils';
-import { getRawProjectData } from '../projectCache';
+import { getRawProjectData } from '../projectReading';
 import { runCommand } from '../command/runCommand';
 import { semverSatisifies } from '../utils/semverUtils';
+import path from 'path';
 
 const MAVEN_PROPERTY_REGEX = /\${.*}/;
 
@@ -38,13 +38,13 @@ type JsEntries = ReadonlyArray<[string, string]>;
 const getMavenProperties = (pomXml: PomXml): MavenProperties =>
 	func.pipe(
 		option.fromNullable(pomXml.project.properties),
-		option.chain(array.head),
+		option.chain(readonlyArray.head),
 		option.map((props) =>
 			Object.entries(props).reduce(
 				(mvnProps: MavenProperties, [key, value]) => {
 					mvnProps[key] = func.pipe(
 						value,
-						array.head,
+						readonlyArray.head,
 						option.getOrElse(() => '')
 					);
 					return mvnProps;
@@ -58,7 +58,7 @@ const getMavenProperties = (pomXml: PomXml): MavenProperties =>
 const mavenFormatArtifactVersion = (dependency: MavenArtifact): string =>
 	func.pipe(
 		option.fromNullable(dependency.version),
-		option.chain(array.head),
+		option.chain(readonlyArray.head),
 		option.getOrElse(() => '')
 	);
 
@@ -83,8 +83,8 @@ const mavenHasNoSnapshotDependencies = ([
 	const hasNoSnapshotDependencies =
 		func.pipe(
 			pomXml.project.dependencies[0].dependency,
-			array.map(mavenFormatArtifactVersion),
-			array.filter((version) =>
+			readonlyArray.map(mavenFormatArtifactVersion),
+			readonlyArray.filter((version) =>
 				mavenReplaceVersionProperty(mvnProps, version).includes(
 					'SNAPSHOT'
 				)
@@ -93,8 +93,8 @@ const mavenHasNoSnapshotDependencies = ([
 	const hasNoSnapshotPlugins =
 		func.pipe(
 			pomXml.project.build?.[0].plugins?.[0].plugin ?? [],
-			array.map(mavenFormatArtifactVersion),
-			array.filter((version) =>
+			readonlyArray.map(mavenFormatArtifactVersion),
+			readonlyArray.filter((version) =>
 				mavenReplaceVersionProperty(mvnProps, version).includes(
 					'SNAPSHOT'
 				)
@@ -104,11 +104,12 @@ const mavenHasNoSnapshotDependencies = ([
 	return hasNoSnapshotDependencies && hasNoSnapshotPlugins;
 };
 
-const validateMavenReleaseDependencies = (
-	context: BuildContext
+const validateMavenPomXml = (
+	context: BuildContext,
+	cwd: string
 ): taskEither.TaskEither<Error, BuildContext> =>
 	func.pipe(
-		getRawProjectData<PomXml>(context.projectType),
+		getRawProjectData<PomXml>(context.projectType, cwd),
 		taskEither.map(
 			(pomXml): PomAndProps => [pomXml, getMavenProperties(pomXml)]
 		),
@@ -121,6 +122,32 @@ const validateMavenReleaseDependencies = (
 		),
 		taskEither.map(() => context)
 	);
+
+const validateMavenReleaseDependencies = (
+	context: BuildContext
+): taskEither.TaskEither<Error, BuildContext> => {
+	const cwd = getCwd();
+	return func.pipe(
+		getRawProjectData<PomXml>(context.projectType, cwd),
+		taskEither.flatMap((pomXml) => {
+			if (pomXml.project.modules) {
+				return func.pipe(
+					pomXml.project.modules,
+					readonlyArray.head,
+					option.getOrElse((): MavenModules => ({ module: [] })),
+					(m) => m.module,
+					readonlyArray.map((module) => path.join(cwd, module)),
+					readonlyArray.map((modulePath) =>
+						validateMavenPomXml(context, modulePath)
+					),
+					taskEither.sequenceArray,
+					taskEither.map(() => context)
+				);
+			}
+			return validateMavenPomXml(context, cwd);
+		})
+	);
+};
 
 const entries = (obj?: { [key: string]: string }): JsEntries =>
 	func.pipe(
