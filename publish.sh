@@ -56,6 +56,15 @@ npm_publish() {
   npm publish
 }
 
+commit_package_json_changes() {
+  changes=$(git status --porcelain | grep "package.json")
+  if [[ "$changes" =~ ^\sM\spackage\.json$ ]]; then
+    git add package.json
+    git commit -m "Bumped version"
+    git push
+  fi
+}
+
 version=$(get_version)
 check_status $?
 
@@ -64,12 +73,8 @@ check_status $?
 
 echo "Publishing version $new_version"
 
-npm publish
+npm_publish "$new_version"
 check_status $?
 
-npm version --allow-same-version --no-git-tag-version $1 && npm publish
-if [ $? -eq 0 ]; then
-  git add package.json
-  git commit -m "Bumped version"
-  git push
-fi
+commit_package_json_changes
+check_status $?
