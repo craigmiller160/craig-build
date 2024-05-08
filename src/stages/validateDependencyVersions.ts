@@ -73,6 +73,11 @@ const mavenReplaceVersionProperty = (
 		)
 		.otherwise(() => version);
 
+const PROJECT_PROP_REGEX = /^\${project\..+}$/;
+
+const excludeIfUsingProjectProp = (version: string): boolean =>
+	!PROJECT_PROP_REGEX.test(version);
+
 const mavenHasNoSnapshotDependencies = ([
 	pomXml,
 	mvnProps
@@ -84,6 +89,7 @@ const mavenHasNoSnapshotDependencies = ([
 		func.pipe(
 			pomXml.project.dependencies[0].dependency,
 			readonlyArray.map(mavenFormatArtifactVersion),
+			readonlyArray.filter(excludeIfUsingProjectProp),
 			readonlyArray.filter((version) =>
 				mavenReplaceVersionProperty(mvnProps, version).includes(
 					'SNAPSHOT'
@@ -94,6 +100,7 @@ const mavenHasNoSnapshotDependencies = ([
 		func.pipe(
 			pomXml.project.build?.[0].plugins?.[0].plugin ?? [],
 			readonlyArray.map(mavenFormatArtifactVersion),
+			readonlyArray.filter(excludeIfUsingProjectProp),
 			readonlyArray.filter((version) =>
 				mavenReplaceVersionProperty(mvnProps, version).includes(
 					'SNAPSHOT'
