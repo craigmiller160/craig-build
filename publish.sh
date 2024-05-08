@@ -58,7 +58,7 @@ npm_publish() {
 
 commit_package_json_changes() {
   changes=$(git status --porcelain | grep "package.json")
-  if [[ "$changes" =~ ^\sM\spackage\.json$ ]]; then
+  if [[ "$changes" != "" ]]; then
     git add package.json
     git commit -m "Bumped version"
     git push
