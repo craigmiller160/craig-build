@@ -42,7 +42,18 @@ increment_beta_if_necessary() {
 npm_publish() {
   version="$1"
 
+  if is_beta "$version" ; then
+    npm version \
+      --allow-same-version \
+      --no-git-tag-version \
+      "$1"
+  else
+    npm version \
+      --allow-same-version \
+      "$1"
+  fi
 
+  npm publish
 }
 
 version=$(get_version)
@@ -53,7 +64,8 @@ check_status $?
 
 echo "Publishing version $new_version"
 
-exit 1
+npm publish
+check_status $?
 
 npm version --allow-same-version --no-git-tag-version $1 && npm publish
 if [ $? -eq 0 ]; then
