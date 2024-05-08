@@ -18,6 +18,7 @@
     "typeCheck": "tsc --noEmit --project ./test/tsconfig.json",
     "test": "vitest run",
     "build": "npm run validate && npm run forceBuild",
+    "deploy": "bash publish.sh && pnpm add -g @craigmiller160/craig-build",
     "validate": "npm run typeCheck && npm run lint && npm run test",
     "prepare": "husky install",
     "install": "node libScripts/gradle-install.js"
