@@ -66,7 +66,7 @@ commit_package_json_changes() {
 }
 
 install_new_package() {
-  read response -r -p "Do you want to install the new version on this machine? (y/n) "
+  read -r -p "Do you want to install the new version on this machine? (y/n) " response
   if [[ "$response" == "y" ]]; then
     pnpm add -g @craigmiller160/craig-build
   fi
