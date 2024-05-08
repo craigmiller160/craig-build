@@ -85,3 +85,6 @@ check_status $?
 
 commit_package_json_changes
 check_status $?
+
+install_new_package
+check_status $?
