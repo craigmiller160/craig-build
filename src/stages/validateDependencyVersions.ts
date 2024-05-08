@@ -76,7 +76,7 @@ const mavenReplaceVersionProperty = (
 const PROJECT_PROP_REGEX = /^\${project\..+}$/;
 
 const excludeIfUsingProjectProp = (version: string): boolean =>
-	PROJECT_PROP_REGEX.test(version);
+	!PROJECT_PROP_REGEX.test(version);
 
 const mavenHasNoSnapshotDependencies = ([
 	pomXml,
