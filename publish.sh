@@ -12,10 +12,20 @@ get_version() {
   jq -r .version < package.json
 }
 
-increment_beta_if_necessary() {
-  version=$1
+is_beta() {
+  version="$1"
 
   if [[ $version =~ ^(.*)-beta\.([0-9]+)$ ]]; then
+    return 0
+  else
+    return 1
+  fi
+}
+
+increment_beta_if_necessary() {
+  version="$1"
+
+  if  is_beta "$version" ; then
     base_version="${BASH_REMATCH[1]}"
     beta_number="${BASH_REMATCH[2]}"
 
@@ -29,13 +39,21 @@ increment_beta_if_necessary() {
   fi
 }
 
+npm_publish() {
+  version="$1"
+
+
+}
+
 version=$(get_version)
 check_status $?
 
 new_version=$(increment_beta_if_necessary "$version")
 check_status $?
 
-exit 0
+echo "Publishing version $new_version"
+
+exit 1
 
 npm version --allow-same-version --no-git-tag-version $1 && npm publish
 if [ $? -eq 0 ]; then
